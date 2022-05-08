@@ -1,0 +1,12 @@
+query GetChannelMembers($channelId: Int!) {
+  Channel(id: $channelId) {
+    id
+    name
+    members {
+      id
+      name
+      email
+      username
+    }
+  }
+}

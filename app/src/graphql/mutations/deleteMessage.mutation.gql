@@ -1,0 +1,5 @@
+mutation DeleteMessage($deleteMessageId: Int!) {
+  deleteMessage(id: $deleteMessageId) {
+    id
+  }
+}

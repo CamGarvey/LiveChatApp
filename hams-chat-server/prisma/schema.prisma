@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     Int       @id @default(autoincrement()) @map("id")
+  email                  String    @unique
+  name                   String?
+  username               String?   @unique
+  sentFriendRequests     User[]    @relation("UserFriendRequests", references: [id])
+  receivedFriendRequests User[]    @relation("UserFriendRequests", references: [id])
+  friends                User[]    @relation("UserFriendsUser", references: [id])
+  friendsOf              User[]    @relation("UserFriendsUser", references: [id])
+  updatedAt              DateTime  @updatedAt
+  createdAt              DateTime  @default(now())
+  channelsCreated        Channel[] @relation("UserCreatedByChannel")
+  memberOfChannels       Channel[] @relation("UserMemberOfChannels")
+  messages               Message[] @relation("WhoUserMessage")
+  likedMessages          Message[] @relation("LikedByUserMessage")
+}
+
+model Channel {
+  id          Int       @id @default(autoincrement())
+  name        String
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+  createdBy   User      @relation("UserCreatedByChannel", fields: [createdById], references: [id])
+  createdById Int
+  isDM        Boolean
+  members     User[]    @relation("UserMemberOfChannels", references: [id])
+  messages    Message[] @relation("ChannelMessagesMessage")
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  createdBy   User     @relation("WhoUserMessage", fields: [createdById], references: [id])
+  createdById Int
+  channel     Channel  @relation("ChannelMessagesMessage", fields: [channelId], references: [id])
+  channelId   Int
+  likedBy     User[]   @relation("LikedByUserMessage", references: [id])
+}

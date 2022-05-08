@@ -1,0 +1,5 @@
+export enum Subscriptions {
+  NEW_MESSAGE = 'NEW_MESSAGE',
+  NEW_FRIEND_REQUEST = 'NEW_FRIEND_REQUEST',
+  NEW_FRIEND = 'NEW_FRIEND',
+}

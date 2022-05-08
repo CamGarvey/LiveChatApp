@@ -1,0 +1,38 @@
+query GetUsers(
+  $before: String
+  $last: Int
+  $after: String
+  $first: Int
+  $orderBy: UserOrderBy
+  $nameFilter: String
+) {
+  Users(
+    before: $before
+    last: $last
+    after: $after
+    first: $first
+    orderBy: $orderBy
+    nameFilter: $nameFilter
+  ) {
+    edges {
+      cursor
+      node {
+        id
+        name
+        email
+        username
+        createdAt
+        updatedAt
+        channels {
+          id
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      startCursor
+      hasPreviousPage
+      hasNextPage
+    }
+  }
+}

@@ -1,0 +1,18 @@
+mutation CreateChannel(
+  $channelId: Int!
+  $createdById: Int!
+  $content: String!
+) {
+  createMessage(
+    channelId: $channelId
+    createdById: $createdById
+    content: $content
+  ) {
+    id
+    content
+    createdAt
+    channel {
+      id
+    }
+  }
+}

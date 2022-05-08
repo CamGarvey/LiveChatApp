@@ -1,0 +1,10 @@
+query GetUserChannels($userId: Int!) {
+  User(id: $userId) {
+    id
+    channels {
+      id
+      name
+      isDM
+    }
+  }
+}

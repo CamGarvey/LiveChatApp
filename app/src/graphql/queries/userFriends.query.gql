@@ -1,0 +1,30 @@
+query GetUserFriends(
+  $userId: Int!
+  $first: Int
+  $after: String
+  $last: Int
+  $before: String
+) {
+  User(id: $userId) {
+    id
+    friends(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        cursor
+        node {
+          id
+          name
+          email
+          username
+          createdAt
+          updatedAt
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}

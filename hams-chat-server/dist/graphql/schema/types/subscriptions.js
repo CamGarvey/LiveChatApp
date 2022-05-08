@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Subscriptions = void 0;
+var Subscriptions;
+(function (Subscriptions) {
+    Subscriptions["NEW_MESSAGE"] = "NEW_MESSAGE";
+    Subscriptions["NEW_FRIEND_REQUEST"] = "NEW_FRIEND_REQUEST";
+    Subscriptions["NEW_FRIEND"] = "NEW_FRIEND";
+})(Subscriptions = exports.Subscriptions || (exports.Subscriptions = {}));
+//# sourceMappingURL=subscriptions.js.map

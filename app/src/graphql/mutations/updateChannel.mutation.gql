@@ -1,0 +1,13 @@
+mutation UpdateChannel(
+  $updateChannelId: Int!
+  $isDm: Boolean!
+  $name: String!
+) {
+  updateChannel(id: $updateChannelId, isDM: $isDm, name: $name) {
+    id
+    name
+    createdAt
+    updatedAt
+    isDM
+  }
+}

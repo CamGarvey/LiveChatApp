@@ -1,0 +1,16 @@
+query GetUserChannelsWithMembers($userId: Int!) {
+  User(id: $userId) {
+    id
+    channels {
+      id
+      name
+      isDM
+      members {
+        id
+        name
+        email
+        username
+      }
+    }
+  }
+}

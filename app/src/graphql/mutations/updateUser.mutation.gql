@@ -1,0 +1,10 @@
+mutation UpdateUser($updateUserId: Int!, $email: String!, $username: String!) {
+  updateUser(id: $updateUserId, email: $email, username: $username) {
+    id
+    name
+    email
+    username
+    createdAt
+    updatedAt
+  }
+}
