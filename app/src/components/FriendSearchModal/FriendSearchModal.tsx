@@ -16,18 +16,25 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
 import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
 import UserItem from './UserItem';
 
 const FriendSearchModal = (props: UseDisclosureProps) => {
-  const btnRef = React.useRef();
+  const btnRef = useRef<HTMLDivElement>();
+  const inputRef = useRef<HTMLInputElement>();
   const [users, setUsers] = useState([]);
   const { isOpen, onClose } = useDisclosure(props);
-  const [getUsers, { data, loading, error }] = useGetUsersLazyQuery();
+  const [getUsers, { data, loading }] = useGetUsersLazyQuery();
 
+  // Wrap the getUsers call in a debounce to prevent over requesting api
   const debouncer = useCallback(_.debounce(getUsers, 1000), []);
+
+  // Focus on input
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef?.current?.id]);
 
   useEffect(() => {
     if (data?.Users?.edges) {
@@ -59,6 +66,7 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
             </InputLeftElement>
             <Input
               placeholder="Find your friends!"
+              ref={inputRef}
               onChange={(e) => {
                 setUsers([]);
                 const value = e.target.value;

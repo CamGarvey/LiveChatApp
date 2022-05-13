@@ -17,13 +17,15 @@ import { ColorModeSwitcher } from './ColorModeSwitcher';
 import FriendSearchModal from '../FriendSearchModal/FriendSearchModal';
 import { BsSearch } from 'react-icons/bs';
 import { MdOutlineAccountCircle } from 'react-icons/md';
+import { useAuth0 } from '@auth0/auth0-react';
 
 type Props = {};
 
 const Header = (props: Props) => {
+  const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
+    useAuth0();
   const [friendSearchOpen, setFriendSearchOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const user = {};
+
   return (
     <Flex
       bg="lightblue"
@@ -35,7 +37,7 @@ const Header = (props: Props) => {
       <Heading size="lg">Hams Chat</Heading>
       <Box id="auth" marginLeft="auto">
         <Flex alignItems="center" gap="3">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
@@ -48,29 +50,28 @@ const Header = (props: Props) => {
                   }}
                 />
               </InputGroup>
-              <FriendSearchModal
-                isOpen={friendSearchOpen}
-                onClose={() => {
-                  setFriendSearchOpen(false);
-                }}
-              />
+              {friendSearchOpen && (
+                <FriendSearchModal
+                  isOpen={friendSearchOpen}
+                  onClose={() => {
+                    console.log('test');
+
+                    setFriendSearchOpen(false);
+                  }}
+                />
+              )}
               <Menu>
                 <MenuButton as={IconButton} icon={<MdOutlineAccountCircle />} />
                 <MenuList>
-                  <MenuItem
-                    onClick={() => {
-                      setIsLoading(true);
-                    }}
-                  >
-                    Logout
-                  </MenuItem>
+                  <MenuItem>{user?.name}</MenuItem>
+                  <MenuItem onClick={() => logout()}>Logout</MenuItem>
                 </MenuList>
               </Menu>
             </>
           ) : (
             <Button
               isLoading={isLoading}
-              onClick={() => setIsLoading(true)}
+              onClick={() => loginWithRedirect()}
               variant={'solid'}
               as="a"
             >
