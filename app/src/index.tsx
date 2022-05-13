@@ -18,10 +18,10 @@ const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <Auth0Provider
-      domain="dev--2cpvhzk.us.auth0.com"
-      clientId="ykjYHTAgBdTmwJmSgOkL7UTOlQqKCJdR"
+      domain={process.env.REACT_APP_AUTH0_DOMAIN}
+      clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
       redirectUri={'http://localhost:3000'}
-      audience="https://dev--2cpvhzk.us.auth0.com/api/v2/"
+      audience={process.env.REACT_APP_AUTH0_AUDIENCE}
       scope="read:current_user update:current_user_metadata"
     >
       <AuthorizedApolloProvider>

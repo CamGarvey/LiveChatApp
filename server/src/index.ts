@@ -21,8 +21,8 @@ const main = async () => {
 
   // Set up CORS
   var corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true, // <-- REQUIRED backend setting
+    origin: 'http://localhost:3000', // <-- allow frontend
+    credentials: true,
   };
 
   app.use(cors(corsOptions));
@@ -31,10 +31,10 @@ const main = async () => {
   app.use(
     '/grahpql/*',
     auth({
-      audience: 'https://dev--2cpvhzk.us.auth0.com/api/v2/',
-      jwksUri: 'https://dev--2cpvhzk.us.auth0.com/.well-known/jwks.json',
-      tokenSigningAlg: 'RS256',
-      issuerBaseURL: `https://dev--2cpvhzk.us.auth0.com/`,
+      audience: process.env.AUTH0_AUDIENCE,
+      jwksUri: process.env.AUTH0_JWKS_URI,
+      tokenSigningAlg: process.env.AUTH0_SIGNING_ALG,
+      issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
     })
   );
 

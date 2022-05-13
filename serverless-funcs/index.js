@@ -20,6 +20,6 @@ exports.onExecutePreUserRegistration = async (event, api) => {
       throw new Error(response.data['message']);
     }
   } catch (e) {
-    api.access.deny(e, 'Failed to create db user!');
+    api.access.deny(e, 'Something went wrong');
   }
 };
