@@ -12,36 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const prisma_1 = __importDefault(require("../lib/clients/prisma"));
-const authRouter = express_1.default.Router();
-authRouter.use((req, res, next) => {
-    const { secret } = req.body;
-    if (secret == process.env.AUTH0_HOOK_SECRET) {
-        next();
+const jwks_rsa_1 = require("jwks-rsa");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const verifyToken = (bearerToken) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = new jwks_rsa_1.JwksClient({
+        jwksUri: process.env.AUTH0_JWKS_URI,
+    });
+    function getJwksClientKey(header, callback) {
+        client.getSigningKey(header.kid, (error, key) => {
+            const signingKey = key.getPublicKey();
+            callback(signingKey, null);
+        });
     }
-    else {
-        res.sendStatus(403);
-    }
+    return new Promise((resolve, reject) => {
+        jsonwebtoken_1.default;
+    });
 });
-authRouter.post('/create-user-hook', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { name, email } = req.body;
-        const user = yield prisma_1.default.user.create({
-            data: {
-                name,
-                email,
-            },
-        });
-        res.status(201).send({
-            userId: user.id,
-        });
-    }
-    catch (e) {
-        res.status(500).send({
-            reason: e,
-        });
-    }
-}));
-exports.default = authRouter;
-//# sourceMappingURL=auth.js.map
+//# sourceMappingURL=verify-token.js.map

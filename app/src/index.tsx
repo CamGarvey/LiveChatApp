@@ -1,4 +1,3 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
@@ -22,7 +21,7 @@ root.render(
       clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
       redirectUri={'http://localhost:3000'}
       audience={process.env.REACT_APP_AUTH0_AUDIENCE}
-      scope="read:current_user update:current_user_metadata"
+      scope="read:current_user update:current_user_metadata read:current_user_metadata email"
     >
       <AuthorizedApolloProvider>
         <ChakraProvider theme={theme}>

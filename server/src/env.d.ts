@@ -1,5 +1,6 @@
 declare namespace NodeJS {
   export interface ProcessEnv {
+    DOMAIN: string;
     DATABASE_URL: string;
     PORT: string;
     REDIS_URL: string;

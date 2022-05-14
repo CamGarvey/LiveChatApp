@@ -8,17 +8,20 @@ const { default: axios } = require('axios');
  */
 exports.onExecutePreUserRegistration = async (event, api) => {
   try {
+    // Send requst to api hook to create a user in local db
     const response = await axios.post(
-      'https://fb11-222-153-101-239.ngrok.io/auth/create-user-hook',
+      'https://1855-222-153-101-239.ngrok.io/auth/create-user-hook',
       {
         name: event.user.name,
         email: event.user.email,
         secret: event.secrets.AUTH0_HOOK_SECRET,
       }
     );
-    if (!response.data['success']) {
-      throw new Error(response.data['message']);
+    if (response.status != 201) {
+      throw new Error(response.data['reason']);
     }
+    // Set database id in Auth0 user metadata for accesstoken
+    api.user.setUserMetadata('userId', response.data.userId);
   } catch (e) {
     api.access.deny(e, 'Something went wrong');
   }

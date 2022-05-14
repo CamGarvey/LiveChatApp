@@ -6,7 +6,6 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';
-import React from 'react';
 
 type Props = {
   children: any;
@@ -21,9 +20,9 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
 
   const authLink = setContext(async () => {
     try {
-      let token = localStorage.getItem('token');
+      // let token = localStorage.getItem('token');
 
-      token = await getAccessTokenSilently();
+      const token = await getAccessTokenSilently();
       // if (!token) {
       //   localStorage.setItem('token', token);
       // }

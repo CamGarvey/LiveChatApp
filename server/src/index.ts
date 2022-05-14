@@ -1,7 +1,6 @@
-import express from 'express';
+import express, { json } from 'express';
 import cors from 'cors';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
-import { schema } from './graphql';
 import { ApolloServer } from 'apollo-server-express';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
@@ -9,25 +8,31 @@ import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { auth } from 'express-oauth2-jwt-bearer';
+import jwt from 'jsonwebtoken';
+
 import authRouter from './routes/auth';
+import { schema } from './graphql';
 import prisma from './lib/clients/prisma';
+import { IContext } from './graphql/context.interface';
+import path from 'path';
 
 const main = async () => {
   // Create Express app
   const app = express();
+
+  app.use(express.json());
 
   // Set up rest routes
   app.use('/auth', authRouter);
 
   // Set up CORS
   var corsOptions = {
-    origin: 'http://localhost:3000', // <-- allow frontend
+    origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend
     credentials: true,
   };
 
   app.use(cors(corsOptions));
 
-  // Set up auth on graphql endpoint
   app.use(
     '/grahpql/*',
     auth({
@@ -79,9 +84,20 @@ const main = async () => {
   const server = new ApolloServer({
     schema,
     csrfPrevention: true,
-    context: ({ req, res }) => {
-      console.log({ req, res });
+    context: ({ req }): IContext => {
+      // Get access token from request
+      const token = req.headers.authorization.replace('Bearer ', '');
+      // Decode token. No need to verify since auth middleware takes care of that
+      const decoded = jwt.decode(token);
+      // Parse decoded token
+      const payload = JSON.parse(JSON.stringify(decoded));
+      // Get user id from token payload
+      // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
+      // to be {API domain}/{field name}
+      const userId = payload[path.join(process.env.DOMAIN, 'user_id')];
+
       return {
+        userId,
         prisma,
         pubsub,
       };

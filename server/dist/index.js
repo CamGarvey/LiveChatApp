@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const apollo_server_core_1 = require("apollo-server-core");
-const graphql_1 = require("./graphql");
 const apollo_server_express_1 = require("apollo-server-express");
 const graphql_redis_subscriptions_1 = require("graphql-redis-subscriptions");
 const ioredis_1 = __importDefault(require("ioredis"));
@@ -23,21 +22,25 @@ const ws_1 = require("ws");
 const http_1 = require("http");
 const ws_2 = require("graphql-ws/lib/use/ws");
 const express_oauth2_jwt_bearer_1 = require("express-oauth2-jwt-bearer");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const auth_1 = __importDefault(require("./routes/auth"));
+const graphql_1 = require("./graphql");
 const prisma_1 = __importDefault(require("./lib/clients/prisma"));
+const path_1 = __importDefault(require("path"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();
+    app.use(express_1.default.json());
     app.use('/auth', auth_1.default);
     var corsOptions = {
-        origin: 'http://localhost:3000',
+        origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
         credentials: true,
     };
     app.use((0, cors_1.default)(corsOptions));
     app.use('/grahpql/*', (0, express_oauth2_jwt_bearer_1.auth)({
-        audience: 'https://dev--2cpvhzk.us.auth0.com/api/v2/',
-        jwksUri: 'https://dev--2cpvhzk.us.auth0.com/.well-known/jwks.json',
-        tokenSigningAlg: 'RS256',
-        issuerBaseURL: `https://dev--2cpvhzk.us.auth0.com/`,
+        audience: process.env.AUTH0_AUDIENCE,
+        jwksUri: process.env.AUTH0_JWKS_URI,
+        tokenSigningAlg: process.env.AUTH0_SIGNING_ALG,
+        issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
     }));
     const httpServer = (0, http_1.createServer)(app);
     const pubsubOptions = {
@@ -67,9 +70,13 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const server = new apollo_server_express_1.ApolloServer({
         schema: graphql_1.schema,
         csrfPrevention: true,
-        context: ({ req, res }) => {
-            console.log({ req, res });
+        context: ({ req }) => {
+            const token = req.headers.authorization.replace('Bearer ', '');
+            const decoded = jsonwebtoken_1.default.decode(token);
+            const payload = JSON.parse(JSON.stringify(decoded));
+            const userId = payload[path_1.default.join(process.env.DOMAIN, 'user_id')];
             return {
+                userId,
                 prisma: prisma_1.default,
                 pubsub,
             };

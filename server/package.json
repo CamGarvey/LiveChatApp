@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
-    "docker": "docker-compose up -d -f ./server/",
+    "docker": "docker-compose up -d",
     "prisma:gen": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
@@ -33,6 +33,7 @@
     "guid": "^0.0.12",
     "ioredis": "^5.0.4",
     "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^2.1.2",
     "nexus": "^1.3.0",
     "ws": "^8.6.0"
   },
