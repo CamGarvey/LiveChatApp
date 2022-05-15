@@ -26,7 +26,6 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const graphql_1 = require("./graphql");
 const prisma_1 = __importDefault(require("./lib/clients/prisma"));
-const path_1 = __importDefault(require("path"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();
     app.use(express_1.default.json());
@@ -74,7 +73,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             const token = req.headers.authorization.replace('Bearer ', '');
             const decoded = jsonwebtoken_1.default.decode(token);
             const payload = JSON.parse(JSON.stringify(decoded));
-            const userId = payload[path_1.default.join(process.env.DOMAIN, 'user_id')];
+            const userId = payload[process.env.DOMAIN + '/user_id'];
             return {
                 userId,
                 prisma: prisma_1.default,

@@ -94,8 +94,7 @@ const main = async () => {
       // Get user id from token payload
       // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
       // to be {API domain}/{field name}
-      const userId = payload[path.join(process.env.DOMAIN, 'user_id')];
-
+      const userId = payload[process.env.DOMAIN + '/user_id'];
       return {
         userId,
         prisma,

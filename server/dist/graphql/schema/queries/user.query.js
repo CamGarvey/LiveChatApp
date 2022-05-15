@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserQuery = exports.FriendsQuery = exports.UserIsFriendsQuery = exports.UsersQuery = void 0;
+exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.UserIsFriendsQuery = exports.UsersQuery = void 0;
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
@@ -121,13 +121,8 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
     definition(t) {
         t.nonNull.list.nonNull.field('Friends', {
             type: user_1.default,
-            args: {
-                userId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
-                    description: 'Id of User',
-                })),
-            },
-            resolve: (_, { userId }, ctx) => {
-                return ctx.prisma.user
+            resolve: (_, __, { prisma, userId }) => {
+                return prisma.user
                     .findUnique({
                     where: {
                         id: userId,
@@ -138,22 +133,28 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
         });
     },
 });
-exports.UserQuery = (0, nexus_1.extendType)({
-    type: 'Query',
-    definition(t) {
-        t.field('User', {
-            type: user_1.default,
-            args: {
-                id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
-                    description: 'id of user',
-                })),
+exports.UserQuery = (0, nexus_1.queryField)('User', {
+    type: user_1.default,
+    args: {
+        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'id of user',
+        })),
+    },
+    resolve: (_, { id }, ctx) => {
+        return ctx.prisma.user.findUnique({
+            where: {
+                id: id,
             },
-            resolve: (_, { id }, ctx) => {
-                return ctx.prisma.user.findUnique({
-                    where: {
-                        id: id,
-                    },
-                });
+        });
+    },
+});
+exports.MeQuery = (0, nexus_1.queryField)('Me', {
+    type: 'User',
+    resolve: (_, __, { prisma, userId }) => {
+        console.log(userId);
+        return prisma.user.findUnique({
+            where: {
+                id: userId,
             },
         });
     },

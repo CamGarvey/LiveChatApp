@@ -185,7 +185,8 @@ export interface NexusGenFieldTypes {
     Channel: NexusGenRootTypes['Channel'] | null; // Channel
     Channels: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
     Friends: NexusGenRootTypes['User'][]; // [User!]!
-    Message: NexusGenRootTypes['Message']; // Message!
+    Me: NexusGenRootTypes['User'] | null; // User
+    Message: NexusGenRootTypes['Message'] | null; // Message
     User: NexusGenRootTypes['User'] | null; // User
     Users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
@@ -276,6 +277,7 @@ export interface NexusGenFieldTypeNames {
     Channel: 'Channel'
     Channels: 'Channel'
     Friends: 'User'
+    Me: 'User'
     Message: 'Message'
     User: 'User'
     Users: 'UserConnection'
@@ -385,9 +387,6 @@ export interface NexusGenArgTypes {
       id: number; // Int!
     }
     Channels: { // args
-      userId: number; // Int!
-    }
-    Friends: { // args
       userId: number; // Int!
     }
     Message: { // args

@@ -6,6 +6,7 @@ import {
   inputObjectType,
   intArg,
   nonNull,
+  queryField,
   stringArg,
 } from 'nexus';
 import { Sort } from '../types/enums';
@@ -131,15 +132,8 @@ export const FriendsQuery = extendType({
   definition(t) {
     t.nonNull.list.nonNull.field('Friends', {
       type: User,
-      args: {
-        userId: nonNull(
-          intArg({
-            description: 'Id of User',
-          })
-        ),
-      },
-      resolve: (_, { userId }, ctx) => {
-        return ctx.prisma.user
+      resolve: (_, __, { prisma, userId }) => {
+        return prisma.user
           .findUnique({
             where: {
               id: userId,
@@ -151,24 +145,32 @@ export const FriendsQuery = extendType({
   },
 });
 
-export const UserQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.field('User', {
-      type: User,
-      args: {
-        id: nonNull(
-          intArg({
-            description: 'id of user',
-          })
-        ),
+export const UserQuery = queryField('User', {
+  type: User,
+  args: {
+    id: nonNull(
+      intArg({
+        description: 'id of user',
+      })
+    ),
+  },
+  resolve: (_, { id }, ctx) => {
+    return ctx.prisma.user.findUnique({
+      where: {
+        id: id,
       },
-      resolve: (_, { id }, ctx) => {
-        return ctx.prisma.user.findUnique({
-          where: {
-            id: id,
-          },
-        });
+    });
+  },
+});
+
+export const MeQuery = queryField('Me', {
+  type: 'User',
+  resolve: (_, __, { prisma, userId }) => {
+    console.log(userId);
+
+    return prisma.user.findUnique({
+      where: {
+        id: userId,
       },
     });
   },

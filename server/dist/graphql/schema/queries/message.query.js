@@ -15,24 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageQuery = void 0;
 const nexus_1 = require("nexus");
 const message_1 = __importDefault(require("../types/message"));
-exports.MessageQuery = (0, nexus_1.extendType)({
-    type: 'Query',
-    definition(t) {
-        t.nonNull.field('Message', {
-            type: message_1.default,
-            args: {
-                id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
-                    description: 'id of message',
-                })),
-            },
-            resolve: (_, { id }, { prisma }) => __awaiter(this, void 0, void 0, function* () {
-                return prisma.message.findUnique({
-                    where: {
-                        id: id,
-                    },
-                });
-            }),
-        });
+exports.MessageQuery = (0, nexus_1.queryField)('Message', {
+    type: message_1.default,
+    args: {
+        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'id of message',
+        })),
     },
+    resolve: (_, { id }, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
+        return prisma.message.findUnique({
+            where: {
+                id: id,
+            },
+        });
+    }),
 });
 //# sourceMappingURL=message.query.js.map

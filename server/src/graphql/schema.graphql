@@ -145,14 +145,12 @@ type Query {
     """Channels user is a member of"""
     userId: Int!
   ): [Channel]
-  Friends(
-    """Id of User"""
-    userId: Int!
-  ): [User!]!
+  Friends: [User!]!
+  Me: User
   Message(
     """id of message"""
     id: Int!
-  ): Message!
+  ): Message
   User(
     """id of user"""
     id: Int!
