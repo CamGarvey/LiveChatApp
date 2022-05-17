@@ -31,6 +31,7 @@ const loadChannels = async (
   const channelFun = await prisma.channel.create({
     data: {
       name: 'FUN',
+      isPrivate: false,
       createdBy: {
         connect: {
           id: masterUser.id,
@@ -64,6 +65,7 @@ const loadChannels = async (
   const channelBoring = await prisma.channel.create({
     data: {
       name: 'BORING',
+      isPrivate: false,
       createdBy: {
         connect: {
           id: masterUser.id,

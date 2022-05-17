@@ -1,6 +1,7 @@
 import { ForbiddenError } from 'apollo-server-core';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { extendType, intArg, nonNull } from 'nexus';
+import Channel from '../types/channel';
 import Message from '../types/message';
 
 export const channelMessages = extendType({
@@ -57,3 +58,21 @@ export const channelMessages = extendType({
     });
   },
 });
+
+// export const openChannels = extendType({
+//   type: 'Query',
+//   definition(t) {
+//     t.nonNull.list.nonNull.field('openChannels', {
+//       type: Channel,
+//       resolve: async (_, __, {prisma, userId}) => {
+//         await prisma.channel.findMany({
+//           where: {
+//             members: {
+
+//             }
+//           }
+//         })
+//       }
+//     })
+//   }
+// });

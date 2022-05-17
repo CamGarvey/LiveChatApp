@@ -83,50 +83,6 @@ export const UsersQuery = extendType({
   },
 });
 
-// get ALl Users
-export const UserIsFriendsQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.nonNull.connectionField('users', {
-      type: User,
-      additionalArgs: {
-        nameFilter: stringArg({
-          description: 'If set, filters users by given filter',
-        }),
-        orderBy: arg({ type: UserOrderBy, description: 'How to order query' }),
-      },
-      resolve: async (_, { after, first, nameFilter, orderBy }, { prisma }) => {
-        const offset = after ? cursorToOffset(after) + 1 : 0;
-        if (isNaN(offset)) throw new Error('cursor is invalid');
-
-        const whereNameIs = Prisma.validator<Prisma.UserWhereInput>()({
-          name: {
-            contains: nameFilter,
-          },
-        });
-
-        const [totalCount, items] = await Promise.all([
-          prisma.user.count({
-            where: whereNameIs,
-          }),
-          prisma.user.findMany({
-            take: first,
-            skip: offset,
-            where: whereNameIs,
-            orderBy: orderBy,
-          }),
-        ]);
-
-        return connectionFromArraySlice(
-          items,
-          { first, after },
-          { sliceStart: offset, arrayLength: totalCount }
-        );
-      },
-    });
-  },
-});
-
 export const FriendsQuery = extendType({
   type: 'Query',
   definition(t) {

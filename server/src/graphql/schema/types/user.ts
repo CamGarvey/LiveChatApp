@@ -38,12 +38,34 @@ const User = objectType({
     });
     t.nonNull.list.nonNull.field('channels', {
       type: Channel,
-      resolve: (parent, _, { prisma }) => {
-        return prisma.user
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .memberOfChannels();
+      resolve: async (parent, _, { prisma, userId }) => {
+        if (parent.id == userId) {
+          // Is current user, return all
+          return await prisma.user
+            .findUnique({
+              where: { id: parent.id || undefined },
+            })
+            .memberOfChannels();
+        }
+
+        // Only return non private channels
+        // or channels that the current user is in
+        return await prisma.channel.findMany({
+          where: {
+            OR: [
+              {
+                isPrivate: false,
+              },
+              {
+                members: {
+                  every: {
+                    id: userId,
+                  },
+                },
+              },
+            ],
+          },
+        });
       },
     });
     t.nonNull.connectionField('friends', {

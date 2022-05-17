@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.UserIsFriendsQuery = exports.UsersQuery = void 0;
+exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.UsersQuery = void 0;
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
@@ -45,42 +45,6 @@ const UserOrderBy = (0, nexus_1.inputObjectType)({
     },
 });
 exports.UsersQuery = (0, nexus_1.extendType)({
-    type: 'Query',
-    definition(t) {
-        t.nonNull.connectionField('users', {
-            type: user_1.default,
-            additionalArgs: {
-                nameFilter: (0, nexus_1.stringArg)({
-                    description: 'If set, filters users by given filter',
-                }),
-                orderBy: (0, nexus_1.arg)({ type: UserOrderBy, description: 'How to order query' }),
-            },
-            resolve: (_, { after, first, nameFilter, orderBy }, { prisma }) => __awaiter(this, void 0, void 0, function* () {
-                const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
-                if (isNaN(offset))
-                    throw new Error('cursor is invalid');
-                const whereNameIs = client_1.Prisma.validator()({
-                    name: {
-                        contains: nameFilter,
-                    },
-                });
-                const [totalCount, items] = yield Promise.all([
-                    prisma.user.count({
-                        where: whereNameIs,
-                    }),
-                    prisma.user.findMany({
-                        take: first,
-                        skip: offset,
-                        where: whereNameIs,
-                        orderBy: orderBy,
-                    }),
-                ]);
-                return (0, graphql_relay_1.connectionFromArraySlice)(items, { first, after }, { sliceStart: offset, arrayLength: totalCount });
-            }),
-        });
-    },
-});
-exports.UserIsFriendsQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('users', {

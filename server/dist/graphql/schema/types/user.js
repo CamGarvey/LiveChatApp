@@ -51,13 +51,31 @@ const User = (0, nexus_1.objectType)({
         });
         t.nonNull.list.nonNull.field('channels', {
             type: channel_1.default,
-            resolve: (parent, _, { prisma }) => {
-                return prisma.user
-                    .findUnique({
-                    where: { id: parent.id || undefined },
-                })
-                    .memberOfChannels();
-            },
+            resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                if (parent.id == userId) {
+                    return yield prisma.user
+                        .findUnique({
+                        where: { id: parent.id || undefined },
+                    })
+                        .memberOfChannels();
+                }
+                return yield prisma.channel.findMany({
+                    where: {
+                        OR: [
+                            {
+                                isPrivate: false,
+                            },
+                            {
+                                members: {
+                                    every: {
+                                        id: userId,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                });
+            }),
         });
         t.nonNull.connectionField('friends', {
             type: User,
