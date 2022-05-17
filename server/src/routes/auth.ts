@@ -18,12 +18,27 @@ authRouter.use((req, res, next) => {
 // Set up a user in chat db
 authRouter.post('/create-user-hook', async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, username, email } = req.body;
+
+    // Make sure username is unique
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (existingUser) {
+      res.status(400).send({
+        error: 'Username taken',
+      });
+      return;
+    }
 
     // Create new user in db
     const user = await prisma.user.create({
       data: {
         name,
+        username,
         email,
       },
     });
@@ -33,9 +48,8 @@ authRouter.post('/create-user-hook', async (req, res) => {
       userId: user.id,
     });
   } catch (e) {
-    res.status(500).send({
-      reason: e,
-    });
+    console.error(e);
+    res.sendStatus(500);
   }
 });
 

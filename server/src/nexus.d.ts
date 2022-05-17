@@ -156,16 +156,16 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     acceptFriendRequest: boolean | null; // Boolean
-    addUsersToChannel: NexusGenRootTypes['Channel'] | null; // Channel
+    addMembersToChannel: NexusGenRootTypes['Channel'] | null; // Channel
     createChannel: NexusGenRootTypes['Channel'] | null; // Channel
+    createDM: NexusGenRootTypes['Channel'] | null; // Channel
     createMessage: NexusGenRootTypes['Message'] | null; // Message
-    createUser: NexusGenRootTypes['User'] | null; // User
     deleteChannel: boolean | null; // Boolean
     deleteFriend: boolean | null; // Boolean
     deleteFriendRequest: boolean | null; // Boolean
     deleteMessage: NexusGenRootTypes['Message'] | null; // Message
     deleteUser: NexusGenRootTypes['User'] | null; // User
-    removeUsersFromChannel: NexusGenRootTypes['Channel'] | null; // Channel
+    removeMembersFromChannel: NexusGenRootTypes['Channel'] | null; // Channel
     sendFriendRequest: boolean | null; // Boolean
     updateChannel: NexusGenRootTypes['Channel'] | null; // Channel
     updateMessage: NexusGenRootTypes['Message'] | null; // Message
@@ -248,16 +248,16 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     acceptFriendRequest: 'Boolean'
-    addUsersToChannel: 'Channel'
+    addMembersToChannel: 'Channel'
     createChannel: 'Channel'
+    createDM: 'Channel'
     createMessage: 'Message'
-    createUser: 'User'
     deleteChannel: 'Boolean'
     deleteFriend: 'Boolean'
     deleteFriendRequest: 'Boolean'
     deleteMessage: 'Message'
     deleteUser: 'User'
-    removeUsersFromChannel: 'Channel'
+    removeMembersFromChannel: 'Channel'
     sendFriendRequest: 'Boolean'
     updateChannel: 'Channel'
     updateMessage: 'Message'
@@ -321,37 +321,30 @@ export interface NexusGenArgTypes {
   Mutation: {
     acceptFriendRequest: { // args
       friendId: number; // Int!
-      userId: number; // Int!
     }
-    addUsersToChannel: { // args
-      id: number; // Int!
-      userIds: number[]; // [Int!]!
+    addMembersToChannel: { // args
+      channelId: number; // Int!
+      memberIds: number[]; // [Int!]!
     }
     createChannel: { // args
-      createdById: number; // Int!
-      isDM: boolean; // Boolean!
+      isPrivate: boolean; // Boolean!
       name: string; // String!
+    }
+    createDM: { // args
+      friendId: number; // Int!
     }
     createMessage: { // args
       channelId: number; // Int!
       content: string; // String!
-      createdById: number; // Int!
-    }
-    createUser: { // args
-      email?: string | null; // String
-      name: string; // String!
-      username?: string | null; // String
     }
     deleteChannel: { // args
       id: number; // Int!
     }
     deleteFriend: { // args
       friendId: number; // Int!
-      userId: number; // Int!
     }
     deleteFriendRequest: { // args
       friendId: number; // Int!
-      userId: number; // Int!
     }
     deleteMessage: { // args
       id: number; // Int!
@@ -359,18 +352,17 @@ export interface NexusGenArgTypes {
     deleteUser: { // args
       id: number; // Int!
     }
-    removeUsersFromChannel: { // args
-      id: number; // Int!
-      userIds: number[]; // [Int!]!
+    removeMembersFromChannel: { // args
+      channelId: number; // Int!
+      membersIds: number[]; // [Int!]!
     }
     sendFriendRequest: { // args
       friendId: number; // Int!
-      userId: number; // Int!
     }
     updateChannel: { // args
       id: number; // Int!
-      isDM: boolean; // Boolean!
-      name: string; // String!
+      isPrivate?: boolean | null; // Boolean
+      name?: string | null; // String
     }
     updateMessage: { // args
       content: string; // String!
@@ -378,16 +370,12 @@ export interface NexusGenArgTypes {
     }
     updateUser: { // args
       email: string; // String!
-      id: number; // Int!
       username: string; // String!
     }
   }
   Query: {
     Channel: { // args
       id: number; // Int!
-    }
-    Channels: { // args
-      userId: number; // Int!
     }
     Message: { // args
       id: number; // Int!
@@ -406,9 +394,6 @@ export interface NexusGenArgTypes {
   }
   Subscription: {
     newFriend: { // args
-      userId: number; // Int!
-    }
-    newFriendRequest: { // args
       userId: number; // Int!
     }
     newMessage: { // args

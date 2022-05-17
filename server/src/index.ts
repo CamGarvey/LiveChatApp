@@ -14,7 +14,6 @@ import authRouter from './routes/auth';
 import { schema } from './graphql';
 import prisma from './lib/clients/prisma';
 import { IContext } from './graphql/context.interface';
-import path from 'path';
 
 const main = async () => {
   // Create Express app
@@ -95,6 +94,7 @@ const main = async () => {
       // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
       // to be {API domain}/{field name}
       const userId = payload[process.env.DOMAIN + '/user_id'];
+
       return {
         userId,
         prisma,

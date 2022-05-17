@@ -4,16 +4,6 @@ import Message from './message';
 import { DateScalar } from './scalars';
 import User from './user';
 
-// id          Int       @id @default(autoincrement())
-// name        String
-// updatedAt   DateTime  @updatedAt
-// createdAt   DateTime  @default(now())
-// createdBy   User      @relation("UserCreatedByChannel", fields: [createdById], references: [id])
-// createdById Int
-// isDM        Boolean
-// members     User[]    @relation("UserMemberOfChannels", references: [id])
-// messages    Message[] @relation("ChannelMessagesMessage")
-
 const Channel = objectType({
   name: 'Channel',
   definition(t) {

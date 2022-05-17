@@ -26,10 +26,22 @@ authRouter.use((req, res, next) => {
 });
 authRouter.post('/create-user-hook', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, email } = req.body;
+        const { name, username, email } = req.body;
+        const existingUser = yield prisma_1.default.user.findUnique({
+            where: {
+                username,
+            },
+        });
+        if (existingUser) {
+            res.status(400).send({
+                error: 'Username taken',
+            });
+            return;
+        }
         const user = yield prisma_1.default.user.create({
             data: {
                 name,
+                username,
                 email,
             },
         });
@@ -38,9 +50,8 @@ authRouter.post('/create-user-hook', (req, res) => __awaiter(void 0, void 0, voi
         });
     }
     catch (e) {
-        res.status(500).send({
-            reason: e,
-        });
+        console.error(e);
+        res.sendStatus(500);
     }
 }));
 exports.default = authRouter;

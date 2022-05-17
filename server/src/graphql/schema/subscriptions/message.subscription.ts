@@ -1,3 +1,4 @@
+import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
 import { intArg, nonNull, objectType, subscriptionField } from 'nexus';
 import Message from '../types/message';
@@ -18,15 +19,29 @@ export const newMessageSubscription = subscriptionField('newMessage', {
   args: {
     channelId: nonNull(intArg()),
   },
-  subscribe: withFilter(
-    (_, __, { pubsub }) => pubsub.asyncIterator(Subscriptions.NEW_MESSAGE),
-    (payload, variables) => {
-      return payload.channelId === variables.channelId;
-    }
-  ),
-  resolve(payload: any) {
-    console.log(payload);
+  subscribe: async (rootValue, args, context) => {
+    const members = await context.prisma.channel
+      .findUnique({
+        where: {
+          id: args.channelId,
+        },
+      })
+      .members();
 
+    if (!members.find((member) => member.id == context.userId)) {
+      throw new ForbiddenError(
+        'You do not have permission to subscribe to this channel'
+      );
+    }
+
+    return withFilter(
+      () => context.pubsub.asyncIterator(Subscriptions.NEW_MESSAGE),
+      (payload, variables) => {
+        return payload.channelId === variables.channelId;
+      }
+    )(rootValue, args, context);
+  },
+  resolve(payload: any) {
     return payload;
   },
 });

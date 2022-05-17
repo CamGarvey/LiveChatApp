@@ -10,11 +10,8 @@ const subscriptions_1 = require("../types/subscriptions");
 const user_1 = __importDefault(require("../types/user"));
 exports.newFriendRequestSubscription = (0, nexus_1.subscriptionField)('newFriendRequest', {
     type: user_1.default,
-    args: {
-        userId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-    },
-    subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator(subscriptions_1.Subscriptions.NEW_FRIEND_REQUEST), (payload, variables) => {
-        return payload.userId === variables.userId;
+    subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator(subscriptions_1.Subscriptions.NEW_FRIEND_REQUEST), (payload, _, context) => {
+        return payload.userId === context.userId;
     }),
     resolve(payload) {
         return payload.friend;
@@ -25,8 +22,8 @@ exports.newFriendSubscription = (0, nexus_1.subscriptionField)('newFriend', {
     args: {
         userId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
     },
-    subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator(subscriptions_1.Subscriptions.NEW_FRIEND), (payload, variables) => {
-        return payload.receiverId === variables.userId;
+    subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator(subscriptions_1.Subscriptions.NEW_FRIEND), (payload, _, context) => {
+        return payload.receiverId === context.userId;
     }),
     resolve(payload) {
         return payload.friend;

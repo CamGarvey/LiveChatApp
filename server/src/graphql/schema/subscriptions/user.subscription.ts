@@ -7,14 +7,11 @@ export const newFriendRequestSubscription = subscriptionField(
   'newFriendRequest',
   {
     type: User,
-    args: {
-      userId: nonNull(intArg()),
-    },
     subscribe: withFilter(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator(Subscriptions.NEW_FRIEND_REQUEST),
-      (payload, variables) => {
-        return payload.userId === variables.userId;
+      (payload, _, context) => {
+        return payload.userId === context.userId;
       }
     ),
     resolve(payload: any) {
@@ -30,8 +27,8 @@ export const newFriendSubscription = subscriptionField('newFriend', {
   },
   subscribe: withFilter(
     (_, __, { pubsub }) => pubsub.asyncIterator(Subscriptions.NEW_FRIEND),
-    (payload, variables) => {
-      return payload.receiverId === variables.userId;
+    (payload, _, context) => {
+      return payload.receiverId === context.userId;
     }
   ),
   resolve(payload: any) {

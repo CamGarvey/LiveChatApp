@@ -12,17 +12,25 @@ exports.onExecutePreUserRegistration = async (event, api) => {
     const response = await axios.post(
       'https://1855-222-153-101-239.ngrok.io/auth/create-user-hook',
       {
+        username: event.user.username,
         name: event.user.name,
         email: event.user.email,
         secret: event.secrets.AUTH0_HOOK_SECRET,
       }
     );
-    if (response.status != 201) {
-      throw new Error(response.data['reason']);
-    }
-    // Set database id in Auth0 user metadata for accesstoken
+    // Set user database id in Auth0 user metadata for accesstoken
     api.user.setUserMetadata('userId', response.data.userId);
   } catch (e) {
-    api.access.deny(e, 'Something went wrong');
+    if (e.response) {
+      const error = e.response.data.error;
+      if (error) {
+        api.access.deny(error, error);
+        return;
+      }
+    }
+    api.access.deny(
+      `Unknown error with status: ${e.response.status}`,
+      'Something went wrong'
+    );
   }
 };

@@ -6,15 +6,8 @@ export const ChannelsQuery = extendType({
   definition(t) {
     t.list.field('Channels', {
       type: Channel,
-      args: {
-        userId: nonNull(
-          intArg({
-            description: 'Channels user is a member of',
-          })
-        ),
-      },
-      resolve: (_, { userId }, ctx) => {
-        return ctx.prisma.channel.findMany({
+      resolve: (_, __, { prisma, userId }) => {
+        return prisma.channel.findMany({
           where: {
             members: {
               some: {
@@ -40,8 +33,8 @@ export const ChannelQuery = extendType({
           })
         ),
       },
-      resolve: (_, { id }, ctx) => {
-        return ctx.prisma.channel.findUnique({
+      resolve: async (_, { id }, { prisma }) => {
+        return await prisma.channel.findUnique({
           where: {
             id: id,
           },

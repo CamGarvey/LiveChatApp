@@ -61,28 +61,28 @@ type MessageEdge {
 
 type Mutation {
   """Accept a Users friend request"""
-  acceptFriendRequest(friendId: Int!, userId: Int!): Boolean
+  acceptFriendRequest(friendId: Int!): Boolean
 
-  """Add Users into Channel"""
-  addUsersToChannel(id: Int!, userIds: [Int!]!): Channel
+  """Add Members into Channel"""
+  addMembersToChannel(channelId: Int!, memberIds: [Int!]!): Channel
 
   """Create a Channel"""
-  createChannel(createdById: Int!, isDM: Boolean!, name: String!): Channel
+  createChannel(isPrivate: Boolean!, name: String!): Channel
+
+  """Create Direct Message Channel"""
+  createDM(friendId: Int!): Channel
 
   """Create a Message in a Channel"""
-  createMessage(channelId: Int!, content: String!, createdById: Int!): Message
-
-  """Create a User"""
-  createUser(email: String, name: String!, username: String): User
+  createMessage(channelId: Int!, content: String!): Message
 
   """Delete a Channel"""
   deleteChannel(id: Int!): Boolean
 
   """Delete a Friend"""
-  deleteFriend(friendId: Int!, userId: Int!): Boolean
+  deleteFriend(friendId: Int!): Boolean
 
   """Delete a received Friend Request"""
-  deleteFriendRequest(friendId: Int!, userId: Int!): Boolean
+  deleteFriendRequest(friendId: Int!): Boolean
 
   """Delete a Message"""
   deleteMessage(id: Int!): Message
@@ -90,20 +90,20 @@ type Mutation {
   """Delete a User"""
   deleteUser(id: Int!): User
 
-  """Remove Users from Channel"""
-  removeUsersFromChannel(id: Int!, userIds: [Int!]!): Channel
+  """Remove Members from Channel"""
+  removeMembersFromChannel(channelId: Int!, membersIds: [Int!]!): Channel
 
   """Send a Friend Request to a User"""
-  sendFriendRequest(friendId: Int!, userId: Int!): Boolean
+  sendFriendRequest(friendId: Int!): Boolean
 
   """Update a Channel"""
-  updateChannel(id: Int!, isDM: Boolean!, name: String!): Channel
+  updateChannel(id: Int!, isPrivate: Boolean, name: String): Channel
 
   """Update a Message"""
   updateMessage(content: String!, id: Int!): Message
 
-  """Update a User"""
-  updateUser(email: String!, id: Int!, username: String!): User
+  """Update current User"""
+  updateUser(email: String!, username: String!): User
 }
 
 type NewMessagePayload {
@@ -141,10 +141,7 @@ type Query {
     """id of channel"""
     id: Int!
   ): Channel
-  Channels(
-    """Channels user is a member of"""
-    userId: Int!
-  ): [Channel]
+  Channels: [Channel]
   Friends: [User!]!
   Me: User
   Message(
@@ -183,7 +180,7 @@ enum Sort {
 
 type Subscription {
   newFriend(userId: Int!): User
-  newFriendRequest(userId: Int!): User
+  newFriendRequest: User
   newMessage(channelId: Int!): NewMessagePayload
 }
 
