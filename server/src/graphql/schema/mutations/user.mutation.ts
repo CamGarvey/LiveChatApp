@@ -23,21 +23,6 @@ export const updateUser = mutationField('updateUser', {
   },
 });
 
-export const deleteUser = mutationField('deleteUser', {
-  type: User,
-  args: {
-    id: nonNull(intArg()),
-  },
-  description: 'Delete a User',
-  resolve(_, { id }, { prisma }) {
-    return prisma.user.delete({
-      where: {
-        id,
-      },
-    });
-  },
-});
-
 export const sendFriendRequest = mutationField('sendFriendRequest', {
   type: 'Boolean',
   args: {

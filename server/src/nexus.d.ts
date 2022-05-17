@@ -164,11 +164,10 @@ export interface NexusGenFieldTypes {
     deleteFriend: boolean | null; // Boolean
     deleteFriendRequest: boolean | null; // Boolean
     deleteMessage: NexusGenRootTypes['Message'] | null; // Message
-    deleteUser: NexusGenRootTypes['User'] | null; // User
+    editMessage: NexusGenRootTypes['Message'] | null; // Message
     removeMembersFromChannel: NexusGenRootTypes['Channel'] | null; // Channel
     sendFriendRequest: boolean | null; // Boolean
     updateChannel: NexusGenRootTypes['Channel'] | null; // Channel
-    updateMessage: NexusGenRootTypes['Message'] | null; // Message
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
   NewMessagePayload: { // field return type
@@ -182,13 +181,11 @@ export interface NexusGenFieldTypes {
     startCursor: string | null; // String
   }
   Query: { // field return type
-    Channel: NexusGenRootTypes['Channel'] | null; // Channel
-    Channels: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
-    Friends: NexusGenRootTypes['User'][]; // [User!]!
-    Me: NexusGenRootTypes['User'] | null; // User
-    Message: NexusGenRootTypes['Message'] | null; // Message
-    User: NexusGenRootTypes['User'] | null; // User
-    Users: NexusGenRootTypes['UserConnection']; // UserConnection!
+    channelMessages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
+    friends: NexusGenRootTypes['User'][]; // [User!]!
+    me: NexusGenRootTypes['User'] | null; // User
+    user: NexusGenRootTypes['User'] | null; // User
+    users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
   Subscription: { // field return type
     newFriend: NexusGenRootTypes['User'] | null; // User
@@ -256,11 +253,10 @@ export interface NexusGenFieldTypeNames {
     deleteFriend: 'Boolean'
     deleteFriendRequest: 'Boolean'
     deleteMessage: 'Message'
-    deleteUser: 'User'
+    editMessage: 'Message'
     removeMembersFromChannel: 'Channel'
     sendFriendRequest: 'Boolean'
     updateChannel: 'Channel'
-    updateMessage: 'Message'
     updateUser: 'User'
   }
   NewMessagePayload: { // field return type name
@@ -274,13 +270,11 @@ export interface NexusGenFieldTypeNames {
     startCursor: 'String'
   }
   Query: { // field return type name
-    Channel: 'Channel'
-    Channels: 'Channel'
-    Friends: 'User'
-    Me: 'User'
-    Message: 'Message'
-    User: 'User'
-    Users: 'UserConnection'
+    channelMessages: 'MessageConnection'
+    friends: 'User'
+    me: 'User'
+    user: 'User'
+    users: 'UserConnection'
   }
   Subscription: { // field return type name
     newFriend: 'User'
@@ -327,18 +321,15 @@ export interface NexusGenArgTypes {
       memberIds: number[]; // [Int!]!
     }
     createChannel: { // args
-      isPrivate: boolean; // Boolean!
+      isPrivate: boolean | null; // Boolean
       name: string; // String!
-    }
-    createDM: { // args
-      friendId: number; // Int!
     }
     createMessage: { // args
       channelId: number; // Int!
       content: string; // String!
     }
     deleteChannel: { // args
-      id: number; // Int!
+      channelId: number; // Int!
     }
     deleteFriend: { // args
       friendId: number; // Int!
@@ -347,10 +338,11 @@ export interface NexusGenArgTypes {
       friendId: number; // Int!
     }
     deleteMessage: { // args
-      id: number; // Int!
+      messageId: number; // Int!
     }
-    deleteUser: { // args
-      id: number; // Int!
+    editMessage: { // args
+      content: string; // String!
+      messageId: number; // Int!
     }
     removeMembersFromChannel: { // args
       channelId: number; // Int!
@@ -360,13 +352,9 @@ export interface NexusGenArgTypes {
       friendId: number; // Int!
     }
     updateChannel: { // args
-      id: number; // Int!
+      channelId: number; // Int!
       isPrivate?: boolean | null; // Boolean
       name?: string | null; // String
-    }
-    updateMessage: { // args
-      content: string; // String!
-      id: number; // Int!
     }
     updateUser: { // args
       email: string; // String!
@@ -374,16 +362,17 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
-    Channel: { // args
+    channelMessages: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      channelId: number; // Int!
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+    user: { // args
       id: number; // Int!
     }
-    Message: { // args
-      id: number; // Int!
-    }
-    User: { // args
-      id: number; // Int!
-    }
-    Users: { // args
+    users: { // args
       after?: string | null; // String
       before?: string | null; // String
       first?: number | null; // Int

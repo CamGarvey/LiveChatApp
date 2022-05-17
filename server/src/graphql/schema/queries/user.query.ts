@@ -39,11 +39,11 @@ const UserOrderBy = inputObjectType({
   },
 });
 
-// get ALl Users
+// get All Users
 export const UsersQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.connectionField('Users', {
+    t.nonNull.connectionField('users', {
       type: User,
       additionalArgs: {
         nameFilter: stringArg({
@@ -87,7 +87,7 @@ export const UsersQuery = extendType({
 export const UserIsFriendsQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.connectionField('Users', {
+    t.nonNull.connectionField('users', {
       type: User,
       additionalArgs: {
         nameFilter: stringArg({
@@ -130,7 +130,7 @@ export const UserIsFriendsQuery = extendType({
 export const FriendsQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('Friends', {
+    t.nonNull.list.nonNull.field('friends', {
       type: User,
       resolve: (_, __, { prisma, userId }) => {
         return prisma.user
@@ -145,7 +145,7 @@ export const FriendsQuery = extendType({
   },
 });
 
-export const UserQuery = queryField('User', {
+export const UserQuery = queryField('user', {
   type: User,
   args: {
     id: nonNull(
@@ -163,7 +163,7 @@ export const UserQuery = queryField('User', {
   },
 });
 
-export const MeQuery = queryField('Me', {
+export const MeQuery = queryField('me', {
   type: 'User',
   resolve: (_, __, { prisma, userId }) => {
     console.log(userId);

@@ -67,16 +67,31 @@ type Mutation {
   addMembersToChannel(channelId: Int!, memberIds: [Int!]!): Channel
 
   """Create a Channel"""
-  createChannel(isPrivate: Boolean!, name: String!): Channel
+  createChannel(
+    """If the Channel should be private"""
+    isPrivate: Boolean = true
+
+    """Name of the Channel"""
+    name: String!
+  ): Channel
 
   """Create Direct Message Channel"""
-  createDM(friendId: Int!): Channel
+  createDM: Channel
 
   """Create a Message in a Channel"""
-  createMessage(channelId: Int!, content: String!): Message
+  createMessage(
+    """Id of Channel to create Message in"""
+    channelId: Int!
+
+    """Content of Message"""
+    content: String!
+  ): Message
 
   """Delete a Channel"""
-  deleteChannel(id: Int!): Boolean
+  deleteChannel(
+    """Id of Channel to be deleted"""
+    channelId: Int!
+  ): Boolean
 
   """Delete a Friend"""
   deleteFriend(friendId: Int!): Boolean
@@ -85,10 +100,19 @@ type Mutation {
   deleteFriendRequest(friendId: Int!): Boolean
 
   """Delete a Message"""
-  deleteMessage(id: Int!): Message
+  deleteMessage(
+    """Id of Message to delete"""
+    messageId: Int!
+  ): Message
 
-  """Delete a User"""
-  deleteUser(id: Int!): User
+  """Edit a Message"""
+  editMessage(
+    """New content for Message"""
+    content: String!
+
+    """Id of Message to edit"""
+    messageId: Int!
+  ): Message
 
   """Remove Members from Channel"""
   removeMembersFromChannel(channelId: Int!, membersIds: [Int!]!): Channel
@@ -97,10 +121,16 @@ type Mutation {
   sendFriendRequest(friendId: Int!): Boolean
 
   """Update a Channel"""
-  updateChannel(id: Int!, isPrivate: Boolean, name: String): Channel
+  updateChannel(
+    """Id of Channel to be updated"""
+    channelId: Int!
 
-  """Update a Message"""
-  updateMessage(content: String!, id: Int!): Message
+    """If the Channel should be private"""
+    isPrivate: Boolean
+
+    """Name of Channel"""
+    name: String
+  ): Channel
 
   """Update current User"""
   updateUser(email: String!, username: String!): User
@@ -137,22 +167,29 @@ type PageInfo {
 }
 
 type Query {
-  Channel(
-    """id of channel"""
-    id: Int!
-  ): Channel
-  Channels: [Channel]
-  Friends: [User!]!
-  Me: User
-  Message(
-    """id of message"""
-    id: Int!
-  ): Message
-  User(
+  channelMessages(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """If set, filters users by given filter"""
+    channelId: Int!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): MessageConnection!
+  friends: [User!]!
+  me: User
+  user(
     """id of user"""
     id: Int!
   ): User
-  Users(
+  users(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 

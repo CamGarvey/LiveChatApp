@@ -12,44 +12,50 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChannelQuery = exports.ChannelsQuery = void 0;
+exports.channelMessages = void 0;
+const apollo_server_core_1 = require("apollo-server-core");
+const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
-const channel_1 = __importDefault(require("../types/channel"));
-exports.ChannelsQuery = (0, nexus_1.extendType)({
+const message_1 = __importDefault(require("../types/message"));
+exports.channelMessages = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
-        t.list.field('Channels', {
-            type: channel_1.default,
-            resolve: (_, __, { prisma, userId }) => {
-                return prisma.channel.findMany({
-                    where: {
-                        members: {
-                            some: {
-                                id: userId,
-                            },
-                        },
-                    },
-                });
-            },
-        });
-    },
-});
-exports.ChannelQuery = (0, nexus_1.extendType)({
-    type: 'Query',
-    definition(t) {
-        t.field('Channel', {
-            type: channel_1.default,
-            args: {
-                id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
-                    description: 'id of channel',
+        t.nonNull.connectionField('channelMessages', {
+            type: message_1.default,
+            additionalArgs: {
+                channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+                    description: 'If set, filters users by given filter',
                 })),
             },
-            resolve: (_, { id }, { prisma }) => __awaiter(this, void 0, void 0, function* () {
-                return yield prisma.channel.findUnique({
+            resolve: (_, { channelId, after, first }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                const members = yield prisma.channel
+                    .findUnique({
                     where: {
-                        id: id,
+                        id: channelId,
                     },
-                });
+                })
+                    .members();
+                if (!members.find((member) => member.id == userId)) {
+                    throw new apollo_server_core_1.ForbiddenError('You do not have permission to this channel');
+                }
+                const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
+                if (isNaN(offset))
+                    throw new Error('cursor is invalid');
+                const [totalCount, items] = yield Promise.all([
+                    prisma.message.count({
+                        where: {
+                            channelId,
+                        },
+                    }),
+                    prisma.message.findMany({
+                        take: first,
+                        skip: offset,
+                        where: {
+                            channelId,
+                        },
+                    }),
+                ]);
+                return (0, graphql_relay_1.connectionFromArraySlice)(items, { first, after }, { sliceStart: offset, arrayLength: totalCount });
             }),
         });
     },

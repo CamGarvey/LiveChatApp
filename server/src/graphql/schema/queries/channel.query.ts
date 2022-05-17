@@ -1,44 +1,58 @@
+import { ForbiddenError } from 'apollo-server-core';
+import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { extendType, intArg, nonNull } from 'nexus';
-import Channel from '../types/channel';
+import Message from '../types/message';
 
-export const ChannelsQuery = extendType({
+export const channelMessages = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('Channels', {
-      type: Channel,
-      resolve: (_, __, { prisma, userId }) => {
-        return prisma.channel.findMany({
-          where: {
-            members: {
-              some: {
-                id: userId,
-              },
-            },
-          },
-        });
-      },
-    });
-  },
-});
-
-export const ChannelQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.field('Channel', {
-      type: Channel,
-      args: {
-        id: nonNull(
+    t.nonNull.connectionField('channelMessages', {
+      type: Message,
+      additionalArgs: {
+        channelId: nonNull(
           intArg({
-            description: 'id of channel',
+            description: 'If set, filters users by given filter',
           })
         ),
       },
-      resolve: async (_, { id }, { prisma }) => {
-        return await prisma.channel.findUnique({
-          where: {
-            id: id,
-          },
-        });
+      resolve: async (_, { channelId, after, first }, { prisma, userId }) => {
+        const members = await prisma.channel
+          .findUnique({
+            where: {
+              id: channelId,
+            },
+          })
+          .members();
+
+        if (!members.find((member) => member.id == userId)) {
+          throw new ForbiddenError(
+            'You do not have permission to this channel'
+          );
+        }
+
+        const offset = after ? cursorToOffset(after) + 1 : 0;
+        if (isNaN(offset)) throw new Error('cursor is invalid');
+
+        const [totalCount, items] = await Promise.all([
+          prisma.message.count({
+            where: {
+              channelId,
+            },
+          }),
+          prisma.message.findMany({
+            take: first,
+            skip: offset,
+            where: {
+              channelId,
+            },
+          }),
+        ]);
+
+        return connectionFromArraySlice(
+          items,
+          { first, after },
+          { sliceStart: offset, arrayLength: totalCount }
+        );
       },
     });
   },

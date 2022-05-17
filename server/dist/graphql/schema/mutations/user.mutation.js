@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.acceptFriendRequest = exports.deleteFriend = exports.deleteFriendRequest = exports.sendFriendRequest = exports.deleteUser = exports.updateUser = void 0;
+exports.acceptFriendRequest = exports.deleteFriend = exports.deleteFriendRequest = exports.sendFriendRequest = exports.updateUser = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 const subscriptions_1 = require("../types/subscriptions");
@@ -32,20 +32,6 @@ exports.updateUser = (0, nexus_1.mutationField)('updateUser', {
             },
             where: {
                 id: userId,
-            },
-        });
-    },
-});
-exports.deleteUser = (0, nexus_1.mutationField)('deleteUser', {
-    type: user_1.default,
-    args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-    },
-    description: 'Delete a User',
-    resolve(_, { id }, { prisma }) {
-        return prisma.user.delete({
-            where: {
-                id,
             },
         });
     },

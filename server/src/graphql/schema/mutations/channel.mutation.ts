@@ -16,8 +16,15 @@ import Channel from '../types/channel';
 export const createChannel = mutationField('createChannel', {
   type: Channel,
   args: {
-    name: nonNull(stringArg()),
-    isPrivate: nonNull(booleanArg()),
+    name: nonNull(
+      stringArg({
+        description: 'Name of the Channel',
+      })
+    ),
+    isPrivate: booleanArg({
+      description: 'If the Channel should be private',
+      default: true,
+    }),
   },
   description: 'Create a Channel',
   resolve: async (_, { name, isPrivate }, { prisma, userId }) => {
@@ -40,16 +47,20 @@ export const createChannel = mutationField('createChannel', {
 export const deleteChannel = mutationField('deleteChannel', {
   type: 'Boolean',
   args: {
-    id: nonNull(intArg()),
+    channelId: nonNull(
+      intArg({
+        description: 'Id of Channel to be deleted',
+      })
+    ),
   },
   description: 'Delete a Channel',
-  resolve: async (_, { id }, { prisma, userId }) => {
+  resolve: async (_, { channelId }, { prisma, userId }) => {
     const channel = await prisma.channel.findUnique({
       select: {
         createdById: true,
       },
       where: {
-        id: id,
+        id: channelId,
       },
     });
 
@@ -65,7 +76,7 @@ export const deleteChannel = mutationField('deleteChannel', {
 
     await prisma.channel.delete({
       where: {
-        id,
+        id: channelId,
       },
     });
     return true;
@@ -75,23 +86,31 @@ export const deleteChannel = mutationField('deleteChannel', {
 export const updateChannel = mutationField('updateChannel', {
   type: Channel,
   args: {
-    id: nonNull(intArg()),
-    name: stringArg(),
-    isPrivate: booleanArg(),
+    channelId: nonNull(
+      intArg({
+        description: 'Id of Channel to be updated',
+      })
+    ),
+    name: stringArg({
+      description: 'Name of Channel',
+    }),
+    isPrivate: booleanArg({
+      description: 'If the Channel should be private',
+    }),
   },
   description: 'Update a Channel',
-  resolve: async (_, { id, name, isPrivate }, { prisma, userId }) => {
+  resolve: async (_, { channelId, name, isPrivate }, { prisma, userId }) => {
     const channel = await prisma.channel.findUnique({
       select: {
         createdById: true,
       },
       where: {
-        id: id,
+        id: channelId,
       },
     });
 
     if (channel == null) {
-      throw new UserInputError(`Channel with id: ${id}, not found`);
+      throw new UserInputError(`Channel with id: ${channelId}, not found`);
     }
 
     if (channel.createdById != userId) {
@@ -107,7 +126,7 @@ export const updateChannel = mutationField('updateChannel', {
         isPrivate,
       },
       where: {
-        id,
+        id: channelId,
       },
     });
   },
@@ -115,61 +134,23 @@ export const updateChannel = mutationField('updateChannel', {
 
 export const createDM = mutationField('createDM', {
   type: Channel,
-  args: {
-    friendId: nonNull(intArg()),
-  },
   description: 'Create Direct Message Channel',
-  resolve: async (_, { friendId }, { prisma, userId }) => {
-    const friends = await prisma.user
-      .findUnique({
-        where: {
-          id: userId,
-        },
-      })
-      .friends();
-
-    if (!friends.find((friend) => friend.id == friendId)) {
-      throw new ForbiddenError('You are not friends with this user');
-    }
-
-    const existing = await prisma.channel.findFirst({
-      where: {
+  resolve: async (_, __, { prisma, userId }) => {
+    return await prisma.channel.create({
+      data: {
+        name: null,
+        createdById: userId,
         isDM: true,
+        isPrivate: true,
         members: {
-          every: {
-            AND: [
-              {
-                id: userId,
-              },
-              {
-                id: friendId,
-              },
-            ],
-          },
+          connect: [
+            {
+              id: userId, // Add creator as member
+            },
+          ],
         },
       },
     });
-
-    return existing == null
-      ? await prisma.channel.create({
-          data: {
-            name: 'DM',
-            createdById: userId,
-            isDM: true,
-            isPrivate: true,
-            members: {
-              connect: [
-                {
-                  id: userId, // Add creator as member
-                },
-                {
-                  id: friendId, // Add friend as member
-                },
-              ],
-            },
-          },
-        })
-      : existing;
   },
 });
 

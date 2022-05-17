@@ -16,7 +16,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./queries/user.query"), exports);
 __exportStar(require("./queries/channel.query"), exports);
-__exportStar(require("./queries/message.query"), exports);
 __exportStar(require("./mutations/user.mutation"), exports);
 __exportStar(require("./mutations/channel.mutation"), exports);
 __exportStar(require("./mutations/message.mutation"), exports);

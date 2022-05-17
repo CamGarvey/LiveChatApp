@@ -19,8 +19,13 @@ const channel_1 = __importDefault(require("../types/channel"));
 exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
     type: channel_1.default,
     args: {
-        name: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
-        isPrivate: (0, nexus_1.nonNull)((0, nexus_1.booleanArg)()),
+        name: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Name of the Channel',
+        })),
+        isPrivate: (0, nexus_1.booleanArg)({
+            description: 'If the Channel should be private',
+            default: true,
+        }),
     },
     description: 'Create a Channel',
     resolve: (_, { name, isPrivate }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,16 +47,18 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
 exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
     type: 'Boolean',
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Id of Channel to be deleted',
+        })),
     },
     description: 'Delete a Channel',
-    resolve: (_, { id }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { channelId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const channel = yield prisma.channel.findUnique({
             select: {
                 createdById: true,
             },
             where: {
-                id: id,
+                id: channelId,
             },
         });
         if (channel == null) {
@@ -62,7 +69,7 @@ exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
         }
         yield prisma.channel.delete({
             where: {
-                id,
+                id: channelId,
             },
         });
         return true;
@@ -71,22 +78,28 @@ exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
 exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
     type: channel_1.default,
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-        name: (0, nexus_1.stringArg)(),
-        isPrivate: (0, nexus_1.booleanArg)(),
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Id of Channel to be updated',
+        })),
+        name: (0, nexus_1.stringArg)({
+            description: 'Name of Channel',
+        }),
+        isPrivate: (0, nexus_1.booleanArg)({
+            description: 'If the Channel should be private',
+        }),
     },
     description: 'Update a Channel',
-    resolve: (_, { id, name, isPrivate }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { channelId, name, isPrivate }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const channel = yield prisma.channel.findUnique({
             select: {
                 createdById: true,
             },
             where: {
-                id: id,
+                id: channelId,
             },
         });
         if (channel == null) {
-            throw new apollo_server_core_1.UserInputError(`Channel with id: ${id}, not found`);
+            throw new apollo_server_core_1.UserInputError(`Channel with id: ${channelId}, not found`);
         }
         if (channel.createdById != userId) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to update this channel');
@@ -97,65 +110,30 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
                 isPrivate,
             },
             where: {
-                id,
+                id: channelId,
             },
         });
     }),
 });
 exports.createDM = (0, nexus_1.mutationField)('createDM', {
     type: channel_1.default,
-    args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-    },
     description: 'Create Direct Message Channel',
-    resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-        const friends = yield prisma.user
-            .findUnique({
-            where: {
-                id: userId,
-            },
-        })
-            .friends();
-        if (!friends.find((friend) => friend.id == friendId)) {
-            throw new apollo_server_core_1.ForbiddenError('You are not friends with this user');
-        }
-        const existing = yield prisma.channel.findFirst({
-            where: {
+    resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield prisma.channel.create({
+            data: {
+                name: null,
+                createdById: userId,
                 isDM: true,
+                isPrivate: true,
                 members: {
-                    every: {
-                        AND: [
-                            {
-                                id: userId,
-                            },
-                            {
-                                id: friendId,
-                            },
-                        ],
-                    },
+                    connect: [
+                        {
+                            id: userId,
+                        },
+                    ],
                 },
             },
         });
-        return existing == null
-            ? yield prisma.channel.create({
-                data: {
-                    name: 'DM',
-                    createdById: userId,
-                    isDM: true,
-                    isPrivate: true,
-                    members: {
-                        connect: [
-                            {
-                                id: userId,
-                            },
-                            {
-                                id: friendId,
-                            },
-                        ],
-                    },
-                },
-            })
-            : existing;
     }),
 });
 exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', {

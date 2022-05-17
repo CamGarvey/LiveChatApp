@@ -47,7 +47,7 @@ const UserOrderBy = (0, nexus_1.inputObjectType)({
 exports.UsersQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
-        t.nonNull.connectionField('Users', {
+        t.nonNull.connectionField('users', {
             type: user_1.default,
             additionalArgs: {
                 nameFilter: (0, nexus_1.stringArg)({
@@ -83,7 +83,7 @@ exports.UsersQuery = (0, nexus_1.extendType)({
 exports.UserIsFriendsQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
-        t.nonNull.connectionField('Users', {
+        t.nonNull.connectionField('users', {
             type: user_1.default,
             additionalArgs: {
                 nameFilter: (0, nexus_1.stringArg)({
@@ -119,7 +119,7 @@ exports.UserIsFriendsQuery = (0, nexus_1.extendType)({
 exports.FriendsQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
-        t.nonNull.list.nonNull.field('Friends', {
+        t.nonNull.list.nonNull.field('friends', {
             type: user_1.default,
             resolve: (_, __, { prisma, userId }) => {
                 return prisma.user
@@ -133,7 +133,7 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
         });
     },
 });
-exports.UserQuery = (0, nexus_1.queryField)('User', {
+exports.UserQuery = (0, nexus_1.queryField)('user', {
     type: user_1.default,
     args: {
         id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
@@ -148,7 +148,7 @@ exports.UserQuery = (0, nexus_1.queryField)('User', {
         });
     },
 });
-exports.MeQuery = (0, nexus_1.queryField)('Me', {
+exports.MeQuery = (0, nexus_1.queryField)('me', {
     type: 'User',
     resolve: (_, __, { prisma, userId }) => {
         console.log(userId);

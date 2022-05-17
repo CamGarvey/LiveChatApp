@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMessage = exports.deleteMessage = exports.createMessage = void 0;
+exports.editMessage = exports.deleteMessage = exports.createMessage = void 0;
 const nexus_1 = require("nexus");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const message_1 = __importDefault(require("../types/message"));
@@ -20,8 +20,12 @@ const subscriptions_1 = require("../types/subscriptions");
 exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
     type: message_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-        content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Id of Channel to create Message in',
+        })),
+        content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Content of Message',
+        })),
     },
     description: 'Create a Message in a Channel',
     resolve: (_, { channelId, content }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,7 +37,7 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
         })
             .members();
         if (!members.find((member) => member.id == userId)) {
-            throw new apollo_server_errors_1.ForbiddenError('You are not a member of this channel');
+            throw new apollo_server_errors_1.ForbiddenError('You are not a member of this Channel');
         }
         const message = yield prisma.message.create({
             data: {
@@ -52,62 +56,68 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
 exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
     type: message_1.default,
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        messageId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Id of Message to delete',
+        })),
     },
     description: 'Delete a Message',
-    resolve: (_, { id }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { messageId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const message = yield prisma.message.findUnique({
             select: {
                 createdById: true,
             },
             where: {
-                id: id,
+                id: messageId,
             },
         });
         if (message == null) {
-            throw new apollo_server_errors_1.UserInputError(`Message with id: ${id}, not found`);
+            throw new apollo_server_errors_1.UserInputError(`Message with id: ${messageId}, not found`);
         }
-        if (message.createdById) {
-            throw new apollo_server_errors_1.ForbiddenError('You do not have permission to delete this message');
+        if (message.createdById != userId) {
+            throw new apollo_server_errors_1.ForbiddenError('You do not have permission to delete this Message');
         }
         return prisma.message.update({
             data: {
                 deletedAt: Date.now().toString(),
             },
             where: {
-                id,
+                id: messageId,
             },
         });
     }),
 });
-exports.updateMessage = (0, nexus_1.mutationField)('updateMessage', {
+exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
     type: message_1.default,
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-        content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
+        messageId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Id of Message to edit',
+        })),
+        content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'New content for Message',
+        })),
     },
-    description: 'Update a Message',
-    resolve: (_, { id, content }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    description: 'Edit a Message',
+    resolve: (_, { messageId, content }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const message = yield prisma.message.findUnique({
             select: {
                 createdById: true,
             },
             where: {
-                id: id,
+                id: messageId,
             },
         });
         if (message == null) {
-            throw new apollo_server_errors_1.UserInputError(`Message with id: ${id}, not found`);
+            throw new apollo_server_errors_1.UserInputError(`Message with id: ${messageId}, not found`);
         }
         if (message.createdById != userId) {
-            throw new apollo_server_errors_1.ForbiddenError('You do not have permission to update this message');
+            throw new apollo_server_errors_1.ForbiddenError('You do not have permission to edit this Message');
         }
         return yield prisma.message.update({
             data: {
                 content,
             },
             where: {
-                id,
+                id: messageId,
             },
         });
     }),

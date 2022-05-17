@@ -2,7 +2,6 @@
 
 export * from './queries/user.query';
 export * from './queries/channel.query';
-export * from './queries/message.query';
 
 // Mutations
 
