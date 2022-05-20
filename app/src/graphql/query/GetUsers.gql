@@ -1,0 +1,15 @@
+query GetUsers($usernameFilter: String, $first: Int, $after: String) {
+  users(usernameFilter: $usernameFilter, first: $first, after: $after) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      cursor
+      node {
+        id
+        name
+      }
+    }
+  }
+}

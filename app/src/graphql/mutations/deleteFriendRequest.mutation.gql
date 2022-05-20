@@ -1,3 +1,0 @@
-mutation DeleteFriendRequest($userId: Int!, $friendId: Int!) {
-  deleteFriendRequest(userId: $userId, friendId: $friendId)
-}

@@ -26,9 +26,35 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
             description: 'If the Channel should be private',
             default: true,
         }),
+        memberIds: (0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Ids of Users to be added to Channel',
+        }))),
     },
     description: 'Create a Channel',
-    resolve: (_, { name, isPrivate }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { name, isPrivate, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+        const memberIdSet = new Set(memberIds);
+        if (memberIdSet) {
+            const user = yield prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    friends: {
+                        where: {
+                            id: {
+                                in: memberIds,
+                            },
+                        },
+                    },
+                },
+            });
+            if (user.friends.length != memberIdSet.size) {
+                throw new apollo_server_core_1.ForbiddenError('You are not friends with all of the users provided');
+            }
+        }
+        if (!memberIdSet.has(userId)) {
+            memberIdSet.add(userId);
+        }
         return yield prisma.channel.create({
             data: {
                 name,
@@ -36,9 +62,7 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
                 isDM: false,
                 isPrivate,
                 members: {
-                    connect: {
-                        id: userId,
-                    },
+                    connect: [...memberIdSet].map((id) => ({ id })),
                 },
             },
         });
@@ -104,7 +128,7 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
         if (channel.createdById != userId) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to update this channel');
         }
-        return prisma.channel.update({
+        return yield prisma.channel.update({
             data: {
                 name,
                 isPrivate,
@@ -139,22 +163,41 @@ exports.createDM = (0, nexus_1.mutationField)('createDM', {
 exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', {
     type: channel_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-        memberIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.intArg)()))),
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Id of Channel to add Users to',
+        })),
+        memberIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.intArg)({
+            description: 'Ids of Users to be added to Channel',
+        })))),
     },
     description: 'Add Members into Channel',
     resolve: (_, { channelId, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-        const members = yield prisma.channel
-            .findUnique({
+        const user = yield prisma.user.findUnique({
             where: {
-                id: channelId,
+                id: userId,
             },
-        })
-            .members();
-        if (!members.find((member) => member.id == userId)) {
+            select: {
+                memberOfChannels: {
+                    where: {
+                        id: channelId,
+                    },
+                },
+                friends: {
+                    where: {
+                        id: {
+                            in: memberIds,
+                        },
+                    },
+                },
+            },
+        });
+        if (user.memberOfChannels.length == 0) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to add members to this channel');
         }
-        return prisma.channel.update({
+        if (user.friends.length != memberIds.length) {
+            throw new apollo_server_core_1.ForbiddenError('You are not friends with all of these users');
+        }
+        return yield prisma.channel.update({
             data: {
                 members: {
                     connect: memberIds.map((id) => ({ id })),

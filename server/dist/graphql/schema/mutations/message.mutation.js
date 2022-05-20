@@ -29,14 +29,19 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
     },
     description: 'Create a Message in a Channel',
     resolve: (_, { channelId, content }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-        const members = yield prisma.channel
-            .findUnique({
+        const user = yield prisma.user.findUnique({
             where: {
-                id: channelId,
+                id: userId,
             },
-        })
-            .members();
-        if (!members.find((member) => member.id == userId)) {
+            include: {
+                memberOfChannels: {
+                    where: {
+                        id: channelId,
+                    },
+                },
+            },
+        });
+        if (!user.memberOfChannels) {
             throw new apollo_server_errors_1.ForbiddenError('You are not a member of this Channel');
         }
         const message = yield prisma.message.create({

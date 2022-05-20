@@ -1,11 +1,10 @@
 import { Avatar, Flex, Text } from '@chakra-ui/react';
-import React from 'react';
 
 type Props = {
   name: string;
 };
 
-const RoomItem = ({ name }: Props) => {
+const ChannelItem = ({ name }: Props) => {
   return (
     <Flex
       gap={3}
@@ -16,11 +15,11 @@ const RoomItem = ({ name }: Props) => {
       <Avatar
         size="sm"
         name={name}
-        src={`https://avatars.dicebear.com/api/initials/${name}`}
+        src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
       />
       <Text alignSelf={'center'}>{name}</Text>
     </Flex>
   );
 };
 
-export default RoomItem;
+export default ChannelItem;

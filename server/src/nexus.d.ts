@@ -182,6 +182,7 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     channelMessages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
+    channels: NexusGenRootTypes['Channel'][]; // [Channel!]!
     friends: NexusGenRootTypes['User'][]; // [User!]!
     me: NexusGenRootTypes['User'] | null; // User
     user: NexusGenRootTypes['User'] | null; // User
@@ -271,6 +272,7 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     channelMessages: 'MessageConnection'
+    channels: 'Channel'
     friends: 'User'
     me: 'User'
     user: 'User'
@@ -322,6 +324,7 @@ export interface NexusGenArgTypes {
     }
     createChannel: { // args
       isPrivate: boolean | null; // Boolean
+      memberIds?: number[] | null; // [Int!]
       name: string; // String!
     }
     createMessage: { // args
@@ -377,8 +380,8 @@ export interface NexusGenArgTypes {
       before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
-      nameFilter?: string | null; // String
       orderBy?: NexusGenInputs['UserOrderBy'] | null; // UserOrderBy
+      usernameFilter?: string | null; // String
     }
   }
   Subscription: {

@@ -1,8 +1,0 @@
-subscription NewFriendRequest($userId: Int!) {
-  newFriendRequest(userId: $userId) {
-    id
-    name
-    email
-    username
-  }
-}

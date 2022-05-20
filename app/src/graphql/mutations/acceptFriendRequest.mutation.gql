@@ -1,3 +1,0 @@
-mutation AcceptFriendRequest($userId: Int!, $friendId: Int!) {
-  acceptFriendRequest(userId: $userId, friendId: $friendId)
-}

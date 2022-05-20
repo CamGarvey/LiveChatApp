@@ -1,9 +1,0 @@
-mutation CreateUser($name: String!, $email: String, $username: String) {
-  createUser(name: $name, email: $email, username: $username) {
-    id
-    name
-    email
-    username
-    createdAt
-  }
-}

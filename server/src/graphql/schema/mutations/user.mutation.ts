@@ -95,8 +95,8 @@ export const deleteFriendRequest = mutationField('deleteFriendRequest', {
         id: userId,
       },
       data: {
-        sentFriendRequests: {
-          connect: {
+        receivedFriendRequests: {
+          disconnect: {
             id: friendId,
           },
         },

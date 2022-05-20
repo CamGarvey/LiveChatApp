@@ -95,8 +95,8 @@ exports.deleteFriendRequest = (0, nexus_1.mutationField)('deleteFriendRequest', 
                 id: userId,
             },
             data: {
-                sentFriendRequests: {
-                    connect: {
+                receivedFriendRequests: {
+                    disconnect: {
                         id: friendId,
                     },
                 },

@@ -25,9 +25,47 @@ export const createChannel = mutationField('createChannel', {
       description: 'If the Channel should be private',
       default: true,
     }),
+    memberIds: list(
+      nonNull(
+        intArg({
+          description: 'Ids of Users to be added to Channel',
+        })
+      )
+    ),
   },
   description: 'Create a Channel',
-  resolve: async (_, { name, isPrivate }, { prisma, userId }) => {
+  resolve: async (_, { name, isPrivate, memberIds }, { prisma, userId }) => {
+    // Remove duplicates
+    const memberIdSet: Set<number> = new Set(memberIds);
+
+    if (memberIdSet) {
+      // Check that the user is friends with all of these users
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          friends: {
+            where: {
+              id: {
+                in: memberIds,
+              },
+            },
+          },
+        },
+      });
+
+      if (user.friends.length != memberIdSet.size) {
+        throw new ForbiddenError(
+          'You are not friends with all of the users provided'
+        );
+      }
+    }
+    // add creator as members
+    if (!memberIdSet.has(userId)) {
+      memberIdSet.add(userId);
+    }
+
     return await prisma.channel.create({
       data: {
         name,
@@ -35,9 +73,7 @@ export const createChannel = mutationField('createChannel', {
         isDM: false,
         isPrivate,
         members: {
-          connect: {
-            id: userId, // Add creator as member
-          },
+          connect: [...memberIdSet].map((id) => ({ id })),
         },
       },
     });
@@ -120,7 +156,7 @@ export const updateChannel = mutationField('updateChannel', {
       );
     }
 
-    return prisma.channel.update({
+    return await prisma.channel.update({
       data: {
         name,
         isPrivate,
@@ -157,26 +193,57 @@ export const createDM = mutationField('createDM', {
 export const addMembersToChannel = mutationField('addMembersToChannel', {
   type: Channel,
   args: {
-    channelId: nonNull(intArg()),
-    memberIds: nonNull(list(nonNull(intArg()))),
+    channelId: nonNull(
+      intArg({
+        description: 'Id of Channel to add Users to',
+      })
+    ),
+    memberIds: nonNull(
+      list(
+        nonNull(
+          intArg({
+            description: 'Ids of Users to be added to Channel',
+          })
+        )
+      )
+    ),
   },
   description: 'Add Members into Channel',
   resolve: async (_, { channelId, memberIds }, { prisma, userId }) => {
-    const members = await prisma.channel
-      .findUnique({
-        where: {
-          id: channelId,
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        memberOfChannels: {
+          where: {
+            id: channelId,
+          },
         },
-      })
-      .members();
+        friends: {
+          where: {
+            id: {
+              in: memberIds,
+            },
+          },
+        },
+      },
+    });
 
-    if (!members.find((member) => member.id == userId)) {
+    // You have to be a member to add members
+    if (user.memberOfChannels.length == 0) {
       throw new ForbiddenError(
         'You do not have permission to add members to this channel'
       );
     }
 
-    return prisma.channel.update({
+    // You have to be friends with all of the user provided
+    if (user.friends.length != memberIds.length) {
+      throw new ForbiddenError('You are not friends with all of these users');
+    }
+
+    // Connect new members to channel
+    return await prisma.channel.update({
       data: {
         members: {
           connect: memberIds.map((id) => ({ id })),

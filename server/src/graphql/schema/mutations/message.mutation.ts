@@ -19,15 +19,20 @@ export const createMessage = mutationField('createMessage', {
   },
   description: 'Create a Message in a Channel',
   resolve: async (_, { channelId, content }, { prisma, pubsub, userId }) => {
-    const members = await prisma.channel
-      .findUnique({
-        where: {
-          id: channelId,
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        memberOfChannels: {
+          where: {
+            id: channelId,
+          },
         },
-      })
-      .members();
+      },
+    });
 
-    if (!members.find((member) => member.id == userId)) {
+    if (!user.memberOfChannels) {
       throw new ForbiddenError('You are not a member of this Channel');
     }
 

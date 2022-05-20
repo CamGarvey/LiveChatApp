@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.channelMessages = void 0;
+exports.channels = exports.channelMessages = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
+const channel_1 = __importDefault(require("../types/channel"));
 const message_1 = __importDefault(require("../types/message"));
 exports.channelMessages = (0, nexus_1.extendType)({
     type: 'Query',
@@ -56,6 +57,23 @@ exports.channelMessages = (0, nexus_1.extendType)({
                     }),
                 ]);
                 return (0, graphql_relay_1.connectionFromArraySlice)(items, { first, after }, { sliceStart: offset, arrayLength: totalCount });
+            }),
+        });
+    },
+});
+exports.channels = (0, nexus_1.extendType)({
+    type: 'Query',
+    definition(t) {
+        t.nonNull.list.nonNull.field('channels', {
+            type: channel_1.default,
+            resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                return yield prisma.user
+                    .findUnique({
+                    where: {
+                        id: userId,
+                    },
+                })
+                    .memberOfChannels();
             }),
         });
     },

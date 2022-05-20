@@ -489,22 +489,6 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
-              },
-              {
-                "name": "userId",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
               }
             ],
             "type": {
@@ -516,12 +500,12 @@
             "deprecationReason": null
           },
           {
-            "name": "addUsersToChannel",
-            "description": "Add Users into Channel",
+            "name": "addMembersToChannel",
+            "description": "Add Members into Channel",
             "args": [
               {
-                "name": "id",
-                "description": null,
+                "name": "channelId",
+                "description": "Id of Channel to add Users to",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -536,8 +520,8 @@
                 "deprecationReason": null
               },
               {
-                "name": "userIds",
-                "description": null,
+                "name": "memberIds",
+                "description": "Ids of Users to be added to Channel",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -573,31 +557,31 @@
             "description": "Create a Channel",
             "args": [
               {
-                "name": "createdById",
-                "description": null,
+                "name": "isPrivate",
+                "description": "If the Channel should be private",
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
                 },
-                "defaultValue": null,
+                "defaultValue": "true",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
               {
-                "name": "isDM",
-                "description": null,
+                "name": "memberIds",
+                "description": "Ids of Users to be added to Channel",
                 "type": {
-                  "kind": "NON_NULL",
+                  "kind": "LIST",
                   "name": null,
                   "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
                   }
                 },
                 "defaultValue": null,
@@ -606,7 +590,7 @@
               },
               {
                 "name": "name",
-                "description": null,
+                "description": "Name of the Channel",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -630,12 +614,24 @@
             "deprecationReason": null
           },
           {
+            "name": "createDM",
+            "description": "Create Direct Message Channel",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Channel",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "createMessage",
             "description": "Create a Message in a Channel",
             "args": [
               {
                 "name": "channelId",
-                "description": null,
+                "description": "Id of Channel to create Message in",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -651,29 +647,13 @@
               },
               {
                 "name": "content",
-                "description": null,
+                "description": "Content of Message",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
                     "kind": "SCALAR",
                     "name": "String",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "createdById",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
                     "ofType": null
                   }
                 },
@@ -691,65 +671,12 @@
             "deprecationReason": null
           },
           {
-            "name": "createUser",
-            "description": "Create a User",
-            "args": [
-              {
-                "name": "email",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "name",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "username",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "OBJECT",
-              "name": "User",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "deleteChannel",
             "description": "Delete a Channel",
             "args": [
               {
-                "name": "id",
-                "description": null,
+                "name": "channelId",
+                "description": "Id of Channel to be deleted",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -778,22 +705,6 @@
             "args": [
               {
                 "name": "friendId",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "userId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -836,22 +747,6 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
-              },
-              {
-                "name": "userId",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
               }
             ],
             "type": {
@@ -867,8 +762,8 @@
             "description": "Delete a Message",
             "args": [
               {
-                "name": "id",
-                "description": null,
+                "name": "messageId",
+                "description": "Id of Message to delete",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -892,12 +787,28 @@
             "deprecationReason": null
           },
           {
-            "name": "deleteUser",
-            "description": "Delete a User",
+            "name": "editMessage",
+            "description": "Edit a Message",
             "args": [
               {
-                "name": "id",
-                "description": null,
+                "name": "content",
+                "description": "New content for Message",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "messageId",
+                "description": "Id of Message to edit",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -914,18 +825,18 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "Message",
               "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "removeUsersFromChannel",
-            "description": "Remove Users from Channel",
+            "name": "removeMembersFromChannel",
+            "description": "Remove Members from Channel",
             "args": [
               {
-                "name": "id",
+                "name": "channelId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -941,7 +852,7 @@
                 "deprecationReason": null
               },
               {
-                "name": "userIds",
+                "name": "membersIds",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -992,22 +903,6 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
-              },
-              {
-                "name": "userId",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
               }
             ],
             "type": {
@@ -1023,8 +918,8 @@
             "description": "Update a Channel",
             "args": [
               {
-                "name": "id",
-                "description": null,
+                "name": "channelId",
+                "description": "Id of Channel to be updated",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1039,16 +934,12 @@
                 "deprecationReason": null
               },
               {
-                "name": "isDM",
-                "description": null,
+                "name": "isPrivate",
+                "description": "If the Channel should be private",
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -1056,15 +947,11 @@
               },
               {
                 "name": "name",
-                "description": null,
+                "description": "Name of Channel",
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -1080,53 +967,8 @@
             "deprecationReason": null
           },
           {
-            "name": "updateMessage",
-            "description": "Update a Message",
-            "args": [
-              {
-                "name": "content",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "id",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "OBJECT",
-              "name": "Message",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "updateUser",
-            "description": "Update a User",
+            "description": "Update current User",
             "args": [
               {
                 "name": "email",
@@ -1137,22 +979,6 @@
                   "ofType": {
                     "kind": "SCALAR",
                     "name": "String",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "id",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
                     "ofType": null
                   }
                 },
@@ -1307,12 +1133,36 @@
         "description": null,
         "fields": [
           {
-            "name": "Channel",
+            "name": "channelMessages",
             "description": null,
             "args": [
               {
-                "name": "id",
-                "description": "id of channel",
+                "name": "after",
+                "description": "Returns the elements in the list that come after the specified cursor",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "before",
+                "description": "Returns the elements in the list that come before the specified cursor",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "channelId",
+                "description": "If set, filters users by given filter",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1325,64 +1175,26 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "OBJECT",
-              "name": "Channel",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "Channels",
-            "description": null,
-            "args": [
+              },
               {
-                "name": "userId",
-                "description": "Channels user is a member of",
+                "name": "first",
+                "description": "Returns the first n elements from the list.",
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Channel",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "Message",
-            "description": null,
-            "args": [
+              },
               {
-                "name": "id",
-                "description": "id of message",
+                "name": "last",
+                "description": "Returns the last n elements from the list.",
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -1394,7 +1206,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Message",
+                "name": "MessageConnection",
                 "ofType": null
               }
             },
@@ -1402,7 +1214,67 @@
             "deprecationReason": null
           },
           {
-            "name": "User",
+            "name": "channels",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Channel",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "friends",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "me",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
             "description": null,
             "args": [
               {
@@ -1431,8 +1303,8 @@
             "deprecationReason": null
           },
           {
-            "name": "Users",
-            "description": null,
+            "name": "users",
+            "description": "Find users",
             "args": [
               {
                 "name": "after",
@@ -1483,11 +1355,11 @@
                 "deprecationReason": null
               },
               {
-                "name": "nameFilter",
-                "description": "If set, filters users by given filter",
+                "name": "orderBy",
+                "description": "How to order query",
                 "type": {
-                  "kind": "SCALAR",
-                  "name": "String",
+                  "kind": "INPUT_OBJECT",
+                  "name": "UserOrderBy",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -1495,11 +1367,11 @@
                 "deprecationReason": null
               },
               {
-                "name": "orderBy",
-                "description": "How to order query",
+                "name": "usernameFilter",
+                "description": "If set, filters users by given filter",
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "UserOrderBy",
+                  "kind": "SCALAR",
+                  "name": "String",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -1595,24 +1467,7 @@
           {
             "name": "newFriendRequest",
             "description": null,
-            "args": [
-              {
-                "name": "userId",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
+            "args": [],
             "type": {
               "kind": "OBJECT",
               "name": "User",

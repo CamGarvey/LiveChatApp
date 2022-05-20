@@ -40,35 +40,58 @@ const UserOrderBy = inputObjectType({
 });
 
 // get All Users
-export const UsersQuery = extendType({
+export const Users = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.connectionField('users', {
       type: User,
+      description: 'Find users',
       additionalArgs: {
-        nameFilter: stringArg({
+        usernameFilter: stringArg({
           description: 'If set, filters users by given filter',
         }),
         orderBy: arg({ type: UserOrderBy, description: 'How to order query' }),
       },
-      resolve: async (_, { after, first, nameFilter, orderBy }, { prisma }) => {
+      resolve: async (
+        _,
+        { after, first, usernameFilter, orderBy },
+        { prisma, userId }
+      ) => {
         const offset = after ? cursorToOffset(after) + 1 : 0;
         if (isNaN(offset)) throw new Error('cursor is invalid');
 
-        const whereNameIs = Prisma.validator<Prisma.UserWhereInput>()({
-          name: {
-            contains: nameFilter,
-          },
+        const where = Prisma.validator<Prisma.UserWhereInput>()({
+          AND: [
+            {
+              id: {
+                not: userId, // Dont include self
+              },
+              OR: [
+                {
+                  username: {
+                    contains: usernameFilter,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  name: {
+                    contains: usernameFilter,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
+            },
+          ],
         });
 
         const [totalCount, items] = await Promise.all([
           prisma.user.count({
-            where: whereNameIs,
+            where,
           }),
           prisma.user.findMany({
             take: first,
             skip: offset,
-            where: whereNameIs,
+            where,
             orderBy: orderBy,
           }),
         ]);
@@ -88,8 +111,8 @@ export const FriendsQuery = extendType({
   definition(t) {
     t.nonNull.list.nonNull.field('friends', {
       type: User,
-      resolve: (_, __, { prisma, userId }) => {
-        return prisma.user
+      resolve: async (_, __, { prisma, userId }) => {
+        return await prisma.user
           .findUnique({
             where: {
               id: userId,

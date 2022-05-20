@@ -1,0 +1,9 @@
+query GetChannelsForSidebar {
+  channels {
+    id
+    name
+    createdAt
+    updatedAt
+    isDM
+  }
+}

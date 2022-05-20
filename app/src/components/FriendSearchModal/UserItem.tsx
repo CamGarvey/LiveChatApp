@@ -1,13 +1,29 @@
 import { Avatar, Flex, IconButton, Text } from '@chakra-ui/react';
 import React from 'react';
-import { GrFormClose } from 'react-icons/gr';
+import { BsFillInfoCircleFill } from 'react-icons/bs';
+import { MdOutlinePersonAddAlt, MdPersonRemoveAlt1 } from 'react-icons/md';
+import FriendStatus from '../../models/friend-status';
 
 type Props = {
   name: string;
+  friendStatus: FriendStatus;
 };
 
-const UserItem = ({ name }: Props) => {
-  console.log(name);
+const UserItem = ({ name, friendStatus }: Props) => {
+  let icon: React.ReactElement;
+
+  switch (friendStatus) {
+    case FriendStatus.Friends:
+      icon = <MdPersonRemoveAlt1 />;
+      break;
+    case FriendStatus.NotFriends:
+      icon = <MdOutlinePersonAddAlt />;
+      break;
+    case FriendStatus.RequestSent:
+    case FriendStatus.RequestReceived:
+      icon = <BsFillInfoCircleFill />;
+      break;
+  }
 
   return (
     <Flex
@@ -24,11 +40,7 @@ const UserItem = ({ name }: Props) => {
         alignSelf={'center'}
       />
       <Text alignSelf={'center'}>{name}</Text>
-      <IconButton
-        aria-label="close"
-        icon={<GrFormClose />}
-        marginLeft={'auto'}
-      />
+      <IconButton aria-label="close" icon={icon} marginLeft={'auto'} />
     </Flex>
   );
 };

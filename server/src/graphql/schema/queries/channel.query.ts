@@ -59,6 +59,24 @@ export const channelMessages = extendType({
   },
 });
 
+export const channels = extendType({
+  type: 'Query',
+  definition(t) {
+    t.nonNull.list.nonNull.field('channels', {
+      type: Channel,
+      resolve: async (_, __, { prisma, userId }) => {
+        return await prisma.user
+          .findUnique({
+            where: {
+              id: userId,
+            },
+          })
+          .memberOfChannels();
+      },
+    });
+  },
+});
+
 // export const openChannels = extendType({
 //   type: 'Query',
 //   definition(t) {

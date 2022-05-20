@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.UsersQuery = void 0;
+exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.Users = void 0;
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
@@ -44,34 +44,53 @@ const UserOrderBy = (0, nexus_1.inputObjectType)({
         });
     },
 });
-exports.UsersQuery = (0, nexus_1.extendType)({
+exports.Users = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('users', {
             type: user_1.default,
+            description: 'Find users',
             additionalArgs: {
-                nameFilter: (0, nexus_1.stringArg)({
+                usernameFilter: (0, nexus_1.stringArg)({
                     description: 'If set, filters users by given filter',
                 }),
                 orderBy: (0, nexus_1.arg)({ type: UserOrderBy, description: 'How to order query' }),
             },
-            resolve: (_, { after, first, nameFilter, orderBy }, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+            resolve: (_, { after, first, usernameFilter, orderBy }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
                 if (isNaN(offset))
                     throw new Error('cursor is invalid');
-                const whereNameIs = client_1.Prisma.validator()({
-                    name: {
-                        contains: nameFilter,
-                    },
+                const where = client_1.Prisma.validator()({
+                    AND: [
+                        {
+                            id: {
+                                not: userId,
+                            },
+                            OR: [
+                                {
+                                    username: {
+                                        contains: usernameFilter,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                                {
+                                    name: {
+                                        contains: usernameFilter,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                            ],
+                        },
+                    ],
                 });
                 const [totalCount, items] = yield Promise.all([
                     prisma.user.count({
-                        where: whereNameIs,
+                        where,
                     }),
                     prisma.user.findMany({
                         take: first,
                         skip: offset,
-                        where: whereNameIs,
+                        where,
                         orderBy: orderBy,
                     }),
                 ]);
@@ -85,15 +104,15 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
     definition(t) {
         t.nonNull.list.nonNull.field('friends', {
             type: user_1.default,
-            resolve: (_, __, { prisma, userId }) => {
-                return prisma.user
+            resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                return yield prisma.user
                     .findUnique({
                     where: {
                         id: userId,
                     },
                 })
                     .friends();
-            },
+            }),
         });
     },
 });

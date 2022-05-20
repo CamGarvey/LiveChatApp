@@ -18,18 +18,45 @@ import {
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
-import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
+import {
+  useGetFriendIdsQuery,
+  useGetFriendRequestIdsQuery,
+  useGetUsersLazyQuery,
+} from '../../graphql/generated/graphql';
 import UserItem from './UserItem';
+import { useAuth0 } from '@auth0/auth0-react';
+import FriendStatus from '../../models/friend-status';
 
 const FriendSearchModal = (props: UseDisclosureProps) => {
   const btnRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLInputElement>();
   const [users, setUsers] = useState([]);
   const { isOpen, onClose } = useDisclosure(props);
-  const [getUsers, { data, loading }] = useGetUsersLazyQuery();
+
+  const { loading: loadingFriends, data: friendData } = useGetFriendIdsQuery();
+
+  const { data: requests, loading: loadingRequets } =
+    useGetFriendRequestIdsQuery();
+
+  const [getUsers, { data, loading: loadingUsers }] = useGetUsersLazyQuery();
+
+  const friendIds = friendData?.friends?.map((f) => f.id) ?? [];
 
   // Wrap the getUsers call in a debounce to prevent over requesting api
   const debouncer = useCallback(_.debounce(getUsers, 1000), []);
+
+  const getFriendStatus = (userId: number): FriendStatus => {
+    if (friendIds.includes(userId)) {
+      return FriendStatus.Friends;
+    }
+    if (requests.me.sentFriendRequests.length > 0) {
+      return FriendStatus.RequestSent;
+    }
+    if (requests.me.receivedFriendRequests.length > 0) {
+      return FriendStatus.RequestReceived;
+    }
+    return FriendStatus.NotFriends;
+  };
 
   // Focus on input
   useEffect(() => {
@@ -37,13 +64,13 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
   }, [inputRef?.current?.id]);
 
   useEffect(() => {
-    if (data?.Users?.edges) {
-      const users = data.Users.edges
+    if (data?.users?.edges && inputRef.current.value !== '') {
+      const users = data.users.edges
         .filter((x) => x != null)
         .map((x) => x.node);
       setUsers((prev) => [...prev, ...users]);
     }
-  }, [data?.Users?.edges]);
+  }, [data?.users?.edges]);
 
   return (
     <Modal
@@ -70,32 +97,44 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
               onChange={(e) => {
                 setUsers([]);
                 const value = e.target.value;
-                if (value === '') return;
-                debouncer({
-                  variables: {
-                    first: 5,
-                    nameFilter: e.target.value,
-                  },
-                });
+                if (value !== '') {
+                  console.log('de');
+
+                  debouncer({
+                    variables: {
+                      first: 5,
+                      usernameFilter: e.target.value,
+                    },
+                  });
+                }
               }}
             />
           </InputGroup>
           <Box paddingTop={'3'}>
-            {loading && (
+            {loadingUsers || loadingFriends || loadingRequets ? (
               <Box textAlign={'center'}>
                 <Spinner></Spinner>
               </Box>
+            ) : users.length === 0 && inputRef.current.value !== '' ? (
+              <>No users found</>
+            ) : (
+              users.map((u) => {
+                return (
+                  <UserItem
+                    key={u.id}
+                    name={u.name}
+                    friendStatus={getFriendStatus(u.id)}
+                  />
+                );
+              })
             )}
-            {users.map((user) => {
-              return <UserItem key={user.id} name={user.name} />;
-            })}
           </Box>
-          {data?.Users?.pageInfo.hasNextPage && (
+          {data?.users?.pageInfo.hasNextPage && (
             <Button
               w={'100%'}
               onClick={() => {
                 getUsers({
-                  variables: { first: 5, after: data.Users.pageInfo.endCursor },
+                  variables: { first: 5, after: data.users.pageInfo.endCursor },
                 });
               }}
             >

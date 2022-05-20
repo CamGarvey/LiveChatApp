@@ -1,9 +1,0 @@
-mutation UpdateMessage($updateMessageId: Int!, $content: String!) {
-  updateMessage(id: $updateMessageId, content: $content) {
-    id
-    content
-    createdAt
-    createdById
-    updatedAt
-  }
-}
