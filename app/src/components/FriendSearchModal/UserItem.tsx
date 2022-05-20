@@ -2,14 +2,17 @@ import { Avatar, Flex, IconButton, Text } from '@chakra-ui/react';
 import React from 'react';
 import { BsFillInfoCircleFill } from 'react-icons/bs';
 import { MdOutlinePersonAddAlt, MdPersonRemoveAlt1 } from 'react-icons/md';
+import { User } from '../../graphql/generated/graphql';
 import FriendStatus from '../../models/friend-status';
 
 type Props = {
-  name: string;
+  user: User;
   friendStatus: FriendStatus;
 };
 
-const UserItem = ({ name, friendStatus }: Props) => {
+const UserItem = ({ user, friendStatus }: Props) => {
+  const { name, username } = user;
+
   let icon: React.ReactElement;
 
   switch (friendStatus) {
@@ -40,6 +43,7 @@ const UserItem = ({ name, friendStatus }: Props) => {
         alignSelf={'center'}
       />
       <Text alignSelf={'center'}>{name}</Text>
+      <Text alignSelf={'center'}>{username}</Text>
       <IconButton aria-label="close" icon={icon} marginLeft={'auto'} />
     </Flex>
   );

@@ -103,7 +103,7 @@ export interface NexusGenObjects {
     id: number; // Int!
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
-    username?: string | null; // String
+    username: string; // String!
   }
   UserConnection: { // root type
     edges?: Array<NexusGenRootTypes['UserEdge'] | null> | null; // [UserEdge]
@@ -203,7 +203,7 @@ export interface NexusGenFieldTypes {
     receivedFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
     sentFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!
-    username: string | null; // String
+    username: string; // String!
   }
   UserConnection: { // field return type
     edges: Array<NexusGenRootTypes['UserEdge'] | null> | null; // [UserEdge]

@@ -9,7 +9,7 @@ const User = objectType({
     t.nonNull.int('id');
     t.nonNull.string('name');
     t.nonNull.string('email');
-    t.string('username');
+    t.nonNull.string('username');
     t.nonNull.field('createdAt', {
       type: DateScalar,
     });

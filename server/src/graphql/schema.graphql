@@ -255,7 +255,7 @@ type User {
   receivedFriendRequests: [User!]!
   sentFriendRequests: [User!]!
   updatedAt: Date!
-  username: String
+  username: String!
 }
 
 type UserConnection {

@@ -32,6 +32,7 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
   const inputRef = useRef<HTMLInputElement>();
   const [users, setUsers] = useState([]);
   const { isOpen, onClose } = useDisclosure(props);
+  // const { masterLoader, setMasterLoader } = useState(false);
 
   const { loading: loadingFriends, data: friendData } = useGetFriendIdsQuery();
 
@@ -64,13 +65,14 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
   }, [inputRef?.current?.id]);
 
   useEffect(() => {
-    if (data?.users?.edges && inputRef.current.value !== '') {
+    setUsers([]);
+    if (data?.users.edges && inputRef?.current?.value !== '') {
       const users = data.users.edges
         .filter((x) => x != null)
         .map((x) => x.node);
       setUsers((prev) => [...prev, ...users]);
     }
-  }, [data?.users?.edges]);
+  }, [data?.users.edges]);
 
   return (
     <Modal
@@ -78,7 +80,7 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
         setUsers([]);
         onClose();
       }}
-      finalFocusRef={btnRef}
+      finalFocusRef={btnRef!}
       isOpen={isOpen}
       scrollBehavior={'inside'}
     >
@@ -95,15 +97,12 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
               placeholder="Find your friends!"
               ref={inputRef}
               onChange={(e) => {
-                setUsers([]);
                 const value = e.target.value;
                 if (value !== '') {
-                  console.log('de');
-
                   debouncer({
                     variables: {
                       first: 5,
-                      usernameFilter: e.target.value,
+                      usernameFilter: value,
                     },
                   });
                 }
@@ -122,7 +121,7 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
                 return (
                   <UserItem
                     key={u.id}
-                    name={u.name}
+                    user={u}
                     friendStatus={getFriendStatus(u.id)}
                   />
                 );

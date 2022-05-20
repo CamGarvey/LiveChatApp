@@ -2,15 +2,9 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -34,6 +28,7 @@ export type Channel = {
   name: Scalars['String'];
   updatedAt: Scalars['Date'];
 };
+
 
 export type ChannelMessagesArgs = {
   after?: InputMaybe<Scalars['String']>;
@@ -102,14 +97,17 @@ export type Mutation = {
   updateUser?: Maybe<User>;
 };
 
+
 export type MutationAcceptFriendRequestArgs = {
   friendId: Scalars['Int'];
 };
+
 
 export type MutationAddMembersToChannelArgs = {
   channelId: Scalars['Int'];
   memberIds: Array<Scalars['Int']>;
 };
+
 
 export type MutationCreateChannelArgs = {
   isPrivate?: InputMaybe<Scalars['Boolean']>;
@@ -117,46 +115,56 @@ export type MutationCreateChannelArgs = {
   name: Scalars['String'];
 };
 
+
 export type MutationCreateMessageArgs = {
   channelId: Scalars['Int'];
   content: Scalars['String'];
 };
 
+
 export type MutationDeleteChannelArgs = {
   channelId: Scalars['Int'];
 };
+
 
 export type MutationDeleteFriendArgs = {
   friendId: Scalars['Int'];
 };
 
+
 export type MutationDeleteFriendRequestArgs = {
   friendId: Scalars['Int'];
 };
 
+
 export type MutationDeleteMessageArgs = {
   messageId: Scalars['Int'];
 };
+
 
 export type MutationEditMessageArgs = {
   content: Scalars['String'];
   messageId: Scalars['Int'];
 };
 
+
 export type MutationRemoveMembersFromChannelArgs = {
   channelId: Scalars['Int'];
   membersIds: Array<Scalars['Int']>;
 };
 
+
 export type MutationSendFriendRequestArgs = {
   friendId: Scalars['Int'];
 };
+
 
 export type MutationUpdateChannelArgs = {
   channelId: Scalars['Int'];
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
 };
+
 
 export type MutationUpdateUserArgs = {
   email: Scalars['String'];
@@ -193,6 +201,7 @@ export type Query = {
   users: UserConnection;
 };
 
+
 export type QueryChannelMessagesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -201,9 +210,11 @@ export type QueryChannelMessagesArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+
 export type QueryUserArgs = {
   id: Scalars['Int'];
 };
+
 
 export type QueryUsersArgs = {
   after?: InputMaybe<Scalars['String']>;
@@ -216,7 +227,7 @@ export type QueryUsersArgs = {
 
 export enum Sort {
   Asc = 'asc',
-  Desc = 'desc',
+  Desc = 'desc'
 }
 
 export type Subscription = {
@@ -226,9 +237,11 @@ export type Subscription = {
   newMessage?: Maybe<NewMessagePayload>;
 };
 
+
 export type SubscriptionNewFriendArgs = {
   userId: Scalars['Int'];
 };
+
 
 export type SubscriptionNewMessageArgs = {
   channelId: Scalars['Int'];
@@ -245,8 +258,9 @@ export type User = {
   receivedFriendRequests: Array<User>;
   sentFriendRequests: Array<User>;
   updatedAt: Scalars['Date'];
-  username?: Maybe<Scalars['String']>;
+  username: Scalars['String'];
 };
+
 
 export type UserFriendsArgs = {
   after?: InputMaybe<Scalars['String']>;
@@ -280,39 +294,20 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
-export type GetChannelsForSidebarQueryVariables = Exact<{
-  [key: string]: never;
-}>;
+export type GetChannelsForSidebarQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetChannelsForSidebarQuery = {
-  __typename?: 'Query';
-  channels: Array<{
-    __typename?: 'Channel';
-    id: number;
-    name: string;
-    createdAt: any;
-    updatedAt: any;
-    isDM: boolean;
-  }>;
-};
 
-export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetChannelsForSidebarQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean }> };
 
-export type GetFriendIdsQuery = {
-  __typename?: 'Query';
-  friends: Array<{ __typename?: 'User'; id: number }>;
-};
+export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetFriendRequestIdsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetFriendRequestIdsQuery = {
-  __typename?: 'Query';
-  me?: {
-    __typename?: 'User';
-    sentFriendRequests: Array<{ __typename?: 'User'; id: number }>;
-    receivedFriendRequests: Array<{ __typename?: 'User'; id: number }>;
-  } | null;
-};
+export type GetFriendIdsQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number }> };
+
+export type GetFriendRequestIdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename?: 'User', sentFriendRequests: Array<{ __typename?: 'User', id: number }>, receivedFriendRequests: Array<{ __typename?: 'User', id: number }> } | null };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -320,34 +315,21 @@ export type GetUsersQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
 }>;
 
-export type GetUsersQuery = {
-  __typename?: 'Query';
-  users: {
-    __typename?: 'UserConnection';
-    pageInfo: {
-      __typename?: 'PageInfo';
-      hasNextPage: boolean;
-      endCursor?: string | null;
-    };
-    edges?: Array<{
-      __typename?: 'UserEdge';
-      cursor: string;
-      node?: { __typename?: 'User'; id: number; name: string } | null;
-    } | null> | null;
-  };
-};
+
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: number, name: string } | null } | null> | null } };
+
 
 export const GetChannelsForSidebarDocument = gql`
-  query GetChannelsForSidebar {
-    channels {
-      id
-      name
-      createdAt
-      updatedAt
-      isDM
-    }
+    query GetChannelsForSidebar {
+  channels {
+    id
+    name
+    createdAt
+    updatedAt
+    isDM
   }
-`;
+}
+    `;
 
 /**
  * __useGetChannelsForSidebarQuery__
@@ -364,47 +346,24 @@ export const GetChannelsForSidebarDocument = gql`
  *   },
  * });
  */
-export function useGetChannelsForSidebarQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetChannelsForSidebarQuery,
-    GetChannelsForSidebarQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetChannelsForSidebarQuery,
-    GetChannelsForSidebarQueryVariables
-  >(GetChannelsForSidebarDocument, options);
-}
-export function useGetChannelsForSidebarLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetChannelsForSidebarQuery,
-    GetChannelsForSidebarQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetChannelsForSidebarQuery,
-    GetChannelsForSidebarQueryVariables
-  >(GetChannelsForSidebarDocument, options);
-}
-export type GetChannelsForSidebarQueryHookResult = ReturnType<
-  typeof useGetChannelsForSidebarQuery
->;
-export type GetChannelsForSidebarLazyQueryHookResult = ReturnType<
-  typeof useGetChannelsForSidebarLazyQuery
->;
-export type GetChannelsForSidebarQueryResult = Apollo.QueryResult<
-  GetChannelsForSidebarQuery,
-  GetChannelsForSidebarQueryVariables
->;
+export function useGetChannelsForSidebarQuery(baseOptions?: Apollo.QueryHookOptions<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>(GetChannelsForSidebarDocument, options);
+      }
+export function useGetChannelsForSidebarLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>(GetChannelsForSidebarDocument, options);
+        }
+export type GetChannelsForSidebarQueryHookResult = ReturnType<typeof useGetChannelsForSidebarQuery>;
+export type GetChannelsForSidebarLazyQueryHookResult = ReturnType<typeof useGetChannelsForSidebarLazyQuery>;
+export type GetChannelsForSidebarQueryResult = Apollo.QueryResult<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>;
 export const GetFriendIdsDocument = gql`
-  query GetFriendIds {
-    friends {
-      id
-    }
+    query GetFriendIds {
+  friends {
+    id
   }
-`;
+}
+    `;
 
 /**
  * __useGetFriendIdsQuery__
@@ -421,52 +380,29 @@ export const GetFriendIdsDocument = gql`
  *   },
  * });
  */
-export function useGetFriendIdsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFriendIdsQuery,
-    GetFriendIdsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(
-    GetFriendIdsDocument,
-    options
-  );
-}
-export function useGetFriendIdsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFriendIdsQuery,
-    GetFriendIdsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(
-    GetFriendIdsDocument,
-    options
-  );
-}
-export type GetFriendIdsQueryHookResult = ReturnType<
-  typeof useGetFriendIdsQuery
->;
-export type GetFriendIdsLazyQueryHookResult = ReturnType<
-  typeof useGetFriendIdsLazyQuery
->;
-export type GetFriendIdsQueryResult = Apollo.QueryResult<
-  GetFriendIdsQuery,
-  GetFriendIdsQueryVariables
->;
+export function useGetFriendIdsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendIdsQuery, GetFriendIdsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(GetFriendIdsDocument, options);
+      }
+export function useGetFriendIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendIdsQuery, GetFriendIdsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(GetFriendIdsDocument, options);
+        }
+export type GetFriendIdsQueryHookResult = ReturnType<typeof useGetFriendIdsQuery>;
+export type GetFriendIdsLazyQueryHookResult = ReturnType<typeof useGetFriendIdsLazyQuery>;
+export type GetFriendIdsQueryResult = Apollo.QueryResult<GetFriendIdsQuery, GetFriendIdsQueryVariables>;
 export const GetFriendRequestIdsDocument = gql`
-  query GetFriendRequestIds {
-    me {
-      sentFriendRequests {
-        id
-      }
-      receivedFriendRequests {
-        id
-      }
+    query GetFriendRequestIds {
+  me {
+    sentFriendRequests {
+      id
+    }
+    receivedFriendRequests {
+      id
     }
   }
-`;
+}
+    `;
 
 /**
  * __useGetFriendRequestIdsQuery__
@@ -483,57 +419,34 @@ export const GetFriendRequestIdsDocument = gql`
  *   },
  * });
  */
-export function useGetFriendRequestIdsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFriendRequestIdsQuery,
-    GetFriendRequestIdsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetFriendRequestIdsQuery,
-    GetFriendRequestIdsQueryVariables
-  >(GetFriendRequestIdsDocument, options);
-}
-export function useGetFriendRequestIdsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFriendRequestIdsQuery,
-    GetFriendRequestIdsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetFriendRequestIdsQuery,
-    GetFriendRequestIdsQueryVariables
-  >(GetFriendRequestIdsDocument, options);
-}
-export type GetFriendRequestIdsQueryHookResult = ReturnType<
-  typeof useGetFriendRequestIdsQuery
->;
-export type GetFriendRequestIdsLazyQueryHookResult = ReturnType<
-  typeof useGetFriendRequestIdsLazyQuery
->;
-export type GetFriendRequestIdsQueryResult = Apollo.QueryResult<
-  GetFriendRequestIdsQuery,
-  GetFriendRequestIdsQueryVariables
->;
-export const GetUsersDocument = gql`
-  query GetUsers($usernameFilter: String, $first: Int, $after: String) {
-    users(usernameFilter: $usernameFilter, first: $first, after: $after) {
-      pageInfo {
-        hasNextPage
-        endCursor
+export function useGetFriendRequestIdsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>(GetFriendRequestIdsDocument, options);
       }
-      edges {
-        cursor
-        node {
-          id
-          name
+export function useGetFriendRequestIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>(GetFriendRequestIdsDocument, options);
         }
+export type GetFriendRequestIdsQueryHookResult = ReturnType<typeof useGetFriendRequestIdsQuery>;
+export type GetFriendRequestIdsLazyQueryHookResult = ReturnType<typeof useGetFriendRequestIdsLazyQuery>;
+export type GetFriendRequestIdsQueryResult = Apollo.QueryResult<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>;
+export const GetUsersDocument = gql`
+    query GetUsers($usernameFilter: String, $first: Int, $after: String) {
+  users(usernameFilter: $usernameFilter, first: $first, after: $after) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      cursor
+      node {
+        id
+        name
       }
     }
   }
-`;
+}
+    `;
 
 /**
  * __useGetUsersQuery__
@@ -553,32 +466,14 @@ export const GetUsersDocument = gql`
  *   },
  * });
  */
-export function useGetUsersQuery(
-  baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(
-    GetUsersDocument,
-    options
-  );
-}
-export function useGetUsersLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUsersQuery,
-    GetUsersQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetUsersQuery, GetUsersQueryVariables>(
-    GetUsersDocument,
-    options
-  );
-}
+export function useGetUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+      }
+export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        }
 export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
-export type GetUsersLazyQueryHookResult = ReturnType<
-  typeof useGetUsersLazyQuery
->;
-export type GetUsersQueryResult = Apollo.QueryResult<
-  GetUsersQuery,
-  GetUsersQueryVariables
->;
+export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
+export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;

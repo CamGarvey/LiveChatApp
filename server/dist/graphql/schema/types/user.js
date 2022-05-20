@@ -22,7 +22,7 @@ const User = (0, nexus_1.objectType)({
         t.nonNull.int('id');
         t.nonNull.string('name');
         t.nonNull.string('email');
-        t.string('username');
+        t.nonNull.string('username');
         t.nonNull.field('createdAt', {
             type: scalars_1.DateScalar,
         });
