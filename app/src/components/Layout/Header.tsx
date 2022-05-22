@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
-import FriendSearchModal from '../FriendSearchModal/FriendSearchModal';
+import UserSearchModal from '../UserSearchModal/UserSearchModal';
 import { BsSearch } from 'react-icons/bs';
 import { MdOutlineAccountCircle } from 'react-icons/md';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -51,7 +51,7 @@ const Header = (props: Props) => {
                 />
               </InputGroup>
               {friendSearchOpen && (
-                <FriendSearchModal
+                <UserSearchModal
                   isOpen={friendSearchOpen}
                   onClose={() => {
                     setFriendSearchOpen(false);

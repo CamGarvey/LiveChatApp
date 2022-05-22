@@ -26,7 +26,7 @@ const main = async () => {
 
   // Set up CORS
   var corsOptions = {
-    origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend
+    origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend & apollo studio
     credentials: true,
   };
 

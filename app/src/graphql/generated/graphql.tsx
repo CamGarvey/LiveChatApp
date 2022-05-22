@@ -309,6 +309,11 @@ export type GetFriendRequestIdsQueryVariables = Exact<{ [key: string]: never; }>
 
 export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename?: 'User', sentFriendRequests: Array<{ __typename?: 'User', id: number }>, receivedFriendRequests: Array<{ __typename?: 'User', id: number }> } | null };
 
+export type GetFriendsForSearchQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFriendsForSearchQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number, name: string, email: string, username: string }> };
+
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -430,6 +435,43 @@ export function useGetFriendRequestIdsLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetFriendRequestIdsQueryHookResult = ReturnType<typeof useGetFriendRequestIdsQuery>;
 export type GetFriendRequestIdsLazyQueryHookResult = ReturnType<typeof useGetFriendRequestIdsLazyQuery>;
 export type GetFriendRequestIdsQueryResult = Apollo.QueryResult<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>;
+export const GetFriendsForSearchDocument = gql`
+    query GetFriendsForSearch {
+  friends {
+    id
+    name
+    email
+    username
+  }
+}
+    `;
+
+/**
+ * __useGetFriendsForSearchQuery__
+ *
+ * To run a query within a React component, call `useGetFriendsForSearchQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendsForSearchQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendsForSearchQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFriendsForSearchQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsForSearchQuery, GetFriendsForSearchQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendsForSearchQuery, GetFriendsForSearchQueryVariables>(GetFriendsForSearchDocument, options);
+      }
+export function useGetFriendsForSearchLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendsForSearchQuery, GetFriendsForSearchQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendsForSearchQuery, GetFriendsForSearchQueryVariables>(GetFriendsForSearchDocument, options);
+        }
+export type GetFriendsForSearchQueryHookResult = ReturnType<typeof useGetFriendsForSearchQuery>;
+export type GetFriendsForSearchLazyQueryHookResult = ReturnType<typeof useGetFriendsForSearchLazyQuery>;
+export type GetFriendsForSearchQueryResult = Apollo.QueryResult<GetFriendsForSearchQuery, GetFriendsForSearchQueryVariables>;
 export const GetUsersDocument = gql`
     query GetUsers($usernameFilter: String, $first: Int, $after: String) {
   users(usernameFilter: $usernameFilter, first: $first, after: $after) {

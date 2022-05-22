@@ -101,7 +101,7 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['Date']; // Date!
     email: string; // String!
     id: number; // Int!
-    name: string; // String!
+    name?: string | null; // String
     updatedAt: NexusGenScalars['Date']; // Date!
     username: string; // String!
   }
@@ -199,7 +199,7 @@ export interface NexusGenFieldTypes {
     email: string; // String!
     friends: NexusGenRootTypes['UserConnection']; // UserConnection!
     id: number; // Int!
-    name: string; // String!
+    name: string | null; // String
     receivedFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
     sentFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!

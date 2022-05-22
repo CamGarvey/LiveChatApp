@@ -1,0 +1,8 @@
+query GetFriendsForSearch {
+  friends {
+    id
+    name
+    email
+    username
+  }
+}

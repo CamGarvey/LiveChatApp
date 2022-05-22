@@ -29,7 +29,7 @@ import FriendStatus from '../../models/friend-status';
 
 const USER_PAGINATION_COUNT = 5;
 
-const FriendSearchModal = (props: UseDisclosureProps) => {
+const UserSearchModal = (props: UseDisclosureProps) => {
   const btnRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLInputElement>();
   const [users, setUsers] = useState([]);
@@ -160,4 +160,4 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
   );
 };
 
-export default FriendSearchModal;
+export default UserSearchModal;

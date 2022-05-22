@@ -14,7 +14,7 @@ model User {
   id                     Int       @id @default(autoincrement()) @map("id")
   email                  String    @unique
   name                   String?
-  username               String?   @unique
+  username               String    @unique
   sentFriendRequests     User[]    @relation("UserFriendRequests", references: [id])
   receivedFriendRequests User[]    @relation("UserFriendRequests", references: [id])
   friends                User[]    @relation("UserFriendsUser", references: [id])

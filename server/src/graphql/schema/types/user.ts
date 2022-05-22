@@ -7,7 +7,7 @@ const User = objectType({
   name: 'User',
   definition(t) {
     t.nonNull.int('id');
-    t.nonNull.string('name');
+    t.string('name');
     t.nonNull.string('email');
     t.nonNull.string('username');
     t.nonNull.field('createdAt', {

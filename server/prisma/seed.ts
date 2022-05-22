@@ -12,6 +12,7 @@ const loadUsers = async (prisma: PrismaClient) => {
     data: {
       email: 'cam.garvey11@gmail.com',
       name: 'Cameron g',
+      username: 'Camgaroo',
       friends: {
         connect: otherUsers.map((user) => ({ id: user.id })),
       },
