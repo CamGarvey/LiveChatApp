@@ -12,19 +12,19 @@ import {
 import { GrGroup } from 'react-icons/gr';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { ImPacman } from 'react-icons/im';
-import React, { useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import RoomItem from './ChannelItem';
 import { useGetChannelsForSidebarQuery } from '../../graphql/generated/graphql';
 
-type Props = {};
+type Props = {
+  onCreateChannel: () => void;
+};
 
-const Sidebar = () => {
+const Sidebar = ({ onCreateChannel }: Props) => {
   const { loading, data, error } = useGetChannelsForSidebarQuery();
 
   return (
-    <VStack w={300} h={'100%'} bg={'lightblue'}>
-      <Accordion defaultIndex={[0]} allowMultiple w={'100%'}>
+    <VStack w={300} h={'100%'} maxH={'100%'} bg={'lightblue'}>
+      <Accordion defaultIndex={[0]} allowMultiple w={'100%'} maxH={'100%'}>
         {loading ? (
           <></>
         ) : (
@@ -39,11 +39,14 @@ const Sidebar = () => {
                 </AccordionButton>
               </h2>
               <AccordionPanel pb={4} paddingX={0}>
-                {data.channels
-                  .filter((channel) => channel.isDM)
-                  .map((channel) => {
-                    return <RoomItem key={channel.id} name={''} />;
-                  })}
+                <Box maxH={'100px'} overflowY={'scroll'}>
+                  {data.channels
+                    .filter((channel) => channel.isDM)
+                    .map((channel) => {
+                      return <RoomItem key={channel.id} name={''} />;
+                    })}
+                </Box>
+
                 <Box p={3}>
                   <Button w={'100%'} rightIcon={<AiOutlinePlus />}>
                     New Chat
@@ -62,13 +65,20 @@ const Sidebar = () => {
                 </AccordionButton>
               </h2>
               <AccordionPanel pb={4} paddingX={0}>
-                {data.channels
-                  .filter((channel) => !channel.isDM)
-                  .map((channel) => {
-                    return <RoomItem key={channel.id} name={channel.name} />;
-                  })}
+                <Box maxH={'300px'} overflowY={'scroll'}>
+                  {data.channels
+                    .filter((channel) => !channel.isDM)
+                    .map((channel) => {
+                      return <RoomItem key={channel.id} name={channel.name} />;
+                    })}
+                </Box>
+
                 <Box p={3}>
-                  <Button w={'100%'} rightIcon={<GrGroup />}>
+                  <Button
+                    onClick={onCreateChannel}
+                    w={'100%'}
+                    rightIcon={<GrGroup />}
+                  >
                     Create Channel
                   </Button>
                 </Box>

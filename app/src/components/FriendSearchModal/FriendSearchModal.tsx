@@ -14,6 +14,7 @@ import {
   ModalFooter,
   Button,
   Spinner,
+  Center,
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,15 +25,16 @@ import {
   useGetUsersLazyQuery,
 } from '../../graphql/generated/graphql';
 import UserItem from './UserItem';
-import { useAuth0 } from '@auth0/auth0-react';
 import FriendStatus from '../../models/friend-status';
+
+const USER_PAGINATION_COUNT = 5;
 
 const FriendSearchModal = (props: UseDisclosureProps) => {
   const btnRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLInputElement>();
   const [users, setUsers] = useState([]);
+  const [loadingMore, setLoadingMore] = useState(false);
   const { isOpen, onClose } = useDisclosure(props);
-  // const { masterLoader, setMasterLoader } = useState(false);
 
   const { loading: loadingFriends, data: friendData } = useGetFriendIdsQuery();
 
@@ -65,7 +67,10 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
   }, [inputRef?.current?.id]);
 
   useEffect(() => {
-    setUsers([]);
+    if (!loadingMore) {
+      // Clear out users
+      setUsers([]);
+    }
     if (data?.users.edges && inputRef?.current?.value !== '') {
       const users = data.users.edges
         .filter((x) => x != null)
@@ -98,42 +103,50 @@ const FriendSearchModal = (props: UseDisclosureProps) => {
               ref={inputRef}
               onChange={(e) => {
                 const value = e.target.value;
-                if (value !== '') {
-                  debouncer({
-                    variables: {
-                      first: 5,
-                      usernameFilter: value,
-                    },
-                  });
+                if (value === '') {
+                  setUsers([]);
+                  return;
                 }
+                setLoadingMore(false);
+                debouncer({
+                  variables: {
+                    first: USER_PAGINATION_COUNT,
+                    usernameFilter: value,
+                    after: null,
+                  },
+                });
               }}
             />
           </InputGroup>
           <Box paddingTop={'3'}>
-            {loadingUsers || loadingFriends || loadingRequets ? (
+            {users.map((u) => {
+              return (
+                <UserItem
+                  key={u.id}
+                  user={u}
+                  friendStatus={getFriendStatus(u.id)}
+                />
+              );
+            })}
+            {(loadingUsers || loadingFriends || loadingRequets) && (
               <Box textAlign={'center'}>
                 <Spinner></Spinner>
               </Box>
-            ) : users.length === 0 && inputRef.current.value !== '' ? (
-              <>No users found</>
-            ) : (
-              users.map((u) => {
-                return (
-                  <UserItem
-                    key={u.id}
-                    user={u}
-                    friendStatus={getFriendStatus(u.id)}
-                  />
-                );
-              })
             )}
+            {inputRef?.current?.value !== '' &&
+              !loadingUsers &&
+              users?.length === 0 && <Center>🙊 No users found 🙊</Center>}
           </Box>
           {data?.users?.pageInfo.hasNextPage && (
             <Button
               w={'100%'}
               onClick={() => {
+                setLoadingMore(true);
                 getUsers({
-                  variables: { first: 5, after: data.users.pageInfo.endCursor },
+                  variables: {
+                    first: USER_PAGINATION_COUNT,
+                    after: data.users.pageInfo.endCursor,
+                  },
                 });
               }}
             >

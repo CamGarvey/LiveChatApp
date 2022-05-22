@@ -1,7 +1,18 @@
-import { Avatar, Flex, IconButton, Text } from '@chakra-ui/react';
+import {
+  Avatar,
+  Box,
+  Flex,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from '@chakra-ui/react';
 import React from 'react';
-import { BsFillInfoCircleFill } from 'react-icons/bs';
-import { MdOutlinePersonAddAlt, MdPersonRemoveAlt1 } from 'react-icons/md';
+import { BsPersonCheck, BsPersonPlus } from 'react-icons/bs';
+import { IoMdMailUnread } from 'react-icons/io';
+import { BiMailSend } from 'react-icons/bi';
 import { User } from '../../graphql/generated/graphql';
 import FriendStatus from '../../models/friend-status';
 
@@ -13,18 +24,27 @@ type Props = {
 const UserItem = ({ user, friendStatus }: Props) => {
   const { name, username } = user;
 
-  let icon: React.ReactElement;
+  let menu: React.ReactElement;
 
   switch (friendStatus) {
     case FriendStatus.Friends:
-      icon = <MdPersonRemoveAlt1 />;
+      menu = (
+        <Menu>
+          <MenuButton as={IconButton} icon={<BsPersonCheck />}></MenuButton>
+          <MenuList>
+            <MenuItem>Unfriend</MenuItem>
+          </MenuList>
+        </Menu>
+      );
       break;
     case FriendStatus.NotFriends:
-      icon = <MdOutlinePersonAddAlt />;
+      menu = <IconButton aria-label="Add user" icon={<BsPersonPlus />} />;
       break;
     case FriendStatus.RequestSent:
+      menu = <BiMailSend />;
+      break;
     case FriendStatus.RequestReceived:
-      icon = <BsFillInfoCircleFill />;
+      menu = <IoMdMailUnread />;
       break;
   }
 
@@ -44,7 +64,7 @@ const UserItem = ({ user, friendStatus }: Props) => {
       />
       <Text alignSelf={'center'}>{name}</Text>
       <Text alignSelf={'center'}>{username}</Text>
-      <IconButton aria-label="close" icon={icon} marginLeft={'auto'} />
+      <Box marginLeft={'auto'}>{menu}</Box>
     </Flex>
   );
 };

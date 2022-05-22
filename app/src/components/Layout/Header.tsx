@@ -54,8 +54,6 @@ const Header = (props: Props) => {
                 <FriendSearchModal
                   isOpen={friendSearchOpen}
                   onClose={() => {
-                    console.log('test');
-
                     setFriendSearchOpen(false);
                   }}
                 />
