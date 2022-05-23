@@ -77,7 +77,7 @@ const UserSearchModal = (props: UseDisclosureProps) => {
         .map((x) => x.node);
       setUsers((prev) => [...prev, ...users]);
     }
-  }, [data?.users.edges]);
+  }, [data?.users.edges, loadingMore]);
 
   return (
     <Modal

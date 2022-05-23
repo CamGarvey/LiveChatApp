@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import { useEffect, useRef } from 'react';
-import FriendSelector from '../FriendSearch/FriendSelector';
+import UserSelector from '../UserSelector/UserSelector';
 
 const CreateChannelModal = ({
   isOpen,
@@ -60,13 +60,13 @@ const CreateChannelModal = ({
                 <Input
                   id="description"
                   type="text"
-                  placeholder="Channel for fun!"
+                  placeholder="Random Jokes"
                   ref={inputRef}
                   onChange={formik.handleChange}
                   value={formik.values.description}
                 />
                 <FormLabel htmlFor="friends">Friends</FormLabel>
-                <FriendSelector />
+                <UserSelector />
               </FormControl>
               <Button type="submit" colorScheme="purple" width="full">
                 Create

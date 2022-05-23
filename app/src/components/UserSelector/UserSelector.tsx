@@ -12,13 +12,13 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
 import { useGetFriendsForSearchQuery } from '../../graphql/generated/graphql';
-import FriendItem from './FriendItem';
+import FriendItem from './Usertem';
 
 type Props = {
-  maxShown?: number;
+  users: {};
 };
 
-const FriendSelector = (props: Props) => {
+const UserSelector = ({ users }: Props) => {
   const inputRef = useRef<HTMLInputElement>();
   const [filter, setFilter] = useState('');
   const [selectedFriends, setSelectedFriends] = useState([]);
@@ -120,4 +120,4 @@ const FriendSelector = (props: Props) => {
   );
 };
 
-export default FriendSelector;
+export default UserSelector;
