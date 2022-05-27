@@ -1,0 +1,35 @@
+query GetChannelMessages(
+  $channelId: Int!
+  $last: Int
+  $after: String
+  $first: Int
+  $before: String
+) {
+  channelMessages(
+    channelId: $channelId
+    last: $last
+    after: $after
+    first: $first
+    before: $before
+  ) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        content
+        createdAt
+        createdBy {
+          id
+          name
+          username
+        }
+      }
+    }
+  }
+}

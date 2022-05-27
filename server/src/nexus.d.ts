@@ -131,6 +131,7 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['Date']; // Date!
     id: number; // Int!
     isDM: boolean; // Boolean!
+    memberCount: number; // Int!
     members: NexusGenRootTypes['User'][]; // [User!]!
     messages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
     name: string; // String!
@@ -221,6 +222,7 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'Date'
     id: 'Int'
     isDM: 'Boolean'
+    memberCount: 'Int'
     members: 'User'
     messages: 'MessageConnection'
     name: 'String'
@@ -323,6 +325,7 @@ export interface NexusGenArgTypes {
       memberIds: number[]; // [Int!]!
     }
     createChannel: { // args
+      description?: string | null; // String
       isPrivate: boolean | null; // Boolean
       memberIds?: number[] | null; // [Int!]
       name: string; // String!

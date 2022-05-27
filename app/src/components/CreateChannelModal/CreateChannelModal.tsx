@@ -11,17 +11,45 @@ import {
   Input,
   Flex,
   Button,
+  Spinner,
+  Center,
+  FormErrorMessage,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { useEffect, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
+import {
+  useCreateChannelMutation,
+  useGetFriendsForSearchQuery,
+} from '../../graphql/generated/graphql';
 
-const CreateChannelModal = ({
-  isOpen,
-  onOpen,
-  onClose,
-}: UseDisclosureProps) => {
+type Props = {
+  isOpen?: boolean;
+  onOpen?: boolean;
+  onClose?: (channelId?: number) => void;
+};
+
+const CreateChannelModal = ({ isOpen, onClose }: Props) => {
   const inputRef = useRef<HTMLInputElement>();
+  const {
+    loading: loadingFriends,
+    data: friendData,
+    error: friendError,
+  } = useGetFriendsForSearchQuery();
+
+  const [
+    createChannelMutation,
+    {
+      data: createChannelData,
+      loading: loadingCreateChannel,
+      error: createChannelError,
+    },
+  ] = useCreateChannelMutation();
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -31,10 +59,16 @@ const CreateChannelModal = ({
     initialValues: {
       name: '',
       description: '',
-      members: [],
+      isPrivate: true,
+      memberIds: [],
     },
+    validationSchema: createChannelSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      createChannelMutation({
+        variables: values,
+      }).then((c) => {
+        onClose(c.data.createChannel.id);
+      });
     },
   });
 
@@ -46,8 +80,10 @@ const CreateChannelModal = ({
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={formik.handleSubmit}>
-            <Flex direction={'column'} gap={'5px'}>
-              <FormControl>
+            <Flex direction={'column'} gap={'10px'}>
+              <FormControl
+                isInvalid={formik.errors.name && formik.touched.name}
+              >
                 <FormLabel htmlFor="name">Name</FormLabel>
                 <Input
                   id="name"
@@ -56,19 +92,60 @@ const CreateChannelModal = ({
                   onChange={formik.handleChange}
                   value={formik.values.name}
                 />
-                <FormLabel htmlFor="description">Description</FormLabel>
+                <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={
+                  formik.errors.description && formik.touched.description
+                }
+              >
+                <FormLabel htmlFor="description">
+                  Description (Optional)
+                </FormLabel>
                 <Input
                   id="description"
                   type="text"
-                  placeholder="Random Jokes"
                   ref={inputRef}
                   onChange={formik.handleChange}
                   value={formik.values.description}
                 />
-                <FormLabel htmlFor="friends">Friends</FormLabel>
-                <UserSelector />
+                <FormErrorMessage>{formik.errors.description}</FormErrorMessage>
               </FormControl>
-              <Button type="submit" colorScheme="purple" width="full">
+              <FormControl>
+                <FormLabel htmlFor="friends">Friends</FormLabel>
+                {loadingFriends ? (
+                  <Spinner />
+                ) : friendError ? (
+                  <Center>Failed to load your friends 😥</Center>
+                ) : (
+                  <UserSelector
+                    users={friendData.friends}
+                    onChange={(users) => {
+                      formik.values.memberIds = users.map((x) => x.id);
+                      formik.handleChange('');
+                    }}
+                  />
+                )}
+              </FormControl>
+              {createChannelError && (
+                <Alert status="error">
+                  <AlertIcon />
+                  <AlertTitle>Failed to create channel</AlertTitle>
+                  <AlertDescription>Try Again Later</AlertDescription>
+                </Alert>
+              )}
+              {createChannelData?.createChannel && (
+                <Alert status="success">
+                  <AlertIcon />
+                  <AlertTitle>Successfully Created Channel</AlertTitle>
+                </Alert>
+              )}
+              <Button
+                type="submit"
+                colorScheme="purple"
+                width="full"
+                isLoading={loadingCreateChannel}
+              >
                 Create
               </Button>
             </Flex>
@@ -78,5 +155,13 @@ const CreateChannelModal = ({
     </Modal>
   );
 };
+
+const createChannelSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(3, 'Name too short!')
+    .max(30, 'Name too long!')
+    .required('Name is required'),
+  description: Yup.string().max(40, 'Description is too long'),
+});
 
 export default CreateChannelModal;

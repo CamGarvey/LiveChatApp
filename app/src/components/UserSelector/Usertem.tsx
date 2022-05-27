@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Text } from '@chakra-ui/react';
+import { Avatar, Box, Checkbox, Flex, Text } from '@chakra-ui/react';
 import { User } from '../../graphql/generated/graphql';
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
   onClick: () => void;
 };
 
-const FriendItem = ({ username, name, selected, onClick }: Props) => {
+const UserItem = ({ username, name, selected, onClick }: Props) => {
   return (
     <Flex
       gap={3}
@@ -34,8 +34,9 @@ const FriendItem = ({ username, name, selected, onClick }: Props) => {
           </Text>
         )}
       </Box>
+      <Checkbox marginLeft={'auto'} isChecked={selected} />
     </Flex>
   );
 };
 
-export default FriendItem;
+export default UserItem;

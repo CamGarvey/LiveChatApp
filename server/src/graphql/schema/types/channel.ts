@@ -47,6 +47,16 @@ const Channel = objectType({
       },
     });
     t.nonNull.boolean('isDM');
+    t.nonNull.int('memberCount', {
+      resolve: async (parent, _, { prisma }) => {
+        const members = await prisma.channel
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .members();
+        return members.length;
+      },
+    });
     t.nonNull.list.nonNull.field('members', {
       type: User,
       resolve: (parent, _, { prisma }) => {

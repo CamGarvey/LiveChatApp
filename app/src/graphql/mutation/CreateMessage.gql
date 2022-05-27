@@ -1,0 +1,5 @@
+mutation CreateMessage($channelId: Int!, $content: String!) {
+  createMessage(channelId: $channelId, content: $content) {
+    id
+  }
+}

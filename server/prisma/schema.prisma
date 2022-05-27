@@ -30,6 +30,7 @@ model User {
 model Channel {
   id          Int       @id @default(autoincrement())
   name        String?
+  description String?
   updatedAt   DateTime  @updatedAt
   createdAt   DateTime  @default(now())
   createdBy   User      @relation("UserCreatedByChannel", fields: [createdById], references: [id])

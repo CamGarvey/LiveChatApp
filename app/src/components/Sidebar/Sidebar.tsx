@@ -12,8 +12,8 @@ import {
 import { GrGroup } from 'react-icons/gr';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { ImPacman } from 'react-icons/im';
-import RoomItem from './ChannelItem';
 import { useGetChannelsForSidebarQuery } from '../../graphql/generated/graphql';
+import ChannelItem from './ChannelItem';
 
 type Props = {
   onCreateChannel: () => void;
@@ -43,7 +43,16 @@ const Sidebar = ({ onCreateChannel }: Props) => {
                   {data.channels
                     .filter((channel) => channel.isDM)
                     .map((channel) => {
-                      return <RoomItem key={channel.id} name={''} />;
+                      return (
+                        <ChannelItem
+                          key={channel.id}
+                          name={''}
+                          memberCount={channel.memberCount}
+                          onClick={() => {
+                            console.log('HELLO');
+                          }}
+                        />
+                      );
                     })}
                 </Box>
 
@@ -59,7 +68,7 @@ const Sidebar = ({ onCreateChannel }: Props) => {
               <h2>
                 <AccordionButton>
                   <Box flex="1" textAlign="left">
-                    Rooms
+                    Channels
                   </Box>
                   <AccordionIcon />
                 </AccordionButton>
@@ -69,7 +78,16 @@ const Sidebar = ({ onCreateChannel }: Props) => {
                   {data.channels
                     .filter((channel) => !channel.isDM)
                     .map((channel) => {
-                      return <RoomItem key={channel.id} name={channel.name} />;
+                      return (
+                        <ChannelItem
+                          key={channel.id}
+                          name={channel.name}
+                          memberCount={channel.memberCount}
+                          onClick={() => {
+                            console.log('HELLO');
+                          }}
+                        />
+                      );
                     })}
                 </Box>
 

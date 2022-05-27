@@ -28,7 +28,7 @@ exports.channelMessages = (0, nexus_1.extendType)({
                     description: 'If set, filters users by given filter',
                 })),
             },
-            resolve: (_, { channelId, after, first }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+            resolve: (_, { channelId, after, first, before, last }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 const members = yield prisma.channel
                     .findUnique({
                     where: {
@@ -39,9 +39,16 @@ exports.channelMessages = (0, nexus_1.extendType)({
                 if (!members.find((member) => member.id == userId)) {
                     throw new apollo_server_core_1.ForbiddenError('You do not have permission to this channel');
                 }
-                const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
+                const offset = after || before ? (0, graphql_relay_1.cursorToOffset)(after || before) + 1 : 0;
                 if (isNaN(offset))
                     throw new Error('cursor is invalid');
+                console.log({
+                    first,
+                    last,
+                    after,
+                    before,
+                    offset,
+                });
                 const [totalCount, items] = yield Promise.all([
                     prisma.message.count({
                         where: {
@@ -49,10 +56,13 @@ exports.channelMessages = (0, nexus_1.extendType)({
                         },
                     }),
                     prisma.message.findMany({
-                        take: first,
+                        take: first || last,
                         skip: offset,
                         where: {
                             channelId,
+                        },
+                        orderBy: {
+                            createdAt: first ? 'asc' : 'desc',
                         },
                     }),
                 ]);

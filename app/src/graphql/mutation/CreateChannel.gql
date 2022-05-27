@@ -1,0 +1,15 @@
+mutation CreateChannel(
+  $name: String!
+  $description: String
+  $isPrivate: Boolean
+  $memberIds: [Int!]
+) {
+  createChannel(
+    name: $name
+    description: $description
+    isPrivate: $isPrivate
+    memberIds: $memberIds
+  ) {
+    id
+  }
+}

@@ -21,6 +21,9 @@ export const createChannel = mutationField('createChannel', {
         description: 'Name of the Channel',
       })
     ),
+    description: stringArg({
+      description: 'Description of Channel',
+    }),
     isPrivate: booleanArg({
       description: 'If the Channel should be private',
       default: true,
@@ -34,9 +37,18 @@ export const createChannel = mutationField('createChannel', {
     ),
   },
   description: 'Create a Channel',
-  resolve: async (_, { name, isPrivate, memberIds }, { prisma, userId }) => {
+  resolve: async (
+    _,
+    { name, description, isPrivate, memberIds },
+    { prisma, userId }
+  ) => {
     // Remove duplicates
     const memberIdSet: Set<number> = new Set(memberIds);
+
+    if (memberIdSet.has(userId)) {
+      // Remove self from memberIdSet
+      memberIdSet.delete(userId);
+    }
 
     if (memberIdSet) {
       // Check that the user is friends with all of these users
@@ -55,20 +67,24 @@ export const createChannel = mutationField('createChannel', {
         },
       });
 
+      if (!user) {
+        throw new Error('Failed to find user');
+      }
+
       if (user.friends.length != memberIdSet.size) {
         throw new ForbiddenError(
           'You are not friends with all of the users provided'
         );
       }
     }
+
     // add creator as members
-    if (!memberIdSet.has(userId)) {
-      memberIdSet.add(userId);
-    }
+    memberIdSet.add(userId);
 
     return await prisma.channel.create({
       data: {
         name,
+        description,
         createdById: userId,
         isDM: false,
         isPrivate,

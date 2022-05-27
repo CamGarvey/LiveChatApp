@@ -16,7 +16,11 @@ export const channelMessages = extendType({
           })
         ),
       },
-      resolve: async (_, { channelId, after, first }, { prisma, userId }) => {
+      resolve: async (
+        _,
+        { channelId, after, first, before, last },
+        { prisma, userId }
+      ) => {
         const members = await prisma.channel
           .findUnique({
             where: {
@@ -31,8 +35,17 @@ export const channelMessages = extendType({
           );
         }
 
-        const offset = after ? cursorToOffset(after) + 1 : 0;
+        const offset =
+          after || before ? cursorToOffset(after || before) + 1 : 0;
         if (isNaN(offset)) throw new Error('cursor is invalid');
+
+        console.log({
+          first,
+          last,
+          after,
+          before,
+          offset,
+        });
 
         const [totalCount, items] = await Promise.all([
           prisma.message.count({
@@ -41,10 +54,13 @@ export const channelMessages = extendType({
             },
           }),
           prisma.message.findMany({
-            take: first,
+            take: first || last,
             skip: offset,
             where: {
               channelId,
+            },
+            orderBy: {
+              createdAt: first ? 'asc' : 'desc',
             },
           }),
         ]);

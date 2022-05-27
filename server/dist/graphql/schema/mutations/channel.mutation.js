@@ -22,6 +22,9 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
         name: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Name of the Channel',
         })),
+        description: (0, nexus_1.stringArg)({
+            description: 'Description of Channel',
+        }),
         isPrivate: (0, nexus_1.booleanArg)({
             description: 'If the Channel should be private',
             default: true,
@@ -31,8 +34,11 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
         }))),
     },
     description: 'Create a Channel',
-    resolve: (_, { name, isPrivate, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { name, description, isPrivate, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const memberIdSet = new Set(memberIds);
+        if (memberIdSet.has(userId)) {
+            memberIdSet.delete(userId);
+        }
         if (memberIdSet) {
             const user = yield prisma.user.findUnique({
                 where: {
@@ -48,16 +54,18 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
                     },
                 },
             });
+            if (!user) {
+                throw new Error('Failed to find user');
+            }
             if (user.friends.length != memberIdSet.size) {
                 throw new apollo_server_core_1.ForbiddenError('You are not friends with all of the users provided');
             }
         }
-        if (!memberIdSet.has(userId)) {
-            memberIdSet.add(userId);
-        }
+        memberIdSet.add(userId);
         return yield prisma.channel.create({
             data: {
                 name,
+                description,
                 createdById: userId,
                 isDM: false,
                 isPrivate,

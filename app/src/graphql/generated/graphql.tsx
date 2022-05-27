@@ -23,6 +23,7 @@ export type Channel = {
   createdAt: Scalars['Date'];
   id: Scalars['Int'];
   isDM: Scalars['Boolean'];
+  memberCount: Scalars['Int'];
   members: Array<User>;
   messages: MessageConnection;
   name: Scalars['String'];
@@ -110,6 +111,7 @@ export type MutationAddMembersToChannelArgs = {
 
 
 export type MutationCreateChannelArgs = {
+  description?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   memberIds?: InputMaybe<Array<Scalars['Int']>>;
   name: Scalars['String'];
@@ -254,7 +256,7 @@ export type User = {
   email: Scalars['String'];
   friends: UserConnection;
   id: Scalars['Int'];
-  name: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
   receivedFriendRequests: Array<User>;
   sentFriendRequests: Array<User>;
   updatedAt: Scalars['Date'];
@@ -294,10 +296,39 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
+export type CreateChannelMutationVariables = Exact<{
+  name: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  isPrivate?: InputMaybe<Scalars['Boolean']>;
+  memberIds?: InputMaybe<Array<Scalars['Int']> | Scalars['Int']>;
+}>;
+
+
+export type CreateChannelMutation = { __typename?: 'Mutation', createChannel?: { __typename?: 'Channel', id: number } | null };
+
+export type CreateMessageMutationVariables = Exact<{
+  channelId: Scalars['Int'];
+  content: Scalars['String'];
+}>;
+
+
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: number } | null };
+
+export type GetChannelMessagesQueryVariables = Exact<{
+  channelId: Scalars['Int'];
+  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetChannelMessagesQuery = { __typename?: 'Query', channelMessages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean }, edges?: Array<{ __typename?: 'MessageEdge', cursor: string, node?: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } | null } | null> | null } };
+
 export type GetChannelsForSidebarQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChannelsForSidebarQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean }> };
+export type GetChannelsForSidebarQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean, memberCount: number }> };
 
 export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -312,7 +343,7 @@ export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename
 export type GetFriendsForSearchQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFriendsForSearchQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number, name: string, email: string, username: string }> };
+export type GetFriendsForSearchQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number, name?: string | null, email: string, username: string }> };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -321,9 +352,147 @@ export type GetUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: number, name: string } | null } | null> | null } };
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: number, name?: string | null } | null } | null> | null } };
 
 
+export const CreateChannelDocument = gql`
+    mutation CreateChannel($name: String!, $description: String, $isPrivate: Boolean, $memberIds: [Int!]) {
+  createChannel(
+    name: $name
+    description: $description
+    isPrivate: $isPrivate
+    memberIds: $memberIds
+  ) {
+    id
+  }
+}
+    `;
+export type CreateChannelMutationFn = Apollo.MutationFunction<CreateChannelMutation, CreateChannelMutationVariables>;
+
+/**
+ * __useCreateChannelMutation__
+ *
+ * To run a mutation, you first call `useCreateChannelMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateChannelMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createChannelMutation, { data, loading, error }] = useCreateChannelMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      isPrivate: // value for 'isPrivate'
+ *      memberIds: // value for 'memberIds'
+ *   },
+ * });
+ */
+export function useCreateChannelMutation(baseOptions?: Apollo.MutationHookOptions<CreateChannelMutation, CreateChannelMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateChannelMutation, CreateChannelMutationVariables>(CreateChannelDocument, options);
+      }
+export type CreateChannelMutationHookResult = ReturnType<typeof useCreateChannelMutation>;
+export type CreateChannelMutationResult = Apollo.MutationResult<CreateChannelMutation>;
+export type CreateChannelMutationOptions = Apollo.BaseMutationOptions<CreateChannelMutation, CreateChannelMutationVariables>;
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($channelId: Int!, $content: String!) {
+  createMessage(channelId: $channelId, content: $content) {
+    id
+  }
+}
+    `;
+export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
+
+/**
+ * __useCreateMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *      content: // value for 'content'
+ *   },
+ * });
+ */
+export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageMutation, CreateMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument, options);
+      }
+export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
+export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
+export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const GetChannelMessagesDocument = gql`
+    query GetChannelMessages($channelId: Int!, $last: Int, $after: String, $first: Int, $before: String) {
+  channelMessages(
+    channelId: $channelId
+    last: $last
+    after: $after
+    first: $first
+    before: $before
+  ) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        content
+        createdAt
+        createdBy {
+          id
+          name
+          username
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetChannelMessagesQuery__
+ *
+ * To run a query within a React component, call `useGetChannelMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChannelMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChannelMessagesQuery({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *      last: // value for 'last'
+ *      after: // value for 'after'
+ *      first: // value for 'first'
+ *      before: // value for 'before'
+ *   },
+ * });
+ */
+export function useGetChannelMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>(GetChannelMessagesDocument, options);
+      }
+export function useGetChannelMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>(GetChannelMessagesDocument, options);
+        }
+export type GetChannelMessagesQueryHookResult = ReturnType<typeof useGetChannelMessagesQuery>;
+export type GetChannelMessagesLazyQueryHookResult = ReturnType<typeof useGetChannelMessagesLazyQuery>;
+export type GetChannelMessagesQueryResult = Apollo.QueryResult<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>;
 export const GetChannelsForSidebarDocument = gql`
     query GetChannelsForSidebar {
   channels {
@@ -332,6 +501,7 @@ export const GetChannelsForSidebarDocument = gql`
     createdAt
     updatedAt
     isDM
+    memberCount
   }
 }
     `;

@@ -2,8 +2,6 @@ import {
   InputGroup,
   InputLeftElement,
   Input,
-  Box,
-  Spinner,
   Center,
   Flex,
   Avatar,
@@ -11,33 +9,30 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
-import { useGetFriendsForSearchQuery } from '../../graphql/generated/graphql';
-import FriendItem from './Usertem';
+import UserItem from './Usertem';
+
+type User = { id: number; name?: string; username: string };
 
 type Props = {
-  users: {};
+  users: User[];
+  onChange: (users: User[]) => void;
 };
 
-const UserSelector = ({ users }: Props) => {
+const UserSelector = ({ users, onChange }: Props) => {
   const inputRef = useRef<HTMLInputElement>();
   const [filter, setFilter] = useState('');
-  const [selectedFriends, setSelectedFriends] = useState([]);
-  const { loading, data, error } = useGetFriendsForSearchQuery();
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  if (error) {
-    return <>Error!</>;
-  }
-
-  if (!data) {
-    return <>no data</>;
-  }
-
-  const friends = data?.friends.filter((x) => {
+  const usersFiltered = users.filter((x) => {
     return (
       x.name?.toLowerCase().includes(filter) ||
       x.username.toLowerCase().includes(filter)
     );
   });
+
+  useEffect(() => {
+    onChange(selectedUsers);
+  }, [selectedUsers, onChange]);
 
   return (
     <Flex direction={'column'} gap="3">
@@ -54,14 +49,16 @@ const UserSelector = ({ users }: Props) => {
       </InputGroup>
 
       <Flex
-        h={'50px'}
+        minH={'60px'}
         gap={'2'}
+        paddingX={'3'}
+        paddingY={'10px'}
         border={'2px solid lightblue'}
         borderRadius={'5'}
         background={'#f4faff'}
-        paddingX={'3'}
+        flexWrap={'wrap'}
       >
-        {selectedFriends.map(({ username }) => {
+        {selectedUsers.map(({ username }) => {
           return (
             <Tooltip label={username}>
               <Avatar
@@ -71,7 +68,7 @@ const UserSelector = ({ users }: Props) => {
                 alignSelf={'center'}
                 cursor={'pointer'}
                 onClick={() =>
-                  setSelectedFriends((prev) =>
+                  setSelectedUsers((prev) =>
                     prev.filter((x) => x.username !== username)
                   )
                 }
@@ -80,7 +77,7 @@ const UserSelector = ({ users }: Props) => {
           );
         })}
       </Flex>
-      <Center>Selected {selectedFriends.length}</Center>
+      <Center>Selected {selectedUsers.length}</Center>
       <Flex
         direction={'column'}
         paddingTop={'3'}
@@ -89,32 +86,25 @@ const UserSelector = ({ users }: Props) => {
         gap={'2'}
         paddingX={'3px'}
       >
-        {friends.map((friend) => {
+        {usersFiltered.map((user) => {
           return (
-            <FriendItem
-              key={friend.id}
-              {...friend}
-              selected={selectedFriends.includes(friend)}
+            <UserItem
+              key={user.id}
+              {...user}
+              selected={selectedUsers.includes(user)}
               onClick={() => {
-                if (selectedFriends.includes(friend)) {
-                  setSelectedFriends(
-                    selectedFriends.filter((x) => x !== friend)
-                  );
+                if (selectedUsers.includes(user)) {
+                  setSelectedUsers(selectedUsers.filter((x) => x !== user));
                 } else {
-                  setSelectedFriends([...selectedFriends, friend]);
+                  setSelectedUsers([...selectedUsers, user]);
                 }
               }}
             />
           );
         })}
-        {loading && (
-          <Box textAlign={'center'}>
-            <Spinner></Spinner>
-          </Box>
+        {inputRef?.current?.value !== '' && usersFiltered?.length === 0 && (
+          <Center>🙊 No friends found 🙊</Center>
         )}
-        {inputRef?.current?.value !== '' &&
-          !loading &&
-          friends?.length === 0 && <Center>🙊 No friends found 🙊</Center>}
       </Flex>
     </Flex>
   );

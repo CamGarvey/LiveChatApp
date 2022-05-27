@@ -55,6 +55,16 @@ const Channel = (0, nexus_1.objectType)({
             }),
         });
         t.nonNull.boolean('isDM');
+        t.nonNull.int('memberCount', {
+            resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+                const members = yield prisma.channel
+                    .findUnique({
+                    where: { id: parent.id || undefined },
+                })
+                    .members();
+                return members.length;
+            }),
+        });
         t.nonNull.list.nonNull.field('members', {
             type: user_1.default,
             resolve: (parent, _, { prisma }) => {
