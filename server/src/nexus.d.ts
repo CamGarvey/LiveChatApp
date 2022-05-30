@@ -49,6 +49,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  FriendStatus: "FRIEND" | "NOT_FRIEND" | "REQUEST_RECEIVED" | "REQUEST_SENT"
   Sort: "asc" | "desc"
 }
 
@@ -199,6 +200,7 @@ export interface NexusGenFieldTypes {
     channels: NexusGenRootTypes['Channel'][]; // [Channel!]!
     createdAt: NexusGenScalars['Date']; // Date!
     email: string; // String!
+    friendStatus: NexusGenEnums['FriendStatus'] | null; // FriendStatus
     friends: NexusGenRootTypes['UserConnection']; // UserConnection!
     id: number; // Int!
     name: string | null; // String
@@ -291,6 +293,7 @@ export interface NexusGenFieldTypeNames {
     channels: 'Channel'
     createdAt: 'Date'
     email: 'String'
+    friendStatus: 'FriendStatus'
     friends: 'UserConnection'
     id: 'Int'
     name: 'String'

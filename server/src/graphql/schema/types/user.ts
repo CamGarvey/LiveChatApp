@@ -1,6 +1,7 @@
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { objectType } from 'nexus';
 import Channel from './channel';
+import FriendStatus from './friend-status';
 import { DateScalar } from './scalars';
 
 const User = objectType({
@@ -15,6 +16,49 @@ const User = objectType({
     });
     t.nonNull.field('updatedAt', {
       type: DateScalar,
+    });
+    t.field('friendStatus', {
+      type: FriendStatus,
+      resolve: async (parent, _, { prisma, userId }) => {
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          include: {
+            friends: {
+              where: {
+                id: parent.id,
+              },
+            },
+            sentFriendRequests: {
+              where: {
+                id: parent.id,
+              },
+            },
+            receivedFriendRequests: {
+              where: {
+                id: parent.id,
+              },
+            },
+          },
+        });
+
+        if (!user) {
+          throw new Error("User doesn't exist");
+        }
+
+        if (user.friends.length) {
+          return 'FRIEND';
+        }
+
+        if (user.receivedFriendRequests.length) {
+          return 'REQUEST_RECEIVED';
+        }
+
+        if (user.sentFriendRequests.length) {
+          return 'REQUEST_SENT';
+        }
+
+        return 'NOT_FRIEND';
+      },
     });
     t.nonNull.list.nonNull.field('sentFriendRequests', {
       type: User,

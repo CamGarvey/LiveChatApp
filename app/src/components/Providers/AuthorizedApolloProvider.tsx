@@ -4,7 +4,6 @@ import {
   createHttpLink,
   InMemoryCache,
   split,
-  from,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';

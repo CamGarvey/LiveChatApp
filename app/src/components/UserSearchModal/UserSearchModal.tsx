@@ -85,9 +85,6 @@ const UserSearchModal = ({ onClose, isOpen }: Props) => {
       }}
       opened={isOpen}
       withCloseButton={false}
-      // finalFocusRef={btnRef!}
-      // isOpen={isOpen}
-      // scrollBehavior={'inside'}
     >
       <InputWrapper>
         <Input

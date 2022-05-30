@@ -5,7 +5,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { App } from './App';
-import AuthorizedApolloProvider from './components/AuthorizedApolloProvider';
+import AuthorizedApolloProvider from './components/Providers/AuthorizedApolloProvider';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);

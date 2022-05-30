@@ -1,5 +1,4 @@
 import React from 'react';
-import { BsPersonCheck, BsPersonPlus } from 'react-icons/bs';
 import { IoMdMailUnread } from 'react-icons/io';
 import { BiMailSend } from 'react-icons/bi';
 import { User } from '../../graphql/generated/graphql';
@@ -8,9 +7,7 @@ import {
   ActionIcon,
   Avatar,
   Box,
-  Group,
   Menu,
-  Stack,
   Text,
   UnstyledButton,
 } from '@mantine/core';
@@ -19,9 +16,14 @@ import { UserPlus } from 'tabler-icons-react';
 type Props = {
   user: User;
   friendStatus: FriendStatus;
+  onSendFriendRequestClicked?: () => void;
+  onUnFriendClicked?: () => void;
+  onCancelRequest?: () => void;
+  onAcceptFriendRequest?: () => void;
+  onDeleteFriendRequest?: () => void;
 };
 
-const UserItem = ({ user, friendStatus }: Props) => {
+const UserItem = ({ user, friendStatus, onUnFriendClicked }: Props) => {
   const { name, username } = user;
 
   let menu: React.ReactElement;
@@ -30,7 +32,7 @@ const UserItem = ({ user, friendStatus }: Props) => {
     case FriendStatus.Friends:
       menu = (
         <Menu>
-          <Menu.Item>Unfriend</Menu.Item>
+          <Menu.Item onClick={onUnFriendClicked}>Unfriend</Menu.Item>
         </Menu>
       );
       break;

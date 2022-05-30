@@ -29,6 +29,13 @@ type Channel {
 """Date custom scalar type"""
 scalar Date
 
+enum FriendStatus {
+  FRIEND
+  NOT_FRIEND
+  REQUEST_RECEIVED
+  REQUEST_SENT
+}
+
 type Message {
   channel: Channel!
   content: String!
@@ -245,6 +252,7 @@ type User {
   channels: [Channel!]!
   createdAt: Date!
   email: String!
+  friendStatus: FriendStatus
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String

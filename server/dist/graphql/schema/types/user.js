@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
 const channel_1 = __importDefault(require("./channel"));
+const friend_status_1 = __importDefault(require("./friend-status"));
 const scalars_1 = require("./scalars");
 const User = (0, nexus_1.objectType)({
     name: 'User',
@@ -28,6 +29,44 @@ const User = (0, nexus_1.objectType)({
         });
         t.nonNull.field('updatedAt', {
             type: scalars_1.DateScalar,
+        });
+        t.field('friendStatus', {
+            type: friend_status_1.default,
+            resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                const user = yield prisma.user.findUnique({
+                    where: { id: userId },
+                    include: {
+                        friends: {
+                            where: {
+                                id: parent.id,
+                            },
+                        },
+                        sentFriendRequests: {
+                            where: {
+                                id: parent.id,
+                            },
+                        },
+                        receivedFriendRequests: {
+                            where: {
+                                id: parent.id,
+                            },
+                        },
+                    },
+                });
+                if (!user) {
+                    throw new Error("User doesn't exist");
+                }
+                if (user.friends.length) {
+                    return 'FRIEND';
+                }
+                if (user.receivedFriendRequests.length) {
+                    return 'REQUEST_RECEIVED';
+                }
+                if (user.sentFriendRequests.length) {
+                    return 'REQUEST_SENT';
+                }
+                return 'NOT_FRIEND';
+            }),
         });
         t.nonNull.list.nonNull.field('sentFriendRequests', {
             type: User,

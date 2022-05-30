@@ -11,7 +11,7 @@ type Props = {
 const ChannelNav = ({ onChannelSelected }: Props) => {
   const [channelSelected, setChannelSelected] = useState(null);
   const [createChannelOpen, setCreateChannelOpen] = useState(false);
-  const { loading, data, error } = useGetChannelsForNavQuery();
+  const { loading, data } = useGetChannelsForNavQuery();
 
   return (
     <Navbar p="xs" width={{ base: 300 }}>
