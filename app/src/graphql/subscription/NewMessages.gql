@@ -1,0 +1,14 @@
+subscription GetNewMessages($channelId: Int!) {
+  newMessage(channelId: $channelId) {
+    message {
+      id
+      content
+      createdAt
+      createdBy {
+        id
+        name
+        username
+      }
+    }
+  }
+}

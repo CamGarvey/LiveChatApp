@@ -1,14 +1,15 @@
 import {
-  InputGroup,
-  InputLeftElement,
-  Input,
-  Center,
-  Flex,
   Avatar,
+  Center,
+  Group,
+  Input,
+  ScrollArea,
+  Stack,
   Tooltip,
-} from '@chakra-ui/react';
+} from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
+import { Search } from 'tabler-icons-react';
 import UserItem from './Usertem';
 
 type User = { id: number; name?: string; username: string };
@@ -35,38 +36,22 @@ const UserSelector = ({ users, onChange }: Props) => {
   }, [selectedUsers, onChange]);
 
   return (
-    <Flex direction={'column'} gap="3">
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <BsSearch color="gray.300" />
-        </InputLeftElement>
-        <Input
-          placeholder="Search your friends!"
-          onChange={(e) => {
-            setFilter(e.target.value.toLowerCase());
-          }}
-        />
-      </InputGroup>
+    <Stack>
+      <Input
+        icon={<Search />}
+        onChange={(e: any) => {
+          setFilter(e.target.value.toLowerCase());
+        }}
+        placeholder="Search your friends!"
+      />
 
-      <Flex
-        minH={'60px'}
-        gap={'2'}
-        paddingX={'3'}
-        paddingY={'10px'}
-        border={'2px solid lightblue'}
-        borderRadius={'5'}
-        background={'#f4faff'}
-        flexWrap={'wrap'}
-      >
+      <Group>
         {selectedUsers.map(({ username }) => {
           return (
             <Tooltip label={username}>
               <Avatar
                 size="sm"
-                name={username}
                 src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
-                alignSelf={'center'}
-                cursor={'pointer'}
                 onClick={() =>
                   setSelectedUsers((prev) =>
                     prev.filter((x) => x.username !== username)
@@ -76,16 +61,9 @@ const UserSelector = ({ users, onChange }: Props) => {
             </Tooltip>
           );
         })}
-      </Flex>
+      </Group>
       <Center>Selected {selectedUsers.length}</Center>
-      <Flex
-        direction={'column'}
-        paddingTop={'3'}
-        h={'400px'}
-        overflowY={'scroll'}
-        gap={'2'}
-        paddingX={'3px'}
-      >
+      <ScrollArea style={{ maxHeight: 400 }}>
         {usersFiltered.map((user) => {
           return (
             <UserItem
@@ -102,11 +80,11 @@ const UserSelector = ({ users, onChange }: Props) => {
             />
           );
         })}
-        {inputRef?.current?.value !== '' && usersFiltered?.length === 0 && (
-          <Center>🙊 No friends found 🙊</Center>
-        )}
-      </Flex>
-    </Flex>
+      </ScrollArea>
+      {inputRef?.current?.value !== '' && usersFiltered?.length === 0 && (
+        <Center>🙊 No friends found 🙊</Center>
+      )}
+    </Stack>
   );
 };
 

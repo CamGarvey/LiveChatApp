@@ -1,23 +1,13 @@
-import {
-  Avatar,
-  Checkbox,
-  Container,
-  Group,
-  SimpleGrid,
-  Text,
-  Stack,
-  UnstyledButton,
-} from '@mantine/core';
-import { User } from '../../graphql/generated/graphql';
+import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
 
 type Props = {
-  username: string;
-  name?: string;
-  selected: boolean;
-  onClick: () => void;
+  name: string;
+  memberCount: number;
+  isSelected: boolean;
+  onClick?: () => void;
 };
 
-const UserItem = ({ username, name, selected, onClick }: Props) => {
+const ChannelItem = ({ name, isSelected, memberCount, onClick }: Props) => {
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -43,10 +33,9 @@ const UserItem = ({ username, name, selected, onClick }: Props) => {
           src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
         />
         <Text size="sm">{name}</Text>
-        <Checkbox ml={'auto'} checked={selected} />
       </Group>
     </UnstyledButton>
   );
 };
 
-export default UserItem;
+export default ChannelItem;

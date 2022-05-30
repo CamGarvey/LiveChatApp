@@ -33,6 +33,7 @@ exports.newMessageSubscription = (0, nexus_1.subscriptionField)('newMessage', {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
     },
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(context.userId);
         const members = yield context.prisma.channel
             .findUnique({
             where: {
@@ -41,7 +42,7 @@ exports.newMessageSubscription = (0, nexus_1.subscriptionField)('newMessage', {
         })
             .members();
         if (!members.find((member) => member.id == context.userId)) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this channel');
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this channel ');
         }
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_1.Subscriptions.NEW_MESSAGE), (payload, variables) => {
             return payload.channelId === variables.channelId;

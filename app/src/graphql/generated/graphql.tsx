@@ -312,7 +312,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: number } | null };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } | null };
 
 export type GetChannelMessagesQueryVariables = Exact<{
   channelId: Scalars['Int'];
@@ -345,6 +345,11 @@ export type GetFriendsForSearchQueryVariables = Exact<{ [key: string]: never; }>
 
 export type GetFriendsForSearchQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number, name?: string | null, email: string, username: string }> };
 
+export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null, email: string, username: string } | null };
+
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -353,6 +358,13 @@ export type GetUsersQueryVariables = Exact<{
 
 
 export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: number, name?: string | null } | null } | null> | null } };
+
+export type GetNewMessagesSubscriptionVariables = Exact<{
+  channelId: Scalars['Int'];
+}>;
+
+
+export type GetNewMessagesSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'NewMessagePayload', message: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } } | null };
 
 
 export const CreateChannelDocument = gql`
@@ -400,6 +412,13 @@ export const CreateMessageDocument = gql`
     mutation CreateMessage($channelId: Int!, $content: String!) {
   createMessage(channelId: $channelId, content: $content) {
     id
+    content
+    createdAt
+    createdBy {
+      id
+      name
+      username
+    }
   }
 }
     `;
@@ -642,6 +661,43 @@ export function useGetFriendsForSearchLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetFriendsForSearchQueryHookResult = ReturnType<typeof useGetFriendsForSearchQuery>;
 export type GetFriendsForSearchLazyQueryHookResult = ReturnType<typeof useGetFriendsForSearchLazyQuery>;
 export type GetFriendsForSearchQueryResult = Apollo.QueryResult<GetFriendsForSearchQuery, GetFriendsForSearchQueryVariables>;
+export const GetMeDocument = gql`
+    query GetMe {
+  me {
+    id
+    name
+    email
+    username
+  }
+}
+    `;
+
+/**
+ * __useGetMeQuery__
+ *
+ * To run a query within a React component, call `useGetMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMeQuery(baseOptions?: Apollo.QueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
+      }
+export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
+        }
+export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
+export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
+export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
 export const GetUsersDocument = gql`
     query GetUsers($usernameFilter: String, $first: Int, $after: String) {
   users(usernameFilter: $usernameFilter, first: $first, after: $after) {
@@ -689,3 +745,42 @@ export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
 export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
 export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export const GetNewMessagesDocument = gql`
+    subscription GetNewMessages($channelId: Int!) {
+  newMessage(channelId: $channelId) {
+    message {
+      id
+      content
+      createdAt
+      createdBy {
+        id
+        name
+        username
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetNewMessagesSubscription__
+ *
+ * To run a query within a React component, call `useGetNewMessagesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useGetNewMessagesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNewMessagesSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useGetNewMessagesSubscription(baseOptions: Apollo.SubscriptionHookOptions<GetNewMessagesSubscription, GetNewMessagesSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<GetNewMessagesSubscription, GetNewMessagesSubscriptionVariables>(GetNewMessagesDocument, options);
+      }
+export type GetNewMessagesSubscriptionHookResult = ReturnType<typeof useGetNewMessagesSubscription>;
+export type GetNewMessagesSubscriptionResult = Apollo.SubscriptionResult<GetNewMessagesSubscription>;

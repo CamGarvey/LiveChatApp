@@ -1,55 +1,51 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-} from '@chakra-ui/react';
-import { useState } from 'react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
-import UserSearchModal from '../UserSearchModal/UserSearchModal';
-import { BsSearch } from 'react-icons/bs';
-import { MdOutlineAccountCircle } from 'react-icons/md';
 import { useAuth0 } from '@auth0/auth0-react';
+import {
+  Group,
+  Title,
+  ActionIcon,
+  Input,
+  Button,
+  Header as MHeader,
+  Menu,
+  useMantineColorScheme,
+} from '@mantine/core';
+import React, { useState } from 'react';
+import { Sun, MoonStars, UserCircle } from 'tabler-icons-react';
+import UserSearchModal from '../UserSearchModal/UserSearchModal';
 
 type Props = {};
 
 const Header = (props: Props) => {
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
     useAuth0();
   const [friendSearchOpen, setFriendSearchOpen] = useState(false);
 
   return (
-    <Flex
-      bg="lightblue"
-      paddingX="10"
-      paddingY="5"
-      alignSelf="center"
-      alignItems="center"
-    >
-      <Heading size="lg">Hams Chat</Heading>
-      <Box id="auth" marginLeft="auto">
-        <Flex alignItems="center" gap="3">
+    <MHeader height={70} p="md">
+      <Group>
+        <Title>Hams Chat</Title>
+        <Group sx={{ height: '100%' }} px={20} position="apart" ml={'auto'}>
+          <ActionIcon
+            variant="default"
+            onClick={() => toggleColorScheme()}
+            size={30}
+          >
+            {colorScheme === 'dark' ? (
+              <Sun size={16} />
+            ) : (
+              <MoonStars size={16} />
+            )}
+          </ActionIcon>
           {isAuthenticated ? (
-            <>
-              <InputGroup>
-                <InputLeftElement pointerEvents="none">
-                  <BsSearch color="gray.300" />
-                </InputLeftElement>
-                <Input
-                  placeholder="Find your friends!"
-                  onClick={() => {
-                    setFriendSearchOpen(true);
-                  }}
-                />
-              </InputGroup>
+            <Group>
+              <Input
+                icon={''}
+                placeholder="Find your friends!"
+                onClick={() => {
+                  setFriendSearchOpen(true);
+                }}
+              />
               {friendSearchOpen && (
                 <UserSearchModal
                   isOpen={friendSearchOpen}
@@ -59,27 +55,24 @@ const Header = (props: Props) => {
                 />
               )}
               <Menu>
-                <MenuButton as={IconButton} icon={<MdOutlineAccountCircle />} />
-                <MenuList>
-                  <MenuItem>{user?.name}</MenuItem>
-                  <MenuItem onClick={() => logout()}>Logout</MenuItem>
-                </MenuList>
+                <UserCircle />
+                <Menu.Item>{user?.name}</Menu.Item>
+                <Menu.Item onClick={() => logout()}>Logout</Menu.Item>
               </Menu>
-            </>
+            </Group>
           ) : (
             <Button
-              isLoading={isLoading}
+              loading={isLoading}
               onClick={() => loginWithRedirect()}
-              variant={'solid'}
-              as="a"
+              // variant={'solid'}
+              // as="a"
             >
               Login
             </Button>
           )}
-          <ColorModeSwitcher />
-        </Flex>
-      </Box>
-    </Flex>
+        </Group>
+      </Group>
+    </MHeader>
   );
 };
 

@@ -11,7 +11,7 @@ exports.DateScalar = (0, nexus_1.scalarType)({
         return new Date(value);
     },
     serialize(value) {
-        return value.getTime();
+        return new Date(value).getTime();
     },
     parseLiteral(ast) {
         if (ast.kind === graphql_1.Kind.INT) {

@@ -1,5 +1,12 @@
 mutation CreateMessage($channelId: Int!, $content: String!) {
   createMessage(channelId: $channelId, content: $content) {
     id
+    content
+    createdAt
+    createdBy {
+      id
+      name
+      username
+    }
   }
 }

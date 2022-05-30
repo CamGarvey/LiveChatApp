@@ -1,21 +1,3 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  useDisclosure,
-  UseDisclosureProps,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Box,
-  ModalFooter,
-  Button,
-  Spinner,
-  Center,
-} from '@chakra-ui/react';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BsSearch } from 'react-icons/bs';
@@ -26,15 +8,31 @@ import {
 } from '../../graphql/generated/graphql';
 import UserItem from './UserItem';
 import FriendStatus from '../../models/friend-status';
+import {
+  Button,
+  Center,
+  Container,
+  Input,
+  InputWrapper,
+  Loader,
+  Modal,
+  Stack,
+  Text,
+} from '@mantine/core';
+import { Search } from 'tabler-icons-react';
 
 const USER_PAGINATION_COUNT = 5;
 
-const UserSearchModal = (props: UseDisclosureProps) => {
+type Props = {
+  onClose?: () => void;
+  isOpen: boolean;
+};
+
+const UserSearchModal = ({ onClose, isOpen }: Props) => {
   const btnRef = useRef<HTMLDivElement>();
   const inputRef = useRef<HTMLInputElement>();
   const [users, setUsers] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
-  const { isOpen, onClose } = useDisclosure(props);
 
   const { loading: loadingFriends, data: friendData } = useGetFriendIdsQuery();
 
@@ -85,77 +83,69 @@ const UserSearchModal = (props: UseDisclosureProps) => {
         setUsers([]);
         onClose();
       }}
-      finalFocusRef={btnRef!}
-      isOpen={isOpen}
-      scrollBehavior={'inside'}
+      opened={isOpen}
+      withCloseButton={false}
+      // finalFocusRef={btnRef!}
+      // isOpen={isOpen}
+      // scrollBehavior={'inside'}
     >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Search for Friends</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <BsSearch color="gray.300" />
-            </InputLeftElement>
-            <Input
-              placeholder="Find your friends!"
-              ref={inputRef}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '') {
-                  setUsers([]);
-                  return;
-                }
-                setLoadingMore(false);
-                debouncer({
-                  variables: {
-                    first: USER_PAGINATION_COUNT,
-                    usernameFilter: value,
-                    after: null,
-                  },
-                });
-              }}
+      <InputWrapper>
+        <Input
+          icon={<Search />}
+          placeholder="Find your friends!"
+          ref={inputRef}
+          mb={'10px'}
+          onChange={(e: any) => {
+            const value = e.target.value;
+            if (value === '') {
+              setUsers([]);
+              return;
+            }
+            setLoadingMore(false);
+            debouncer({
+              variables: {
+                first: USER_PAGINATION_COUNT,
+                usernameFilter: value,
+                after: null,
+              },
+            });
+          }}
+        />
+      </InputWrapper>
+      <Stack py={'10px'}>
+        {users.map((u) => {
+          return (
+            <UserItem
+              key={u.id}
+              user={u}
+              friendStatus={getFriendStatus(u.id)}
             />
-          </InputGroup>
-          <Box paddingTop={'3'}>
-            {users.map((u) => {
-              return (
-                <UserItem
-                  key={u.id}
-                  user={u}
-                  friendStatus={getFriendStatus(u.id)}
-                />
-              );
-            })}
-            {(loadingUsers || loadingFriends || loadingRequets) && (
-              <Box textAlign={'center'}>
-                <Spinner></Spinner>
-              </Box>
-            )}
-            {inputRef?.current?.value !== '' &&
-              !loadingUsers &&
-              users?.length === 0 && <Center>🙊 No users found 🙊</Center>}
-          </Box>
-          {data?.users?.pageInfo.hasNextPage && (
-            <Button
-              w={'100%'}
-              onClick={() => {
-                setLoadingMore(true);
-                getUsers({
-                  variables: {
-                    first: USER_PAGINATION_COUNT,
-                    after: data.users.pageInfo.endCursor,
-                  },
-                });
-              }}
-            >
-              Load More
-            </Button>
+          );
+        })}
+        <Center>
+          {(loadingUsers || loadingFriends || loadingRequets) && (
+            <Loader variant="dots" />
           )}
-        </ModalBody>
-        <ModalFooter></ModalFooter>
-      </ModalContent>
+          {inputRef?.current?.value !== '' &&
+            !loadingUsers &&
+            users?.length === 0 && <Text>🙊 No users found 🙊</Text>}
+        </Center>
+      </Stack>
+      {data?.users?.pageInfo.hasNextPage && (
+        <Button
+          onClick={() => {
+            setLoadingMore(true);
+            getUsers({
+              variables: {
+                first: USER_PAGINATION_COUNT,
+                after: data.users.pageInfo.endCursor,
+              },
+            });
+          }}
+        >
+          Load More
+        </Button>
+      )}
     </Modal>
   );
 };

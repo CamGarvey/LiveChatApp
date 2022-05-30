@@ -1,20 +1,19 @@
-import {
-  Avatar,
-  Box,
-  Flex,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-} from '@chakra-ui/react';
 import React from 'react';
 import { BsPersonCheck, BsPersonPlus } from 'react-icons/bs';
 import { IoMdMailUnread } from 'react-icons/io';
 import { BiMailSend } from 'react-icons/bi';
 import { User } from '../../graphql/generated/graphql';
 import FriendStatus from '../../models/friend-status';
+import {
+  ActionIcon,
+  Avatar,
+  Box,
+  Group,
+  Menu,
+  Stack,
+  Text,
+} from '@mantine/core';
+import { UserPlus } from 'tabler-icons-react';
 
 type Props = {
   user: User;
@@ -30,15 +29,16 @@ const UserItem = ({ user, friendStatus }: Props) => {
     case FriendStatus.Friends:
       menu = (
         <Menu>
-          <MenuButton as={IconButton} icon={<BsPersonCheck />}></MenuButton>
-          <MenuList>
-            <MenuItem>Unfriend</MenuItem>
-          </MenuList>
+          <Menu.Item>Unfriend</Menu.Item>
         </Menu>
       );
       break;
     case FriendStatus.NotFriends:
-      menu = <IconButton aria-label="Add user" icon={<BsPersonPlus />} />;
+      menu = (
+        <ActionIcon aria-label="Add user">
+          <UserPlus />
+        </ActionIcon>
+      );
       break;
     case FriendStatus.RequestSent:
       menu = <BiMailSend />;
@@ -49,23 +49,15 @@ const UserItem = ({ user, friendStatus }: Props) => {
   }
 
   return (
-    <Flex
-      gap={3}
-      borderRadius={'5'}
-      _hover={{ backgroundColor: 'blue.100' }}
-      cursor={'pointer'}
-      p={3}
-    >
+    <Group style={{ cursor: 'pointer' }}>
       <Avatar
         size="sm"
-        name={name}
         src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
-        alignSelf={'center'}
       />
-      <Text alignSelf={'center'}>{name}</Text>
-      <Text alignSelf={'center'}>{username}</Text>
-      <Box marginLeft={'auto'}>{menu}</Box>
-    </Flex>
+      <Text>{name}</Text>
+      <Text>{username}</Text>
+      <Box ml={'auto'}>{menu}</Box>
+    </Group>
   );
 };
 

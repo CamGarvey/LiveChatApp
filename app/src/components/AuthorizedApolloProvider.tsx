@@ -3,9 +3,14 @@ import {
   ApolloProvider,
   createHttpLink,
   InMemoryCache,
+  split,
+  from,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 
 type Props = {
   children: any;
@@ -18,23 +23,28 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
     uri: 'http://localhost:4000/graphql',
   });
 
+  const wsLink = new GraphQLWsLink(
+    createClient({
+      url: 'ws://localhost:4000/graphql',
+      lazy: true,
+      connectionParams: async () => {
+        const token = await getAccessTokenSilently();
+        return {
+          Authorization: token ? `Bearer ${token}` : '',
+        };
+      },
+    })
+  );
+
   const authLink = setContext(async () => {
     try {
-      // let token = localStorage.getItem('token');
-
       const token = await getAccessTokenSilently();
-      // if (!token) {
-      //   localStorage.setItem('token', token);
-      // }
-
       return {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
     } catch (e) {
-      console.log(e);
-
       return {
         headers: {
           Authorization: `Bearer `,
@@ -43,8 +53,20 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
     }
   });
 
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    wsLink,
+    authLink.concat(httpLink)
+  );
+
   const apolloClient = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: splitLink,
     cache: new InMemoryCache(),
     connectToDevTools: true,
   });

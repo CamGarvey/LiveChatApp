@@ -1,6 +1,9 @@
-import express, { json } from 'express';
+import express from 'express';
 import cors from 'cors';
-import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
+import {
+  ApolloServerPluginDrainHttpServer,
+  ForbiddenError,
+} from 'apollo-server-core';
 import { ApolloServer } from 'apollo-server-express';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
@@ -70,8 +73,27 @@ const main = async () => {
   const serverCleanup = useServer(
     {
       schema,
-      context: () => {
+      context: (req) => {
+        console.log(req.connectionParams.Authorization);
+        if (!req.connectionParams.Authorization) {
+          throw new ForbiddenError('No token');
+        }
+        // Get access token from request
+        const token = req.connectionParams.Authorization.toString().replace(
+          'Bearer ',
+          ''
+        );
+        // Decode token. No need to verify since auth middleware takes care of that
+        const decoded = jwt.decode(token);
+        // Parse decoded token
+        const payload = JSON.parse(JSON.stringify(decoded));
+        // Get user id from token payload
+        // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
+        // to be {API domain}/{field name}
+        const userId = payload[process.env.DOMAIN + '/user_id'];
+
         return {
+          userId,
           prisma,
           pubsub,
         };
