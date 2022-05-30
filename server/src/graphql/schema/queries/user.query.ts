@@ -133,8 +133,8 @@ export const UserQuery = queryField('user', {
       })
     ),
   },
-  resolve: (_, { id }, ctx) => {
-    return ctx.prisma.user.findUnique({
+  resolve: async (_, { id }, ctx) => {
+    return await ctx.prisma.user.findUnique({
       where: {
         id: id,
       },
@@ -144,10 +144,8 @@ export const UserQuery = queryField('user', {
 
 export const MeQuery = queryField('me', {
   type: 'User',
-  resolve: (_, __, { prisma, userId }) => {
-    console.log(userId);
-
-    return prisma.user.findUnique({
+  resolve: async (_, __, { prisma, userId }) => {
+    return await prisma.user.findUnique({
       where: {
         id: userId,
       },

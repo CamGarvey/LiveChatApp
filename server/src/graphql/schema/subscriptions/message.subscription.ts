@@ -20,8 +20,6 @@ export const newMessageSubscription = subscriptionField('newMessage', {
     channelId: nonNull(intArg()),
   },
   subscribe: async (rootValue, args, context) => {
-    console.log(context.userId);
-
     const members = await context.prisma.channel
       .findUnique({
         where: {

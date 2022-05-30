@@ -39,14 +39,6 @@ export const channelMessages = extendType({
           after || before ? cursorToOffset(after || before) + 1 : 0;
         if (isNaN(offset)) throw new Error('cursor is invalid');
 
-        console.log({
-          first,
-          last,
-          after,
-          before,
-          offset,
-        });
-
         const [totalCount, items] = await Promise.all([
           prisma.message.count({
             where: {
@@ -93,20 +85,39 @@ export const channels = extendType({
   },
 });
 
-// export const openChannels = extendType({
-//   type: 'Query',
-//   definition(t) {
-//     t.nonNull.list.nonNull.field('openChannels', {
-//       type: Channel,
-//       resolve: async (_, __, {prisma, userId}) => {
-//         await prisma.channel.findMany({
-//           where: {
-//             members: {
+export const channel = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('channel', {
+      type: Channel,
+      args: {
+        channelId: nonNull(
+          intArg({
+            description: 'Id of channel',
+          })
+        ),
+      },
+      resolve: async (_, { channelId }, { prisma, userId }) => {
+        const channel = await prisma.channel.findUnique({
+          where: {
+            id: channelId,
+          },
+          include: {
+            members: {
+              where: {
+                id: userId,
+              },
+            },
+          },
+        });
 
-//             }
-//           }
-//         })
-//       }
-//     })
-//   }
-// });
+        if (!channel?.members.length) {
+          throw new ForbiddenError(
+            'You do not have permission to this channel'
+          );
+        }
+        return channel;
+      },
+    });
+  },
+});

@@ -18,11 +18,16 @@ const ChannelItem = ({ name, isSelected, memberCount, onClick }: Props) => {
         color:
           theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
 
+        backgroundColor:
+          isSelected &&
+          (theme.colorScheme === 'dark'
+            ? theme.colors.dark[6]
+            : theme.colors.gray[1]),
         '&:hover': {
           backgroundColor:
             theme.colorScheme === 'dark'
               ? theme.colors.dark[6]
-              : theme.colors.gray[0],
+              : theme.colors.gray[1],
         },
       })}
       onClick={onClick}

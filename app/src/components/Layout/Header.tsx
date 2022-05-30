@@ -8,9 +8,10 @@ import {
   Header as MHeader,
   Menu,
   useMantineColorScheme,
+  Text,
 } from '@mantine/core';
 import React, { useState } from 'react';
-import { Sun, MoonStars, UserCircle } from 'tabler-icons-react';
+import { Sun, MoonStars, UserCircle, Logout } from 'tabler-icons-react';
 import UserSearchModal from '../UserSearchModal/UserSearchModal';
 
 type Props = {};
@@ -55,9 +56,18 @@ const Header = (props: Props) => {
                 />
               )}
               <Menu>
-                <UserCircle />
-                <Menu.Item>{user?.name}</Menu.Item>
-                <Menu.Item onClick={() => logout()}>Logout</Menu.Item>
+                <Menu.Item>
+                  <Group>
+                    <UserCircle />
+                    <Text>{user?.name}</Text>
+                  </Group>
+                </Menu.Item>
+                <Menu.Item onClick={() => logout()}>
+                  <Group>
+                    <Logout />
+                    <Text>Logout</Text>
+                  </Group>
+                </Menu.Item>
               </Menu>
             </Group>
           ) : (

@@ -104,7 +104,7 @@ const loadAll = async (prisma: PrismaClient) => {
   try {
     const { masterUser, otherUsers } = await loadUsers(prisma);
     await loadChannels(prisma, masterUser, otherUsers);
-    console.log('Database seedededed');
+    console.log('Database seeded');
   } catch (e) {
     console.error(e);
     process.exit(1);

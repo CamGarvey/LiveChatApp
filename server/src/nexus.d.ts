@@ -127,8 +127,8 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   Channel: { // field return type
-    createBy: NexusGenRootTypes['User']; // User!
     createdAt: NexusGenScalars['Date']; // Date!
+    createdBy: NexusGenRootTypes['User']; // User!
     id: number; // Int!
     isDM: boolean; // Boolean!
     memberCount: number; // Int!
@@ -182,6 +182,7 @@ export interface NexusGenFieldTypes {
     startCursor: string | null; // String
   }
   Query: { // field return type
+    channel: NexusGenRootTypes['Channel'] | null; // Channel
     channelMessages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
     channels: NexusGenRootTypes['Channel'][]; // [Channel!]!
     friends: NexusGenRootTypes['User'][]; // [User!]!
@@ -218,8 +219,8 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Channel: { // field return type name
-    createBy: 'User'
     createdAt: 'Date'
+    createdBy: 'User'
     id: 'Int'
     isDM: 'Boolean'
     memberCount: 'Int'
@@ -273,6 +274,7 @@ export interface NexusGenFieldTypeNames {
     startCursor: 'String'
   }
   Query: { // field return type name
+    channel: 'Channel'
     channelMessages: 'MessageConnection'
     channels: 'Channel'
     friends: 'User'
@@ -368,6 +370,9 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    channel: { // args
+      channelId: number; // Int!
+    }
     channelMessages: { // args
       after?: string | null; // String
       before?: string | null; // String

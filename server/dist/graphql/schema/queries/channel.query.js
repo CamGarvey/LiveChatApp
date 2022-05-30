@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.channels = exports.channelMessages = void 0;
+exports.channel = exports.channels = exports.channelMessages = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
@@ -42,13 +42,6 @@ exports.channelMessages = (0, nexus_1.extendType)({
                 const offset = after || before ? (0, graphql_relay_1.cursorToOffset)(after || before) + 1 : 0;
                 if (isNaN(offset))
                     throw new Error('cursor is invalid');
-                console.log({
-                    first,
-                    last,
-                    after,
-                    before,
-                    offset,
-                });
                 const [totalCount, items] = yield Promise.all([
                     prisma.message.count({
                         where: {
@@ -84,6 +77,37 @@ exports.channels = (0, nexus_1.extendType)({
                     },
                 })
                     .memberOfChannels();
+            }),
+        });
+    },
+});
+exports.channel = (0, nexus_1.extendType)({
+    type: 'Query',
+    definition(t) {
+        t.field('channel', {
+            type: channel_1.default,
+            args: {
+                channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+                    description: 'Id of channel',
+                })),
+            },
+            resolve: (_, { channelId }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                const channel = yield prisma.channel.findUnique({
+                    where: {
+                        id: channelId,
+                    },
+                    include: {
+                        members: {
+                            where: {
+                                id: userId,
+                            },
+                        },
+                    },
+                });
+                if (!(channel === null || channel === void 0 ? void 0 : channel.members.length)) {
+                    throw new apollo_server_core_1.ForbiddenError('You do not have permission to this channel');
+                }
+                return channel;
             }),
         });
     },

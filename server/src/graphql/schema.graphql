@@ -3,8 +3,8 @@
 
 
 type Channel {
-  createBy: User!
   createdAt: Date!
+  createdBy: User!
   id: Int!
   isDM: Boolean!
   memberCount: Int!
@@ -180,6 +180,10 @@ type PageInfo {
 }
 
 type Query {
+  channel(
+    """Id of channel"""
+    channelId: Int!
+  ): Channel
   channelMessages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String

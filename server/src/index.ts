@@ -74,7 +74,6 @@ const main = async () => {
     {
       schema,
       context: (req) => {
-        console.log(req.connectionParams.Authorization);
         if (!req.connectionParams.Authorization) {
           throw new ForbiddenError('No token');
         }
@@ -116,6 +115,10 @@ const main = async () => {
       // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
       // to be {API domain}/{field name}
       const userId = payload[process.env.DOMAIN + '/user_id'];
+
+      if (!userId) {
+        throw new ForbiddenError('Invalid user');
+      }
 
       return {
         userId,

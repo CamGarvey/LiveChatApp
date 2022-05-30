@@ -60,7 +60,6 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const serverCleanup = (0, ws_2.useServer)({
         schema: graphql_1.schema,
         context: (req) => {
-            console.log(req.connectionParams.Authorization);
             if (!req.connectionParams.Authorization) {
                 throw new apollo_server_core_1.ForbiddenError('No token');
             }
@@ -83,6 +82,9 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             const decoded = jsonwebtoken_1.default.decode(token);
             const payload = JSON.parse(JSON.stringify(decoded));
             const userId = payload[process.env.DOMAIN + '/user_id'];
+            if (!userId) {
+                throw new apollo_server_core_1.ForbiddenError('Invalid user');
+            }
             return {
                 userId,
                 prisma: prisma_1.default,

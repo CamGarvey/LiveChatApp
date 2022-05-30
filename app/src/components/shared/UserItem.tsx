@@ -1,5 +1,4 @@
 import React from 'react';
-import { BsPersonCheck, BsPersonPlus } from 'react-icons/bs';
 import { IoMdMailUnread } from 'react-icons/io';
 import { BiMailSend } from 'react-icons/bi';
 import { User } from '../../graphql/generated/graphql';
@@ -8,16 +7,18 @@ import {
   ActionIcon,
   Avatar,
   Box,
-  Group,
   Menu,
-  Stack,
   Text,
   UnstyledButton,
 } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
 
 type Props = {
-  user: User;
+  user: {
+    id: number;
+    name?: string;
+    username: string;
+  };
   friendStatus: FriendStatus;
 };
 
@@ -72,7 +73,7 @@ const UserItem = ({ user, friendStatus }: Props) => {
         size="sm"
         src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
       />
-      <Text>{name}</Text>
+      {/* <Text>{name}</Text> */}
       <Text>{username}</Text>
       <Box ml={'auto'}>{menu}</Box>
     </UnstyledButton>

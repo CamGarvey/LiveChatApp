@@ -1,0 +1,17 @@
+query GetChannelInfoForSidebar($channelId: Int!) {
+  channel(channelId: $channelId) {
+    id
+    name
+    createdBy {
+      id
+      name
+      username
+    }
+    createdAt
+    members {
+      id
+      name
+      username
+    }
+  }
+}

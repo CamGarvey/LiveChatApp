@@ -123,23 +123,22 @@ exports.UserQuery = (0, nexus_1.queryField)('user', {
             description: 'id of user',
         })),
     },
-    resolve: (_, { id }, ctx) => {
-        return ctx.prisma.user.findUnique({
+    resolve: (_, { id }, ctx) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield ctx.prisma.user.findUnique({
             where: {
                 id: id,
             },
         });
-    },
+    }),
 });
 exports.MeQuery = (0, nexus_1.queryField)('me', {
     type: 'User',
-    resolve: (_, __, { prisma, userId }) => {
-        console.log(userId);
-        return prisma.user.findUnique({
+    resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield prisma.user.findUnique({
             where: {
                 id: userId,
             },
         });
-    },
+    }),
 });
 //# sourceMappingURL=user.query.js.map

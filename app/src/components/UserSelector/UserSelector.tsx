@@ -8,9 +8,8 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
-import { BsSearch } from 'react-icons/bs';
 import { Search } from 'tabler-icons-react';
-import UserItem from './Usertem';
+import UserItem from './UserSelectItem';
 
 type User = { id: number; name?: string; username: string };
 

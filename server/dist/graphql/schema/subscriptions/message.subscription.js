@@ -33,7 +33,6 @@ exports.newMessageSubscription = (0, nexus_1.subscriptionField)('newMessage', {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
     },
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(context.userId);
         const members = yield context.prisma.channel
             .findUnique({
             where: {

@@ -6,14 +6,19 @@ import Message from './Message';
 type MessageGroupProps = {
   messages: MessageItem[];
   showAvatar?: boolean;
+  style?: React.CSSProperties;
 };
 
 // Message Group makes it so the avatar is only on the last message
-const MessageGroup = ({ messages, showAvatar = true }: MessageGroupProps) => {
+const MessageGroup = ({
+  messages,
+  showAvatar = true,
+  style,
+}: MessageGroupProps) => {
   const [showInfoFor, setShowInfoFor] = useState(null);
   const createdBy = messages[0].createdBy;
   return (
-    <Group style={{}}>
+    <Group style={style}>
       {showAvatar && (
         <Avatar
           size="md"

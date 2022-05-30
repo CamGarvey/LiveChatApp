@@ -28,15 +28,19 @@ const Channel = (0, nexus_1.objectType)({
         t.nonNull.field('updatedAt', {
             type: scalars_1.DateScalar,
         });
-        t.nonNull.field('createBy', {
+        t.nonNull.field('createdBy', {
             type: user_1.default,
-            resolve: (parent, _, { prisma }) => {
-                return prisma.user.findUnique({
+            resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+                const channel = yield prisma.channel.findUnique({
                     where: {
                         id: parent.id,
                     },
+                    include: {
+                        createdBy: true,
+                    },
                 });
-            },
+                return channel.createdBy;
+            }),
         });
         t.nonNull.connectionField('messages', {
             type: message_1.default,

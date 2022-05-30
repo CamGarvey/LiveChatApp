@@ -19,8 +19,8 @@ export type Scalars = {
 
 export type Channel = {
   __typename?: 'Channel';
-  createBy: User;
   createdAt: Scalars['Date'];
+  createdBy: User;
   id: Scalars['Int'];
   isDM: Scalars['Boolean'];
   memberCount: Scalars['Int'];
@@ -194,6 +194,7 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: 'Query';
+  channel?: Maybe<Channel>;
   channelMessages: MessageConnection;
   channels: Array<Channel>;
   friends: Array<User>;
@@ -201,6 +202,11 @@ export type Query = {
   user?: Maybe<User>;
   /** Find users */
   users: UserConnection;
+};
+
+
+export type QueryChannelArgs = {
+  channelId: Scalars['Int'];
 };
 
 
@@ -314,6 +320,13 @@ export type CreateMessageMutationVariables = Exact<{
 
 export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } | null };
 
+export type GetChannelInfoForSidebarQueryVariables = Exact<{
+  channelId: Scalars['Int'];
+}>;
+
+
+export type GetChannelInfoForSidebarQuery = { __typename?: 'Query', channel?: { __typename?: 'Channel', id: number, name: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string }, members: Array<{ __typename?: 'User', id: number, name?: string | null, username: string }> } | null };
+
 export type GetChannelMessagesQueryVariables = Exact<{
   channelId: Scalars['Int'];
   last?: InputMaybe<Scalars['Int']>;
@@ -325,10 +338,10 @@ export type GetChannelMessagesQueryVariables = Exact<{
 
 export type GetChannelMessagesQuery = { __typename?: 'Query', channelMessages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean }, edges?: Array<{ __typename?: 'MessageEdge', cursor: string, node?: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } | null } | null> | null } };
 
-export type GetChannelsForSidebarQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetChannelsForNavQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChannelsForSidebarQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean, memberCount: number }> };
+export type GetChannelsForNavQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean, memberCount: number }> };
 
 export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -449,6 +462,53 @@ export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const GetChannelInfoForSidebarDocument = gql`
+    query GetChannelInfoForSidebar($channelId: Int!) {
+  channel(channelId: $channelId) {
+    id
+    name
+    createdBy {
+      id
+      name
+      username
+    }
+    createdAt
+    members {
+      id
+      name
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetChannelInfoForSidebarQuery__
+ *
+ * To run a query within a React component, call `useGetChannelInfoForSidebarQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChannelInfoForSidebarQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChannelInfoForSidebarQuery({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useGetChannelInfoForSidebarQuery(baseOptions: Apollo.QueryHookOptions<GetChannelInfoForSidebarQuery, GetChannelInfoForSidebarQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChannelInfoForSidebarQuery, GetChannelInfoForSidebarQueryVariables>(GetChannelInfoForSidebarDocument, options);
+      }
+export function useGetChannelInfoForSidebarLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelInfoForSidebarQuery, GetChannelInfoForSidebarQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChannelInfoForSidebarQuery, GetChannelInfoForSidebarQueryVariables>(GetChannelInfoForSidebarDocument, options);
+        }
+export type GetChannelInfoForSidebarQueryHookResult = ReturnType<typeof useGetChannelInfoForSidebarQuery>;
+export type GetChannelInfoForSidebarLazyQueryHookResult = ReturnType<typeof useGetChannelInfoForSidebarLazyQuery>;
+export type GetChannelInfoForSidebarQueryResult = Apollo.QueryResult<GetChannelInfoForSidebarQuery, GetChannelInfoForSidebarQueryVariables>;
 export const GetChannelMessagesDocument = gql`
     query GetChannelMessages($channelId: Int!, $last: Int, $after: String, $first: Int, $before: String) {
   channelMessages(
@@ -512,8 +572,8 @@ export function useGetChannelMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetChannelMessagesQueryHookResult = ReturnType<typeof useGetChannelMessagesQuery>;
 export type GetChannelMessagesLazyQueryHookResult = ReturnType<typeof useGetChannelMessagesLazyQuery>;
 export type GetChannelMessagesQueryResult = Apollo.QueryResult<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>;
-export const GetChannelsForSidebarDocument = gql`
-    query GetChannelsForSidebar {
+export const GetChannelsForNavDocument = gql`
+    query GetChannelsForNav {
   channels {
     id
     name
@@ -526,31 +586,31 @@ export const GetChannelsForSidebarDocument = gql`
     `;
 
 /**
- * __useGetChannelsForSidebarQuery__
+ * __useGetChannelsForNavQuery__
  *
- * To run a query within a React component, call `useGetChannelsForSidebarQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetChannelsForSidebarQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetChannelsForNavQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChannelsForNavQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetChannelsForSidebarQuery({
+ * const { data, loading, error } = useGetChannelsForNavQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetChannelsForSidebarQuery(baseOptions?: Apollo.QueryHookOptions<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>) {
+export function useGetChannelsForNavQuery(baseOptions?: Apollo.QueryHookOptions<GetChannelsForNavQuery, GetChannelsForNavQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>(GetChannelsForSidebarDocument, options);
+        return Apollo.useQuery<GetChannelsForNavQuery, GetChannelsForNavQueryVariables>(GetChannelsForNavDocument, options);
       }
-export function useGetChannelsForSidebarLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>) {
+export function useGetChannelsForNavLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelsForNavQuery, GetChannelsForNavQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>(GetChannelsForSidebarDocument, options);
+          return Apollo.useLazyQuery<GetChannelsForNavQuery, GetChannelsForNavQueryVariables>(GetChannelsForNavDocument, options);
         }
-export type GetChannelsForSidebarQueryHookResult = ReturnType<typeof useGetChannelsForSidebarQuery>;
-export type GetChannelsForSidebarLazyQueryHookResult = ReturnType<typeof useGetChannelsForSidebarLazyQuery>;
-export type GetChannelsForSidebarQueryResult = Apollo.QueryResult<GetChannelsForSidebarQuery, GetChannelsForSidebarQueryVariables>;
+export type GetChannelsForNavQueryHookResult = ReturnType<typeof useGetChannelsForNavQuery>;
+export type GetChannelsForNavLazyQueryHookResult = ReturnType<typeof useGetChannelsForNavLazyQuery>;
+export type GetChannelsForNavQueryResult = Apollo.QueryResult<GetChannelsForNavQuery, GetChannelsForNavQueryVariables>;
 export const GetFriendIdsDocument = gql`
     query GetFriendIds {
   friends {

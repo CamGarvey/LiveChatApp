@@ -15,14 +15,18 @@ const Channel = objectType({
     t.nonNull.field('updatedAt', {
       type: DateScalar,
     });
-    t.nonNull.field('createBy', {
+    t.nonNull.field('createdBy', {
       type: User,
-      resolve: (parent, _, { prisma }) => {
-        return prisma.user.findUnique({
+      resolve: async (parent, _, { prisma }) => {
+        const channel = await prisma.channel.findUnique({
           where: {
             id: parent.id,
           },
+          include: {
+            createdBy: true,
+          },
         });
+        return channel.createdBy;
       },
     });
     t.nonNull.connectionField('messages', {

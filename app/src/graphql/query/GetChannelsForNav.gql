@@ -1,4 +1,4 @@
-query GetChannelsForSidebar {
+query GetChannelsForNav {
   channels {
     id
     name

@@ -1,16 +1,20 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   AppShell,
+  Aside,
   Center,
   ColorScheme,
   ColorSchemeProvider,
   MantineProvider,
+  MediaQuery,
+  Text,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { useState } from 'react';
 import Chat from './components/Chat/Chat';
 import Header from './components/Layout/Header';
-import Nav from './components/Layout/Nav';
+import ChannelNav from './components/Layout/ChannelNav';
+import ChannelInfoSidebar from './components/Layout/ChannelInfoSidebar';
 
 export const App = () => {
   const { isAuthenticated } = useAuth0();
@@ -41,12 +45,17 @@ export const App = () => {
           asideOffsetBreakpoint="sm"
           fixed
           header={<Header />}
-          navbar={isAuthenticated && <Nav onChannelSelected={setChannel} />}
+          navbar={
+            isAuthenticated && <ChannelNav onChannelSelected={setChannel} />
+          }
+          aside={isAuthenticated && <ChannelInfoSidebar channelId={channel} />}
         >
           {channel ? (
             <Chat channelId={channel} />
-          ) : (
+          ) : isAuthenticated ? (
             <Center>Pick a channel</Center>
+          ) : (
+            <Center>Welcome to GraphChat</Center>
           )}
         </AppShell>
       </MantineProvider>

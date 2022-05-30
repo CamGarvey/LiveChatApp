@@ -1,7 +1,6 @@
 import { Button, Navbar, ScrollArea } from '@mantine/core';
 import React, { useState } from 'react';
-import { Stack } from 'tabler-icons-react';
-import { useGetChannelsForSidebarQuery } from '../../graphql/generated/graphql';
+import { useGetChannelsForNavQuery } from '../../graphql/generated/graphql';
 import CreateChannelModal from '../CreateChannelModal/CreateChannelModal';
 import ChannelItem from './ChannelItem';
 
@@ -9,10 +8,10 @@ type Props = {
   onChannelSelected: (channelId: number) => void;
 };
 
-const Nav = ({ onChannelSelected }: Props) => {
+const ChannelNav = ({ onChannelSelected }: Props) => {
   const [channelSelected, setChannelSelected] = useState(null);
   const [createChannelOpen, setCreateChannelOpen] = useState(false);
-  const { loading, data, error } = useGetChannelsForSidebarQuery();
+  const { loading, data, error } = useGetChannelsForNavQuery();
 
   return (
     <Navbar p="xs" width={{ base: 300 }}>
@@ -40,7 +39,7 @@ const Nav = ({ onChannelSelected }: Props) => {
             setCreateChannelOpen(true);
           }}
         >
-          Create Group
+          Create Channel
         </Button>
       </Navbar.Section>
       <CreateChannelModal
@@ -53,4 +52,4 @@ const Nav = ({ onChannelSelected }: Props) => {
   );
 };
 
-export default Nav;
+export default ChannelNav;
