@@ -1,0 +1,11 @@
+query GetDataForHeader {
+  me {
+    name
+    username
+    receivedFriendRequests {
+      id
+      name
+      username
+    }
+  }
+}

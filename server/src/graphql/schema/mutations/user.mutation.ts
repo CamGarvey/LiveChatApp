@@ -121,7 +121,7 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
       })
       .receivedFriendRequests();
 
-    if (!receivedRequests.find((request) => request.id)) {
+    if (!receivedRequests.find((request) => request.id == friendId)) {
       throw new ForbiddenError('You do not have a request from this user');
     }
 

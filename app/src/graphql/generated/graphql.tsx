@@ -393,15 +393,10 @@ export type GetChannelsForNavQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetChannelsForNavQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean, memberCount: number }> };
 
-export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetDataForHeaderQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFriendIdsQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number }> };
-
-export type GetFriendRequestIdsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename?: 'User', sentFriendRequests: Array<{ __typename?: 'User', id: number }>, receivedFriendRequests: Array<{ __typename?: 'User', id: number }> } | null };
+export type GetDataForHeaderQuery = { __typename?: 'Query', me?: { __typename?: 'User', name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: number, name?: string | null, username: string }> } | null };
 
 export type GetFriendsForSearchQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -421,6 +416,11 @@ export type GetUsersQueryVariables = Exact<{
 
 
 export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: number, username: string, name?: string | null, friendStatus: FriendStatus } | null } | null> | null } };
+
+export type NewFriendRequestSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NewFriendRequestSubscription = { __typename?: 'Subscription', newFriendRequest?: { __typename?: 'User', id: number, name?: string | null, email: string, username: string } | null };
 
 export type GetNewMessagesSubscriptionVariables = Exact<{
   channelId: Scalars['Int'];
@@ -817,79 +817,46 @@ export function useGetChannelsForNavLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type GetChannelsForNavQueryHookResult = ReturnType<typeof useGetChannelsForNavQuery>;
 export type GetChannelsForNavLazyQueryHookResult = ReturnType<typeof useGetChannelsForNavLazyQuery>;
 export type GetChannelsForNavQueryResult = Apollo.QueryResult<GetChannelsForNavQuery, GetChannelsForNavQueryVariables>;
-export const GetFriendIdsDocument = gql`
-    query GetFriendIds {
-  friends {
-    id
-  }
-}
-    `;
-
-/**
- * __useGetFriendIdsQuery__
- *
- * To run a query within a React component, call `useGetFriendIdsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFriendIdsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFriendIdsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetFriendIdsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendIdsQuery, GetFriendIdsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(GetFriendIdsDocument, options);
-      }
-export function useGetFriendIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendIdsQuery, GetFriendIdsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(GetFriendIdsDocument, options);
-        }
-export type GetFriendIdsQueryHookResult = ReturnType<typeof useGetFriendIdsQuery>;
-export type GetFriendIdsLazyQueryHookResult = ReturnType<typeof useGetFriendIdsLazyQuery>;
-export type GetFriendIdsQueryResult = Apollo.QueryResult<GetFriendIdsQuery, GetFriendIdsQueryVariables>;
-export const GetFriendRequestIdsDocument = gql`
-    query GetFriendRequestIds {
+export const GetDataForHeaderDocument = gql`
+    query GetDataForHeader {
   me {
-    sentFriendRequests {
-      id
-    }
+    name
+    username
     receivedFriendRequests {
       id
+      name
+      username
     }
   }
 }
     `;
 
 /**
- * __useGetFriendRequestIdsQuery__
+ * __useGetDataForHeaderQuery__
  *
- * To run a query within a React component, call `useGetFriendRequestIdsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFriendRequestIdsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetDataForHeaderQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDataForHeaderQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetFriendRequestIdsQuery({
+ * const { data, loading, error } = useGetDataForHeaderQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetFriendRequestIdsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>) {
+export function useGetDataForHeaderQuery(baseOptions?: Apollo.QueryHookOptions<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>(GetFriendRequestIdsDocument, options);
+        return Apollo.useQuery<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>(GetDataForHeaderDocument, options);
       }
-export function useGetFriendRequestIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>) {
+export function useGetDataForHeaderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>(GetFriendRequestIdsDocument, options);
+          return Apollo.useLazyQuery<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>(GetDataForHeaderDocument, options);
         }
-export type GetFriendRequestIdsQueryHookResult = ReturnType<typeof useGetFriendRequestIdsQuery>;
-export type GetFriendRequestIdsLazyQueryHookResult = ReturnType<typeof useGetFriendRequestIdsLazyQuery>;
-export type GetFriendRequestIdsQueryResult = Apollo.QueryResult<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>;
+export type GetDataForHeaderQueryHookResult = ReturnType<typeof useGetDataForHeaderQuery>;
+export type GetDataForHeaderLazyQueryHookResult = ReturnType<typeof useGetDataForHeaderLazyQuery>;
+export type GetDataForHeaderQueryResult = Apollo.QueryResult<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>;
 export const GetFriendsForSearchDocument = gql`
     query GetFriendsForSearch {
   friends {
@@ -1013,6 +980,38 @@ export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
 export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
 export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export const NewFriendRequestDocument = gql`
+    subscription NewFriendRequest {
+  newFriendRequest {
+    id
+    name
+    email
+    username
+  }
+}
+    `;
+
+/**
+ * __useNewFriendRequestSubscription__
+ *
+ * To run a query within a React component, call `useNewFriendRequestSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNewFriendRequestSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNewFriendRequestSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useNewFriendRequestSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NewFriendRequestSubscription, NewFriendRequestSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NewFriendRequestSubscription, NewFriendRequestSubscriptionVariables>(NewFriendRequestDocument, options);
+      }
+export type NewFriendRequestSubscriptionHookResult = ReturnType<typeof useNewFriendRequestSubscription>;
+export type NewFriendRequestSubscriptionResult = Apollo.SubscriptionResult<NewFriendRequestSubscription>;
 export const GetNewMessagesDocument = gql`
     subscription GetNewMessages($channelId: Int!) {
   newMessage(channelId: $channelId) {

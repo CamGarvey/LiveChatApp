@@ -119,7 +119,7 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
             },
         })
             .receivedFriendRequests();
-        if (!receivedRequests.find((request) => request.id)) {
+        if (!receivedRequests.find((request) => request.id == friendId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have a request from this user');
         }
         const user = yield prisma.user.update({

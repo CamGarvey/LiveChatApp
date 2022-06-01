@@ -1,0 +1,8 @@
+subscription NewFriendRequest {
+  newFriendRequest {
+    id
+    name
+    email
+    username
+  }
+}
