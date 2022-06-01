@@ -1,8 +1,7 @@
 import React from 'react';
 import { IoMdMailUnread } from 'react-icons/io';
 import { BiMailSend } from 'react-icons/bi';
-import { User } from '../../graphql/generated/graphql';
-import FriendStatus from '../../models/friend-status';
+import { FriendStatus, User } from '../../graphql/generated/graphql';
 import {
   ActionIcon,
   Avatar,
@@ -18,24 +17,24 @@ type Props = {
     id: number;
     name?: string;
     username: string;
+    friendStatus: FriendStatus;
   };
-  friendStatus: FriendStatus;
 };
 
-const UserItem = ({ user, friendStatus }: Props) => {
-  const { name, username } = user;
+const UserItem = ({ user }: Props) => {
+  const { name, username, friendStatus } = user;
 
   let menu: React.ReactElement;
 
   switch (friendStatus) {
-    case FriendStatus.Friends:
+    case FriendStatus.Friend:
       menu = (
         <Menu>
           <Menu.Item>Unfriend</Menu.Item>
         </Menu>
       );
       break;
-    case FriendStatus.NotFriends:
+    case FriendStatus.NotFriend:
       menu = (
         <ActionIcon aria-label="Add user">
           <UserPlus />

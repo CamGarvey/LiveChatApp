@@ -80,6 +80,9 @@ type Mutation {
     memberIds: [Int!]!
   ): Channel
 
+  """Cancel/Delete a sent Friend Request"""
+  cancelFriendRequest(friendId: Int!): Boolean
+
   """Create a Channel"""
   createChannel(
     """Description of Channel"""
@@ -107,6 +110,9 @@ type Mutation {
     content: String!
   ): Message
 
+  """Delete/Decline a received Friend Request"""
+  declineFriendRequest(friendId: Int!): Boolean
+
   """Delete a Channel"""
   deleteChannel(
     """Id of Channel to be deleted"""
@@ -115,9 +121,6 @@ type Mutation {
 
   """Delete a Friend"""
   deleteFriend(friendId: Int!): Boolean
-
-  """Delete a received Friend Request"""
-  deleteFriendRequest(friendId: Int!): Boolean
 
   """Delete a Message"""
   deleteMessage(
@@ -252,7 +255,7 @@ type User {
   channels: [Channel!]!
   createdAt: Date!
   email: String!
-  friendStatus: FriendStatus
+  friendStatus: FriendStatus!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String

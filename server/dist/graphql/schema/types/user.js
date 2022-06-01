@@ -30,39 +30,31 @@ const User = (0, nexus_1.objectType)({
         t.nonNull.field('updatedAt', {
             type: scalars_1.DateScalar,
         });
-        t.field('friendStatus', {
+        t.nonNull.field('friendStatus', {
             type: friend_status_1.default,
             resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
-                const user = yield prisma.user.findUnique({
+                const friends = yield prisma.user
+                    .findUnique({
                     where: { id: userId },
-                    include: {
-                        friends: {
-                            where: {
-                                id: parent.id,
-                            },
-                        },
-                        sentFriendRequests: {
-                            where: {
-                                id: parent.id,
-                            },
-                        },
-                        receivedFriendRequests: {
-                            where: {
-                                id: parent.id,
-                            },
-                        },
-                    },
-                });
-                if (!user) {
-                    throw new Error("User doesn't exist");
-                }
-                if (user.friends.length) {
+                })
+                    .friends();
+                const receivedFriendRequests = yield prisma.user
+                    .findUnique({
+                    where: { id: userId },
+                })
+                    .receivedFriendRequests();
+                const sentFriendRequests = yield prisma.user
+                    .findUnique({
+                    where: { id: userId },
+                })
+                    .sentFriendRequests();
+                if (friends.find((x) => x.id == parent.id)) {
                     return 'FRIEND';
                 }
-                if (user.receivedFriendRequests.length) {
+                if (receivedFriendRequests.find((x) => x.id == parent.id)) {
                     return 'REQUEST_RECEIVED';
                 }
-                if (user.sentFriendRequests.length) {
+                if (sentFriendRequests.find((x) => x.id == parent.id)) {
                     return 'REQUEST_SENT';
                 }
                 return 'NOT_FRIEND';

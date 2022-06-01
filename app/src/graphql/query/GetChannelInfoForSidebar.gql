@@ -12,6 +12,7 @@ query GetChannelInfoForSidebar($channelId: Int!) {
       id
       name
       username
+      friendStatus
     }
   }
 }

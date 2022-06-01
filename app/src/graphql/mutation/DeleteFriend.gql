@@ -1,0 +1,3 @@
+mutation DeleteFriend($friendId: Int!) {
+  deleteFriend(friendId: $friendId)
+}

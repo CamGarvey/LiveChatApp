@@ -8,7 +8,9 @@ query GetUsers($usernameFilter: String, $first: Int, $after: String) {
       cursor
       node {
         id
+        username
         name
+        friendStatus
       }
     }
   }

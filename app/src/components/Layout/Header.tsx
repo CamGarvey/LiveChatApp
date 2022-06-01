@@ -56,17 +56,11 @@ const Header = (props: Props) => {
                 />
               )}
               <Menu>
-                <Menu.Item>
-                  <Group>
-                    <UserCircle />
-                    <Text>{user?.name}</Text>
-                  </Group>
+                <Menu.Item icon={<UserCircle />}>
+                  <Text>{user?.name}</Text>
                 </Menu.Item>
-                <Menu.Item onClick={() => logout()}>
-                  <Group>
-                    <Logout />
-                    <Text>Logout</Text>
-                  </Group>
+                <Menu.Item icon={<Logout />} onClick={() => logout()}>
+                  <Text>Logout</Text>
                 </Menu.Item>
               </Menu>
             </Group>

@@ -1,8 +1,4 @@
-import React from 'react';
-import { IoMdMailUnread } from 'react-icons/io';
-import { BiMailSend } from 'react-icons/bi';
-import { User } from '../../graphql/generated/graphql';
-import FriendStatus from '../../models/friend-status';
+import React, { useState } from 'react';
 import {
   ActionIcon,
   Avatar,
@@ -11,43 +7,154 @@ import {
   Text,
   UnstyledButton,
 } from '@mantine/core';
-import { UserPlus } from 'tabler-icons-react';
+import { Mailbox, MailForward, UserMinus, UserPlus } from 'tabler-icons-react';
+import User from './User';
+import {
+  AcceptFriendRequestMutation,
+  CancelFriendRequestMutation,
+  DeclineFriendRequestMutation,
+  DeleteFriendMutation,
+  FriendStatus,
+  SendFriendRequestMutation,
+  useAcceptFriendRequestMutation,
+  useCancelFriendRequestMutation,
+  useDeclineFriendRequestMutation,
+  useDeleteFriendMutation,
+  useSendFriendRequestMutation,
+} from '../../graphql/generated/graphql';
+import { ApolloCache, FetchResult } from '@apollo/client';
 
 type Props = {
   user: User;
-  friendStatus: FriendStatus;
   onSendFriendRequestClicked?: () => void;
   onUnFriendClicked?: () => void;
-  onCancelRequest?: () => void;
-  onAcceptFriendRequest?: () => void;
-  onDeleteFriendRequest?: () => void;
+  onCancelRequestClicked?: () => void;
+  onAcceptFriendRequestClicked?: () => void;
+  onDeclineFriendRequestClicked?: () => void;
 };
 
-const UserItem = ({ user, friendStatus, onUnFriendClicked }: Props) => {
-  const { name, username } = user;
+const UserItem = ({ user }: Props) => {
+  const { name, username, friendStatus } = user;
+
+  // Update friend status mutations
+  const [cancelFriendRequest] = useCancelFriendRequestMutation();
+  const [sendFriendRequest] = useSendFriendRequestMutation();
+  const [declineFriendRequest] = useDeclineFriendRequestMutation();
+  const [acceptFriendRequest] = useAcceptFriendRequestMutation();
+  const [deleteFriend] = useDeleteFriendMutation();
 
   let menu: React.ReactElement;
 
   switch (friendStatus) {
-    case FriendStatus.Friends:
+    case FriendStatus.Friend:
       menu = (
         <Menu>
-          <Menu.Item onClick={onUnFriendClicked}>Unfriend</Menu.Item>
+          <Menu.Item
+            icon={<UserMinus />}
+            type="button"
+            onClick={() => {
+              deleteFriend({
+                variables: {
+                  friendId: user.id,
+                },
+                update: updateFriendStatusCache<DeleteFriendMutation>(
+                  user,
+                  FriendStatus.NotFriend
+                ),
+              });
+            }}
+          >
+            <Text>Unfriend</Text>
+          </Menu.Item>
         </Menu>
       );
       break;
-    case FriendStatus.NotFriends:
+    case FriendStatus.NotFriend:
       menu = (
-        <ActionIcon aria-label="Add user">
+        <ActionIcon
+          type="button"
+          onClick={() => {
+            sendFriendRequest({
+              variables: {
+                friendId: user.id,
+              },
+              update: updateFriendStatusCache<SendFriendRequestMutation>(
+                user,
+                FriendStatus.RequestSent
+              ),
+            });
+          }}
+        >
           <UserPlus />
         </ActionIcon>
       );
       break;
     case FriendStatus.RequestSent:
-      menu = <BiMailSend />;
+      menu = (
+        <Menu
+          control={
+            <ActionIcon type="button">
+              <MailForward />
+            </ActionIcon>
+          }
+        >
+          <Menu.Item
+            onClick={() => {
+              cancelFriendRequest({
+                variables: {
+                  friendId: user.id,
+                },
+                update: updateFriendStatusCache<CancelFriendRequestMutation>(
+                  user,
+                  FriendStatus.NotFriend
+                ),
+              });
+            }}
+          >
+            Cancel Friend Request
+          </Menu.Item>
+        </Menu>
+      );
       break;
     case FriendStatus.RequestReceived:
-      menu = <IoMdMailUnread />;
+      menu = (
+        <Menu
+          control={
+            <ActionIcon
+              type="button"
+              onClick={() => {
+                declineFriendRequest({
+                  variables: {
+                    friendId: user.id,
+                  },
+                  update: updateFriendStatusCache<DeclineFriendRequestMutation>(
+                    user,
+                    FriendStatus.NotFriend
+                  ),
+                });
+              }}
+            >
+              <Mailbox />
+            </ActionIcon>
+          }
+        >
+          <Menu.Item
+            onClick={() => {
+              acceptFriendRequest({
+                variables: {
+                  friendId: user.id,
+                },
+                update: updateFriendStatusCache<AcceptFriendRequestMutation>(
+                  user,
+                  FriendStatus.Friend
+                ),
+              });
+            }}
+          >
+            Accept
+          </Menu.Item>
+        </Menu>
+      );
       break;
   }
 
@@ -79,6 +186,30 @@ const UserItem = ({ user, friendStatus, onUnFriendClicked }: Props) => {
       <Box ml={'auto'}>{menu}</Box>
     </UnstyledButton>
   );
+};
+
+const updateFriendStatusCache = <T,>(
+  user: User,
+  friendStatus: FriendStatus
+) => {
+  return (
+    cache: ApolloCache<T>,
+    {
+      data,
+      errors,
+    }: Omit<FetchResult<T, Record<string, any>, Record<string, any>>, 'context'>
+  ) => {
+    if (!errors) {
+      cache.modify({
+        id: cache.identify(user),
+        fields: {
+          friendStatus() {
+            return friendStatus;
+          },
+        },
+      });
+    }
+  };
 };
 
 export default UserItem;

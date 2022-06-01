@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.acceptFriendRequest = exports.deleteFriend = exports.deleteFriendRequest = exports.sendFriendRequest = exports.updateUser = void 0;
+exports.deleteFriend = exports.declineFriendRequest = exports.acceptFriendRequest = exports.cancelFriendRequest = exports.sendFriendRequest = exports.updateUser = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 const subscriptions_1 = require("../types/subscriptions");
@@ -83,12 +83,75 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
         return true;
     }),
 });
-exports.deleteFriendRequest = (0, nexus_1.mutationField)('deleteFriendRequest', {
+exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', {
     type: 'Boolean',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
     },
-    description: 'Delete a received Friend Request',
+    description: 'Cancel/Delete a sent Friend Request',
+    resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+        yield prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                sentFriendRequests: {
+                    disconnect: {
+                        id: friendId,
+                    },
+                },
+            },
+        });
+        return true;
+    }),
+});
+exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', {
+    type: 'Boolean',
+    args: {
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+    },
+    description: 'Accept a Users friend request',
+    resolve: (_, { friendId }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+        const receivedRequests = yield prisma.user
+            .findUnique({
+            where: {
+                id: userId,
+            },
+        })
+            .receivedFriendRequests();
+        if (!receivedRequests.find((request) => request.id)) {
+            throw new apollo_server_core_1.ForbiddenError('You do not have a request from this user');
+        }
+        const user = yield prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                receivedFriendRequests: {
+                    disconnect: {
+                        id: friendId,
+                    },
+                },
+                friends: {
+                    connect: {
+                        id: friendId,
+                    },
+                },
+            },
+        });
+        pubsub.publish(subscriptions_1.Subscriptions.NEW_FRIEND, {
+            senderId: friendId,
+            receiver: user,
+        });
+        return true;
+    }),
+});
+exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest', {
+    type: 'Boolean',
+    args: {
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+    },
+    description: 'Delete/Decline a received Friend Request',
     resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         yield prisma.user.update({
             where: {
@@ -143,47 +206,6 @@ exports.deleteFriend = (0, nexus_1.mutationField)('deleteFriend', {
                     },
                 },
             },
-        });
-        return true;
-    }),
-});
-exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', {
-    type: 'Boolean',
-    args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-    },
-    description: 'Accept a Users friend request',
-    resolve: (_, { friendId }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-        const receivedRequests = yield prisma.user
-            .findUnique({
-            where: {
-                id: userId,
-            },
-        })
-            .receivedFriendRequests();
-        if (!receivedRequests.find((request) => request.id)) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have a request from this user');
-        }
-        const user = yield prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                receivedFriendRequests: {
-                    disconnect: {
-                        id: friendId,
-                    },
-                },
-                friends: {
-                    connect: {
-                        id: friendId,
-                    },
-                },
-            },
-        });
-        pubsub.publish(subscriptions_1.Subscriptions.NEW_FRIEND, {
-            senderId: friendId,
-            receiver: user,
         });
         return true;
     }),

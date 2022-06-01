@@ -17,43 +17,36 @@ const User = objectType({
     t.nonNull.field('updatedAt', {
       type: DateScalar,
     });
-    t.field('friendStatus', {
+    t.nonNull.field('friendStatus', {
       type: FriendStatus,
       resolve: async (parent, _, { prisma, userId }) => {
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-          include: {
-            friends: {
-              where: {
-                id: parent.id,
-              },
-            },
-            sentFriendRequests: {
-              where: {
-                id: parent.id,
-              },
-            },
-            receivedFriendRequests: {
-              where: {
-                id: parent.id,
-              },
-            },
-          },
-        });
+        const friends = await prisma.user
+          .findUnique({
+            where: { id: userId },
+          })
+          .friends();
 
-        if (!user) {
-          throw new Error("User doesn't exist");
-        }
+        const receivedFriendRequests = await prisma.user
+          .findUnique({
+            where: { id: userId },
+          })
+          .receivedFriendRequests();
 
-        if (user.friends.length) {
+        const sentFriendRequests = await prisma.user
+          .findUnique({
+            where: { id: userId },
+          })
+          .sentFriendRequests();
+
+        if (friends.find((x) => x.id == parent.id)) {
           return 'FRIEND';
         }
 
-        if (user.receivedFriendRequests.length) {
+        if (receivedFriendRequests.find((x) => x.id == parent.id)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (user.sentFriendRequests.length) {
+        if (sentFriendRequests.find((x) => x.id == parent.id)) {
           return 'REQUEST_SENT';
         }
 

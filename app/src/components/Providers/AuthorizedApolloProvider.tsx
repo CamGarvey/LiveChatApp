@@ -10,6 +10,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
+import { relayStylePagination } from '@apollo/client/utilities';
 
 type Props = {
   children: any;
@@ -66,7 +67,15 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
 
   const apolloClient = new ApolloClient({
     link: splitLink,
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            users: relayStylePagination(['usernameFilter']),
+          },
+        },
+      },
+    }),
     connectToDevTools: true,
   });
 

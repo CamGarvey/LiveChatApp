@@ -9,9 +9,8 @@ import {
   Group,
 } from '@mantine/core';
 import React from 'react';
-import { Settings, UserPlus, Users } from 'tabler-icons-react';
+import { UserPlus } from 'tabler-icons-react';
 import { useGetChannelInfoForSidebarQuery } from '../../graphql/generated/graphql';
-import FriendStatus from '../../models/friend-status';
 import UserItem from '../shared/UserItem';
 
 type Props = {
@@ -46,13 +45,7 @@ const ChannelInfoSidebar = ({ channelId }: Props) => {
               pr={'10px'}
             >
               {data.channel.members.map((member) => {
-                return (
-                  <UserItem
-                    key={member.id}
-                    user={{ ...member }}
-                    friendStatus={FriendStatus.Friends}
-                  />
-                );
+                return <UserItem key={member.id} user={{ ...member }} />;
               })}
             </ScrollArea>
           </>
