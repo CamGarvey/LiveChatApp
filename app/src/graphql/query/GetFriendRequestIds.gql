@@ -1,0 +1,10 @@
+query GetFriendRequestIds {
+  me {
+    sentFriendRequests {
+      id
+    }
+    receivedFriendRequests {
+      id
+    }
+  }
+}

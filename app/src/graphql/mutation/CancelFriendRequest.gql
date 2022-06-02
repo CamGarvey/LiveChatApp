@@ -1,3 +1,6 @@
 mutation CancelFriendRequest($friendId: Int!) {
-  cancelFriendRequest(friendId: $friendId)
+  cancelFriendRequest(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }

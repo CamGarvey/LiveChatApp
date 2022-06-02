@@ -75,37 +75,45 @@ const UserSearchModal = ({ onClose, isOpen }: Props) => {
           }}
         />
       </InputWrapper>
-      <Stack py={'10px'}>
-        <ScrollArea>
-          {hasInput && (
-            <>
-              {users.map((user) => {
-                return <UserItem key={user.id} user={user} />;
-              })}
-              <Center>
-                {loadingUsers && <Loader variant="dots" />}
-                {!loadingUsers && users.length === 0 && (
-                  <Text>🙊 No users found 🙊</Text>
-                )}
-              </Center>
-            </>
+      {hasInput && (
+        <>
+          <Stack py={'10px'}>
+            <ScrollArea
+              style={{
+                maxHeight: '490px',
+              }}
+            >
+              {hasInput && (
+                <>
+                  {users.map((user) => {
+                    return <UserItem key={user.id} user={user} />;
+                  })}
+                  <Center>
+                    {loadingUsers && <Loader variant="dots" />}
+                    {!loadingUsers && users.length === 0 && (
+                      <Text>🙊 No users found 🙊</Text>
+                    )}
+                  </Center>
+                </>
+              )}
+            </ScrollArea>
+          </Stack>
+          {data?.users?.pageInfo.hasNextPage && hasInput && (
+            <Button
+              fullWidth
+              onClick={() => {
+                fetchMore({
+                  variables: {
+                    first: USER_PAGINATION_COUNT,
+                    after: data.users.pageInfo.endCursor,
+                  },
+                });
+              }}
+            >
+              Load More
+            </Button>
           )}
-        </ScrollArea>
-      </Stack>
-      {data?.users?.pageInfo.hasNextPage && hasInput && (
-        <Button
-          fullWidth
-          onClick={() => {
-            fetchMore({
-              variables: {
-                first: USER_PAGINATION_COUNT,
-                after: data.users.pageInfo.endCursor,
-              },
-            });
-          }}
-        >
-          Load More
-        </Button>
+        </>
       )}
     </Modal>
   );

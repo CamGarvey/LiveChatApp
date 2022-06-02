@@ -11,39 +11,23 @@ import {
   Text,
   Center,
   Stack,
-  Avatar,
-  Tooltip,
 } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Sun, MoonStars, UserCircle, Logout, Bell } from 'tabler-icons-react';
 import {
-  Sun,
-  MoonStars,
-  UserCircle,
-  Logout,
-  Bell,
-  Check,
-  SquareX,
-  CircleCheck,
-  CircleX,
-} from 'tabler-icons-react';
-import {
-  useAcceptFriendRequestMutation,
-  useDeclineFriendRequestMutation,
+  FriendStatus,
   useGetDataForHeaderLazyQuery,
 } from '../../graphql/generated/graphql';
 import UserSearchModal from '../UserSearchModal/UserSearchModal';
+import FriendRequest from './FriendRequest';
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = () => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
     useAuth0();
   const [friendSearchOpen, setFriendSearchOpen] = useState(false);
 
   const [getData, { loading, data, error }] = useGetDataForHeaderLazyQuery();
-  const [acceptRequest] = useAcceptFriendRequestMutation();
-  const [declineRequest] = useDeclineFriendRequestMutation();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -51,7 +35,11 @@ const Header = (props: Props) => {
     }
   }, [isAuthenticated, user, getData]);
 
-  const receivedFriendRequests = data?.me?.receivedFriendRequests ?? [];
+  // Filtering on Request Received for Apollo cache to filter out once clicked action
+  const receivedFriendRequests =
+    data?.me?.receivedFriendRequests.filter(
+      (x) => x.friendStatus === FriendStatus.RequestReceived
+    ) ?? [];
 
   return (
     <MHeader height={70} p="md">
@@ -72,7 +60,7 @@ const Header = (props: Props) => {
           {isAuthenticated ? (
             <Group>
               <Menu
-                size={'auto'}
+                size={'xl'}
                 control={
                   <ActionIcon>
                     <Bell />
@@ -80,31 +68,19 @@ const Header = (props: Props) => {
                 }
               >
                 <Stack>
-                  <Center>
-                    <Title order={6}>Friend Requests</Title>
-                  </Center>
                   {receivedFriendRequests.length ? (
-                    receivedFriendRequests.map((request) => (
-                      <FriendRequest
-                        {...request}
-                        onDecline={() => {
-                          declineRequest({
-                            variables: {
-                              friendId: request.id,
-                            },
-                          });
-                        }}
-                        onAccept={() => {
-                          acceptRequest({
-                            variables: {
-                              friendId: request.id,
-                            },
-                          });
-                        }}
-                      />
-                    ))
+                    <>
+                      <Center>
+                        <Title order={6}>Friend Requests</Title>
+                      </Center>
+                      {receivedFriendRequests.map((request) => (
+                        <FriendRequest key={request.id} {...request} />
+                      ))}
+                    </>
                   ) : (
-                    <Text>No notifications</Text>
+                    <Center>
+                      <Text>No notifications</Text>
+                    </Center>
                   )}
                 </Stack>
               </Menu>
@@ -140,46 +116,6 @@ const Header = (props: Props) => {
         </Group>
       </Group>
     </MHeader>
-  );
-};
-
-type FriendRequestProps = {
-  name?: string;
-  username: string;
-  onAccept: () => void;
-  onDecline: () => void;
-};
-
-const FriendRequest = ({
-  name,
-  username,
-  onDecline,
-  onAccept,
-}: FriendRequestProps) => {
-  return (
-    <Group>
-      <Avatar
-        size="sm"
-        src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
-      />
-      <Stack spacing={0}>
-        <Text>{name}</Text>
-        <Text>{username}</Text>
-      </Stack>
-
-      <Group ml={'auto'}>
-        <Tooltip label="Decline" openDelay={200} withArrow>
-          <ActionIcon onClick={onDecline}>
-            <CircleX />
-          </ActionIcon>
-        </Tooltip>
-        <Tooltip label="Accept" openDelay={200} withArrow>
-          <ActionIcon onClick={onAccept}>
-            <CircleCheck />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-    </Group>
   );
 };
 

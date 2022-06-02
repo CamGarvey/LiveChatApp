@@ -157,19 +157,19 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['Message'] | null; // Message
   }
   Mutation: { // field return type
-    acceptFriendRequest: boolean | null; // Boolean
+    acceptFriendRequest: NexusGenRootTypes['User'] | null; // User
     addMembersToChannel: NexusGenRootTypes['Channel'] | null; // Channel
-    cancelFriendRequest: boolean | null; // Boolean
+    cancelFriendRequest: NexusGenRootTypes['User'] | null; // User
     createChannel: NexusGenRootTypes['Channel'] | null; // Channel
     createDM: NexusGenRootTypes['Channel'] | null; // Channel
     createMessage: NexusGenRootTypes['Message'] | null; // Message
-    declineFriendRequest: boolean | null; // Boolean
+    declineFriendRequest: NexusGenRootTypes['User'] | null; // User
     deleteChannel: boolean | null; // Boolean
-    deleteFriend: boolean | null; // Boolean
+    deleteFriend: NexusGenRootTypes['User'] | null; // User
     deleteMessage: NexusGenRootTypes['Message'] | null; // Message
     editMessage: NexusGenRootTypes['Message'] | null; // Message
     removeMembersFromChannel: NexusGenRootTypes['Channel'] | null; // Channel
-    sendFriendRequest: boolean | null; // Boolean
+    sendFriendRequest: NexusGenRootTypes['User'] | null; // User
     updateChannel: NexusGenRootTypes['Channel'] | null; // Channel
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -251,19 +251,19 @@ export interface NexusGenFieldTypeNames {
     node: 'Message'
   }
   Mutation: { // field return type name
-    acceptFriendRequest: 'Boolean'
+    acceptFriendRequest: 'User'
     addMembersToChannel: 'Channel'
-    cancelFriendRequest: 'Boolean'
+    cancelFriendRequest: 'User'
     createChannel: 'Channel'
     createDM: 'Channel'
     createMessage: 'Message'
-    declineFriendRequest: 'Boolean'
+    declineFriendRequest: 'User'
     deleteChannel: 'Boolean'
-    deleteFriend: 'Boolean'
+    deleteFriend: 'User'
     deleteMessage: 'Message'
     editMessage: 'Message'
     removeMembersFromChannel: 'Channel'
-    sendFriendRequest: 'Boolean'
+    sendFriendRequest: 'User'
     updateChannel: 'Channel'
     updateUser: 'User'
   }

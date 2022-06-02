@@ -24,50 +24,60 @@ export const updateUser = mutationField('updateUser', {
 });
 
 export const sendFriendRequest = mutationField('sendFriendRequest', {
-  type: 'Boolean',
+  type: User,
   args: {
     friendId: nonNull(intArg()),
   },
   description: 'Send a Friend Request to a User',
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-    // Validate
-    const user = await prisma.user.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
         id: userId,
-        AND: [
-          {
-            // not already friends
-            friends: {
-              none: { id: friendId },
-            },
-            // no request sent
-            sentFriendRequests: {
-              none: { id: friendId },
-            },
-            // no request has been received
-            receivedFriendRequests: {
-              none: { id: friendId },
-            },
+      },
+      include: {
+        friends: {
+          where: {
+            id: friendId,
           },
-        ],
+        },
+        sentFriendRequests: {
+          where: {
+            id: friendId,
+          },
+        },
+        receivedFriendRequests: {
+          where: {
+            id: friendId,
+          },
+        },
       },
     });
 
     if (user == null) {
-      throw new UserInputError(
-        'User does not exist, already friends, request already sent or request already received'
-      );
+      throw new UserInputError('User does not exist');
+    }
+
+    if (user.friends.length) {
+      throw new ForbiddenError('Already friends with this user');
+    }
+
+    if (user.sentFriendRequests.length) {
+      throw new ForbiddenError('Friend request already sent');
+    }
+
+    if (user.receivedFriendRequests.length) {
+      throw new ForbiddenError('You have a request from this user');
     }
 
     // Send request
-    await prisma.user.update({
+    const friend = await prisma.user.update({
       where: {
-        id: userId,
+        id: friendId,
       },
       data: {
-        sentFriendRequests: {
+        receivedFriendRequests: {
           connect: {
-            id: friendId,
+            id: userId,
           },
         },
       },
@@ -79,17 +89,31 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
       sender: user,
     });
 
-    return true;
+    return friend;
   },
 });
 
 export const cancelFriendRequest = mutationField('cancelFriendRequest', {
-  type: 'Boolean',
+  type: User,
   args: {
     friendId: nonNull(intArg()),
   },
   description: 'Cancel/Delete a sent Friend Request',
   resolve: async (_, { friendId }, { prisma, userId }) => {
+    const sentRequests = await prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .sentFriendRequests();
+
+    const friend = sentRequests.find((request) => request.id == friendId);
+
+    if (!friend) {
+      throw new ForbiddenError('You have no sent requests to this user');
+    }
+
     await prisma.user.update({
       where: {
         id: userId,
@@ -102,12 +126,12 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
         },
       },
     });
-    return true;
+    return friend;
   },
 });
 
 export const acceptFriendRequest = mutationField('acceptFriendRequest', {
-  type: 'Boolean',
+  type: User,
   args: {
     friendId: nonNull(intArg()),
   },
@@ -121,7 +145,9 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
       })
       .receivedFriendRequests();
 
-    if (!receivedRequests.find((request) => request.id == friendId)) {
+    const friend = receivedRequests.find((request) => request.id == friendId);
+
+    if (!friend) {
       throw new ForbiddenError('You do not have a request from this user');
     }
 
@@ -152,17 +178,31 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
       receiver: user,
     });
 
-    return true;
+    return friend;
   },
 });
 
 export const declineFriendRequest = mutationField('declineFriendRequest', {
-  type: 'Boolean',
+  type: User,
   args: {
     friendId: nonNull(intArg()),
   },
   description: 'Delete/Decline a received Friend Request',
   resolve: async (_, { friendId }, { prisma, userId }) => {
+    const receivedRequests = await prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .receivedFriendRequests();
+
+    const friend = receivedRequests.find((request) => request.id == friendId);
+
+    if (!friend) {
+      throw new ForbiddenError('You do not have a request from this user');
+    }
+
     await prisma.user.update({
       where: {
         id: userId,
@@ -175,34 +215,37 @@ export const declineFriendRequest = mutationField('declineFriendRequest', {
         },
       },
     });
-    return true;
+    return friend;
   },
 });
 
 export const deleteFriend = mutationField('deleteFriend', {
-  type: 'Boolean',
+  type: User,
   args: {
     friendId: nonNull(intArg()),
   },
   description: 'Delete a Friend',
   resolve: async (_, { friendId }, { prisma, userId }) => {
     // Validate
-    const user = await prisma.user.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
         id: userId,
-        AND: [
-          {
-            // is friend
-            friends: {
-              some: { id: friendId },
-            },
+      },
+      include: {
+        friends: {
+          where: {
+            id: friendId,
           },
-        ],
+        },
       },
     });
 
     if (user == null) {
-      throw new Error('User does not exist or not friends');
+      throw new Error('User does not exist');
+    }
+
+    if (user.friends.length == 0) {
+      throw new Error('You are not friends with this user');
     }
 
     // Delete user
@@ -224,6 +267,6 @@ export const deleteFriend = mutationField('deleteFriend', {
       },
     });
 
-    return true;
+    return user.friends[0];
   },
 });

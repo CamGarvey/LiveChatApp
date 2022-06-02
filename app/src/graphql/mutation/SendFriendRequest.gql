@@ -1,3 +1,6 @@
 mutation SendFriendRequest($friendId: Int!) {
-  sendFriendRequest(friendId: $friendId)
+  sendFriendRequest(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }

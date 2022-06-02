@@ -1,3 +1,6 @@
 mutation DeleteFriend($friendId: Int!) {
-  deleteFriend(friendId: $friendId)
+  deleteFriend(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }

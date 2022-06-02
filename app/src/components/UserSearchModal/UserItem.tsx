@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   ActionIcon,
   Avatar,
@@ -10,27 +10,16 @@ import {
 import { Mailbox, MailForward, UserMinus, UserPlus } from 'tabler-icons-react';
 import User from './User';
 import {
-  AcceptFriendRequestMutation,
-  CancelFriendRequestMutation,
-  DeclineFriendRequestMutation,
-  DeleteFriendMutation,
   FriendStatus,
-  SendFriendRequestMutation,
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
   useDeclineFriendRequestMutation,
   useDeleteFriendMutation,
   useSendFriendRequestMutation,
 } from '../../graphql/generated/graphql';
-import { ApolloCache, FetchResult } from '@apollo/client';
 
 type Props = {
   user: User;
-  onSendFriendRequestClicked?: () => void;
-  onUnFriendClicked?: () => void;
-  onCancelRequestClicked?: () => void;
-  onAcceptFriendRequestClicked?: () => void;
-  onDeclineFriendRequestClicked?: () => void;
 };
 
 const UserItem = ({ user }: Props) => {
@@ -57,10 +46,6 @@ const UserItem = ({ user }: Props) => {
                 variables: {
                   friendId: user.id,
                 },
-                update: updateFriendStatusCache<DeleteFriendMutation>(
-                  user,
-                  FriendStatus.NotFriend
-                ),
               });
             }}
           >
@@ -78,10 +63,6 @@ const UserItem = ({ user }: Props) => {
               variables: {
                 friendId: user.id,
               },
-              update: updateFriendStatusCache<SendFriendRequestMutation>(
-                user,
-                FriendStatus.RequestSent
-              ),
             });
           }}
         >
@@ -104,10 +85,6 @@ const UserItem = ({ user }: Props) => {
                 variables: {
                   friendId: user.id,
                 },
-                update: updateFriendStatusCache<CancelFriendRequestMutation>(
-                  user,
-                  FriendStatus.NotFriend
-                ),
               });
             }}
           >
@@ -120,20 +97,7 @@ const UserItem = ({ user }: Props) => {
       menu = (
         <Menu
           control={
-            <ActionIcon
-              type="button"
-              onClick={() => {
-                declineFriendRequest({
-                  variables: {
-                    friendId: user.id,
-                  },
-                  update: updateFriendStatusCache<DeclineFriendRequestMutation>(
-                    user,
-                    FriendStatus.NotFriend
-                  ),
-                });
-              }}
-            >
+            <ActionIcon type="button">
               <Mailbox />
             </ActionIcon>
           }
@@ -144,14 +108,21 @@ const UserItem = ({ user }: Props) => {
                 variables: {
                   friendId: user.id,
                 },
-                update: updateFriendStatusCache<AcceptFriendRequestMutation>(
-                  user,
-                  FriendStatus.Friend
-                ),
               });
             }}
           >
             Accept
+          </Menu.Item>
+          <Menu.Item
+            onClick={() => {
+              declineFriendRequest({
+                variables: {
+                  friendId: user.id,
+                },
+              });
+            }}
+          >
+            Decline
           </Menu.Item>
         </Menu>
       );
@@ -188,28 +159,28 @@ const UserItem = ({ user }: Props) => {
   );
 };
 
-const updateFriendStatusCache = <T,>(
-  user: User,
-  friendStatus: FriendStatus
-) => {
-  return (
-    cache: ApolloCache<T>,
-    {
-      data,
-      errors,
-    }: Omit<FetchResult<T, Record<string, any>, Record<string, any>>, 'context'>
-  ) => {
-    if (!errors) {
-      cache.modify({
-        id: cache.identify(user),
-        fields: {
-          friendStatus() {
-            return friendStatus;
-          },
-        },
-      });
-    }
-  };
-};
+// const updateFriendStatusCache = <T,>(
+//   user: User,
+//   friendStatus: FriendStatus
+// ) => {
+//   return (
+//     cache: ApolloCache<T>,
+//     {
+//       data,
+//       errors,
+//     }: Omit<FetchResult<T, Record<string, any>, Record<string, any>>, 'context'>
+//   ) => {
+//     if (!errors) {
+//       cache.modify({
+//         id: cache.identify(user),
+//         fields: {
+//           friendStatus() {
+//             return friendStatus;
+//           },
+//         },
+//       });
+//     }
+//   };
+// };
 
 export default UserItem;

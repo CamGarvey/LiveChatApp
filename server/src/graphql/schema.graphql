@@ -69,7 +69,7 @@ type MessageEdge {
 
 type Mutation {
   """Accept a Users friend request"""
-  acceptFriendRequest(friendId: Int!): Boolean
+  acceptFriendRequest(friendId: Int!): User
 
   """Add Members into Channel"""
   addMembersToChannel(
@@ -81,7 +81,7 @@ type Mutation {
   ): Channel
 
   """Cancel/Delete a sent Friend Request"""
-  cancelFriendRequest(friendId: Int!): Boolean
+  cancelFriendRequest(friendId: Int!): User
 
   """Create a Channel"""
   createChannel(
@@ -111,7 +111,7 @@ type Mutation {
   ): Message
 
   """Delete/Decline a received Friend Request"""
-  declineFriendRequest(friendId: Int!): Boolean
+  declineFriendRequest(friendId: Int!): User
 
   """Delete a Channel"""
   deleteChannel(
@@ -120,7 +120,7 @@ type Mutation {
   ): Boolean
 
   """Delete a Friend"""
-  deleteFriend(friendId: Int!): Boolean
+  deleteFriend(friendId: Int!): User
 
   """Delete a Message"""
   deleteMessage(
@@ -141,7 +141,7 @@ type Mutation {
   removeMembersFromChannel(channelId: Int!, membersIds: [Int!]!): Channel
 
   """Send a Friend Request to a User"""
-  sendFriendRequest(friendId: Int!): Boolean
+  sendFriendRequest(friendId: Int!): User
 
   """Update a Channel"""
   updateChannel(

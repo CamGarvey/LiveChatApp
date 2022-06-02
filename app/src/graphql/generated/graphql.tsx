@@ -76,11 +76,11 @@ export type MessageEdge = {
 export type Mutation = {
   __typename?: 'Mutation';
   /** Accept a Users friend request */
-  acceptFriendRequest?: Maybe<Scalars['Boolean']>;
+  acceptFriendRequest?: Maybe<User>;
   /** Add Members into Channel */
   addMembersToChannel?: Maybe<Channel>;
   /** Cancel/Delete a sent Friend Request */
-  cancelFriendRequest?: Maybe<Scalars['Boolean']>;
+  cancelFriendRequest?: Maybe<User>;
   /** Create a Channel */
   createChannel?: Maybe<Channel>;
   /** Create Direct Message Channel */
@@ -88,11 +88,11 @@ export type Mutation = {
   /** Create a Message in a Channel */
   createMessage?: Maybe<Message>;
   /** Delete/Decline a received Friend Request */
-  declineFriendRequest?: Maybe<Scalars['Boolean']>;
+  declineFriendRequest?: Maybe<User>;
   /** Delete a Channel */
   deleteChannel?: Maybe<Scalars['Boolean']>;
   /** Delete a Friend */
-  deleteFriend?: Maybe<Scalars['Boolean']>;
+  deleteFriend?: Maybe<User>;
   /** Delete a Message */
   deleteMessage?: Maybe<Message>;
   /** Edit a Message */
@@ -100,7 +100,7 @@ export type Mutation = {
   /** Remove Members from Channel */
   removeMembersFromChannel?: Maybe<Channel>;
   /** Send a Friend Request to a User */
-  sendFriendRequest?: Maybe<Scalars['Boolean']>;
+  sendFriendRequest?: Maybe<User>;
   /** Update a Channel */
   updateChannel?: Maybe<Channel>;
   /** Update current User */
@@ -322,14 +322,14 @@ export type AcceptFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: boolean | null };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
 
 export type CancelFriendRequestMutationVariables = Exact<{
   friendId: Scalars['Int'];
 }>;
 
 
-export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: boolean | null };
+export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
 
 export type CreateChannelMutationVariables = Exact<{
   name: Scalars['String'];
@@ -354,21 +354,21 @@ export type DeclineFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: boolean | null };
+export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
 
 export type DeleteFriendMutationVariables = Exact<{
   friendId: Scalars['Int'];
 }>;
 
 
-export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: boolean | null };
+export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
 
 export type SendFriendRequestMutationVariables = Exact<{
   friendId: Scalars['Int'];
 }>;
 
 
-export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: boolean | null };
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
 
 export type GetChannelInfoForSidebarQueryVariables = Exact<{
   channelId: Scalars['Int'];
@@ -396,7 +396,17 @@ export type GetChannelsForNavQuery = { __typename?: 'Query', channels: Array<{ _
 export type GetDataForHeaderQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDataForHeaderQuery = { __typename?: 'Query', me?: { __typename?: 'User', name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: number, name?: string | null, username: string }> } | null };
+export type GetDataForHeaderQuery = { __typename?: 'Query', me?: { __typename?: 'User', name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
+
+export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFriendIdsQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number }> };
+
+export type GetFriendRequestIdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename?: 'User', sentFriendRequests: Array<{ __typename?: 'User', id: number }>, receivedFriendRequests: Array<{ __typename?: 'User', id: number }> } | null };
 
 export type GetFriendsForSearchQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -432,7 +442,10 @@ export type GetNewMessagesSubscription = { __typename?: 'Subscription', newMessa
 
 export const AcceptFriendRequestDocument = gql`
     mutation AcceptFriendRequest($friendId: Int!) {
-  acceptFriendRequest(friendId: $friendId)
+  acceptFriendRequest(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }
     `;
 export type AcceptFriendRequestMutationFn = Apollo.MutationFunction<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
@@ -463,7 +476,10 @@ export type AcceptFriendRequestMutationResult = Apollo.MutationResult<AcceptFrie
 export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
 export const CancelFriendRequestDocument = gql`
     mutation CancelFriendRequest($friendId: Int!) {
-  cancelFriendRequest(friendId: $friendId)
+  cancelFriendRequest(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }
     `;
 export type CancelFriendRequestMutationFn = Apollo.MutationFunction<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
@@ -576,7 +592,10 @@ export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMut
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
 export const DeclineFriendRequestDocument = gql`
     mutation DeclineFriendRequest($friendId: Int!) {
-  declineFriendRequest(friendId: $friendId)
+  declineFriendRequest(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }
     `;
 export type DeclineFriendRequestMutationFn = Apollo.MutationFunction<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
@@ -607,7 +626,10 @@ export type DeclineFriendRequestMutationResult = Apollo.MutationResult<DeclineFr
 export type DeclineFriendRequestMutationOptions = Apollo.BaseMutationOptions<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
 export const DeleteFriendDocument = gql`
     mutation DeleteFriend($friendId: Int!) {
-  deleteFriend(friendId: $friendId)
+  deleteFriend(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }
     `;
 export type DeleteFriendMutationFn = Apollo.MutationFunction<DeleteFriendMutation, DeleteFriendMutationVariables>;
@@ -638,7 +660,10 @@ export type DeleteFriendMutationResult = Apollo.MutationResult<DeleteFriendMutat
 export type DeleteFriendMutationOptions = Apollo.BaseMutationOptions<DeleteFriendMutation, DeleteFriendMutationVariables>;
 export const SendFriendRequestDocument = gql`
     mutation SendFriendRequest($friendId: Int!) {
-  sendFriendRequest(friendId: $friendId)
+  sendFriendRequest(friendId: $friendId) {
+    id
+    friendStatus
+  }
 }
     `;
 export type SendFriendRequestMutationFn = Apollo.MutationFunction<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
@@ -826,6 +851,7 @@ export const GetDataForHeaderDocument = gql`
       id
       name
       username
+      friendStatus
     }
   }
 }
@@ -857,6 +883,79 @@ export function useGetDataForHeaderLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetDataForHeaderQueryHookResult = ReturnType<typeof useGetDataForHeaderQuery>;
 export type GetDataForHeaderLazyQueryHookResult = ReturnType<typeof useGetDataForHeaderLazyQuery>;
 export type GetDataForHeaderQueryResult = Apollo.QueryResult<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>;
+export const GetFriendIdsDocument = gql`
+    query GetFriendIds {
+  friends {
+    id
+  }
+}
+    `;
+
+/**
+ * __useGetFriendIdsQuery__
+ *
+ * To run a query within a React component, call `useGetFriendIdsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendIdsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendIdsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFriendIdsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendIdsQuery, GetFriendIdsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(GetFriendIdsDocument, options);
+      }
+export function useGetFriendIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendIdsQuery, GetFriendIdsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendIdsQuery, GetFriendIdsQueryVariables>(GetFriendIdsDocument, options);
+        }
+export type GetFriendIdsQueryHookResult = ReturnType<typeof useGetFriendIdsQuery>;
+export type GetFriendIdsLazyQueryHookResult = ReturnType<typeof useGetFriendIdsLazyQuery>;
+export type GetFriendIdsQueryResult = Apollo.QueryResult<GetFriendIdsQuery, GetFriendIdsQueryVariables>;
+export const GetFriendRequestIdsDocument = gql`
+    query GetFriendRequestIds {
+  me {
+    sentFriendRequests {
+      id
+    }
+    receivedFriendRequests {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetFriendRequestIdsQuery__
+ *
+ * To run a query within a React component, call `useGetFriendRequestIdsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendRequestIdsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendRequestIdsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFriendRequestIdsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>(GetFriendRequestIdsDocument, options);
+      }
+export function useGetFriendRequestIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>(GetFriendRequestIdsDocument, options);
+        }
+export type GetFriendRequestIdsQueryHookResult = ReturnType<typeof useGetFriendRequestIdsQuery>;
+export type GetFriendRequestIdsLazyQueryHookResult = ReturnType<typeof useGetFriendRequestIdsLazyQuery>;
+export type GetFriendRequestIdsQueryResult = Apollo.QueryResult<GetFriendRequestIdsQuery, GetFriendRequestIdsQueryVariables>;
 export const GetFriendsForSearchDocument = gql`
     query GetFriendsForSearch {
   friends {
