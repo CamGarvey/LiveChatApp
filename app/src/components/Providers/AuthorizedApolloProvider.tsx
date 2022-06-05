@@ -72,6 +72,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         Query: {
           fields: {
             users: relayStylePagination(['usernameFilter']),
+            channelMessages: relayStylePagination(['channelId']),
           },
         },
       },

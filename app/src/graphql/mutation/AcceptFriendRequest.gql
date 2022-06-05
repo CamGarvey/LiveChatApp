@@ -1,4 +1,4 @@
-mutation AcceptFriendRequest($friendId: Int!) {
+mutation AcceptFriendRequest($friendId: String!) {
   acceptFriendRequest(friendId: $friendId) {
     id
     friendStatus

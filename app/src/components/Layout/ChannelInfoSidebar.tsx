@@ -8,16 +8,17 @@ import {
   ActionIcon,
   Group,
 } from '@mantine/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { UserPlus } from 'tabler-icons-react';
 import { useGetChannelInfoForSidebarQuery } from '../../graphql/generated/graphql';
 import UserItem from '../shared/UserItem';
 
 type Props = {
-  channelId: number;
+  channelId: string;
 };
 
 const ChannelInfoSidebar = ({ channelId }: Props) => {
+  const [isAddMembersModelOpen, setIsAddMembersModelOpen] = useState(false);
   const { loading, data, error } = useGetChannelInfoForSidebarQuery({
     variables: {
       channelId,
@@ -33,8 +34,14 @@ const ChannelInfoSidebar = ({ channelId }: Props) => {
           <>
             <Title order={4}>{data.channel.name}</Title>
             <Group>
-              <Text>Members</Text>
-              <ActionIcon ml={'auto'} variant="light">
+              <Text>Members ({data.channel.members.length})</Text>
+              <ActionIcon
+                ml={'auto'}
+                variant="light"
+                onClick={() => {
+                  console.log('Hello');
+                }}
+              >
                 <UserPlus size={16} />
               </ActionIcon>
             </Group>

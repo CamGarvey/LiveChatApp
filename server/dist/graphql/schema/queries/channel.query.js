@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.channel = exports.channels = exports.channelMessages = void 0;
+const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const apollo_server_core_1 = require("apollo-server-core");
-const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
 const channel_1 = __importDefault(require("../types/channel"));
 const message_1 = __importDefault(require("../types/message"));
@@ -24,7 +24,7 @@ exports.channelMessages = (0, nexus_1.extendType)({
         t.nonNull.connectionField('channelMessages', {
             type: message_1.default,
             additionalArgs: {
-                channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+                channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
                     description: 'If set, filters users by given filter',
                 })),
             },
@@ -39,27 +39,18 @@ exports.channelMessages = (0, nexus_1.extendType)({
                 if (!members.find((member) => member.id == userId)) {
                     throw new apollo_server_core_1.ForbiddenError('You do not have permission to this channel');
                 }
-                const offset = after || before ? (0, graphql_relay_1.cursorToOffset)(after || before) + 1 : 0;
-                if (isNaN(offset))
-                    throw new Error('cursor is invalid');
-                const [totalCount, items] = yield Promise.all([
-                    prisma.message.count({
-                        where: {
-                            channelId,
-                        },
-                    }),
-                    prisma.message.findMany({
-                        take: first || last,
-                        skip: offset,
-                        where: {
-                            channelId,
-                        },
+                return (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => {
+                    return prisma.message.findMany(Object.assign(Object.assign({}, args), {
+                        where: { channelId },
                         orderBy: {
-                            createdAt: first ? 'asc' : 'desc',
+                            createdAt: 'asc',
                         },
-                    }),
-                ]);
-                return (0, graphql_relay_1.connectionFromArraySlice)(items, { first, after }, { sliceStart: offset, arrayLength: totalCount });
+                    }));
+                }, () => prisma.message.count({
+                    where: {
+                        channelId,
+                    },
+                }), { after, first, before, last });
             }),
         });
     },
@@ -87,7 +78,7 @@ exports.channel = (0, nexus_1.extendType)({
         t.field('channel', {
             type: channel_1.default,
             args: {
-                channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+                channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
                     description: 'Id of channel',
                 })),
             },

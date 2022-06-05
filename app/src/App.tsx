@@ -15,10 +15,11 @@ import Chat from './components/Chat/Chat';
 import Header from './components/Layout/Header';
 import ChannelNav from './components/Layout/ChannelNav';
 import ChannelInfoSidebar from './components/Layout/ChannelInfoSidebar';
+import { useGetNewMessagesSubscription } from './graphql/generated/graphql';
 
 export const App = () => {
   const { isAuthenticated, user } = useAuth0();
-  const [channel, setChannel] = useState<number>(null);
+  const [channel, setChannel] = useState<string>(null);
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',
@@ -29,8 +30,6 @@ export const App = () => {
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
   useHotkeys([['mod+J', () => toggleColorScheme()]]);
-
-  useEffect(() => {});
 
   return (
     <ColorSchemeProvider

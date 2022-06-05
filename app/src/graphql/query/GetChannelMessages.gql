@@ -1,5 +1,5 @@
 query GetChannelMessages(
-  $channelId: Int!
+  $channelId: String!
   $last: Int
   $after: String
   $first: Int
@@ -19,7 +19,6 @@ query GetChannelMessages(
       hasNextPage
     }
     edges {
-      cursor
       node {
         id
         content

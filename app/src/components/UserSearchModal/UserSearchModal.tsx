@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
-import UserItem from './UserItem';
+import UserItem from '../shared/UserItem';
 import {
   Button,
   Center,
@@ -14,7 +14,7 @@ import {
   Text,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
-import User from './User';
+import User from '../shared/User';
 
 const USER_PAGINATION_COUNT = 5;
 

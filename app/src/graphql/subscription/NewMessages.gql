@@ -1,4 +1,4 @@
-subscription GetNewMessages($channelId: Int!) {
+subscription GetNewMessages($channelId: String!) {
   newMessage(channelId: $channelId) {
     message {
       id

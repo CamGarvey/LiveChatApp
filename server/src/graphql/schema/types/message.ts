@@ -6,12 +6,12 @@ import User from './user';
 const Message = objectType({
   name: 'Message',
   definition(t) {
-    t.nonNull.int('id');
+    t.nonNull.string('id');
     t.nonNull.string('content');
     t.nonNull.field('createdAt', {
       type: DateScalar,
     });
-    t.nonNull.int('createdById');
+    t.nonNull.string('createdById');
     t.nonNull.field('createdBy', {
       type: User,
       resolve: (parent, _, { prisma }) => {

@@ -6,7 +6,7 @@ import {
 } from '../../graphql/generated/graphql';
 
 type Props = {
-  id: number;
+  id: string;
   name?: string;
   username: string;
 };

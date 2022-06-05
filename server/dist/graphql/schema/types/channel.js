@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const graphql_relay_1 = require("graphql-relay");
+const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const nexus_1 = require("nexus");
 const message_1 = __importDefault(require("./message"));
 const scalars_1 = require("./scalars");
@@ -20,7 +20,7 @@ const user_1 = __importDefault(require("./user"));
 const Channel = (0, nexus_1.objectType)({
     name: 'Channel',
     definition(t) {
-        t.nonNull.int('id');
+        t.nonNull.string('id');
         t.nonNull.string('name');
         t.nonNull.field('createdAt', {
             type: scalars_1.DateScalar,
@@ -44,18 +44,8 @@ const Channel = (0, nexus_1.objectType)({
         });
         t.nonNull.connectionField('messages', {
             type: message_1.default,
-            resolve: (_, { after, first }, { prisma }) => __awaiter(this, void 0, void 0, function* () {
-                const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
-                if (isNaN(offset))
-                    throw new Error('cursor is invalid');
-                const [totalCount, items] = yield Promise.all([
-                    prisma.message.count(),
-                    prisma.message.findMany({
-                        take: first,
-                        skip: offset,
-                    }),
-                ]);
-                return (0, graphql_relay_1.connectionFromArraySlice)(items, { first, after }, { sliceStart: offset, arrayLength: totalCount });
+            resolve: (parent, args, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+                return yield (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => prisma.message.findMany(Object.assign(Object.assign({}, args), { where: { channelId: parent.id } })), () => prisma.message.count(Object.assign({ where: { channelId: parent.id } })), args);
             }),
         });
         t.nonNull.boolean('isDM');

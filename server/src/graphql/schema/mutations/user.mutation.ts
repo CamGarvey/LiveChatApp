@@ -26,7 +26,7 @@ export const updateUser = mutationField('updateUser', {
 export const sendFriendRequest = mutationField('sendFriendRequest', {
   type: User,
   args: {
-    friendId: nonNull(intArg()),
+    friendId: nonNull(stringArg()),
   },
   description: 'Send a Friend Request to a User',
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
@@ -96,7 +96,7 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
 export const cancelFriendRequest = mutationField('cancelFriendRequest', {
   type: User,
   args: {
-    friendId: nonNull(intArg()),
+    friendId: nonNull(stringArg()),
   },
   description: 'Cancel/Delete a sent Friend Request',
   resolve: async (_, { friendId }, { prisma, userId }) => {
@@ -133,7 +133,7 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
 export const acceptFriendRequest = mutationField('acceptFriendRequest', {
   type: User,
   args: {
-    friendId: nonNull(intArg()),
+    friendId: nonNull(stringArg()),
   },
   description: 'Accept a Users friend request',
   resolve: async (_, { friendId }, { prisma, pubsub, userId }) => {
@@ -185,7 +185,7 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
 export const declineFriendRequest = mutationField('declineFriendRequest', {
   type: User,
   args: {
-    friendId: nonNull(intArg()),
+    friendId: nonNull(stringArg()),
   },
   description: 'Delete/Decline a received Friend Request',
   resolve: async (_, { friendId }, { prisma, userId }) => {
@@ -222,7 +222,7 @@ export const declineFriendRequest = mutationField('declineFriendRequest', {
 export const deleteFriend = mutationField('deleteFriend', {
   type: User,
   args: {
-    friendId: nonNull(intArg()),
+    friendId: nonNull(stringArg()),
   },
   description: 'Delete a Friend',
   resolve: async (_, { friendId }, { prisma, userId }) => {

@@ -1,6 +1,6 @@
+import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { ForbiddenError } from 'apollo-server-core';
-import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
-import { extendType, intArg, nonNull } from 'nexus';
+import { extendType, nonNull, stringArg } from 'nexus';
 import Channel from '../types/channel';
 import Message from '../types/message';
 
@@ -11,7 +11,7 @@ export const channelMessages = extendType({
       type: Message,
       additionalArgs: {
         channelId: nonNull(
-          intArg({
+          stringArg({
             description: 'If set, filters users by given filter',
           })
         ),
@@ -34,33 +34,26 @@ export const channelMessages = extendType({
             'You do not have permission to this channel'
           );
         }
+        return findManyCursorConnection(
+          (args) => {
+            return prisma.message.findMany({
+              ...args,
+              ...{
+                where: { channelId },
+                orderBy: {
+                  createdAt: 'asc',
+                },
+              },
+            });
+          },
 
-        const offset =
-          after || before ? cursorToOffset(after || before) + 1 : 0;
-        if (isNaN(offset)) throw new Error('cursor is invalid');
-
-        const [totalCount, items] = await Promise.all([
-          prisma.message.count({
-            where: {
-              channelId,
-            },
-          }),
-          prisma.message.findMany({
-            take: first || last,
-            skip: offset,
-            where: {
-              channelId,
-            },
-            orderBy: {
-              createdAt: first ? 'asc' : 'desc',
-            },
-          }),
-        ]);
-
-        return connectionFromArraySlice(
-          items,
-          { first, after },
-          { sliceStart: offset, arrayLength: totalCount }
+          () =>
+            prisma.message.count({
+              where: {
+                channelId,
+              },
+            }),
+          { after, first, before, last }
         );
       },
     });
@@ -92,7 +85,7 @@ export const channel = extendType({
       type: Channel,
       args: {
         channelId: nonNull(
-          intArg({
+          stringArg({
             description: 'Id of channel',
           })
         ),

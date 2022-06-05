@@ -21,7 +21,7 @@ const subscriptions_1 = require("../types/subscriptions");
 const newMessagePayload = (0, nexus_1.objectType)({
     name: 'NewMessagePayload',
     definition(t) {
-        t.nonNull.int('channelId');
+        t.nonNull.string('channelId');
         t.nonNull.field('message', {
             type: message_1.default,
         });
@@ -30,7 +30,7 @@ const newMessagePayload = (0, nexus_1.objectType)({
 exports.newMessageSubscription = (0, nexus_1.subscriptionField)('newMessage', {
     type: newMessagePayload,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
         const members = yield context.prisma.channel

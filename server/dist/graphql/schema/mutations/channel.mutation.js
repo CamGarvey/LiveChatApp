@@ -29,7 +29,7 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
             description: 'If the Channel should be private',
             default: true,
         }),
-        memberIds: (0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        memberIds: (0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Ids of Users to be added to Channel',
         }))),
     },
@@ -79,7 +79,7 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
 exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
     type: 'Boolean',
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Channel to be deleted',
         })),
     },
@@ -110,7 +110,7 @@ exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
 exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
     type: channel_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Channel to be updated',
         })),
         name: (0, nexus_1.stringArg)({
@@ -171,10 +171,10 @@ exports.createDM = (0, nexus_1.mutationField)('createDM', {
 exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', {
     type: channel_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Channel to add Users to',
         })),
-        memberIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        memberIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Ids of Users to be added to Channel',
         })))),
     },
@@ -220,8 +220,8 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
 exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFromChannel', {
     type: channel_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
-        membersIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.intArg)()))),
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
+        membersIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)()))),
     },
     description: 'Remove Members from Channel',
     resolve: (_, { channelId, membersIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {

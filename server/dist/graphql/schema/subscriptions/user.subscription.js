@@ -20,7 +20,7 @@ exports.newFriendRequestSubscription = (0, nexus_1.subscriptionField)('newFriend
 exports.newFriendSubscription = (0, nexus_1.subscriptionField)('newFriend', {
     type: user_1.default,
     args: {
-        userId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        userId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator(subscriptions_1.Subscriptions.NEW_FRIEND), (payload, _, context) => {
         return payload.receiverId === context.userId;

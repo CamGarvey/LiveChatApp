@@ -1,4 +1,4 @@
-import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
+import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { objectType } from 'nexus';
 import Message from './message';
 import { DateScalar } from './scalars';
@@ -7,7 +7,7 @@ import User from './user';
 const Channel = objectType({
   name: 'Channel',
   definition(t) {
-    t.nonNull.int('id');
+    t.nonNull.string('id');
     t.nonNull.string('name');
     t.nonNull.field('createdAt', {
       type: DateScalar,
@@ -31,22 +31,18 @@ const Channel = objectType({
     });
     t.nonNull.connectionField('messages', {
       type: Message,
-      resolve: async (_, { after, first }, { prisma }) => {
-        const offset = after ? cursorToOffset(after) + 1 : 0;
-        if (isNaN(offset)) throw new Error('cursor is invalid');
-
-        const [totalCount, items] = await Promise.all([
-          prisma.message.count(),
-          prisma.message.findMany({
-            take: first,
-            skip: offset,
-          }),
-        ]);
-
-        return connectionFromArraySlice(
-          items,
-          { first, after },
-          { sliceStart: offset, arrayLength: totalCount }
+      resolve: async (parent, args, { prisma }) => {
+        return await findManyCursorConnection(
+          (args) =>
+            prisma.message.findMany({
+              ...args,
+              ...{ where: { channelId: parent.id } },
+            }),
+          () =>
+            prisma.message.count({
+              ...{ where: { channelId: parent.id } },
+            }),
+          args
         );
       },
     });

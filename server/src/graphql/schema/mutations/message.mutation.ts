@@ -7,7 +7,7 @@ export const createMessage = mutationField('createMessage', {
   type: Message,
   args: {
     channelId: nonNull(
-      intArg({
+      stringArg({
         description: 'Id of Channel to create Message in',
       })
     ),
@@ -57,7 +57,7 @@ export const deleteMessage = mutationField('deleteMessage', {
   type: Message,
   args: {
     messageId: nonNull(
-      intArg({
+      stringArg({
         description: 'Id of Message to delete',
       })
     ),
@@ -100,7 +100,7 @@ export const editMessage = mutationField('editMessage', {
   type: Message,
   args: {
     messageId: nonNull(
-      intArg({
+      stringArg({
         description: 'Id of Message to edit',
       })
     ),

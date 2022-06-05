@@ -10,12 +10,12 @@ const user_1 = __importDefault(require("./user"));
 const Message = (0, nexus_1.objectType)({
     name: 'Message',
     definition(t) {
-        t.nonNull.int('id');
+        t.nonNull.string('id');
         t.nonNull.string('content');
         t.nonNull.field('createdAt', {
             type: scalars_1.DateScalar,
         });
-        t.nonNull.int('createdById');
+        t.nonNull.string('createdById');
         t.nonNull.field('createdBy', {
             type: user_1.default,
             resolve: (parent, _, { prisma }) => {

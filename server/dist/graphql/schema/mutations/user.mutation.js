@@ -39,7 +39,7 @@ exports.updateUser = (0, nexus_1.mutationField)('updateUser', {
 exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
     type: user_1.default,
     args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Send a Friend Request to a User',
     resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -99,7 +99,7 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
 exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', {
     type: user_1.default,
     args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Cancel/Delete a sent Friend Request',
     resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -132,7 +132,7 @@ exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', 
 exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', {
     type: user_1.default,
     args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Accept a Users friend request',
     resolve: (_, { friendId }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -174,7 +174,7 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
 exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest', {
     type: user_1.default,
     args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Delete/Decline a received Friend Request',
     resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -207,7 +207,7 @@ exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest'
 exports.deleteFriend = (0, nexus_1.mutationField)('deleteFriend', {
     type: user_1.default,
     args: {
-        friendId: (0, nexus_1.nonNull)((0, nexus_1.intArg)()),
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Delete a Friend',
     resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {

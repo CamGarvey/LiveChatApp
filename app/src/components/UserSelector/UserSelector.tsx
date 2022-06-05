@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Search } from 'tabler-icons-react';
 import UserItem from './UserSelectItem';
 
-type User = { id: number; name?: string; username: string };
+type User = { id: string; name?: string; username: string };
 
 type Props = {
   users: User[];

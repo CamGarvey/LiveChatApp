@@ -1,7 +1,4 @@
 import React from 'react';
-import { IoMdMailUnread } from 'react-icons/io';
-import { BiMailSend } from 'react-icons/bi';
-import { FriendStatus, User } from '../../graphql/generated/graphql';
 import {
   ActionIcon,
   Avatar,
@@ -10,19 +7,30 @@ import {
   Text,
   UnstyledButton,
 } from '@mantine/core';
-import { UserPlus } from 'tabler-icons-react';
+import { Mailbox, MailForward, UserMinus, UserPlus } from 'tabler-icons-react';
+import {
+  FriendStatus,
+  useAcceptFriendRequestMutation,
+  useCancelFriendRequestMutation,
+  useDeclineFriendRequestMutation,
+  useDeleteFriendMutation,
+  useSendFriendRequestMutation,
+} from '../../graphql/generated/graphql';
+import User from './User';
 
 type Props = {
-  user: {
-    id: number;
-    name?: string;
-    username: string;
-    friendStatus: FriendStatus;
-  };
+  user: User;
 };
 
 const UserItem = ({ user }: Props) => {
   const { name, username, friendStatus } = user;
+
+  // Update friend status mutations
+  const [cancelFriendRequest] = useCancelFriendRequestMutation();
+  const [sendFriendRequest] = useSendFriendRequestMutation();
+  const [declineFriendRequest] = useDeclineFriendRequestMutation();
+  const [acceptFriendRequest] = useAcceptFriendRequestMutation();
+  const [deleteFriend] = useDeleteFriendMutation();
 
   let menu: React.ReactElement;
 
@@ -30,22 +38,94 @@ const UserItem = ({ user }: Props) => {
     case FriendStatus.Friend:
       menu = (
         <Menu>
-          <Menu.Item>Unfriend</Menu.Item>
+          <Menu.Item
+            icon={<UserMinus />}
+            type="button"
+            onClick={() => {
+              deleteFriend({
+                variables: {
+                  friendId: user.id,
+                },
+              });
+            }}
+          >
+            <Text>Unfriend</Text>
+          </Menu.Item>
         </Menu>
       );
       break;
     case FriendStatus.NotFriend:
       menu = (
-        <ActionIcon aria-label="Add user">
+        <ActionIcon
+          type="button"
+          onClick={() => {
+            sendFriendRequest({
+              variables: {
+                friendId: user.id,
+              },
+            });
+          }}
+        >
           <UserPlus />
         </ActionIcon>
       );
       break;
     case FriendStatus.RequestSent:
-      menu = <BiMailSend />;
+      menu = (
+        <Menu
+          control={
+            <ActionIcon type="button">
+              <MailForward />
+            </ActionIcon>
+          }
+        >
+          <Menu.Item
+            onClick={() => {
+              cancelFriendRequest({
+                variables: {
+                  friendId: user.id,
+                },
+              });
+            }}
+          >
+            Cancel Friend Request
+          </Menu.Item>
+        </Menu>
+      );
       break;
     case FriendStatus.RequestReceived:
-      menu = <IoMdMailUnread />;
+      menu = (
+        <Menu
+          control={
+            <ActionIcon type="button">
+              <Mailbox />
+            </ActionIcon>
+          }
+        >
+          <Menu.Item
+            onClick={() => {
+              acceptFriendRequest({
+                variables: {
+                  friendId: user.id,
+                },
+              });
+            }}
+          >
+            Accept
+          </Menu.Item>
+          <Menu.Item
+            onClick={() => {
+              declineFriendRequest({
+                variables: {
+                  friendId: user.id,
+                },
+              });
+            }}
+          >
+            Decline
+          </Menu.Item>
+        </Menu>
+      );
       break;
   }
 
@@ -72,11 +152,35 @@ const UserItem = ({ user }: Props) => {
         size="sm"
         src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
       />
-      {/* <Text>{name}</Text> */}
+      <Text>{name}</Text>
       <Text>{username}</Text>
       <Box ml={'auto'}>{menu}</Box>
     </UnstyledButton>
   );
 };
+
+// const updateFriendStatusCache = <T,>(
+//   user: User,
+//   friendStatus: FriendStatus
+// ) => {
+//   return (
+//     cache: ApolloCache<T>,
+//     {
+//       data,
+//       errors,
+//     }: Omit<FetchResult<T, Record<string, any>, Record<string, any>>, 'context'>
+//   ) => {
+//     if (!errors) {
+//       cache.modify({
+//         id: cache.identify(user),
+//         fields: {
+//           friendStatus() {
+//             return friendStatus;
+//           },
+//         },
+//       });
+//     }
+//   };
+// };
 
 export default UserItem;

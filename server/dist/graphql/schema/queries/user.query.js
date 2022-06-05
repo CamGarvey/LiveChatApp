@@ -119,7 +119,7 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
 exports.UserQuery = (0, nexus_1.queryField)('user', {
     type: user_1.default,
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        id: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'id of user',
         })),
     },

@@ -20,7 +20,7 @@ const subscriptions_1 = require("../types/subscriptions");
 exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
     type: message_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Channel to create Message in',
         })),
         content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
@@ -61,7 +61,7 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
 exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
     type: message_1.default,
     args: {
-        messageId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        messageId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Message to delete',
         })),
     },
@@ -94,7 +94,7 @@ exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
 exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
     type: message_1.default,
     args: {
-        messageId: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        messageId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Message to edit',
         })),
         content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({

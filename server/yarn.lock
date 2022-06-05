@@ -50,6 +50,13 @@
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
+"@devoxa/prisma-relay-cursor-connection@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@devoxa/prisma-relay-cursor-connection/-/prisma-relay-cursor-connection-2.2.1.tgz#40f65accff3d044a11c014fd03b17a12bca8fd81"
+  integrity sha512-WGtHPHDHaUJ4/ESmz+UL5T1FFZNYbgSBCTol488aInoDBttBmeNKHh5l66PzL9Z0GNwDUrfakWnAZs0DEA0XHw==
+  dependencies:
+    graphql-fields "^2.0.3"
+
 "@graphql-tools/merge@8.2.11":
   version "8.2.11"
   resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-8.2.11.tgz#0cdc6c9feb32e3392bf0c633881a78ccc1d24368"
@@ -981,6 +988,11 @@ graceful-fs@^4.1.2:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
+
+graphql-fields@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/graphql-fields/-/graphql-fields-2.0.3.tgz#5e68dff7afbb202be4f4f40623e983b22c96ab8f"
+  integrity sha512-x3VE5lUcR4XCOxPIqaO4CE+bTK8u6gVouOdpQX9+EKHr+scqtK5Pp/l8nIGqIpN1TUlkKE6jDCCycm/WtLRAwA==
 
 graphql-redis-subscriptions@^2.4.2:
   version "2.4.2"

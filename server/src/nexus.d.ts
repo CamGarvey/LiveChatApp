@@ -65,7 +65,7 @@ export interface NexusGenScalars {
 export interface NexusGenObjects {
   Channel: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
-    id: number; // Int!
+    id: string; // String!
     isDM: boolean; // Boolean!
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
@@ -73,8 +73,8 @@ export interface NexusGenObjects {
   Message: { // root type
     content: string; // String!
     createdAt: NexusGenScalars['Date']; // Date!
-    createdById: number; // Int!
-    id: number; // Int!
+    createdById: string; // String!
+    id: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
   MessageConnection: { // root type
@@ -87,7 +87,7 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   NewMessagePayload: { // root type
-    channelId: number; // Int!
+    channelId: string; // String!
     message: NexusGenRootTypes['Message']; // Message!
   }
   PageInfo: { // root type
@@ -101,7 +101,7 @@ export interface NexusGenObjects {
   User: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
     email: string; // String!
-    id: number; // Int!
+    id: string; // String!
     name?: string | null; // String
     updatedAt: NexusGenScalars['Date']; // Date!
     username: string; // String!
@@ -130,7 +130,7 @@ export interface NexusGenFieldTypes {
   Channel: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
-    id: number; // Int!
+    id: string; // String!
     isDM: boolean; // Boolean!
     memberCount: number; // Int!
     members: NexusGenRootTypes['User'][]; // [User!]!
@@ -143,8 +143,8 @@ export interface NexusGenFieldTypes {
     content: string; // String!
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
-    createdById: number; // Int!
-    id: number; // Int!
+    createdById: string; // String!
+    id: string; // String!
     likedBy: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
@@ -174,7 +174,7 @@ export interface NexusGenFieldTypes {
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
   NewMessagePayload: { // field return type
-    channelId: number; // Int!
+    channelId: string; // String!
     message: NexusGenRootTypes['Message']; // Message!
   }
   PageInfo: { // field return type
@@ -203,7 +203,7 @@ export interface NexusGenFieldTypes {
     email: string; // String!
     friendStatus: NexusGenEnums['FriendStatus']; // FriendStatus!
     friends: NexusGenRootTypes['UserConnection']; // UserConnection!
-    id: number; // Int!
+    id: string; // String!
     name: string | null; // String
     receivedFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
     sentFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
@@ -224,7 +224,7 @@ export interface NexusGenFieldTypeNames {
   Channel: { // field return type name
     createdAt: 'Date'
     createdBy: 'User'
-    id: 'Int'
+    id: 'String'
     isDM: 'Boolean'
     memberCount: 'Int'
     members: 'User'
@@ -237,8 +237,8 @@ export interface NexusGenFieldTypeNames {
     content: 'String'
     createdAt: 'Date'
     createdBy: 'User'
-    createdById: 'Int'
-    id: 'Int'
+    createdById: 'String'
+    id: 'String'
     likedBy: 'User'
     updatedAt: 'Date'
   }
@@ -268,7 +268,7 @@ export interface NexusGenFieldTypeNames {
     updateUser: 'User'
   }
   NewMessagePayload: { // field return type name
-    channelId: 'Int'
+    channelId: 'String'
     message: 'Message'
   }
   PageInfo: { // field return type name
@@ -297,7 +297,7 @@ export interface NexusGenFieldTypeNames {
     email: 'String'
     friendStatus: 'FriendStatus'
     friends: 'UserConnection'
-    id: 'Int'
+    id: 'String'
     name: 'String'
     receivedFriendRequests: 'User'
     sentFriendRequests: 'User'
@@ -325,50 +325,50 @@ export interface NexusGenArgTypes {
   }
   Mutation: {
     acceptFriendRequest: { // args
-      friendId: number; // Int!
+      friendId: string; // String!
     }
     addMembersToChannel: { // args
-      channelId: number; // Int!
-      memberIds: number[]; // [Int!]!
+      channelId: string; // String!
+      memberIds: string[]; // [String!]!
     }
     cancelFriendRequest: { // args
-      friendId: number; // Int!
+      friendId: string; // String!
     }
     createChannel: { // args
       description?: string | null; // String
       isPrivate: boolean | null; // Boolean
-      memberIds?: number[] | null; // [Int!]
+      memberIds?: string[] | null; // [String!]
       name: string; // String!
     }
     createMessage: { // args
-      channelId: number; // Int!
+      channelId: string; // String!
       content: string; // String!
     }
     declineFriendRequest: { // args
-      friendId: number; // Int!
+      friendId: string; // String!
     }
     deleteChannel: { // args
-      channelId: number; // Int!
+      channelId: string; // String!
     }
     deleteFriend: { // args
-      friendId: number; // Int!
+      friendId: string; // String!
     }
     deleteMessage: { // args
-      messageId: number; // Int!
+      messageId: string; // String!
     }
     editMessage: { // args
       content: string; // String!
-      messageId: number; // Int!
+      messageId: string; // String!
     }
     removeMembersFromChannel: { // args
-      channelId: number; // Int!
-      membersIds: number[]; // [Int!]!
+      channelId: string; // String!
+      membersIds: string[]; // [String!]!
     }
     sendFriendRequest: { // args
-      friendId: number; // Int!
+      friendId: string; // String!
     }
     updateChannel: { // args
-      channelId: number; // Int!
+      channelId: string; // String!
       isPrivate?: boolean | null; // Boolean
       name?: string | null; // String
     }
@@ -379,17 +379,17 @@ export interface NexusGenArgTypes {
   }
   Query: {
     channel: { // args
-      channelId: number; // Int!
+      channelId: string; // String!
     }
     channelMessages: { // args
       after?: string | null; // String
       before?: string | null; // String
-      channelId: number; // Int!
+      channelId: string; // String!
       first?: number | null; // Int
       last?: number | null; // Int
     }
     user: { // args
-      id: number; // Int!
+      id: string; // String!
     }
     users: { // args
       after?: string | null; // String
@@ -402,10 +402,10 @@ export interface NexusGenArgTypes {
   }
   Subscription: {
     newFriend: { // args
-      userId: number; // Int!
+      userId: string; // String!
     }
     newMessage: { // args
-      channelId: number; // Int!
+      channelId: string; // String!
     }
   }
   User: {

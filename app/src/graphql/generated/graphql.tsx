@@ -21,7 +21,7 @@ export type Channel = {
   __typename?: 'Channel';
   createdAt: Scalars['Date'];
   createdBy: User;
-  id: Scalars['Int'];
+  id: Scalars['String'];
   isDM: Scalars['Boolean'];
   memberCount: Scalars['Int'];
   members: Array<User>;
@@ -51,8 +51,8 @@ export type Message = {
   content: Scalars['String'];
   createdAt: Scalars['Date'];
   createdBy: User;
-  createdById: Scalars['Int'];
-  id: Scalars['Int'];
+  createdById: Scalars['String'];
+  id: Scalars['String'];
   likedBy: Array<User>;
   updatedAt: Scalars['Date'];
 };
@@ -109,74 +109,74 @@ export type Mutation = {
 
 
 export type MutationAcceptFriendRequestArgs = {
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 };
 
 
 export type MutationAddMembersToChannelArgs = {
-  channelId: Scalars['Int'];
-  memberIds: Array<Scalars['Int']>;
+  channelId: Scalars['String'];
+  memberIds: Array<Scalars['String']>;
 };
 
 
 export type MutationCancelFriendRequestArgs = {
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 };
 
 
 export type MutationCreateChannelArgs = {
   description?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
-  memberIds?: InputMaybe<Array<Scalars['Int']>>;
+  memberIds?: InputMaybe<Array<Scalars['String']>>;
   name: Scalars['String'];
 };
 
 
 export type MutationCreateMessageArgs = {
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
   content: Scalars['String'];
 };
 
 
 export type MutationDeclineFriendRequestArgs = {
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 };
 
 
 export type MutationDeleteChannelArgs = {
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
 };
 
 
 export type MutationDeleteFriendArgs = {
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 };
 
 
 export type MutationDeleteMessageArgs = {
-  messageId: Scalars['Int'];
+  messageId: Scalars['String'];
 };
 
 
 export type MutationEditMessageArgs = {
   content: Scalars['String'];
-  messageId: Scalars['Int'];
+  messageId: Scalars['String'];
 };
 
 
 export type MutationRemoveMembersFromChannelArgs = {
-  channelId: Scalars['Int'];
-  membersIds: Array<Scalars['Int']>;
+  channelId: Scalars['String'];
+  membersIds: Array<Scalars['String']>;
 };
 
 
 export type MutationSendFriendRequestArgs = {
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 };
 
 
 export type MutationUpdateChannelArgs = {
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
 };
@@ -189,7 +189,7 @@ export type MutationUpdateUserArgs = {
 
 export type NewMessagePayload = {
   __typename?: 'NewMessagePayload';
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
   message: Message;
 };
 
@@ -220,21 +220,21 @@ export type Query = {
 
 
 export type QueryChannelArgs = {
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
 };
 
 
 export type QueryChannelMessagesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
 };
 
 
 export type QueryUserArgs = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
 };
 
 
@@ -261,12 +261,12 @@ export type Subscription = {
 
 
 export type SubscriptionNewFriendArgs = {
-  userId: Scalars['Int'];
+  userId: Scalars['String'];
 };
 
 
 export type SubscriptionNewMessageArgs = {
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
 };
 
 export type User = {
@@ -276,7 +276,7 @@ export type User = {
   email: Scalars['String'];
   friendStatus: FriendStatus;
   friends: UserConnection;
-  id: Scalars['Int'];
+  id: Scalars['String'];
   name?: Maybe<Scalars['String']>;
   receivedFriendRequests: Array<User>;
   sentFriendRequests: Array<User>;
@@ -318,67 +318,67 @@ export type UserOrderBy = {
 };
 
 export type AcceptFriendRequestMutationVariables = Exact<{
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'User', id: string, friendStatus: FriendStatus } | null };
 
 export type CancelFriendRequestMutationVariables = Exact<{
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 }>;
 
 
-export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
+export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'User', id: string, friendStatus: FriendStatus } | null };
 
 export type CreateChannelMutationVariables = Exact<{
   name: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
-  memberIds?: InputMaybe<Array<Scalars['Int']> | Scalars['Int']>;
+  memberIds?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
 }>;
 
 
-export type CreateChannelMutation = { __typename?: 'Mutation', createChannel?: { __typename?: 'Channel', id: number } | null };
+export type CreateChannelMutation = { __typename?: 'Mutation', createChannel?: { __typename?: 'Channel', id: string } | null };
 
 export type CreateMessageMutationVariables = Exact<{
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
   content: Scalars['String'];
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } | null };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: string, content: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string } } | null };
 
 export type DeclineFriendRequestMutationVariables = Exact<{
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 }>;
 
 
-export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
+export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'User', id: string, friendStatus: FriendStatus } | null };
 
 export type DeleteFriendMutationVariables = Exact<{
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 }>;
 
 
-export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
+export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: { __typename?: 'User', id: string, friendStatus: FriendStatus } | null };
 
 export type SendFriendRequestMutationVariables = Exact<{
-  friendId: Scalars['Int'];
+  friendId: Scalars['String'];
 }>;
 
 
-export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'User', id: number, friendStatus: FriendStatus } | null };
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'User', id: string, friendStatus: FriendStatus } | null };
 
 export type GetChannelInfoForSidebarQueryVariables = Exact<{
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
 }>;
 
 
-export type GetChannelInfoForSidebarQuery = { __typename?: 'Query', channel?: { __typename?: 'Channel', id: number, name: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string }, members: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
+export type GetChannelInfoForSidebarQuery = { __typename?: 'Query', channel?: { __typename?: 'Channel', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string }, members: Array<{ __typename?: 'User', id: string, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
 
 export type GetChannelMessagesQueryVariables = Exact<{
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
   last?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -386,37 +386,37 @@ export type GetChannelMessagesQueryVariables = Exact<{
 }>;
 
 
-export type GetChannelMessagesQuery = { __typename?: 'Query', channelMessages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean }, edges?: Array<{ __typename?: 'MessageEdge', cursor: string, node?: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } | null } | null> | null } };
+export type GetChannelMessagesQuery = { __typename?: 'Query', channelMessages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename?: 'Message', id: string, content: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string } } | null } | null> | null } };
 
 export type GetChannelsForNavQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChannelsForNavQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: number, name: string, createdAt: any, updatedAt: any, isDM: boolean, memberCount: number }> };
+export type GetChannelsForNavQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: string, name: string, createdAt: any, updatedAt: any, isDM: boolean, memberCount: number }> };
 
 export type GetDataForHeaderQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDataForHeaderQuery = { __typename?: 'Query', me?: { __typename?: 'User', name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
+export type GetDataForHeaderQuery = { __typename?: 'Query', me?: { __typename?: 'User', name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: string, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
 
 export type GetFriendIdsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFriendIdsQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number }> };
+export type GetFriendIdsQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: string }> };
 
 export type GetFriendRequestIdsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename?: 'User', sentFriendRequests: Array<{ __typename?: 'User', id: number }>, receivedFriendRequests: Array<{ __typename?: 'User', id: number }> } | null };
+export type GetFriendRequestIdsQuery = { __typename?: 'Query', me?: { __typename?: 'User', sentFriendRequests: Array<{ __typename?: 'User', id: string }>, receivedFriendRequests: Array<{ __typename?: 'User', id: string }> } | null };
 
 export type GetFriendsForSearchQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFriendsForSearchQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: number, name?: string | null, email: string, username: string }> };
+export type GetFriendsForSearchQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'User', id: string, name?: string | null, email: string, username: string }> };
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, name?: string | null, email: string, username: string } | null };
+export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, email: string, username: string } | null };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -425,23 +425,23 @@ export type GetUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: number, username: string, name?: string | null, friendStatus: FriendStatus } | null } | null> | null } };
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'User', id: string, username: string, name?: string | null, friendStatus: FriendStatus } | null } | null> | null } };
 
 export type NewFriendRequestSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NewFriendRequestSubscription = { __typename?: 'Subscription', newFriendRequest?: { __typename?: 'User', id: number, name?: string | null, email: string, username: string } | null };
+export type NewFriendRequestSubscription = { __typename?: 'Subscription', newFriendRequest?: { __typename?: 'User', id: string, name?: string | null, email: string, username: string } | null };
 
 export type GetNewMessagesSubscriptionVariables = Exact<{
-  channelId: Scalars['Int'];
+  channelId: Scalars['String'];
 }>;
 
 
-export type GetNewMessagesSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'NewMessagePayload', message: { __typename?: 'Message', id: number, content: string, createdAt: any, createdBy: { __typename?: 'User', id: number, name?: string | null, username: string } } } | null };
+export type GetNewMessagesSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'NewMessagePayload', message: { __typename?: 'Message', id: string, content: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string } } } | null };
 
 
 export const AcceptFriendRequestDocument = gql`
-    mutation AcceptFriendRequest($friendId: Int!) {
+    mutation AcceptFriendRequest($friendId: String!) {
   acceptFriendRequest(friendId: $friendId) {
     id
     friendStatus
@@ -475,7 +475,7 @@ export type AcceptFriendRequestMutationHookResult = ReturnType<typeof useAcceptF
 export type AcceptFriendRequestMutationResult = Apollo.MutationResult<AcceptFriendRequestMutation>;
 export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
 export const CancelFriendRequestDocument = gql`
-    mutation CancelFriendRequest($friendId: Int!) {
+    mutation CancelFriendRequest($friendId: String!) {
   cancelFriendRequest(friendId: $friendId) {
     id
     friendStatus
@@ -509,7 +509,7 @@ export type CancelFriendRequestMutationHookResult = ReturnType<typeof useCancelF
 export type CancelFriendRequestMutationResult = Apollo.MutationResult<CancelFriendRequestMutation>;
 export type CancelFriendRequestMutationOptions = Apollo.BaseMutationOptions<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
 export const CreateChannelDocument = gql`
-    mutation CreateChannel($name: String!, $description: String, $isPrivate: Boolean, $memberIds: [Int!]) {
+    mutation CreateChannel($name: String!, $description: String, $isPrivate: Boolean, $memberIds: [String!]) {
   createChannel(
     name: $name
     description: $description
@@ -550,7 +550,7 @@ export type CreateChannelMutationHookResult = ReturnType<typeof useCreateChannel
 export type CreateChannelMutationResult = Apollo.MutationResult<CreateChannelMutation>;
 export type CreateChannelMutationOptions = Apollo.BaseMutationOptions<CreateChannelMutation, CreateChannelMutationVariables>;
 export const CreateMessageDocument = gql`
-    mutation CreateMessage($channelId: Int!, $content: String!) {
+    mutation CreateMessage($channelId: String!, $content: String!) {
   createMessage(channelId: $channelId, content: $content) {
     id
     content
@@ -591,7 +591,7 @@ export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessage
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
 export const DeclineFriendRequestDocument = gql`
-    mutation DeclineFriendRequest($friendId: Int!) {
+    mutation DeclineFriendRequest($friendId: String!) {
   declineFriendRequest(friendId: $friendId) {
     id
     friendStatus
@@ -625,7 +625,7 @@ export type DeclineFriendRequestMutationHookResult = ReturnType<typeof useDeclin
 export type DeclineFriendRequestMutationResult = Apollo.MutationResult<DeclineFriendRequestMutation>;
 export type DeclineFriendRequestMutationOptions = Apollo.BaseMutationOptions<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
 export const DeleteFriendDocument = gql`
-    mutation DeleteFriend($friendId: Int!) {
+    mutation DeleteFriend($friendId: String!) {
   deleteFriend(friendId: $friendId) {
     id
     friendStatus
@@ -659,7 +659,7 @@ export type DeleteFriendMutationHookResult = ReturnType<typeof useDeleteFriendMu
 export type DeleteFriendMutationResult = Apollo.MutationResult<DeleteFriendMutation>;
 export type DeleteFriendMutationOptions = Apollo.BaseMutationOptions<DeleteFriendMutation, DeleteFriendMutationVariables>;
 export const SendFriendRequestDocument = gql`
-    mutation SendFriendRequest($friendId: Int!) {
+    mutation SendFriendRequest($friendId: String!) {
   sendFriendRequest(friendId: $friendId) {
     id
     friendStatus
@@ -693,7 +693,7 @@ export type SendFriendRequestMutationHookResult = ReturnType<typeof useSendFrien
 export type SendFriendRequestMutationResult = Apollo.MutationResult<SendFriendRequestMutation>;
 export type SendFriendRequestMutationOptions = Apollo.BaseMutationOptions<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
 export const GetChannelInfoForSidebarDocument = gql`
-    query GetChannelInfoForSidebar($channelId: Int!) {
+    query GetChannelInfoForSidebar($channelId: String!) {
   channel(channelId: $channelId) {
     id
     name
@@ -741,7 +741,7 @@ export type GetChannelInfoForSidebarQueryHookResult = ReturnType<typeof useGetCh
 export type GetChannelInfoForSidebarLazyQueryHookResult = ReturnType<typeof useGetChannelInfoForSidebarLazyQuery>;
 export type GetChannelInfoForSidebarQueryResult = Apollo.QueryResult<GetChannelInfoForSidebarQuery, GetChannelInfoForSidebarQueryVariables>;
 export const GetChannelMessagesDocument = gql`
-    query GetChannelMessages($channelId: Int!, $last: Int, $after: String, $first: Int, $before: String) {
+    query GetChannelMessages($channelId: String!, $last: Int, $after: String, $first: Int, $before: String) {
   channelMessages(
     channelId: $channelId
     last: $last
@@ -756,7 +756,6 @@ export const GetChannelMessagesDocument = gql`
       hasNextPage
     }
     edges {
-      cursor
       node {
         id
         content
@@ -1112,7 +1111,7 @@ export function useNewFriendRequestSubscription(baseOptions?: Apollo.Subscriptio
 export type NewFriendRequestSubscriptionHookResult = ReturnType<typeof useNewFriendRequestSubscription>;
 export type NewFriendRequestSubscriptionResult = Apollo.SubscriptionResult<NewFriendRequestSubscription>;
 export const GetNewMessagesDocument = gql`
-    subscription GetNewMessages($channelId: Int!) {
+    subscription GetNewMessages($channelId: String!) {
   newMessage(channelId: $channelId) {
     message {
       id

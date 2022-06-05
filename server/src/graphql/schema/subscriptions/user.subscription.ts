@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { intArg, nonNull, subscriptionField } from 'nexus';
+import { intArg, nonNull, stringArg, subscriptionField } from 'nexus';
 import { Subscriptions } from '../types/subscriptions';
 import User from '../types/user';
 
@@ -23,7 +23,7 @@ export const newFriendRequestSubscription = subscriptionField(
 export const newFriendSubscription = subscriptionField('newFriend', {
   type: User,
   args: {
-    userId: nonNull(intArg()),
+    userId: nonNull(stringArg()),
   },
   subscribe: withFilter(
     (_, __, { pubsub }) => pubsub.asyncIterator(Subscriptions.NEW_FRIEND),

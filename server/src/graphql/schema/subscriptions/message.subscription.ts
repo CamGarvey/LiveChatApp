@@ -1,13 +1,19 @@
 import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
-import { intArg, nonNull, objectType, subscriptionField } from 'nexus';
+import {
+  intArg,
+  nonNull,
+  objectType,
+  stringArg,
+  subscriptionField,
+} from 'nexus';
 import Message from '../types/message';
 import { Subscriptions } from '../types/subscriptions';
 
 const newMessagePayload = objectType({
   name: 'NewMessagePayload',
   definition(t) {
-    t.nonNull.int('channelId');
+    t.nonNull.string('channelId');
     t.nonNull.field('message', {
       type: Message,
     });
@@ -17,7 +23,7 @@ const newMessagePayload = objectType({
 export const newMessageSubscription = subscriptionField('newMessage', {
   type: newMessagePayload,
   args: {
-    channelId: nonNull(intArg()),
+    channelId: nonNull(stringArg()),
   },
   subscribe: async (rootValue, args, context) => {
     const members = await context.prisma.channel

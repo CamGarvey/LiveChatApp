@@ -2,7 +2,7 @@ mutation CreateChannel(
   $name: String!
   $description: String
   $isPrivate: Boolean
-  $memberIds: [Int!]
+  $memberIds: [String!]
 ) {
   createChannel(
     name: $name

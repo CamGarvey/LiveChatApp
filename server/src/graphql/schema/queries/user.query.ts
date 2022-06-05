@@ -128,7 +128,7 @@ export const UserQuery = queryField('user', {
   type: User,
   args: {
     id: nonNull(
-      intArg({
+      stringArg({
         description: 'id of user',
       })
     ),

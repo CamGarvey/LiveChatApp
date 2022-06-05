@@ -19,7 +19,7 @@ import {
 type Props = {
   isOpen?: boolean;
   onOpen?: boolean;
-  onClose?: (channelId?: number) => void;
+  onClose?: (channelId?: string) => void;
 };
 
 const CreateChannelModal = ({ isOpen, onClose }: Props) => {
@@ -77,7 +77,6 @@ const CreateChannelModal = ({ isOpen, onClose }: Props) => {
             <Input
               id="description"
               type="text"
-              ref={inputRef}
               onChange={formik.handleChange}
               value={formik.values.description}
             />

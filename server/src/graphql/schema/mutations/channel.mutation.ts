@@ -30,7 +30,7 @@ export const createChannel = mutationField('createChannel', {
     }),
     memberIds: list(
       nonNull(
-        intArg({
+        stringArg({
           description: 'Ids of Users to be added to Channel',
         })
       )
@@ -43,7 +43,7 @@ export const createChannel = mutationField('createChannel', {
     { prisma, userId }
   ) => {
     // Remove duplicates
-    const memberIdSet: Set<number> = new Set(memberIds);
+    const memberIdSet: Set<string> = new Set(memberIds);
 
     if (memberIdSet.has(userId)) {
       // Remove self from memberIdSet
@@ -100,7 +100,7 @@ export const deleteChannel = mutationField('deleteChannel', {
   type: 'Boolean',
   args: {
     channelId: nonNull(
-      intArg({
+      stringArg({
         description: 'Id of Channel to be deleted',
       })
     ),
@@ -139,7 +139,7 @@ export const updateChannel = mutationField('updateChannel', {
   type: Channel,
   args: {
     channelId: nonNull(
-      intArg({
+      stringArg({
         description: 'Id of Channel to be updated',
       })
     ),
@@ -210,14 +210,14 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
   type: Channel,
   args: {
     channelId: nonNull(
-      intArg({
+      stringArg({
         description: 'Id of Channel to add Users to',
       })
     ),
     memberIds: nonNull(
       list(
         nonNull(
-          intArg({
+          stringArg({
             description: 'Ids of Users to be added to Channel',
           })
         )
@@ -277,8 +277,8 @@ export const removeMembersFromChannel = mutationField(
   {
     type: Channel,
     args: {
-      channelId: nonNull(intArg()),
-      membersIds: nonNull(list(nonNull(intArg()))),
+      channelId: nonNull(stringArg()),
+      membersIds: nonNull(list(nonNull(stringArg()))),
     },
     description: 'Remove Members from Channel',
     resolve: async (_, { channelId, membersIds }, { prisma, userId }) => {

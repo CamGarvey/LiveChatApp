@@ -5,7 +5,7 @@ import CreateChannelModal from '../CreateChannelModal/CreateChannelModal';
 import ChannelItem from './ChannelItem';
 
 type Props = {
-  onChannelSelected: (channelId: number) => void;
+  onChannelSelected: (channelId: string) => void;
 };
 
 const ChannelNav = ({ onChannelSelected }: Props) => {

@@ -5,7 +5,6 @@ import {
   Center,
   Grid,
   InputWrapper,
-  Loader,
   LoadingOverlay,
   Popover,
   ScrollArea,
@@ -14,25 +13,22 @@ import {
   Textarea,
 } from '@mantine/core';
 import {
+  GetNewMessagesDocument,
   useCreateMessageMutation,
   useGetChannelMessagesQuery,
   useGetMeQuery,
-  useGetNewMessagesSubscription,
 } from '../../graphql/generated/graphql';
 import MessageGroup from './MessageGroup';
 import { useEffect, useRef, useState } from 'react';
-import MessageItem from '../../models/message-item';
 
 const MIN_HEIGHT_BEFORE_AUTO_SCROLL = 300;
 
 type Props = {
-  channelId?: number;
+  channelId?: string;
 };
 
 export const Chat = ({ channelId }: Props) => {
-  const [messages, setMessages] = useState([]);
   const [isAutoScrollingDown, setIsAutoScrollingDown] = useState(false);
-  const [groupedMessages, setGroupedMessages] = useState<MessageItem[][]>([]);
   const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
   const [scrollToBottomPopoverOpened, setScrollToBottomPopoverOpened] =
     useState(false);
@@ -41,22 +37,47 @@ export const Chat = ({ channelId }: Props) => {
   // Get info about current user
   const { data: meData, loading: loadingMeData } = useGetMeQuery();
 
-  const { loading, data, error } = useGetChannelMessagesQuery({
-    variables: {
-      channelId,
-      last: 20,
-    },
-    fetchPolicy: 'network-only',
-  });
+  const { loading, data, error, subscribeToMore, fetchMore } =
+    useGetChannelMessagesQuery({
+      variables: {
+        channelId,
+        last: 20,
+      },
+      fetchPolicy: 'network-only',
+    });
+
+  const hasPreviousPage =
+    data?.channelMessages?.pageInfo?.hasPreviousPage ?? false;
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: GetNewMessagesDocument,
+      variables: {
+        channelId,
+      },
+      updateQuery: (prev, { subscriptionData }: any) => {
+        if (!subscriptionData.data) return prev;
+        const subscriptionResponse = subscriptionData.data.newMessage.message;
+        const newCache = Object.assign({}, prev, {
+          channelMessages: {
+            edges: [
+              ...prev.channelMessages.edges,
+              {
+                node: subscriptionResponse,
+                __typename: 'MessageEdge',
+              },
+            ],
+            pageInfo: prev.channelMessages.pageInfo,
+          },
+        });
+        return newCache;
+      },
+    });
+    return () => unsubscribe();
+  }, [channelId, subscribeToMore]);
 
   const [createMessageMutation, { loading: loadingCreateMessage }] =
     useCreateMessageMutation();
-
-  const { data: newMessageData } = useGetNewMessagesSubscription({
-    variables: {
-      channelId,
-    },
-  });
 
   const scrollToBottom = () => {
     setIsAutoScrollingDown(true);
@@ -65,10 +86,6 @@ export const Chat = ({ channelId }: Props) => {
       behavior: 'smooth',
     });
   };
-
-  useEffect(() => {
-    setMessages([]);
-  }, [channelId]);
 
   // Handle scrolling to bottom popper
   useEffect(() => {
@@ -85,44 +102,53 @@ export const Chat = ({ channelId }: Props) => {
     ) {
       setScrollToBottomPopoverOpened(true);
     }
-  }, [scrollPosition.y, channelId, isAutoScrollingDown]);
+
+    // Reached top
+    if (scrollPosition.y === 0 && hasPreviousPage) {
+      console.log('Fetching more');
+
+      fetchMore({
+        variables: {
+          channelId,
+          last: 20,
+          before: data.channelMessages.pageInfo.startCursor,
+        },
+      });
+    }
+  }, [
+    scrollPosition.y,
+    channelId,
+    isAutoScrollingDown,
+    hasPreviousPage,
+    fetchMore,
+    data?.channelMessages?.pageInfo.startCursor,
+  ]);
 
   // Scroll to the bottom of the page on load of messages
   useEffect(() => {
-    scrollToBottom();
-  }, [groupedMessages]);
-
-  useEffect(() => {
-    if (newMessageData) {
-      setMessages((prev) => [...prev, newMessageData.newMessage.message]);
-    }
-  }, [newMessageData]);
-
-  useEffect(() => {
-    if (messages) {
-      setGroupedMessages(
-        messages.reduce((prev, curr) => {
-          if (prev.length === 0) {
-            prev.push([curr]);
-            return prev;
-          }
-          if (prev[prev.length - 1][0].createdBy.id === curr.createdBy.id) {
-            prev[prev.length - 1].push(curr);
-          } else {
-            prev.push([curr]);
-          }
-          return prev;
-        }, [])
-      );
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    if (data) {
-      const messages = data.channelMessages.edges.map((x) => x.node).reverse();
-      setMessages((prev) => [...prev, ...messages]);
+    const element = messageViewport.current;
+    const height = element.scrollHeight - element.offsetHeight;
+    if (scrollPosition.y > height - 80) {
+      scrollToBottom();
     }
   }, [data]);
+
+  let messages = data?.channelMessages?.edges?.map((x) => x.node) ?? [];
+
+  // setTopMessage(messages[0]);
+
+  const groupedMessages = messages.reduce((prev, curr) => {
+    if (prev.length === 0) {
+      prev.push([curr]);
+      return prev;
+    }
+    if (prev[prev.length - 1][0].createdBy.id === curr.createdBy.id) {
+      prev[prev.length - 1].push(curr);
+    } else {
+      prev.push([curr]);
+    }
+    return prev;
+  }, []);
 
   const formik = useFormik({
     initialValues: {

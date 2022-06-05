@@ -1,4 +1,4 @@
-mutation CreateMessage($channelId: Int!, $content: String!) {
+mutation CreateMessage($channelId: String!, $content: String!) {
   createMessage(channelId: $channelId, content: $content) {
     id
     content

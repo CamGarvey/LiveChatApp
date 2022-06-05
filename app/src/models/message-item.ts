@@ -1,9 +1,9 @@
 type MessageItem = {
-  id: number;
+  id: string;
   content: string;
   createdAt: number;
   createdBy: {
-    id: number;
+    id: string;
     username: string;
     name?: string;
   };
