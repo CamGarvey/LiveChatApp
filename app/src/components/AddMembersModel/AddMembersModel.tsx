@@ -61,7 +61,7 @@ const AddMembersModel = ({ isOpen, onClose }: Props) => {
   });
 
   return (
-    <Modal opened={isOpen} onClose={onClose} title={'Create Channel'}>
+    <Modal opened={isOpen} onClose={onClose} title={'Add Members'}>
       <form onSubmit={formik.handleSubmit}>
         <Stack>
           <InputWrapper id="input-demo" required label="Name">

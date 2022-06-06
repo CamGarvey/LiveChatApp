@@ -27,7 +27,8 @@ type Props = {
   channelId?: string;
 };
 
-export const Chat = ({ channelId }: Props) => {
+export const ChatPanel = ({ channelId }: Props) => {
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [isAutoScrollingDown, setIsAutoScrollingDown] = useState(false);
   const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
   const [scrollToBottomPopoverOpened, setScrollToBottomPopoverOpened] =
@@ -87,6 +88,19 @@ export const Chat = ({ channelId }: Props) => {
     });
   };
 
+  // Scroll to the bottom of the page on load of messages
+  useEffect(() => {
+    const element = messageViewport.current;
+    const height = element.scrollHeight - element.offsetHeight;
+    if (scrollPosition.y > height - 80) {
+      scrollToBottom();
+    }
+    if (isFirstLoad && data) {
+      scrollToBottom();
+      setIsFirstLoad(false);
+    }
+  }, [data?.channelMessages?.edges, isFirstLoad]);
+
   // Handle scrolling to bottom popper
   useEffect(() => {
     const element = messageViewport.current;
@@ -104,9 +118,7 @@ export const Chat = ({ channelId }: Props) => {
     }
 
     // Reached top
-    if (scrollPosition.y === 0 && hasPreviousPage) {
-      console.log('Fetching more');
-
+    if (scrollPosition.y === 0 && hasPreviousPage && !isFirstLoad) {
       fetchMore({
         variables: {
           channelId,
@@ -122,16 +134,8 @@ export const Chat = ({ channelId }: Props) => {
     hasPreviousPage,
     fetchMore,
     data?.channelMessages?.pageInfo.startCursor,
+    isFirstLoad,
   ]);
-
-  // Scroll to the bottom of the page on load of messages
-  useEffect(() => {
-    const element = messageViewport.current;
-    const height = element.scrollHeight - element.offsetHeight;
-    if (scrollPosition.y > height - 80) {
-      scrollToBottom();
-    }
-  }, [data]);
 
   let messages = data?.channelMessages?.edges?.map((x) => x.node) ?? [];
 
@@ -192,16 +196,15 @@ export const Chat = ({ channelId }: Props) => {
           <Text>No Messages</Text>
         </Center>
       )}
-
       <ScrollArea
         sx={{ flex: 1 }}
         onScrollPositionChange={onScrollPositionChange}
         viewportRef={messageViewport}
         pr={'30px'} // Make room for scrollbar
       >
-        <Stack spacing={'sm'}>
+        <Stack spacing={'sm'} mb={'5px'}>
           {groupedMessages.map((group, idx) => {
-            const isCurrentUser = group[0].createdBy.id === meData.me.id;
+            const isCurrentUser = group[0].createdBy.id === meData?.me.id;
             return (
               <MessageGroup
                 key={idx}
@@ -277,4 +280,4 @@ const createMessageSchema = Yup.object().shape({
     .required('Name is required'),
 });
 
-export default Chat;
+export default ChatPanel;

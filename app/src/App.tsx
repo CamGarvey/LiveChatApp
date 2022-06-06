@@ -1,25 +1,16 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
-  AppShell,
-  Aside,
-  Center,
   ColorScheme,
   ColorSchemeProvider,
   MantineProvider,
-  MediaQuery,
-  Text,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { useState } from 'react';
-import Chat from './components/Chat/Chat';
-import Header from './components/Layout/Header';
-import ChannelNav from './components/Layout/ChannelNav';
-import ChannelInfoSidebar from './components/Layout/ChannelInfoSidebar';
-import { useGetNewMessagesSubscription } from './graphql/generated/graphql';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Home from './routes/Home';
+import Chat from './routes/Chat';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export const App = () => {
-  const { isAuthenticated, user } = useAuth0();
-  const [channel, setChannel] = useState<string>(null);
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',
@@ -41,24 +32,17 @@ export const App = () => {
         withGlobalStyles
         withNormalizeCSS
       >
-        <AppShell
-          navbarOffsetBreakpoint="sm"
-          asideOffsetBreakpoint="sm"
-          fixed
-          header={<Header />}
-          navbar={
-            isAuthenticated && <ChannelNav onChannelSelected={setChannel} />
-          }
-          aside={isAuthenticated && <ChannelInfoSidebar channelId={channel} />}
-        >
-          {channel ? (
-            <Chat channelId={channel} />
-          ) : isAuthenticated ? (
-            <Center>Pick a channel</Center>
-          ) : (
-            <Center>Welcome to GraphChat</Center>
-          )}
-        </AppShell>
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="/chat" element={<ProtectedRoute component={Chat} />}>
+              <Route
+                path=":chatId"
+                element={<ProtectedRoute component={Chat} />}
+              />
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </MantineProvider>
     </ColorSchemeProvider>
   );

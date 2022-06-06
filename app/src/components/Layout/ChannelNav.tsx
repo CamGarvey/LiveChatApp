@@ -8,7 +8,7 @@ type Props = {
   onChannelSelected: (channelId: string) => void;
 };
 
-const ChannelNav = ({ onChannelSelected }: Props) => {
+const ChannelNav = () => {
   const [channelSelected, setChannelSelected] = useState(null);
   const [createChannelOpen, setCreateChannelOpen] = useState(false);
   const { loading, data } = useGetChannelsForNavQuery();
@@ -23,11 +23,11 @@ const ChannelNav = ({ onChannelSelected }: Props) => {
               <ChannelItem
                 key={channel.id}
                 {...channel}
-                isSelected={channelSelected === channel}
-                onClick={() => {
-                  setChannelSelected(channel);
-                  onChannelSelected(channel.id);
-                }}
+                // isSelected={channelSelected === channel}
+                // onClick={() => {
+                //   setChannelSelected(channel);
+                //   navigate(`/chat/${channel.id}`);
+                // }}
               />
             );
           })}

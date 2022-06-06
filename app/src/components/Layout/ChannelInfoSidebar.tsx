@@ -14,7 +14,7 @@ import { useGetChannelInfoForSidebarQuery } from '../../graphql/generated/graphq
 import UserItem from '../shared/UserItem';
 
 type Props = {
-  channelId: string;
+  channelId?: string;
 };
 
 const ChannelInfoSidebar = ({ channelId }: Props) => {
