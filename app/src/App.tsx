@@ -37,7 +37,7 @@ export const App = () => {
             <Route index element={<Home />} />
             <Route path="/chat" element={<ProtectedRoute component={Chat} />}>
               <Route
-                path=":chatId"
+                path=":channelId"
                 element={<ProtectedRoute component={Chat} />}
               />
             </Route>

@@ -19,7 +19,8 @@ import {
   useGetMeQuery,
 } from '../../graphql/generated/graphql';
 import MessageGroup from './MessageGroup';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
 
 const MIN_HEIGHT_BEFORE_AUTO_SCROLL = 300;
 
@@ -28,11 +29,13 @@ type Props = {
 };
 
 export const ChatPanel = ({ channelId }: Props) => {
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [isReadyForFetchMore, setIsReadyForFetchMore] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [isAutoScrollingDown, setIsAutoScrollingDown] = useState(false);
   const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
   const [scrollToBottomPopoverOpened, setScrollToBottomPopoverOpened] =
     useState(false);
+
   const messageViewport = useRef<HTMLDivElement>();
 
   // Get info about current user
@@ -80,11 +83,11 @@ export const ChatPanel = ({ channelId }: Props) => {
   const [createMessageMutation, { loading: loadingCreateMessage }] =
     useCreateMessageMutation();
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (behavior: 'smooth' | 'auto') => {
     setIsAutoScrollingDown(true);
     messageViewport.current.scrollTo({
       top: messageViewport.current.scrollHeight,
-      behavior: 'smooth',
+      behavior: behavior,
     });
   };
 
@@ -93,22 +96,27 @@ export const ChatPanel = ({ channelId }: Props) => {
     const element = messageViewport.current;
     const height = element.scrollHeight - element.offsetHeight;
     if (scrollPosition.y > height - 80) {
-      scrollToBottom();
+      scrollToBottom('smooth');
     }
-    if (isFirstLoad && data) {
-      scrollToBottom();
-      setIsFirstLoad(false);
+    if (isReadyForFetchMore && data) {
+      scrollToBottom('auto');
     }
-  }, [data?.channelMessages?.edges, isFirstLoad]);
+  }, [data?.channelMessages?.edges, isReadyForFetchMore]);
 
-  // Handle scrolling to bottom popper
-  useEffect(() => {
+  const checkScrollPosition = (e: any) => {
     const element = messageViewport.current;
     if (element.scrollHeight - element.scrollTop === element.clientHeight) {
       setScrollToBottomPopoverOpened(false);
       setIsAutoScrollingDown(false);
     }
     const height = element.scrollHeight - element.offsetHeight;
+
+    // At bottom of page
+    if (scrollPosition.y === height) {
+      setIsReadyForFetchMore(true);
+    }
+
+    // At half way of page
     if (
       height > MIN_HEIGHT_BEFORE_AUTO_SCROLL &&
       scrollPosition.y <= height / 2 && // higher than halfway
@@ -116,26 +124,33 @@ export const ChatPanel = ({ channelId }: Props) => {
     ) {
       setScrollToBottomPopoverOpened(true);
     }
-
-    // Reached top
-    if (scrollPosition.y === 0 && hasPreviousPage && !isFirstLoad) {
+    console.log(e);
+    // At top of page
+    if (
+      scrollPosition.y === 0 &&
+      hasPreviousPage &&
+      isReadyForFetchMore &&
+      !isFetchingMore
+    ) {
+      setIsFetchingMore(true);
       fetchMore({
         variables: {
           channelId,
           last: 20,
           before: data.channelMessages.pageInfo.startCursor,
         },
-      });
+      }).then(() => setIsFetchingMore(false));
     }
-  }, [
-    scrollPosition.y,
-    channelId,
-    isAutoScrollingDown,
-    hasPreviousPage,
-    fetchMore,
-    data?.channelMessages?.pageInfo.startCursor,
-    isFirstLoad,
-  ]);
+  };
+
+  const debouncer = useCallback(
+    (e) => _.debounce(() => checkScrollPosition(e), 200),
+    []
+  );
+
+  useEffect(() => {
+    debouncer(scrollPosition.y);
+  }, [scrollPosition.y]);
 
   let messages = data?.channelMessages?.edges?.map((x) => x.node) ?? [];
 
@@ -200,9 +215,19 @@ export const ChatPanel = ({ channelId }: Props) => {
         sx={{ flex: 1 }}
         onScrollPositionChange={onScrollPositionChange}
         viewportRef={messageViewport}
-        pr={'30px'} // Make room for scrollbar
+        // style={{
+        //   display: 'flex',
+        //   flexDirection: 'column-reverse',
+        // }}
+        offsetScrollbars
       >
-        <Stack spacing={'sm'} mb={'5px'}>
+        <Stack
+          spacing={'sm'}
+          mb={'5px'}
+          style={{
+            flexDirection: 'column-reverse',
+          }}
+        >
           {groupedMessages.map((group, idx) => {
             const isCurrentUser = group[0].createdBy.id === meData?.me.id;
             return (
@@ -263,7 +288,7 @@ export const ChatPanel = ({ channelId }: Props) => {
         <Text
           align="center"
           onClick={() => {
-            scrollToBottom();
+            scrollToBottom('smooth');
             setScrollToBottomPopoverOpened(false);
           }}
         >

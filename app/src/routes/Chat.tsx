@@ -8,10 +8,8 @@ import Header from '../components/Layout/Header';
 
 type Props = {};
 
-const c = () => <>Hello</>;
-
 const Chat = (props: Props) => {
-  const { chatId } = useParams();
+  const { channelId } = useParams();
 
   return (
     <AppShell
@@ -20,9 +18,19 @@ const Chat = (props: Props) => {
       fixed
       header={<Header />}
       navbar={<ChannelNav />}
-      aside={chatId && <ChannelInfoSidebar channelId={chatId} />}
+      aside={channelId && <ChannelInfoSidebar channelId={channelId} />}
     >
-      {chatId && <ChatPanel channelId={chatId} />}
+      {channelId ? (
+        <ChatPanel channelId={channelId} />
+      ) : (
+        <Center
+          style={{
+            height: '100%',
+          }}
+        >
+          Select or Create a Channel
+        </Center>
+      )}
     </AppShell>
   );
 };
