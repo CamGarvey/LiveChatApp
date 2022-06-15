@@ -7,7 +7,6 @@ type Props = {
 };
 
 const ChannelItem = ({ id, name }: Props) => {
-  console.log('Hello');
 
   return (
     <NavLink

@@ -38,9 +38,6 @@ const ChannelInfoSidebar = ({ channelId }: Props) => {
               <ActionIcon
                 ml={'auto'}
                 variant="light"
-                onClick={() => {
-                  console.log('Hello');
-                }}
               >
                 <UserPlus size={16} />
               </ActionIcon>

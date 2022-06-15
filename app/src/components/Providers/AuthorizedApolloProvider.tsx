@@ -20,12 +20,12 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const httpLink = createHttpLink({
-    uri: 'http://localhost:4000/graphql',
+    uri: `${process.env.REACT_APP_GRAPHQL_API_URL}/graphql`,
   });
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: 'ws://localhost:4000/graphql',
+      url: `${process.env.REACT_APP_GRAPHQL_SUBSCRIPTION_URL}/graphql`,
       lazy: true,
       connectionParams: async () => {
         const token = await getAccessTokenSilently();
