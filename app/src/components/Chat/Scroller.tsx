@@ -1,4 +1,4 @@
-import { Popover, Text } from '@mantine/core';
+import { Container, Popover, Text } from '@mantine/core';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
@@ -15,6 +15,13 @@ type Props = {
     height: number;
     percentage: number;
   }) => void;
+};
+
+const stlyes = {
+  '::-webkit-scrollbar': { width: 0 },
+  '::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+  },
 };
 
 const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
@@ -99,7 +106,7 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
 
   return (
     <>
-      <div
+      <Container
         ref={viewport}
         style={{
           display: 'flex',
@@ -107,9 +114,14 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
           overflowY: 'scroll',
           paddingRight: '15px',
         }}
+        sx={(theme) => ({
+          '&::-webkit-scrollbar-track': {
+            background: 'red',
+          },
+        })}
       >
         {children}
-      </div>
+      </Container>
       <Popover
         opened={isScrollToBottomOpened}
         width={'100%'}

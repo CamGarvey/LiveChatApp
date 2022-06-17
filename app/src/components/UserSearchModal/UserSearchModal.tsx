@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
 import UserItem from '../shared/UserItem';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
 import User from '../shared/User';
+import { useDebouncedValue } from '@mantine/hooks';
 
 const USER_PAGINATION_COUNT = 5;
 
@@ -25,6 +26,8 @@ type Props = {
 
 const UserSearchModal = ({ onClose, isOpen }: Props) => {
   const inputRef = useRef<HTMLInputElement>();
+  const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebouncedValue(search, 1000);
 
   const [hasInput, setHasInput] = useState(false);
 
@@ -32,7 +35,16 @@ const UserSearchModal = ({ onClose, isOpen }: Props) => {
     useGetUsersLazyQuery();
 
   // Wrap the getUsers call in a debounce to prevent over requesting api
-  const debouncer = useCallback(_.debounce(getUsers, 1000), []);
+
+  useEffect(() => {
+    getUsers({
+      variables: {
+        first: USER_PAGINATION_COUNT,
+        usernameFilter: debouncedSearch,
+        after: null,
+      },
+    });
+  }, [debouncedSearch, getUsers]);
 
   // Focus on input
   useEffect(() => {
@@ -65,13 +77,7 @@ const UserSearchModal = ({ onClose, isOpen }: Props) => {
             if (value === '') {
               return;
             }
-            debouncer({
-              variables: {
-                first: USER_PAGINATION_COUNT,
-                usernameFilter: value,
-                after: null,
-              },
-            });
+            setSearch(value);
           }}
         />
       </InputWrapper>
