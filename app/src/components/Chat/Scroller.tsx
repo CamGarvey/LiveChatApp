@@ -17,13 +17,6 @@ type Props = {
   }) => void;
 };
 
-const stlyes = {
-  '::-webkit-scrollbar': { width: 0 },
-  '::-webkit-scrollbar-track': {
-    background: '#f1f1f1',
-  },
-};
-
 const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
   const viewport = useRef<HTMLDivElement>();
   const [isScrollToBottomOpened, setIsScrollToBottomOpened] = useState(false);
@@ -113,14 +106,36 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
           flexDirection: 'column-reverse',
           overflowY: 'scroll',
           paddingRight: '15px',
+          width: '100%',
+          maxWidth: 'none',
         }}
         sx={(theme) => ({
+          backgroundColor: 'transparent',
+          WebkitBackgroundClip: 'text',
+          transition: 'background-color .8s',
+          '&:hover': {
+            backgroundColor: 'rgba(0,0,0,0.30)',
+          },
+
+          '&::-webkit-scrollbar': {
+            width: '10px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: theme.radius.md,
+            backgroundColor: 'inherit',
+          },
           '&::-webkit-scrollbar-track': {
-            background: 'red',
+            borderRadius: theme.radius.md,
           },
         })}
       >
-        {children}
+        <div
+          style={{
+            zIndex: 1,
+          }}
+        >
+          {children}
+        </div>
       </Container>
       <Popover
         opened={isScrollToBottomOpened}

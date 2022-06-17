@@ -114,7 +114,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         cors: true,
     });
     const port = parseInt(process.env.PORT);
-    httpServer.listen(port, () => {
+    httpServer.listen(port, '0.0.0.0', () => {
         console.log(`Server is now running on http://localhost:${port}${server.graphqlPath}`);
     });
 });

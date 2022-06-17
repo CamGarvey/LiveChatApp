@@ -1,5 +1,5 @@
 import { Group, Stack, Text, Paper } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { useId, useMediaQuery } from '@mantine/hooks';
 import moment from 'moment';
 import MessageItem from '../../models/message-item';
 
@@ -15,15 +15,14 @@ const Message = ({
   onClick,
   isInfoShown = false,
 }: MessageProps) => {
-  const largeScreen = useMediaQuery('(min-width: 900px)');
+  const largeScreen = useMediaQuery('(min-width: 1200px)');
 
   const time = moment(createdAt);
   let humanReadableTime = '';
 
   if (time.diff(moment()) < 10) {
-    humanReadableTime = time.fromNow();
+    // humanReadableTime = time.fromNow();
   }
-
   return (
     <Stack style={{ width: largeScreen ? '400px' : '200px', gap: '3px' }}>
       {isInfoShown && (
@@ -38,8 +37,7 @@ const Message = ({
         shadow="sm"
         radius="lg"
         p="md"
-        // onClick={() => onClick && onClick()}
-        onClick={() => console.log(time.minutes())}
+        onClick={() => onClick && onClick()}
         withBorder
       >
         <Text

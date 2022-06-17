@@ -152,7 +152,7 @@ const main = async () => {
 
   const port = parseInt(process.env.PORT);
 
-  httpServer.listen(port, () => {
+  httpServer.listen(port, '0.0.0.0', () => {
     console.log(
       `Server is now running on http://localhost:${port}${server.graphqlPath}`
     );

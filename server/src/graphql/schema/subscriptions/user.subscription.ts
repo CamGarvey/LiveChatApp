@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { intArg, nonNull, stringArg, subscriptionField } from 'nexus';
+import { nonNull, stringArg, subscriptionField } from 'nexus';
 import { Subscriptions } from '../types/subscriptions';
 import User from '../types/user';
 

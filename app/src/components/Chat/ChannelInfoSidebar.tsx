@@ -27,18 +27,15 @@ const ChannelInfoSidebar = ({ channelId }: Props) => {
   if (error) return <>Error!</>;
 
   return (
-    <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
-      <Aside p="md" hiddenBreakpoint="sm" width={{ sm: 200, lg: 300 }}>
+    <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
+      <Aside p="md" hiddenBreakpoint="md" width={{ md: 300, lg: 300 }}>
         <LoadingOverlay visible={loading} loaderProps={{ variant: 'bars' }} />
         {data?.channel && (
           <>
             <Title order={4}>{data.channel.name}</Title>
             <Group>
               <Text>Members ({data.channel.members.length})</Text>
-              <ActionIcon
-                ml={'auto'}
-                variant="light"
-              >
+              <ActionIcon ml={'auto'} variant="light">
                 <UserPlus size={16} />
               </ActionIcon>
             </Group>

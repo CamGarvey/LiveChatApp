@@ -14,7 +14,7 @@ const Chat = (props: Props) => {
   return (
     <AppShell
       navbarOffsetBreakpoint="sm"
-      asideOffsetBreakpoint="sm"
+      asideOffsetBreakpoint="md"
       fixed
       header={<Header />}
       navbar={<ChannelNav />}
