@@ -4,16 +4,17 @@ import { NavLink } from 'react-router-dom';
 type Props = {
   id: string;
   name: string;
+  onClick?: () => void;
 };
 
-const ChannelItem = ({ id, name }: Props) => {
-
+const ChannelItem = ({ id, name, onClick }: Props) => {
   return (
     <NavLink
       to={`${id}`}
       style={{
         textDecoration: 'none',
       }}
+      onClick={onClick}
     >
       {({ isActive }) => (
         <UnstyledButton
