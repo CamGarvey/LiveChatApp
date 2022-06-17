@@ -1,11 +1,10 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import {
   ColorScheme,
   ColorSchemeProvider,
   MantineProvider,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './routes/Home';
 import Chat from './routes/Chat';
 import ProtectedRoute from './components/ProtectedRoute';

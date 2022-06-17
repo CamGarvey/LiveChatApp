@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
 import UserItem from '../shared/UserItem';

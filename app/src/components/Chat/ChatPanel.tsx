@@ -86,6 +86,8 @@ export const ChatPanel = ({ channelId }: Props) => {
     return prev;
   }, []);
 
+  
+
   return (
     <Stack
       style={{

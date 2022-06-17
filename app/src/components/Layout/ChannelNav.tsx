@@ -2,14 +2,11 @@ import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
 import React, { useState } from 'react';
 import { useGetChannelsForNavQuery } from '../../graphql/generated/graphql';
 import CreateChannelModal from '../CreateChannelModal/CreateChannelModal';
+import { useOpenCreateChannelModal } from '../store';
 import ChannelItem from './ChannelItem';
 
-type Props = {
-  onChannelSelected: (channelId: string) => void;
-};
-
 const ChannelNav = () => {
-  const [createChannelOpen, setCreateChannelOpen] = useState(false);
+  const openChannelModal = useOpenCreateChannelModal();
   const { loading, data } = useGetChannelsForNavQuery();
 
   return (
@@ -23,21 +20,10 @@ const ChannelNav = () => {
             })}
         </Navbar.Section>
         <Navbar.Section>
-          <Button
-            fullWidth
-            onClick={() => {
-              setCreateChannelOpen(true);
-            }}
-          >
+          <Button fullWidth onClick={openChannelModal}>
             Create Channel
           </Button>
         </Navbar.Section>
-        <CreateChannelModal
-          isOpen={createChannelOpen}
-          onClose={() => {
-            setCreateChannelOpen(false);
-          }}
-        />
       </Navbar>
     </MediaQuery>
   );

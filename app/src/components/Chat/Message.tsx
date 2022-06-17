@@ -1,5 +1,5 @@
 import { Group, Stack, Text, Paper } from '@mantine/core';
-import { useId, useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import moment from 'moment';
 import MessageItem from '../../models/message-item';
 
@@ -23,6 +23,7 @@ const Message = ({
   if (time.diff(moment()) < 10) {
     // humanReadableTime = time.fromNow();
   }
+
   return (
     <Stack style={{ width: largeScreen ? '400px' : '200px', gap: '3px' }}>
       {isInfoShown && (

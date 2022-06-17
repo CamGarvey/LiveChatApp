@@ -12,6 +12,7 @@ import {
   Center,
   Stack,
   MediaQuery,
+  Burger,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
@@ -22,25 +23,26 @@ import {
   Logout,
   Bell,
   Search,
-  Menu2,
 } from 'tabler-icons-react';
 import {
   FriendStatus,
   useGetDataForHeaderLazyQuery,
 } from '../../graphql/generated/graphql';
+import { useIsDrawerOpen, useToggleDrawer } from '../store';
 import UserSearchModal from '../UserSearchModal/UserSearchModal';
-import Drawer from './Drawer';
 import FriendRequest from './FriendRequest';
 
 const Header = () => {
   const isLargerScreen = useMediaQuery('(min-width: 900px)');
-  const [isDrawerOpened, setIsDrawerOpened] = useState(false);
+  const isSmallScreen = useMediaQuery('(max-width: 500px)');
+  const isDrawerOpen = useIsDrawerOpen();
+  const toggleDrawer = useToggleDrawer();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
     useAuth0();
   const [friendSearchOpen, setFriendSearchOpen] = useState(false);
 
-  const [getData, { loading, data, error }] = useGetDataForHeaderLazyQuery();
+  const [getData, { data }] = useGetDataForHeaderLazyQuery();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -56,18 +58,17 @@ const Header = () => {
 
   return (
     <>
-      <Drawer
-        isOpened={isDrawerOpened}
-        onClose={() => setIsDrawerOpened(false)}
-      />
       <MHeader height={70} p="md">
-        <Group>
+        <Group spacing={3}>
           <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
-            <ActionIcon onClick={() => setIsDrawerOpened(true)}>
-              <Menu2 />
-            </ActionIcon>
+            <Burger opened={isDrawerOpen} onClick={toggleDrawer} />
           </MediaQuery>
-          <Title order={isLargerScreen ? 1 : 3}>Hams Chat</Title>
+          <Title
+            order={isLargerScreen ? 1 : 3}
+            ml={isSmallScreen ? 'auto' : 'none'}
+          >
+            Hams Chat
+          </Title>
           <Group sx={{ height: '100%' }} px={20} position="apart" ml={'auto'}>
             <ActionIcon
               variant="default"

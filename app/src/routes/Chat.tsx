@@ -1,10 +1,11 @@
 import { AppShell, Center } from '@mantine/core';
-import React, { useState } from 'react';
-import { Route, Routes, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ChatPanel from '../components/Chat/ChatPanel';
 import ChannelInfoSidebar from '../components/Chat/ChannelInfoSidebar';
 import ChannelNav from '../components/Layout/ChannelNav';
 import Header from '../components/Layout/Header';
+import Drawer from '../components/Layout/Drawer';
+import CreateChannelModal from '../components/CreateChannelModal/CreateChannelModal';
 
 type Props = {};
 
@@ -20,6 +21,8 @@ const Chat = (props: Props) => {
       navbar={<ChannelNav />}
       aside={channelId && <ChannelInfoSidebar channelId={channelId} />}
     >
+      <CreateChannelModal />
+      <Drawer />
       {channelId ? (
         <ChatPanel channelId={channelId} />
       ) : (

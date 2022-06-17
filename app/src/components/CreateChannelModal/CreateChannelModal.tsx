@@ -15,6 +15,10 @@ import {
   Modal,
   Stack,
 } from '@mantine/core';
+import {
+  useIsCreateChannelModalOpen,
+  useOpenCreateChannelModal as useCloseCreateChannelModal,
+} from '../store';
 
 type Props = {
   isOpen?: boolean;
@@ -23,6 +27,8 @@ type Props = {
 };
 
 const CreateChannelModal = ({ isOpen, onClose }: Props) => {
+  const close = useCloseCreateChannelModal();
+  const isCreateChannelModalOpen = useIsCreateChannelModalOpen();
   const inputRef = useRef<HTMLInputElement>();
   const {
     loading: loadingFriends,
@@ -30,14 +36,8 @@ const CreateChannelModal = ({ isOpen, onClose }: Props) => {
     error: friendError,
   } = useGetFriendsForSearchQuery();
 
-  const [
-    createChannelMutation,
-    {
-      data: createChannelData,
-      loading: loadingCreateChannel,
-      error: createChannelError,
-    },
-  ] = useCreateChannelMutation();
+  const [createChannelMutation, { loading: loadingCreateChannel }] =
+    useCreateChannelMutation();
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -61,7 +61,11 @@ const CreateChannelModal = ({ isOpen, onClose }: Props) => {
   });
 
   return (
-    <Modal opened={isOpen} onClose={onClose} title={'Create Channel'}>
+    <Modal
+      opened={isCreateChannelModalOpen}
+      onClose={onClose}
+      title={'Create Channel'}
+    >
       <form onSubmit={formik.handleSubmit}>
         <Stack>
           <InputWrapper id="input-demo" required label="Name">

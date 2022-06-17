@@ -1,14 +1,4 @@
-import {
-  Avatar,
-  Checkbox,
-  Container,
-  Group,
-  SimpleGrid,
-  Text,
-  Stack,
-  UnstyledButton,
-} from '@mantine/core';
-import { User } from '../../graphql/generated/graphql';
+import { Avatar, Checkbox, Group, Text, UnstyledButton } from '@mantine/core';
 
 type Props = {
   username: string;
