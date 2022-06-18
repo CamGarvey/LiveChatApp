@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
-import UserItem from '../shared/UserItem';
+import { useGetUsersLazyQuery } from '../../../graphql/generated/graphql';
+import UserItem from '../../shared/UserItem';
 import {
   Button,
   Center,
@@ -13,17 +13,16 @@ import {
   Text,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
-import User from '../shared/User';
+import User from '../../shared/User';
 import { useDebouncedValue } from '@mantine/hooks';
+import { useCloseModal, useIsModalOpen } from '../../store';
+import ModalType from '../../../models/modal-type';
 
 const USER_PAGINATION_COUNT = 5;
 
-type Props = {
-  onClose?: () => void;
-  isOpen: boolean;
-};
-
-const UserSearchModal = ({ onClose, isOpen }: Props) => {
+const UserSearchModal = () => {
+  const isOpen = useIsModalOpen(ModalType.UserSeach);
+  const close = useCloseModal(ModalType.UserSeach);
   const inputRef = useRef<HTMLInputElement>();
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 1000);
@@ -57,13 +56,7 @@ const UserSearchModal = ({ onClose, isOpen }: Props) => {
   }
 
   return (
-    <Modal
-      onClose={() => {
-        onClose();
-      }}
-      opened={isOpen}
-      withCloseButton={false}
-    >
+    <Modal onClose={close} opened={isOpen} withCloseButton={false}>
       <InputWrapper>
         <Input
           icon={<Search />}
@@ -82,11 +75,17 @@ const UserSearchModal = ({ onClose, isOpen }: Props) => {
       </InputWrapper>
       {hasInput && (
         <>
-          <Stack py={'10px'}>
+          <Stack
+            py={'10px'}
+            style={{
+              maxHeight: '490px',
+            }}
+          >
             <ScrollArea
               style={{
-                maxHeight: '490px',
+                height: '100%',
               }}
+              offsetScrollbars
             >
               {hasInput && (
                 <>

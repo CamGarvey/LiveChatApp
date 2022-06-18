@@ -105,7 +105,8 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
           display: 'flex',
           flexDirection: 'column-reverse',
           overflowY: 'scroll',
-          paddingRight: '15px',
+          // paddingRight: '15px',
+          padding: '0',
           width: '100%',
           maxWidth: 'none',
         }}

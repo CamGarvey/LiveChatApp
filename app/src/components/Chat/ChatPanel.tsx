@@ -1,4 +1,12 @@
-import { Center, Loader, LoadingOverlay, Stack, Text } from '@mantine/core';
+import {
+  Center,
+  Container,
+  Loader,
+  LoadingOverlay,
+  Paper,
+  Stack,
+  Text,
+} from '@mantine/core';
 import {
   GetNewMessagesDocument,
   useCreateMessageMutation,
@@ -86,8 +94,6 @@ export const ChatPanel = ({ channelId }: Props) => {
     return prev;
   }, []);
 
-  
-
   return (
     <Stack
       style={{
@@ -114,7 +120,6 @@ export const ChatPanel = ({ channelId }: Props) => {
               <Text>No Messages</Text>
             </Center>
           )}
-
           <Scroller
             onScroll={({ percentage }) => {
               if (percentage > 90 && hasPreviousPage && !isFetchingMore) {

@@ -16,7 +16,7 @@ type Props = {
   channelId?: string;
 };
 
-const ChannelInfoSidebar = ({ channelId }: Props) => {
+const ChannelInfoAside = ({ channelId }: Props) => {
   const { loading, data, error } = useGetChannelInfoForSidebarQuery({
     variables: {
       channelId,
@@ -54,4 +54,4 @@ const ChannelInfoSidebar = ({ channelId }: Props) => {
   );
 };
 
-export default ChannelInfoSidebar;
+export default ChannelInfoAside;

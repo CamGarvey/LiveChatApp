@@ -3,7 +3,9 @@ import {
   ActionIcon,
   Avatar,
   Box,
+  Center,
   Menu,
+  Stack,
   Text,
   UnstyledButton,
 } from '@mantine/core';
@@ -139,7 +141,7 @@ const UserItem = ({ user }: Props) => {
         gap: '20px',
         color:
           theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-
+        alignItems: 'center',
         '&:hover': {
           backgroundColor:
             theme.colorScheme === 'dark'
@@ -152,35 +154,13 @@ const UserItem = ({ user }: Props) => {
         size="sm"
         src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
       />
-      <Text>{name}</Text>
-      <Text>{username}</Text>
+      <Stack spacing={0}>
+        <Text>{name}</Text>
+        <Text>{username}</Text>
+      </Stack>
       <Box ml={'auto'}>{menu}</Box>
     </UnstyledButton>
   );
 };
-
-// const updateFriendStatusCache = <T,>(
-//   user: User,
-//   friendStatus: FriendStatus
-// ) => {
-//   return (
-//     cache: ApolloCache<T>,
-//     {
-//       data,
-//       errors,
-//     }: Omit<FetchResult<T, Record<string, any>, Record<string, any>>, 'context'>
-//   ) => {
-//     if (!errors) {
-//       cache.modify({
-//         id: cache.identify(user),
-//         fields: {
-//           friendStatus() {
-//             return friendStatus;
-//           },
-//         },
-//       });
-//     }
-//   };
-// };
 
 export default UserItem;

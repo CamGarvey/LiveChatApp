@@ -37,7 +37,7 @@ const Message = ({
       <Paper
         shadow="sm"
         radius="lg"
-        p="md"
+        p="xs"
         onClick={() => onClick && onClick()}
         withBorder
       >

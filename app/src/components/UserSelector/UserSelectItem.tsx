@@ -7,7 +7,7 @@ type Props = {
   onClick: () => void;
 };
 
-const UserItem = ({ username, name, selected, onClick }: Props) => {
+const UserItem = ({ name, selected, onClick }: Props) => {
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -28,10 +28,7 @@ const UserItem = ({ username, name, selected, onClick }: Props) => {
       onClick={onClick}
     >
       <Group>
-        <Avatar
-          size="sm"
-          src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
-        />
+        <Avatar size="sm">{name}</Avatar>
         <Text size="sm">{name}</Text>
         <Checkbox ml={'auto'} checked={selected} />
       </Group>

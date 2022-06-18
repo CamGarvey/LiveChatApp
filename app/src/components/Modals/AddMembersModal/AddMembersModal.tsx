@@ -1,11 +1,11 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useRef } from 'react';
-import UserSelector from '../UserSelector/UserSelector';
+import UserSelector from '../../UserSelector/UserSelector';
 import {
   useCreateChannelMutation,
   useGetFriendsForSearchQuery,
-} from '../../graphql/generated/graphql';
+} from '../../../graphql/generated/graphql';
 import {
   Button,
   Center,

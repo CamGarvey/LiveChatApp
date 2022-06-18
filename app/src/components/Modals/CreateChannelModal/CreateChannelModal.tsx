@@ -1,11 +1,11 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useRef } from 'react';
-import UserSelector from '../UserSelector/UserSelector';
+import UserSelector from '../../UserSelector/UserSelector';
 import {
   useCreateChannelMutation,
   useGetFriendsForSearchQuery,
-} from '../../graphql/generated/graphql';
+} from '../../../graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -15,20 +15,12 @@ import {
   Modal,
   Stack,
 } from '@mantine/core';
-import {
-  useIsCreateChannelModalOpen,
-  useOpenCreateChannelModal as useCloseCreateChannelModal,
-} from '../store';
+import { useIsModalOpen, useCloseModal } from '../../store';
+import ModalType from '../../../models/modal-type';
 
-type Props = {
-  isOpen?: boolean;
-  onOpen?: boolean;
-  onClose?: (channelId?: string) => void;
-};
-
-const CreateChannelModal = ({ isOpen, onClose }: Props) => {
-  const close = useCloseCreateChannelModal();
-  const isCreateChannelModalOpen = useIsCreateChannelModalOpen();
+const CreateChannelModal = () => {
+  const close = useCloseModal(ModalType.CreateChannel);
+  const isCreateChannelModalOpen = useIsModalOpen(ModalType.CreateChannel);
   const inputRef = useRef<HTMLInputElement>();
   const {
     loading: loadingFriends,
@@ -55,7 +47,7 @@ const CreateChannelModal = ({ isOpen, onClose }: Props) => {
       createChannelMutation({
         variables: values,
       }).then((c) => {
-        onClose(c.data.createChannel.id);
+        close();
       });
     },
   });
@@ -63,7 +55,7 @@ const CreateChannelModal = ({ isOpen, onClose }: Props) => {
   return (
     <Modal
       opened={isCreateChannelModalOpen}
-      onClose={onClose}
+      onClose={close}
       title={'Create Channel'}
     >
       <form onSubmit={formik.handleSubmit}>
@@ -100,19 +92,6 @@ const CreateChannelModal = ({ isOpen, onClose }: Props) => {
               />
             )}
           </InputWrapper>
-          {/* {createChannelError && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>Failed to create channel</AlertTitle>
-              <AlertDescription>Try Again Later</AlertDescription>
-            </Alert>
-          )}
-          {createChannelData?.createChannel && (
-            <Alert status="success">
-              <AlertIcon />
-              <AlertTitle>Successfully Created Channel</AlertTitle>
-            </Alert>
-          )} */}
           <Button type="submit" loading={loadingCreateChannel}>
             Create
           </Button>

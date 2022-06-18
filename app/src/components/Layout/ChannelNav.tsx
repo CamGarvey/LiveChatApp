@@ -1,12 +1,11 @@
 import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
-import React, { useState } from 'react';
 import { useGetChannelsForNavQuery } from '../../graphql/generated/graphql';
-import CreateChannelModal from '../CreateChannelModal/CreateChannelModal';
-import { useOpenCreateChannelModal } from '../store';
+import ModalType from '../../models/modal-type';
+import { useOpenModal } from '../store';
 import ChannelItem from './ChannelItem';
 
 const ChannelNav = () => {
-  const openChannelModal = useOpenCreateChannelModal();
+  const openChannelModal = useOpenModal(ModalType.CreateChannel);
   const { loading, data } = useGetChannelsForNavQuery();
 
   return (
