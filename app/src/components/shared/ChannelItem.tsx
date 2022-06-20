@@ -1,13 +1,20 @@
-import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
+import {
+  Avatar,
+  AvatarsGroup,
+  Group,
+  Text,
+  UnstyledButton,
+} from '@mantine/core';
 import { NavLink } from 'react-router-dom';
 
 type Props = {
   id: string;
   name: string;
+  members: { username: string }[];
   onClick?: () => void;
 };
 
-const ChannelItem = ({ id, name, onClick }: Props) => {
+const ChannelItem = ({ id, name, members, onClick }: Props) => {
   return (
     <NavLink
       to={`${id}`}
@@ -45,6 +52,15 @@ const ChannelItem = ({ id, name, onClick }: Props) => {
               src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
             />
             <Text size="sm">{name}</Text>
+            <AvatarsGroup ml={'auto'} limit={3} total={members.length}>
+              {members.slice(0, 2).map((member) => (
+                <Avatar
+                  radius={'xs'}
+                  size="sm"
+                  src={`https://avatars.dicebear.com/api/initials/${member.username}.svg`}
+                />
+              ))}
+            </AvatarsGroup>
           </Group>
         </UnstyledButton>
       )}

@@ -18,7 +18,7 @@ import {
   useDeleteFriendMutation,
   useSendFriendRequestMutation,
 } from '../../graphql/generated/graphql';
-import User from './User';
+import { User } from '../../models';
 
 type Props = {
   user: User;

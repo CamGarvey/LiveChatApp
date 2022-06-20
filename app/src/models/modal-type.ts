@@ -1,7 +1,4 @@
-
-enum ModalType {
+export enum ModalType {
   UserSeach,
   CreateChannel,
 }
-
-export default ModalType;

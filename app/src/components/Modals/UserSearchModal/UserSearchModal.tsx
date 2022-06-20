@@ -13,10 +13,9 @@ import {
   Text,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
-import User from '../../shared/User';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useCloseModal, useIsModalOpen } from '../../store';
-import ModalType from '../../../models/modal-type';
+import { ModalType, User } from '../../../models';
 
 const USER_PAGINATION_COUNT = 5;
 

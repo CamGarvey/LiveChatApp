@@ -14,6 +14,7 @@ import {
   MediaQuery,
   Burger,
   Indicator,
+  Transition,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
@@ -29,13 +30,19 @@ import {
   FriendStatus,
   useGetDataForHeaderLazyQuery,
 } from '../../graphql/generated/graphql';
-import ModalType from '../../models/modal-type';
 import { useIsDrawerOpen, useOpenModal, useToggleDrawer } from '../store';
-import FriendRequest from './FriendRequest';
+import FriendRequest from '../shared/FriendRequest';
+import { ChannelInfo, ModalType } from '../../models';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const ICON_SIZE = 16;
+const TRANSITION_DURATION = 300;
 
-const Header = () => {
+type Props = {
+  channel?: ChannelInfo;
+};
+
+const Header = ({ channel }: Props) => {
   const openUserSearchModal = useOpenModal(ModalType.UserSeach);
   const isLargerScreen = useMediaQuery('(min-width: 900px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
@@ -46,7 +53,6 @@ const Header = () => {
     useAuth0();
 
   const [getData, { data }] = useGetDataForHeaderLazyQuery();
-
   useEffect(() => {
     if (isAuthenticated) {
       getData();
@@ -63,14 +69,31 @@ const Header = () => {
     <MantineHeader height={70} p="md">
       <Group spacing={3}>
         <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
-          <Burger opened={isDrawerOpen} onClick={toggleDrawer} />
+          <Burger
+            opened={isDrawerOpen}
+            onClick={() => {
+              toggleDrawer();
+            }}
+          />
         </MediaQuery>
-        <Title
-          order={isLargerScreen ? 1 : 3}
-          ml={isSmallScreen ? 'auto' : 'none'}
-        >
-          Hams Chat
-        </Title>
+        <AnimatePresence custom={isDrawerOpen} exitBeforeEnter>
+          <motion.div
+            key={isDrawerOpen ? 'ham' : 'channel'}
+            initial={{ y: 0, x: -100, opacity: 0 }}
+            animate={{ y: 0, x: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            style={{ margin: 0 }}
+            transition={{ type: 'spring', bounce: 0.2, duration: 0.2 }}
+          >
+            {isDrawerOpen ? (
+              <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
+            ) : (
+              <Group>
+                <Text>{channel?.name}</Text>
+              </Group>
+            )}
+          </motion.div>
+        </AnimatePresence>
         <Group sx={{ height: '100%' }} px={20} position="apart" ml={'auto'}>
           <ActionIcon variant={'default'} onClick={() => toggleColorScheme()}>
             {colorScheme === 'dark' ? (

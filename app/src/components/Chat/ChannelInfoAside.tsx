@@ -9,44 +9,35 @@ import {
   Group,
 } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
-import { useGetChannelInfoForSidebarQuery } from '../../graphql/generated/graphql';
+import { ChannelInfo } from '../../models';
 import UserItem from '../shared/UserItem';
 
 type Props = {
-  channelId?: string;
+  isLoading: boolean;
+  channel: ChannelInfo;
 };
 
-const ChannelInfoAside = ({ channelId }: Props) => {
-  const { loading, data, error } = useGetChannelInfoForSidebarQuery({
-    variables: {
-      channelId,
-    },
-  });
-  if (error) return <>Error!</>;
-
+const ChannelInfoAside = ({ channel, isLoading }: Props) => {
   return (
     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
       <Aside p="md" hiddenBreakpoint="md" width={{ md: 300, lg: 300 }}>
-        <LoadingOverlay visible={loading} loaderProps={{ variant: 'bars' }} />
-        {data?.channel && (
+        <LoadingOverlay visible={isLoading} />
+        {channel && (
           <>
-            <Title order={4}>{data.channel.name}</Title>
-            <Group>
-              <Text>Members ({data.channel.members.length})</Text>
-              <ActionIcon ml={'auto'} variant="light">
-                <UserPlus size={16} />
-              </ActionIcon>
-            </Group>
-            <ScrollArea
-              style={{
-                height: '500px',
-              }}
-              pr={'10px'}
-            >
-              {data.channel.members.map((member) => {
+            <Aside.Section>
+              <Title order={4}>{channel.name}</Title>
+              <Group>
+                <Text>Members ({channel.members.length})</Text>
+                <ActionIcon ml={'auto'} variant="light">
+                  <UserPlus size={16} />
+                </ActionIcon>
+              </Group>
+            </Aside.Section>
+            <Aside.Section grow component={ScrollArea} mx="-xs" px="xs">
+              {channel.members.map((member) => {
                 return <UserItem key={member.id} user={{ ...member }} />;
               })}
-            </ScrollArea>
+            </Aside.Section>
           </>
         )}
       </Aside>

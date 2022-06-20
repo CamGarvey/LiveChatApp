@@ -4,6 +4,7 @@ import {
   Center,
   Container,
   Group,
+  LoadingOverlay,
   Text,
 } from '@mantine/core';
 import { useParams } from 'react-router-dom';
@@ -15,29 +16,43 @@ import Drawer from '../components/Layout/Drawer';
 import CreateChannelModal from '../components/Modals/CreateChannelModal/CreateChannelModal';
 import UserSearchModal from '../components/Modals/UserSearchModal/UserSearchModal';
 import { useOpenModal } from '../components/store';
-import ModalType from '../models/modal-type';
+import { ModalType } from '../models';
+import { useEffect } from 'react';
+import { useGetChannelInfoLazyQuery } from '../graphql/generated/graphql';
 
 const Chat = () => {
   const { channelId } = useParams();
   const openCreateChannelModal = useOpenModal(ModalType.CreateChannel);
+  const [getChannelInfo, { data, loading }] = useGetChannelInfoLazyQuery();
+
+  useEffect(() => {
+    if (channelId) {
+      getChannelInfo({
+        variables: {
+          channelId,
+        },
+      });
+    }
+  }, [channelId, getChannelInfo]);
 
   return (
     <AppShell
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="md"
-      fixed
-      header={<Header />}
+      header={<Header channel={data?.channel} />}
       navbar={<ChannelNav />}
-      aside={channelId && <ChannelInfoAside channelId={channelId} />}
+      aside={
+        channelId && (
+          <ChannelInfoAside channel={data?.channel} isLoading={loading} />
+        )
+      }
+      fixed
     >
       <CreateChannelModal />
       <UserSearchModal />
       <Drawer />
       {channelId ? (
-        <>
-          <div>{channelId}</div>
-          <ChatPanel channelId={channelId} />
-        </>
+        <ChatPanel channelId={channelId} />
       ) : (
         <Center
           style={{

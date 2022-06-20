@@ -1,4 +1,4 @@
-type MessageItem = {
+export type MessageItem = {
   id: string;
   content: string;
   createdAt: number;
@@ -8,5 +8,3 @@ type MessageItem = {
     name?: string;
   };
 };
-
-export default MessageItem;

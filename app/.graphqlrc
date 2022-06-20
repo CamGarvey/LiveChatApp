@@ -1,2 +1,2 @@
-schema: 'https://localhost:4000/graphql'
+schema: '${REACT_APP_GRAPHQL_API_URL}/graphql'
 documents: './src/graphql/**/*.graphql'

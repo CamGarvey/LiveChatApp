@@ -19,7 +19,7 @@ import Scroller from './Scroller';
 import ChatInput from './ChatInput';
 
 type Props = {
-  channelId?: string;
+  channelId: string;
 };
 
 export const ChatPanel = ({ channelId }: Props) => {

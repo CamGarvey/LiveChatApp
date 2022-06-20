@@ -16,7 +16,7 @@ import {
   Stack,
 } from '@mantine/core';
 import { useIsModalOpen, useCloseModal } from '../../store';
-import ModalType from '../../../models/modal-type';
+import { ModalType } from '../../../models';
 
 const CreateChannelModal = () => {
   const close = useCloseModal(ModalType.CreateChannel);

@@ -1,6 +1,6 @@
 import create from 'zustand';
-import ModalType from '../models/modal-type';
-import Modals from '../models/modal-type';
+import { FriendStatus } from '../graphql/generated/graphql';
+import { ModalType } from '../models';
 
 type Store = {
   isDrawerOpen: boolean;

@@ -5,6 +5,8 @@ query GetChannelsForNav {
     createdAt
     updatedAt
     isDM
-    memberCount
+    members {
+      username
+    }
   }
 }

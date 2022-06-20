@@ -1,7 +1,7 @@
 import { Group, Stack, Text, Paper } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import moment from 'moment';
-import MessageItem from '../../models/message-item';
+import { MessageItem } from '../../models';
 
 type MessageProps = MessageItem & {
   onClick?: () => void;

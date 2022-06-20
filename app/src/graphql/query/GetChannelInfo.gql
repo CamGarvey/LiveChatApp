@@ -1,4 +1,4 @@
-query GetChannelInfoForSidebar($channelId: String!) {
+query GetChannelInfo($channelId: String!) {
   channel(channelId: $channelId) {
     id
     name

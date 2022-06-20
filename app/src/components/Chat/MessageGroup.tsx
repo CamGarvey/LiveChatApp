@@ -1,6 +1,6 @@
 import { Group, Avatar, Stack } from '@mantine/core';
 import { useState } from 'react';
-import MessageItem from '../../models/message-item';
+import { MessageItem } from '../../models';
 import Message from './Message';
 
 type MessageGroupProps = {

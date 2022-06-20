@@ -8,20 +8,20 @@ import {
   Group,
   Loader,
   MediaQuery,
+  Skeleton,
   Stack,
   Text,
   Title,
 } from '@mantine/core';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Logout, Search, SquarePlus } from 'tabler-icons-react';
 import {
   useGetChannelsForNavQuery,
-  useGetDataForHeaderLazyQuery,
   useGetMeLazyQuery,
 } from '../../graphql/generated/graphql';
-import ModalType from '../../models/modal-type';
+import { ModalType } from '../../models';
 import { useToggleDrawer, useIsDrawerOpen, useOpenModal } from '../store';
-import ChannelItem from './ChannelItem';
+import ChannelItem from '../shared/ChannelItem';
 
 const Drawer = () => {
   const { loading, data } = useGetChannelsForNavQuery();
@@ -30,8 +30,7 @@ const Drawer = () => {
 
   const openCreateChannelModal = useOpenModal(ModalType.CreateChannel);
   const openUserSearchModal = useOpenModal(ModalType.UserSeach);
-  const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
-    useAuth0();
+  const { user, isAuthenticated, logout } = useAuth0();
 
   const [getMeData, { data: meData, loading: loadingMe }] = useGetMeLazyQuery();
 
@@ -65,9 +64,10 @@ const Drawer = () => {
         {isAuthenticated ? (
           <>
             {loadingMe || meData?.me == null ? (
-              <Center>
-                <Loader />
-              </Center>
+              <Group>
+                <Skeleton circle />
+                <Skeleton />
+              </Group>
             ) : (
               <Stack spacing={'md'}>
                 <Group>

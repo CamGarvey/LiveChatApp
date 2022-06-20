@@ -1,5 +1,13 @@
-import { Button, Grid, InputWrapper, Textarea } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Grid,
+  InputWrapper,
+  MediaQuery,
+  Textarea,
+} from '@mantine/core';
 import { useFormik } from 'formik';
+import { Send } from 'tabler-icons-react';
 import * as Yup from 'yup';
 
 type Props = {
@@ -32,15 +40,28 @@ const ChatInput = ({ onSubmit, isLoading, isDisabled }: Props) => {
             />
           </InputWrapper>
         </Grid.Col>
-        <Grid.Col span={1}>
-          <Button
-            type="submit"
-            loading={isLoading}
-            disabled={isDisabled || isLoading}
-            fullWidth={true}
-          >
-            Send
-          </Button>
+        <Grid.Col span={1} sx={{ alignSelf: 'center' }}>
+          <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
+            <ActionIcon
+              type="submit"
+              loading={isLoading}
+              disabled={isDisabled || isLoading}
+              variant={'filled'}
+              color={'blue'}
+            >
+              <Send />
+            </ActionIcon>
+          </MediaQuery>
+          <MediaQuery smallerThan={'sm'} styles={{ display: 'none' }}>
+            <Button
+              type="submit"
+              loading={isLoading}
+              disabled={isDisabled || isLoading}
+              fullWidth={true}
+            >
+              Send
+            </Button>
+          </MediaQuery>
         </Grid.Col>
       </Grid>
     </form>
