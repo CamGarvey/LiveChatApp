@@ -1,11 +1,13 @@
-import { Group, Stack, Text, Paper } from '@mantine/core';
+import { Group, Stack, Text, Paper, Avatar } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import moment from 'moment';
 import { MessageItem } from '../../models';
 
 type MessageProps = MessageItem & {
   onClick?: () => void;
-  isInfoShown?: boolean;
+  showInfo?: boolean;
+  showAvatar?: boolean;
+  variant?: 'default' | 'light';
 };
 
 const Message = ({
@@ -13,7 +15,9 @@ const Message = ({
   createdBy,
   createdAt,
   onClick,
-  isInfoShown = false,
+  showInfo = false,
+  showAvatar = true,
+  variant = 'default',
 }: MessageProps) => {
   const largeScreen = useMediaQuery('(min-width: 1200px)');
 
@@ -25,31 +29,50 @@ const Message = ({
   }
 
   return (
-    <Stack style={{ width: largeScreen ? '400px' : '200px', gap: '3px' }}>
-      {isInfoShown && (
-        <Group grow>
-          <Text size={'sm'}>{createdBy.username}</Text>
-          <Text size={'sm'} align={'right'}>
-            {humanReadableTime}
-          </Text>
-        </Group>
-      )}
-      <Paper
-        shadow="sm"
-        radius="lg"
-        p="xs"
-        onClick={() => onClick && onClick()}
-        withBorder
-      >
-        <Text
-          style={{
-            whiteSpace: 'pre',
-          }}
+    <Group style={{}}>
+      <Avatar
+        size="md"
+        src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}
+        style={{ marginTop: 'auto' }}
+        sx={{
+          visibility: showAvatar ? 'visible' : 'hidden',
+        }}
+      />
+      <Stack style={{ width: largeScreen ? '400px' : '200px', gap: '3px' }}>
+        {showInfo && (
+          <Group grow>
+            <Text size={'sm'}>{createdBy.username}</Text>
+            <Text size={'sm'} align={'right'}>
+              {humanReadableTime}
+            </Text>
+          </Group>
+        )}
+        <Paper
+          shadow="sm"
+          radius="lg"
+          p="xs"
+          onClick={() => onClick && onClick()}
+          sx={(theme) => ({
+            backgroundColor:
+              variant === 'light' &&
+              (theme.colorScheme === 'dark'
+                ? theme.colors.blue[7]
+                : theme.colors.blue[1]),
+            color:
+              variant === 'light' && theme.colorScheme === 'dark' && '#fff',
+          })}
+          withBorder
         >
-          {content}
-        </Text>
-      </Paper>
-    </Stack>
+          <Text
+            style={{
+              whiteSpace: 'pre',
+            }}
+          >
+            {content}
+          </Text>
+        </Paper>
+      </Stack>
+    </Group>
   );
 };
 export default Message;

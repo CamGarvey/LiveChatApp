@@ -13,10 +13,23 @@ import {
   useGetChannelMessagesQuery,
   useGetMeQuery,
 } from '../../graphql/generated/graphql';
-import MessageGroup from './MessageGroup';
 import { useEffect, useState } from 'react';
 import Scroller from './Scroller';
 import ChatInput from './ChatInput';
+import Message from './Message';
+import { groupMessages } from '../../util';
+import { motion } from 'framer-motion';
+
+type MessageData = {
+  id: string;
+  content: string;
+  createdAt: any;
+  createdBy: {
+    id: string;
+    name?: string;
+    username: string;
+  };
+};
 
 type Props = {
   channelId: string;
@@ -79,20 +92,10 @@ export const ChatPanel = ({ channelId }: Props) => {
   const [createMessageMutation, { loading: loadingCreateMessage }] =
     useCreateMessageMutation();
 
-  let messages = data?.channelMessages?.edges?.map((x) => x.node) ?? [];
+  let messages: MessageData[] =
+    data?.channelMessages?.edges?.map((x) => x.node) ?? [];
 
-  const groupedMessages = messages.reduce((prev, curr) => {
-    if (prev.length === 0) {
-      prev.push([curr]);
-      return prev;
-    }
-    if (prev[prev.length - 1][0].createdBy.id === curr.createdBy.id) {
-      prev[prev.length - 1].push(curr);
-    } else {
-      prev.push([curr]);
-    }
-    return prev;
-  }, []);
+  const groupedMessages: MessageData[][] = groupMessages(messages);
 
   return (
     <Stack
@@ -140,18 +143,27 @@ export const ChatPanel = ({ channelId }: Props) => {
                   <Loader variant="bars" />
                 </Center>
               )}
-              {groupedMessages.map((group, idx) => {
+              {groupedMessages.map((group) => {
                 const isCurrentUser = group[0].createdBy.id === meData?.me.id;
-                return (
-                  <MessageGroup
-                    key={idx}
-                    messages={group}
-                    showAvatar={!isCurrentUser}
-                    style={{
-                      justifyContent: isCurrentUser && 'right',
-                    }}
-                  />
-                );
+                return group.map((message, idx) => {
+                  const isLastMessageInGroup = idx < group.length - 1;
+                  return (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: isCurrentUser ? 'right' : 'left',
+                        overflowX: 'hidden',
+                      }}
+                    >
+                      <Message
+                        key={idx}
+                        {...message}
+                        showAvatar={!isLastMessageInGroup && !isCurrentUser}
+                        variant={isCurrentUser ? 'light' : 'default'}
+                      />
+                    </div>
+                  );
+                });
               })}
             </Stack>
           </Scroller>
