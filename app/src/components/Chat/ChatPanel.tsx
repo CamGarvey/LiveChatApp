@@ -97,6 +97,41 @@ export const ChatPanel = ({ channelId }: Props) => {
 
   const groupedMessages: MessageData[][] = groupMessages(messages);
 
+  const messageComponents = groupedMessages
+    .map((group) => {
+      const isCurrentUser = group[0].createdBy.id === meData?.me.id;
+      return group
+        .map((message, idx) => {
+          const isLastMessageInGroup = idx < group.length - 1;
+          return (
+            <motion.div
+              key={message.id}
+              variants={{
+                hidden: {
+                  x: isCurrentUser ? 200 : -200,
+                },
+                show: {
+                  x: 0,
+                },
+              }}
+              style={{
+                display: 'flex',
+                justifyContent: isCurrentUser ? 'right' : 'left',
+                overflowX: 'hidden',
+              }}
+            >
+              <Message
+                {...message}
+                showAvatar={!isLastMessageInGroup && !isCurrentUser}
+                variant={isCurrentUser ? 'light' : 'default'}
+              />
+            </motion.div>
+          );
+        })
+        .flat();
+    })
+    .flat();
+
   return (
     <Stack
       style={{
@@ -123,50 +158,24 @@ export const ChatPanel = ({ channelId }: Props) => {
               <Text>No Messages</Text>
             </Center>
           )}
-          <Scroller
-            onScroll={({ percentage }) => {
-              if (percentage > 90 && hasPreviousPage && !isFetchingMore) {
-                setIsFetchingMore(true);
-                fetchMore({
-                  variables: {
-                    channelId,
-                    last: 20,
-                    before: data.channelMessages.pageInfo.startCursor,
-                  },
-                }).finally(() => setIsFetchingMore(false));
-              }
-            }}
-          >
-            <Stack spacing={'sm'} mb={'5px'}>
-              {isFetchingMore && (
-                <Center>
-                  <Loader variant="bars" />
-                </Center>
-              )}
-              {groupedMessages.map((group) => {
-                const isCurrentUser = group[0].createdBy.id === meData?.me.id;
-                return group.map((message, idx) => {
-                  const isLastMessageInGroup = idx < group.length - 1;
-                  return (
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: isCurrentUser ? 'right' : 'left',
-                        overflowX: 'hidden',
-                      }}
-                    >
-                      <Message
-                        key={idx}
-                        {...message}
-                        showAvatar={!isLastMessageInGroup && !isCurrentUser}
-                        variant={isCurrentUser ? 'light' : 'default'}
-                      />
-                    </div>
-                  );
-                });
-              })}
-            </Stack>
-          </Scroller>
+          {messages.length !== 0 && (
+            <Scroller
+              onScroll={({ percentage }) => {
+                if (percentage > 90 && hasPreviousPage && !isFetchingMore) {
+                  setIsFetchingMore(true);
+                  fetchMore({
+                    variables: {
+                      channelId,
+                      last: 20,
+                      before: data.channelMessages.pageInfo.startCursor,
+                    },
+                  }).finally(() => setIsFetchingMore(false));
+                }
+              }}
+            >
+              {messageComponents}
+            </Scroller>
+          )}
         </>
       )}
 

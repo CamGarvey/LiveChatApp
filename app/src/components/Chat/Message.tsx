@@ -29,7 +29,7 @@ const Message = ({
   }
 
   return (
-    <Group style={{}}>
+    <Group>
       <Avatar
         size="md"
         src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}
@@ -38,7 +38,7 @@ const Message = ({
           visibility: showAvatar ? 'visible' : 'hidden',
         }}
       />
-      <Stack style={{ width: largeScreen ? '400px' : '200px', gap: '3px' }}>
+      <Stack style={{ maxWidth: largeScreen ? '400px' : '200px', gap: '3px' }}>
         {showInfo && (
           <Group grow>
             <Text size={'sm'}>{createdBy.username}</Text>
@@ -51,6 +51,7 @@ const Message = ({
           shadow="sm"
           radius="lg"
           p="xs"
+          py={'5px'}
           onClick={() => onClick && onClick()}
           sx={(theme) => ({
             backgroundColor:

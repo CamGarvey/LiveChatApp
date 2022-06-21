@@ -1,9 +1,10 @@
 import { Container, Popover, Text } from '@mantine/core';
+import { motion } from 'framer-motion';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
 type Props = {
-  children: React.ReactElement;
+  children: React.ReactNode;
   onHitTop?: () => void;
   onHitBottom?: () => void;
   onScroll?: ({
@@ -105,7 +106,6 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
           display: 'flex',
           flexDirection: 'column-reverse',
           overflowY: 'scroll',
-          // paddingRight: '15px',
           padding: '0',
           width: '100%',
           maxWidth: 'none',
@@ -130,13 +130,26 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
           },
         })}
       >
-        <div
+        <motion.div
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.01,
+                staggerDirection: -1,
+              },
+            },
+          }}
+          initial="hidden"
+          animate="show"
           style={{
             zIndex: 1,
+            overflowX: 'clip',
           }}
         >
           {children}
-        </div>
+        </motion.div>
       </Container>
       <Popover
         opened={isScrollToBottomOpened}
