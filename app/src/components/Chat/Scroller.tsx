@@ -10,6 +10,9 @@ import { motion } from 'framer-motion';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
+// Min height the scroll element has to before the popper will show
+const MIN_POPUP_HEIGHT = 1500;
+
 type Props = {
   children: JSX.Element[];
   isLoading?: boolean;
@@ -85,7 +88,11 @@ const Scroller = ({
         percentage,
       });
 
-      if (percentage > 50 && !isAutoScrollingDown) {
+      if (
+        percentage > 50 &&
+        !isAutoScrollingDown &&
+        height > MIN_POPUP_HEIGHT
+      ) {
         setIsScrollToBottomOpened(true);
       }
       if (scrollY <= 0.5) {
@@ -145,19 +152,21 @@ const Scroller = ({
           height: '100%',
           width: '100%',
           maxWidth: 'none',
-          backgroundColor: 'transparent',
-          WebkitBackgroundClip: 'text',
-          transition: 'background-color .8s',
-          '&:hover': {
-            backgroundColor: 'rgba(0,0,0,0.30)',
-          },
 
+          color: '#00000000',
+
+          transition: 'color 0.3s',
+          '&:hover': {
+            color: '#666666FF',
+          },
           '&::-webkit-scrollbar': {
-            width: '10px',
+            width: '14px',
           },
           '&::-webkit-scrollbar-thumb': {
             borderRadius: theme.radius.md,
-            backgroundColor: 'inherit',
+            backgroundClip: 'content-box',
+            border: '4px solid transparent',
+            boxShadow: 'inset 0 0 0 10px',
           },
           '&::-webkit-scrollbar-track': {
             borderRadius: theme.radius.md,
@@ -166,7 +175,6 @@ const Scroller = ({
       >
         <div
           style={{
-            // zIndex: -1,
             display: 'flex',
             flexDirection: 'column',
             gap: 4,
