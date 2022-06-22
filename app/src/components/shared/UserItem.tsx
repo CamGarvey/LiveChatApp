@@ -152,11 +152,13 @@ const UserItem = ({ user }: Props) => {
     >
       <Avatar
         size="sm"
-        src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
+        src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
       />
       <Stack spacing={0}>
-        <Text>{name}</Text>
         <Text>{username}</Text>
+        <Text size={'xs'} color={'dimmed'}>
+          {name}
+        </Text>
       </Stack>
       <Box ml={'auto'}>{menu}</Box>
     </UnstyledButton>

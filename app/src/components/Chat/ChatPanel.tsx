@@ -1,12 +1,4 @@
-import {
-  Center,
-  Container,
-  Loader,
-  LoadingOverlay,
-  Paper,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Center, Stack, Text } from '@mantine/core';
 import {
   GetNewMessagesDocument,
   useCreateMessageMutation,
@@ -37,6 +29,7 @@ type Props = {
 
 export const ChatPanel = ({ channelId }: Props) => {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
 
   // Get info about current user
   const {
@@ -122,6 +115,8 @@ export const ChatPanel = ({ channelId }: Props) => {
             >
               <Message
                 {...message}
+                isSelected={message.id === selectedMessage}
+                onClick={() => setSelectedMessage(message.id)}
                 showAvatar={!isLastMessageInGroup && !isCurrentUser}
                 variant={isCurrentUser ? 'light' : 'default'}
               />
@@ -132,6 +127,15 @@ export const ChatPanel = ({ channelId }: Props) => {
     })
     .flat();
 
+  let topMessage = null;
+  if (!isLoadingMessages) {
+    if (messages.length === 0) {
+      topMessage = 'no messages';
+    } else if (!hasPreviousPage) {
+      topMessage = 'start of conversation';
+    }
+  }
+
   return (
     <Stack
       style={{
@@ -140,59 +144,49 @@ export const ChatPanel = ({ channelId }: Props) => {
       }}
       spacing={'sm'}
     >
-      <LoadingOverlay
-        visible={isLoadingMessages || isLoadingMeData}
-        loaderProps={{ size: 'lg', variant: 'bars' }}
-      />
-
       {messagesError || meError ? (
         <Center>Failed to load messages</Center>
+      ) : messages.length === 0 && !(isLoadingMessages || isLoadingMeData) ? (
+        <Center
+          style={{
+            height: '100%',
+          }}
+        >
+          <Text>No Messages</Text>
+        </Center>
       ) : (
-        <>
-          {messages.length === 0 && !(isLoadingMessages || isLoadingMeData) && (
-            <Center
-              style={{
-                height: '100%',
-              }}
-            >
-              <Text>No Messages</Text>
-            </Center>
-          )}
-          {messages.length !== 0 && (
-            <Scroller
-              onScroll={({ percentage }) => {
-                if (percentage > 90 && hasPreviousPage && !isFetchingMore) {
-                  setIsFetchingMore(true);
-                  fetchMore({
-                    variables: {
-                      channelId,
-                      last: 20,
-                      before: data.channelMessages.pageInfo.startCursor,
-                    },
-                  }).finally(() => setIsFetchingMore(false));
-                }
-              }}
-            >
-              {messageComponents}
-            </Scroller>
-          )}
-        </>
+        <Scroller
+          isLoading={isLoadingMessages || isLoadingMeData}
+          isLoadingMore={isFetchingMore}
+          topMessage={topMessage}
+          onScroll={({ percentage }) => {
+            if (percentage > 90 && hasPreviousPage && !isFetchingMore) {
+              setIsFetchingMore(true);
+              fetchMore({
+                variables: {
+                  channelId,
+                  last: 20,
+                  before: data.channelMessages.pageInfo.startCursor,
+                },
+              }).finally(() => setIsFetchingMore(false));
+            }
+          }}
+        >
+          {messageComponents}
+        </Scroller>
       )}
-
-      {!isLoadingMessages && (
-        <ChatInput
-          isLoading={loadingCreateMessage}
-          isDisabled={!!messagesError || !!meError}
-          onSubmit={({ content }) =>
-            createMessageMutation({
-              variables: {
-                channelId,
-                content: content,
-              },
-            })
-          }
-        />
-      )}
+      <ChatInput
+        isLoading={loadingCreateMessage}
+        isDisabled={!!messagesError || !!meError}
+        onSubmit={({ content }) =>
+          createMessageMutation({
+            variables: {
+              channelId,
+              content: content,
+            },
+          })
+        }
+      />
     </Stack>
   );
 };

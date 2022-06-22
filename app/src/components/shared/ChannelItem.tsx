@@ -52,11 +52,14 @@ const ChannelItem = ({ id, name, members, onClick }: Props) => {
               src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
             />
             <Text size="sm">{name}</Text>
-            <AvatarsGroup ml={'auto'} limit={3} total={members.length}>
+            <AvatarsGroup
+              ml={'auto'}
+              limit={4}
+              total={members.length}
+              size={'sm'}
+            >
               {members.slice(0, 2).map((member) => (
                 <Avatar
-                  radius={'xs'}
-                  size="sm"
                   src={`https://avatars.dicebear.com/api/initials/${member.username}.svg`}
                 />
               ))}

@@ -44,7 +44,7 @@ type Props = {
 
 const Header = ({ channel }: Props) => {
   const openUserSearchModal = useOpenModal(ModalType.UserSeach);
-  const isLargerScreen = useMediaQuery('(min-width: 900px)');
+  const isLargerScreen = useMediaQuery('(min-width: 993px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
@@ -85,7 +85,7 @@ const Header = ({ channel }: Props) => {
             style={{ margin: 0 }}
             transition={{ type: 'spring', bounce: 0.2, duration: 0.2 }}
           >
-            {isDrawerOpen ? (
+            {isDrawerOpen || isLargerScreen ? (
               <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
             ) : (
               <Group>

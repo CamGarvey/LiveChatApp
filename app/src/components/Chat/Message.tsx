@@ -5,7 +5,7 @@ import { MessageItem } from '../../models';
 
 type MessageProps = MessageItem & {
   onClick?: () => void;
-  showInfo?: boolean;
+  isSelected?: boolean;
   showAvatar?: boolean;
   variant?: 'default' | 'light';
 };
@@ -15,7 +15,7 @@ const Message = ({
   createdBy,
   createdAt,
   onClick,
-  showInfo = false,
+  isSelected = false,
   showAvatar = true,
   variant = 'default',
 }: MessageProps) => {
@@ -29,7 +29,7 @@ const Message = ({
   }
 
   return (
-    <Group>
+    <Group pb={3}>
       <Avatar
         size="md"
         src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}
@@ -39,7 +39,7 @@ const Message = ({
         }}
       />
       <Stack style={{ maxWidth: largeScreen ? '400px' : '200px', gap: '3px' }}>
-        {showInfo && (
+        {isSelected && (
           <Group grow>
             <Text size={'sm'}>{createdBy.username}</Text>
             <Text size={'sm'} align={'right'}>
@@ -66,7 +66,8 @@ const Message = ({
         >
           <Text
             style={{
-              whiteSpace: 'pre',
+              whiteSpace: 'pre-wrap',
+              overflowWrap: 'break-word',
             }}
           >
             {content}

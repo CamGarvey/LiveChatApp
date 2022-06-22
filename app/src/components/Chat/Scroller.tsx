@@ -1,10 +1,20 @@
-import { Container, Popover, Text } from '@mantine/core';
+import {
+  Center,
+  Container,
+  Loader,
+  LoadingOverlay,
+  Popover,
+  Text,
+} from '@mantine/core';
 import { motion } from 'framer-motion';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
 type Props = {
-  children: React.ReactNode;
+  children: JSX.Element[];
+  isLoading?: boolean;
+  isLoadingMore?: boolean;
+  topMessage?: string;
   onHitTop?: () => void;
   onHitBottom?: () => void;
   onScroll?: ({
@@ -18,7 +28,17 @@ type Props = {
   }) => void;
 };
 
-const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
+const AnimatedBox = motion(Container);
+
+const Scroller = ({
+  children,
+  onHitBottom,
+  onHitTop,
+  onScroll,
+  isLoading = false,
+  isLoadingMore = false,
+  topMessage = null,
+}: Props) => {
   const viewport = useRef<HTMLDivElement>();
   const [isScrollToBottomOpened, setIsScrollToBottomOpened] = useState(false);
   const [isAutoScrollingDown, setIsAutoScrollingDown] = useState(false);
@@ -100,17 +120,31 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
 
   return (
     <>
-      <Container
+      <AnimatedBox
+        variants={{
+          hidden: { opacity: 1 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.01,
+              staggerDirection: -1,
+            },
+          },
+        }}
+        initial="hidden"
+        animate="show"
         ref={viewport}
-        style={{
+        sx={(theme) => ({
           display: 'flex',
+          position: 'relative',
           flexDirection: 'column-reverse',
           overflowY: 'scroll',
+          overflowX: 'clip',
           padding: '0',
+          paddingRight: '5px',
+          height: '100%',
           width: '100%',
           maxWidth: 'none',
-        }}
-        sx={(theme) => ({
           backgroundColor: 'transparent',
           WebkitBackgroundClip: 'text',
           transition: 'background-color .8s',
@@ -130,27 +164,31 @@ const Scroller = ({ children, onHitBottom, onHitTop, onScroll }: Props) => {
           },
         })}
       >
-        <motion.div
-          variants={{
-            hidden: { opacity: 0 },
-            show: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.01,
-                staggerDirection: -1,
-              },
-            },
-          }}
-          initial="hidden"
-          animate="show"
+        <div
           style={{
-            zIndex: 1,
-            overflowX: 'clip',
+            // zIndex: -1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
           }}
         >
+          <LoadingOverlay
+            visible={isLoading}
+            loaderProps={{ size: 'lg', variant: 'bars' }}
+          />
+          {isLoadingMore && (
+            <Center>
+              <Loader variant="bars" />
+            </Center>
+          )}
+          {topMessage && (
+            <Center>
+              <Text color={'dimmed'}>{topMessage}</Text>
+            </Center>
+          )}
           {children}
-        </motion.div>
-      </Container>
+        </div>
+      </AnimatedBox>
       <Popover
         opened={isScrollToBottomOpened}
         width={'100%'}
