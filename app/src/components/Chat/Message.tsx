@@ -1,5 +1,6 @@
 import { Group, Stack, Text, Paper, Avatar } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { AnimatePresence, motion } from 'framer-motion';
 import moment from 'moment';
 import { MessageItem } from '../../models';
 
@@ -9,6 +10,9 @@ type MessageProps = MessageItem & {
   showAvatar?: boolean;
   variant?: 'default' | 'light';
 };
+
+const MotionGroup = motion(Group);
+const MotionStack = motion(Stack);
 
 const Message = ({
   content,
@@ -38,15 +42,26 @@ const Message = ({
           visibility: showAvatar ? 'visible' : 'hidden',
         }}
       />
-      <Stack style={{ maxWidth: largeScreen ? '400px' : '200px', gap: '3px' }}>
-        {isSelected && (
-          <Group grow>
-            <Text size={'sm'}>{createdBy.username}</Text>
-            <Text size={'sm'} align={'right'}>
-              {humanReadableTime}
-            </Text>
-          </Group>
-        )}
+      <MotionStack
+        transition={{ delay: 1 }}
+        style={{ maxWidth: largeScreen ? '400px' : '200px', gap: '3px' }}
+      >
+        <AnimatePresence>
+          {isSelected && (
+            <MotionGroup
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              style={{ color: 'black', zIndex: -1 }}
+              grow
+            >
+              <Text size={'sm'}>{createdBy.username}</Text>
+              <Text size={'sm'} align={'right'}>
+                {humanReadableTime}
+              </Text>
+            </MotionGroup>
+          )}
+        </AnimatePresence>
         <Paper
           shadow="sm"
           radius="lg"
@@ -73,7 +88,7 @@ const Message = ({
             {content}
           </Text>
         </Paper>
-      </Stack>
+      </MotionStack>
     </Group>
   );
 };

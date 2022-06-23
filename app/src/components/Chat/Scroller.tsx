@@ -31,7 +31,7 @@ type Props = {
   }) => void;
 };
 
-const AnimatedBox = motion(Container);
+const MotionContainer = motion(Container);
 
 const Scroller = ({
   children,
@@ -127,7 +127,7 @@ const Scroller = ({
 
   return (
     <>
-      <AnimatedBox
+      <MotionContainer
         variants={{
           hidden: { opacity: 1 },
           show: {
@@ -196,7 +196,7 @@ const Scroller = ({
           )}
           {children}
         </div>
-      </AnimatedBox>
+      </MotionContainer>
       <Popover
         opened={isScrollToBottomOpened}
         width={'100%'}

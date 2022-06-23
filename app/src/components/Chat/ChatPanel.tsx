@@ -116,7 +116,11 @@ export const ChatPanel = ({ channelId }: Props) => {
               <Message
                 {...message}
                 isSelected={message.id === selectedMessage}
-                onClick={() => setSelectedMessage(message.id)}
+                onClick={() =>
+                  setSelectedMessage(
+                    message.id === selectedMessage ? null : message.id
+                  )
+                }
                 showAvatar={!isLastMessageInGroup && !isCurrentUser}
                 variant={isCurrentUser ? 'light' : 'default'}
               />
