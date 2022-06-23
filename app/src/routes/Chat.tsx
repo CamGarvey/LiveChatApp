@@ -19,6 +19,7 @@ import { useOpenModal } from '../components/store';
 import { ModalType } from '../models';
 import { useEffect } from 'react';
 import { useGetChannelInfoLazyQuery } from '../graphql/generated/graphql';
+import ChannelInfoModal from '../components/Modals/ChannelInfoModal/ChannelInfoModal';
 
 const Chat = () => {
   const { channelId } = useParams();
@@ -43,13 +44,16 @@ const Chat = () => {
       navbar={<ChannelNav />}
       aside={
         channelId && (
-          <ChannelInfoAside channel={data?.channel} isLoading={loading} />
+          <ChannelInfoAside isLoading={loading} channel={data?.channel} />
         )
       }
       fixed
     >
       <CreateChannelModal />
       <UserSearchModal />
+      {channelId && (
+        <ChannelInfoModal isLoading={loading} channel={data?.channel} />
+      )}
       <Drawer />
       {channelId ? (
         <ChatPanel channelId={channelId} />

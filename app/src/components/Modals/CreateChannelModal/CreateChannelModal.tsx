@@ -60,7 +60,11 @@ const CreateChannelModal = () => {
     >
       <form onSubmit={formik.handleSubmit}>
         <Stack>
-          <InputWrapper id="input-demo" required label="Name">
+          <InputWrapper
+            required
+            error={formik.touched.name && formik.errors.name}
+            label="Name"
+          >
             <Input
               id="name"
               type="text"
@@ -69,7 +73,7 @@ const CreateChannelModal = () => {
               value={formik.values.name}
             />
           </InputWrapper>
-          <InputWrapper id="input-demo" label="Description">
+          <InputWrapper error={formik.errors.description} label="Description">
             <Input
               id="description"
               type="text"
@@ -77,13 +81,14 @@ const CreateChannelModal = () => {
               value={formik.values.description}
             />
           </InputWrapper>
-          <InputWrapper label="Friends">
+          <InputWrapper>
             {loadingFriends ? (
               <Loader />
             ) : friendError ? (
               <Center>Failed to load your friends 😥</Center>
             ) : (
               <UserSelector
+                label={'Friends'}
                 users={friendData.friends}
                 onChange={(users) => {
                   formik.values.memberIds = users.map((x) => x.id);

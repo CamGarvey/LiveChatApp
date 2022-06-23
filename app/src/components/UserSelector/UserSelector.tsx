@@ -1,90 +1,65 @@
-import {
-  Avatar,
-  Center,
-  Group,
-  Input,
-  ScrollArea,
-  Stack,
-  Tooltip,
-} from '@mantine/core';
-import { useEffect, useRef, useState } from 'react';
-import { Search } from 'tabler-icons-react';
-import UserItem from './UserSelectItem';
+import { MultiSelect, MultiSelectProps, Stack } from '@mantine/core';
+import { forwardRef, useEffect, useMemo, useState } from 'react';
+import UserItem from './UserItem';
+import UserValue from './UserValue';
 
 type User = { id: string; name?: string; username: string };
 
 type Props = {
+  label: string;
+  placeholder?: string;
+  nothingFound?: string;
   users: User[];
   onChange: (users: User[]) => void;
 };
 
-const UserSelector = ({ users, onChange }: Props) => {
-  const inputRef = useRef<HTMLInputElement>();
-  const [filter, setFilter] = useState('');
-  const [selectedUsers, setSelectedUsers] = useState([]);
+const UserSelector = forwardRef<HTMLInputElement, Props>(
+  (
+    { users, onChange, nothingFound = 'Nobody Here', ...others }: Props,
+    ref
+  ) => {
+    const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const usersFiltered = users.filter((x) => {
+    useEffect(() => {
+      onChange(selectedUsers);
+    }, [selectedUsers, onChange]);
+
+    let usersConverted = useMemo(() => {
+      return users.map((u) => ({
+        ...u,
+        value: u.username,
+        label: u.username,
+        image: `https://avatars.dicebear.com/api/pixel-art/${u.username}.svg`,
+      }));
+    }, [users]);
+
     return (
-      x.name?.toLowerCase().includes(filter) ||
-      x.username.toLowerCase().includes(filter)
+      <Stack>
+        <MultiSelect
+          ref={ref}
+          {...others}
+          itemComponent={UserItem}
+          valueComponent={UserValue}
+          data={usersConverted}
+          searchable
+          nothingFound={nothingFound}
+          maxDropdownHeight={400}
+          filter={(value, selected, item) => {
+            return (
+              !selected &&
+              ((item.username
+                .toLowerCase()
+                .includes(value.toLowerCase().trim()) ||
+                item.name
+                  ?.toLowerCase()
+                  .includes(value.toLowerCase().trim())) ??
+                false)
+            );
+          }}
+        />
+      </Stack>
     );
-  });
-
-  useEffect(() => {
-    onChange(selectedUsers);
-  }, [selectedUsers, onChange]);
-
-  return (
-    <Stack>
-      <Input
-        icon={<Search />}
-        onChange={(e: any) => {
-          setFilter(e.target.value.toLowerCase());
-        }}
-        placeholder="Search your friends!"
-      />
-
-      <Group>
-        {selectedUsers.map(({ username }) => {
-          return (
-            <Tooltip label={username}>
-              <Avatar
-                size="sm"
-                src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
-                onClick={() =>
-                  setSelectedUsers((prev) =>
-                    prev.filter((x) => x.username !== username)
-                  )
-                }
-              />
-            </Tooltip>
-          );
-        })}
-      </Group>
-      <Center>Selected {selectedUsers.length}</Center>
-      <ScrollArea style={{ maxHeight: 400 }}>
-        {usersFiltered.map((user) => {
-          return (
-            <UserItem
-              key={user.id}
-              {...user}
-              selected={selectedUsers.includes(user)}
-              onClick={() => {
-                if (selectedUsers.includes(user)) {
-                  setSelectedUsers(selectedUsers.filter((x) => x !== user));
-                } else {
-                  setSelectedUsers([...selectedUsers, user]);
-                }
-              }}
-            />
-          );
-        })}
-      </ScrollArea>
-      {inputRef?.current?.value !== '' && usersFiltered?.length === 0 && (
-        <Center>🙊 No friends found 🙊</Center>
-      )}
-    </Stack>
-  );
-};
+  }
+);
 
 export default UserSelector;

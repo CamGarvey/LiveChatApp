@@ -81,13 +81,14 @@ const AddMembersModel = ({ isOpen, onClose }: Props) => {
               value={formik.values.description}
             />
           </InputWrapper>
-          <InputWrapper label="Friends">
+          <InputWrapper>
             {loadingFriends ? (
               <Loader />
             ) : friendError ? (
               <Center>Failed to load your friends 😥</Center>
             ) : (
               <UserSelector
+                label="Friends"
                 users={friendData.friends}
                 onChange={(users) => {
                   formik.values.memberIds = users.map((x) => x.id);
