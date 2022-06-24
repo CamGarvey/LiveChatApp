@@ -127,76 +127,78 @@ const Scroller = ({
 
   return (
     <>
-      <MotionContainer
-        variants={{
-          hidden: { opacity: 1 },
-          show: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.01,
-              staggerDirection: -1,
+      {children.length > 0 && (
+        <MotionContainer
+          variants={{
+            hidden: { opacity: 1 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.01,
+                staggerDirection: -1,
+              },
             },
-          },
-        }}
-        initial="hidden"
-        animate="show"
-        ref={viewport}
-        sx={(theme) => ({
-          display: 'flex',
-          position: 'relative',
-          flexDirection: 'column-reverse',
-          overflowY: 'scroll',
-          overflowX: 'clip',
-          padding: '0',
-          paddingRight: '5px',
-          height: '100%',
-          width: '100%',
-          maxWidth: 'none',
-
-          color: '#00000000',
-
-          transition: 'color 0.3s',
-          '&:hover': {
-            color: '#666666FF',
-          },
-          '&::-webkit-scrollbar': {
-            width: '14px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            borderRadius: theme.radius.md,
-            backgroundClip: 'content-box',
-            border: '4px solid transparent',
-            boxShadow: 'inset 0 0 0 10px',
-          },
-          '&::-webkit-scrollbar-track': {
-            borderRadius: theme.radius.md,
-          },
-        })}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4,
           }}
+          initial="hidden"
+          animate="show"
+          ref={viewport}
+          sx={(theme) => ({
+            display: 'flex',
+            position: 'relative',
+            flexDirection: 'column-reverse',
+            overflowY: 'scroll',
+            overflowX: 'clip',
+            padding: '0',
+            paddingRight: '5px',
+            height: '100%',
+            width: '100%',
+            maxWidth: 'none',
+
+            color: '#00000000',
+
+            transition: 'color 0.3s',
+            '&:hover': {
+              color: '#666666FF',
+            },
+            '&::-webkit-scrollbar': {
+              width: '14px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              borderRadius: theme.radius.md,
+              backgroundClip: 'content-box',
+              border: '4px solid transparent',
+              boxShadow: 'inset 0 0 0 10px',
+            },
+            '&::-webkit-scrollbar-track': {
+              borderRadius: theme.radius.md,
+            },
+          })}
         >
-          <LoadingOverlay
-            visible={isLoading}
-            loaderProps={{ size: 'lg', variant: 'bars' }}
-          />
-          {isLoadingMore && (
-            <Center>
-              <Loader variant="bars" />
-            </Center>
-          )}
-          {topMessage && (
-            <Center>
-              <Text color={'dimmed'}>{topMessage}</Text>
-            </Center>
-          )}
-          {children}
-        </div>
-      </MotionContainer>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+            }}
+          >
+            <LoadingOverlay
+              visible={isLoading}
+              loaderProps={{ size: 'lg', variant: 'bars' }}
+            />
+            {isLoadingMore && (
+              <Center>
+                <Loader variant="bars" />
+              </Center>
+            )}
+            {topMessage && (
+              <Center>
+                <Text color={'dimmed'}>{topMessage}</Text>
+              </Center>
+            )}
+            {children}
+          </div>
+        </MotionContainer>
+      )}
       <Popover
         opened={isScrollToBottomOpened}
         width={'100%'}

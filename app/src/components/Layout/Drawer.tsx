@@ -20,16 +20,18 @@ import {
   useGetMeLazyQuery,
 } from '../../graphql/generated/graphql';
 import { ModalType } from '../../models';
-import { useToggleDrawer, useIsDrawerOpen, useOpenModal } from '../store';
+import { useToggleDrawer, useIsDrawerOpen } from '../store';
 import ChannelItem from '../shared/ChannelItem';
+import { useCreateChannelModal } from '../Modals/CreateChannelModal/CreateChannelModal';
+import { useUserSearchModal } from '../Modals/UserSearchModal/UserSearchModal';
 
 const Drawer = () => {
   const { loading, data } = useGetChannelsForNavQuery();
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
 
-  const openCreateChannelModal = useOpenModal(ModalType.CreateChannel);
-  const openUserSearchModal = useOpenModal(ModalType.UserSeach);
+  const openCreateChannelModal = useCreateChannelModal();
+  const openUserSearchModal = useUserSearchModal();
   const { user, isAuthenticated, logout } = useAuth0();
 
   const [getMeData, { data: meData, loading: loadingMe }] = useGetMeLazyQuery();

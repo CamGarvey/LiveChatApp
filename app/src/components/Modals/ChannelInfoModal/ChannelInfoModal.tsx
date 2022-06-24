@@ -1,18 +1,48 @@
-import { Modal } from '@mantine/core';
-import { useRef } from 'react';
-import { ChannelInfo, ModalType } from '../../../models';
-import { useCloseModal, useIsModalOpen } from '../../store';
+import { ActionIcon, Group, ScrollArea, Text, Title } from '@mantine/core';
+import { ContextModalProps, useModals } from '@mantine/modals';
+import { UserPlus } from 'tabler-icons-react';
+import { ChannelInfo } from '../../../models';
+import UserItem from '../../shared/UserItem';
 
 type Props = {
-  isLoading: boolean;
   channel: ChannelInfo;
 };
 
-const ChannelInfoModal = ({ isLoading, channel }: Props) => {
-  const close = useCloseModal(ModalType.ChannelInfo);
-  const isModalOpen = useIsModalOpen(ModalType.ChannelInfo);
-
-  return <Modal opened={isModalOpen} onClose={close} title={'Channel'}></Modal>;
+export const ChannelInfoModal = ({
+  context,
+  id,
+  innerProps,
+}: ContextModalProps<Props>) => {
+  const { channel } = innerProps;
+  return (
+    channel && (
+      <>
+        <Group>
+          <Text>Members ({channel.members.length})</Text>
+          <ActionIcon ml={'auto'} variant="light">
+            <UserPlus size={16} />
+          </ActionIcon>
+        </Group>
+        <ScrollArea
+          offsetScrollbars={true}
+          sx={{
+            height: '400px',
+          }}
+        >
+          {channel.members.map((member) => {
+            return <UserItem key={member.id} user={{ ...member }} />;
+          })}
+        </ScrollArea>
+      </>
+    )
+  );
 };
 
-export default ChannelInfoModal;
+export const useChannelInfoModal = () => {
+  const modals = useModals();
+  return (props: Props) =>
+    modals.openContextModal('channelInfo', {
+      title: props?.channel.name,
+      innerProps: props,
+    });
+};

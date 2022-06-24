@@ -8,6 +8,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './routes/Home';
 import Chat from './routes/Chat';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ModalsProvider } from '@mantine/modals';
+import { ChannelInfoModal } from './components/Modals/ChannelInfoModal/ChannelInfoModal';
+import { UserSearchModal } from './components/Modals/UserSearchModal/UserSearchModal';
+import CreateChannelModal from './components/Modals/CreateChannelModal/CreateChannelModal';
 
 export const App = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -31,17 +35,25 @@ export const App = () => {
         withGlobalStyles
         withNormalizeCSS
       >
-        <BrowserRouter>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="/chat" element={<ProtectedRoute component={Chat} />}>
-              <Route
-                path=":channelId"
-                element={<ProtectedRoute component={Chat} />}
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <ModalsProvider
+          modals={{
+            channelInfo: ChannelInfoModal,
+            userSearch: UserSearchModal,
+            createChannel: CreateChannelModal,
+          }}
+        >
+          <BrowserRouter>
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="/chat" element={<ProtectedRoute component={Chat} />}>
+                <Route
+                  path=":channelId"
+                  element={<ProtectedRoute component={Chat} />}
+                />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </ModalsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );

@@ -14,14 +14,16 @@ import {
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
-import { useCloseModal, useIsModalOpen } from '../../store';
 import { ModalType, User } from '../../../models';
+import { ContextModalProps, useModals } from '@mantine/modals';
 
 const USER_PAGINATION_COUNT = 5;
 
-const UserSearchModal = () => {
-  const isOpen = useIsModalOpen(ModalType.UserSeach);
-  const close = useCloseModal(ModalType.UserSeach);
+export const UserSearchModal = ({
+  context,
+  id,
+  innerProps,
+}: ContextModalProps<{}>) => {
   const inputRef = useRef<HTMLInputElement>();
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 1000);
@@ -55,7 +57,7 @@ const UserSearchModal = () => {
   }
 
   return (
-    <Modal onClose={close} opened={isOpen} withCloseButton={false}>
+    <>
       <InputWrapper>
         <Input
           icon={<Search />}
@@ -118,8 +120,15 @@ const UserSearchModal = () => {
           )}
         </>
       )}
-    </Modal>
+    </>
   );
 };
 
-export default UserSearchModal;
+export const useUserSearchModal = () => {
+  const modals = useModals();
+  return () =>
+    modals.openContextModal('userSearch', {
+      withCloseButton: false,
+      innerProps: {},
+    });
+};

@@ -12,15 +12,15 @@ import {
   Input,
   InputWrapper,
   Loader,
-  Modal,
   Stack,
 } from '@mantine/core';
-import { useIsModalOpen, useCloseModal } from '../../store';
-import { ModalType } from '../../../models';
+import { ContextModalProps, useModals } from '@mantine/modals';
 
-const CreateChannelModal = () => {
-  const close = useCloseModal(ModalType.CreateChannel);
-  const isCreateChannelModalOpen = useIsModalOpen(ModalType.CreateChannel);
+export const CreateChannelModal = ({
+  context,
+  id,
+  innerProps,
+}: ContextModalProps<{}>) => {
   const inputRef = useRef<HTMLInputElement>();
   const {
     loading: loadingFriends,
@@ -47,63 +47,66 @@ const CreateChannelModal = () => {
       createChannelMutation({
         variables: values,
       }).then((c) => {
-        close();
+        context.closeModal(id);
       });
     },
   });
 
   return (
-    <Modal
-      opened={isCreateChannelModalOpen}
-      onClose={close}
-      title={'Create Channel'}
-    >
-      <form onSubmit={formik.handleSubmit}>
-        <Stack>
-          <InputWrapper
-            required
-            error={formik.touched.name && formik.errors.name}
-            label="Name"
-          >
-            <Input
-              id="name"
-              type="text"
-              ref={inputRef}
-              onChange={formik.handleChange}
-              value={formik.values.name}
+    <form onSubmit={formik.handleSubmit}>
+      <Stack>
+        <InputWrapper
+          required
+          error={formik.touched.name && formik.errors.name}
+          label="Name"
+        >
+          <Input
+            id="name"
+            type="text"
+            ref={inputRef}
+            onChange={formik.handleChange}
+            value={formik.values.name}
+          />
+        </InputWrapper>
+        <InputWrapper error={formik.errors.description} label="Description">
+          <Input
+            id="description"
+            type="text"
+            onChange={formik.handleChange}
+            value={formik.values.description}
+          />
+        </InputWrapper>
+        <InputWrapper>
+          {loadingFriends ? (
+            <Loader />
+          ) : friendError ? (
+            <Center>Failed to load your friends 😥</Center>
+          ) : (
+            <UserSelector
+              label={'Friends'}
+              users={friendData.friends}
+              onChange={(users) => {
+                formik.values.memberIds = users.map((x) => x.id);
+                formik.handleChange('');
+              }}
             />
-          </InputWrapper>
-          <InputWrapper error={formik.errors.description} label="Description">
-            <Input
-              id="description"
-              type="text"
-              onChange={formik.handleChange}
-              value={formik.values.description}
-            />
-          </InputWrapper>
-          <InputWrapper>
-            {loadingFriends ? (
-              <Loader />
-            ) : friendError ? (
-              <Center>Failed to load your friends 😥</Center>
-            ) : (
-              <UserSelector
-                label={'Friends'}
-                users={friendData.friends}
-                onChange={(users) => {
-                  formik.values.memberIds = users.map((x) => x.id);
-                  formik.handleChange('');
-                }}
-              />
-            )}
-          </InputWrapper>
-          <Button type="submit" loading={loadingCreateChannel}>
-            Create
-          </Button>
-        </Stack>
-      </form>
-    </Modal>
+          )}
+        </InputWrapper>
+        <Button type="submit" loading={loadingCreateChannel}>
+          Create
+        </Button>
+      </Stack>
+    </form>
   );
+};
+
+export const useCreateChannelModal = () => {
+  const modals = useModals();
+  return () =>
+    modals.openContextModal('createChannel', {
+      title: 'Create Channel',
+      innerProps: {},
+    });
 };
 
 const createChannelSchema = Yup.object().shape({

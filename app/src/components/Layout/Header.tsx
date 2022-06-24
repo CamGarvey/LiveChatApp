@@ -25,15 +25,18 @@ import {
   Logout,
   Bell,
   Search,
+  InfoCircle,
 } from 'tabler-icons-react';
 import {
   FriendStatus,
   useGetDataForHeaderLazyQuery,
 } from '../../graphql/generated/graphql';
-import { useIsDrawerOpen, useOpenModal, useToggleDrawer } from '../store';
+import { useIsDrawerOpen, useToggleDrawer } from '../store';
 import FriendRequest from '../shared/FriendRequest';
 import { ChannelInfo, ModalType } from '../../models';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useChannelInfoModal } from '../Modals/ChannelInfoModal/ChannelInfoModal';
+import { useUserSearchModal } from '../Modals/UserSearchModal/UserSearchModal';
 
 const ICON_SIZE = 16;
 const TRANSITION_DURATION = 300;
@@ -43,11 +46,12 @@ type Props = {
 };
 
 const Header = ({ channel }: Props) => {
-  const openUserSearchModal = useOpenModal(ModalType.UserSeach);
+  const openUserSearchModal = useUserSearchModal();
   const isLargerScreen = useMediaQuery('(min-width: 993px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
+  const openChannelInfo = useChannelInfoModal();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
     useAuth0();
@@ -88,8 +92,15 @@ const Header = ({ channel }: Props) => {
             {isDrawerOpen || isLargerScreen ? (
               <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
             ) : (
-              <Group>
+              <Group spacing={2}>
                 <Text>{channel?.name}</Text>
+                <ActionIcon
+                  size={'xs'}
+                  color={'blue'}
+                  onClick={() => openChannelInfo({ channel })}
+                >
+                  <InfoCircle />
+                </ActionIcon>
               </Group>
             )}
           </motion.div>
