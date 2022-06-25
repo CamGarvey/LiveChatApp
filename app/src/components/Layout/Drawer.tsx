@@ -15,18 +15,15 @@ import {
 } from '@mantine/core';
 import { useEffect } from 'react';
 import { Logout, Search, SquarePlus } from 'tabler-icons-react';
-import {
-  useGetChannelsForNavQuery,
-  useGetMeLazyQuery,
-} from '../../graphql/generated/graphql';
+import { useGetMeLazyQuery } from '../../graphql/generated/graphql';
 import { ModalType } from '../../models';
 import { useToggleDrawer, useIsDrawerOpen } from '../store';
 import ChannelItem from '../shared/ChannelItem';
 import { useCreateChannelModal } from '../Modals/CreateChannelModal/CreateChannelModal';
 import { useUserSearchModal } from '../Modals/UserSearchModal/UserSearchModal';
+import ChannelDisplay from '../shared/ChannelDisplay';
 
 const Drawer = () => {
-  const { loading, data } = useGetChannelsForNavQuery();
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
 
@@ -106,17 +103,7 @@ const Drawer = () => {
                     <SquarePlus />
                   </ActionIcon>
                 </Group>
-                {!loading &&
-                  data &&
-                  data.channels.map((channel) => {
-                    return (
-                      <ChannelItem
-                        key={channel.id}
-                        {...channel}
-                        onClick={toggleDrawer}
-                      />
-                    );
-                  })}
+                <ChannelDisplay onChannelClick={toggleDrawer} />
               </Stack>
             )}
           </>

@@ -11,7 +11,8 @@ import { Send } from 'tabler-icons-react';
 import * as Yup from 'yup';
 
 type Props = {
-  onSubmit: ({ content }: { content: string }) => void;
+  // onSubmit returns a isSuccessful boolean which decides whether to reset the form
+  onSubmit: ({ content }: { content: string }) => Promise<boolean>;
   isDisabled: boolean;
   isLoading: boolean;
 };
@@ -22,7 +23,12 @@ const ChatInput = ({ onSubmit, isLoading, isDisabled }: Props) => {
       content: '',
     },
     validationSchema: createMessageSchema,
-    onSubmit,
+    onSubmit: async (values) => {
+      const isSuccessful = await onSubmit(values);
+      if (isSuccessful) {
+        formik.resetForm();
+      }
+    },
   });
 
   return (

@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Center,
   Container,
   Loader,
@@ -9,6 +10,7 @@ import {
 import { motion } from 'framer-motion';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
+import { ArrowDownCircle } from 'tabler-icons-react';
 
 // Min height the scroll element has to before the popper will show
 const MIN_POPUP_HEIGHT = 1500;
@@ -208,19 +210,28 @@ const Scroller = ({
             padding: 3,
             cursor: 'pointer',
           },
+          body: {
+            boxShadow: 'none',
+            background: 'transparent',
+            border: 'none',
+          },
         }}
         target={<></>}
-        withArrow
       >
-        <Text
-          align="center"
+        <ActionIcon
+          size={'xl'}
           onClick={() => {
             scrollToBottom('smooth');
             setIsScrollToBottomOpened(false);
           }}
+          styles={{
+            hover: {
+              backgroundColor: 'transparent !important',
+            },
+          }}
         >
-          Scroll To Bottom
-        </Text>
+          <ArrowDownCircle size={60} strokeWidth={1} color={'#405abf'} />
+        </ActionIcon>
       </Popover>
     </>
   );

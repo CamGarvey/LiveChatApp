@@ -83,9 +83,9 @@ const Header = ({ channel }: Props) => {
         <AnimatePresence custom={isDrawerOpen} exitBeforeEnter>
           <motion.div
             key={isDrawerOpen ? 'ham' : 'channel'}
-            initial={{ y: 0, x: -100, opacity: 0 }}
-            animate={{ y: 0, x: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
+            initial={{ y: -200 }}
+            animate={{ y: 0 }}
+            exit={{ y: -200 }}
             style={{ margin: 0 }}
             transition={{ type: 'spring', bounce: 0.2, duration: 0.2 }}
           >

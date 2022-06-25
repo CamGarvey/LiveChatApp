@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
 import { ChannelInfo } from '../../models';
-import UserItem from '../shared/UserItem';
+import { UserItem } from '../shared/UserItem';
 
 type Props = {
   isLoading: boolean;

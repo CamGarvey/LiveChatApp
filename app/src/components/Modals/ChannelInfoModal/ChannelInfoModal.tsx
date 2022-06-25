@@ -2,8 +2,7 @@ import { ActionIcon, Group, ScrollArea, Text, Title } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { UserPlus } from 'tabler-icons-react';
 import { ChannelInfo } from '../../../models';
-import UserItem from '../../shared/UserItem';
-
+import { ChannelMenu, UserItem } from '../../shared/UserItem';
 type Props = {
   channel: ChannelInfo;
 };
@@ -30,7 +29,13 @@ export const ChannelInfoModal = ({
           }}
         >
           {channel.members.map((member) => {
-            return <UserItem key={member.id} user={{ ...member }} />;
+            return (
+              <UserItem
+                key={member.id}
+                user={{ ...member }}
+                menu={<ChannelMenu />}
+              />
+            );
           })}
         </ScrollArea>
       </>

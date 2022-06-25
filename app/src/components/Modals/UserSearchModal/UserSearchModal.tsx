@@ -1,29 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGetUsersLazyQuery } from '../../../graphql/generated/graphql';
-import UserItem from '../../shared/UserItem';
 import {
   Button,
   Center,
   Input,
   InputWrapper,
   Loader,
-  Modal,
   ScrollArea,
   Stack,
   Text,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
-import { ModalType, User } from '../../../models';
 import { ContextModalProps, useModals } from '@mantine/modals';
+import { FriendMenu } from '../../shared/UserItem/FriendMenu';
+import { UserItem } from '../../shared/UserItem';
+import { User } from '../../../models';
 
 const USER_PAGINATION_COUNT = 5;
 
-export const UserSearchModal = ({
-  context,
-  id,
-  innerProps,
-}: ContextModalProps<{}>) => {
+export const UserSearchModal = () => {
   const inputRef = useRef<HTMLInputElement>();
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 1000);
@@ -91,7 +87,13 @@ export const UserSearchModal = ({
               {hasInput && (
                 <>
                   {users.map((user) => {
-                    return <UserItem key={user.id} user={user} />;
+                    return (
+                      <UserItem
+                        key={user.id}
+                        user={user}
+                        menu={<FriendMenu user={user} />}
+                      />
+                    );
                   })}
                   <Center>
                     {loadingUsers && <Loader variant="dots" />}

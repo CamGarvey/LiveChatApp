@@ -1,14 +1,4 @@
-import React from 'react';
-import {
-  ActionIcon,
-  Avatar,
-  Box,
-  Center,
-  Menu,
-  Stack,
-  Text,
-  UnstyledButton,
-} from '@mantine/core';
+import { ActionIcon, Menu, Text } from '@mantine/core';
 import { Mailbox, MailForward, UserMinus, UserPlus } from 'tabler-icons-react';
 import {
   FriendStatus,
@@ -17,28 +7,25 @@ import {
   useDeclineFriendRequestMutation,
   useDeleteFriendMutation,
   useSendFriendRequestMutation,
-} from '../../graphql/generated/graphql';
-import { User } from '../../models';
+} from '../../../graphql/generated/graphql';
 
 type Props = {
-  user: User;
+  user: {
+    id: string;
+    friendStatus: FriendStatus;
+  };
 };
 
-const UserItem = ({ user }: Props) => {
-  const { name, username, friendStatus } = user;
-
-  // Update friend status mutations
+export const FriendMenu = ({ user: { id, friendStatus } }: Props) => {
   const [cancelFriendRequest] = useCancelFriendRequestMutation();
   const [sendFriendRequest] = useSendFriendRequestMutation();
   const [declineFriendRequest] = useDeclineFriendRequestMutation();
   const [acceptFriendRequest] = useAcceptFriendRequestMutation();
   const [deleteFriend] = useDeleteFriendMutation();
 
-  let menu: React.ReactElement;
-
   switch (friendStatus) {
     case FriendStatus.Friend:
-      menu = (
+      return (
         <Menu>
           <Menu.Item
             icon={<UserMinus />}
@@ -46,7 +33,7 @@ const UserItem = ({ user }: Props) => {
             onClick={() => {
               deleteFriend({
                 variables: {
-                  friendId: user.id,
+                  friendId: id,
                 },
               });
             }}
@@ -55,15 +42,14 @@ const UserItem = ({ user }: Props) => {
           </Menu.Item>
         </Menu>
       );
-      break;
     case FriendStatus.NotFriend:
-      menu = (
+      return (
         <ActionIcon
           type="button"
           onClick={() => {
             sendFriendRequest({
               variables: {
-                friendId: user.id,
+                friendId: id,
               },
             });
           }}
@@ -71,9 +57,8 @@ const UserItem = ({ user }: Props) => {
           <UserPlus />
         </ActionIcon>
       );
-      break;
     case FriendStatus.RequestSent:
-      menu = (
+      return (
         <Menu
           control={
             <ActionIcon type="button">
@@ -85,7 +70,7 @@ const UserItem = ({ user }: Props) => {
             onClick={() => {
               cancelFriendRequest({
                 variables: {
-                  friendId: user.id,
+                  friendId: id,
                 },
               });
             }}
@@ -94,9 +79,8 @@ const UserItem = ({ user }: Props) => {
           </Menu.Item>
         </Menu>
       );
-      break;
     case FriendStatus.RequestReceived:
-      menu = (
+      return (
         <Menu
           control={
             <ActionIcon type="button">
@@ -108,7 +92,7 @@ const UserItem = ({ user }: Props) => {
             onClick={() => {
               acceptFriendRequest({
                 variables: {
-                  friendId: user.id,
+                  friendId: id,
                 },
               });
             }}
@@ -119,7 +103,7 @@ const UserItem = ({ user }: Props) => {
             onClick={() => {
               declineFriendRequest({
                 variables: {
-                  friendId: user.id,
+                  friendId: id,
                 },
               });
             }}
@@ -128,41 +112,5 @@ const UserItem = ({ user }: Props) => {
           </Menu.Item>
         </Menu>
       );
-      break;
   }
-
-  return (
-    <UnstyledButton
-      sx={(theme) => ({
-        display: 'flex',
-        width: '100%',
-        padding: theme.spacing.xs,
-        borderRadius: theme.radius.sm,
-        gap: '20px',
-        color:
-          theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-        alignItems: 'center',
-        '&:hover': {
-          backgroundColor:
-            theme.colorScheme === 'dark'
-              ? theme.colors.dark[6]
-              : theme.colors.gray[0],
-        },
-      })}
-    >
-      <Avatar
-        size="sm"
-        src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
-      />
-      <Stack spacing={0}>
-        <Text>{username}</Text>
-        <Text size={'xs'} color={'dimmed'}>
-          {name}
-        </Text>
-      </Stack>
-      <Box ml={'auto'}>{menu}</Box>
-    </UnstyledButton>
-  );
 };
-
-export default UserItem;

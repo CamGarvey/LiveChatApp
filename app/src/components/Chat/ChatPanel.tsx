@@ -188,7 +188,7 @@ export const ChatPanel = ({ channelId }: Props) => {
               channelId,
               content: content,
             },
-          })
+          }).then((x) => !!!x.errors)
         }
       />
     </Stack>
