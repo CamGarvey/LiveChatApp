@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
   FriendStatus,
@@ -37,18 +37,7 @@ export const UpdateChannelModal = ({
     error: friendError,
   } = useGetFriendsQuery();
 
-  const formik = useFormik({
-    initialValues: {
-      name: channel.name,
-      description: channel.description ?? '',
-      isPrivate: true,
-      memberIds: channel.members.map((x) => x.id),
-    },
-    validationSchema: channelSchema,
-    onSubmit: (values) => {
-      console.log(values);
-    },
-  });
+  const memberIds = useMemo(() => channel.members.map((x) => x.id), [channel]);
 
   // Since other friends can add either friends
   // We need to make sure that we get all of the users in the chat
@@ -64,8 +53,39 @@ export const UpdateChannelModal = ({
         })),
         'id'
       );
-    return [];
+    return channel.members;
   }, [channel, friendData]);
+
+  const formik = useFormik({
+    initialValues: {
+      name: channel.name,
+      description: channel.description ?? '',
+      isPrivate: true,
+      memberIds,
+    },
+    validationSchema: channelSchema,
+    onSubmit: (values) => {
+      const membersRemoved = memberIds.filter(
+        (x) => !values.memberIds.includes(x)
+      );
+      const membersAdded = values.memberIds.filter(
+        (x) => !memberIds.includes(x)
+      );
+      console.log({
+        membersAdded: totalUsers.filter((x) => membersAdded.includes(x.id)),
+        membersRemoved: channel.members.filter((x) =>
+          membersRemoved.includes(x.id)
+        ),
+      });
+    },
+  });
+
+  const handleChangeValue = useCallback(
+    (value) => {
+      formik.setFieldValue('memberIds', value);
+    },
+    [formik]
+  );
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -103,11 +123,7 @@ export const UpdateChannelModal = ({
               label={'Friends'}
               users={totalUsers}
               defaultValue={channel.members}
-              onChange={(users) => {
-                const e = users.map((x) => x);
-                formik.setFieldValue('memberIds', e);
-                // formik.handleChange('memberIds');
-              }}
+              onChange={handleChangeValue}
             />
           )}
         </InputWrapper>

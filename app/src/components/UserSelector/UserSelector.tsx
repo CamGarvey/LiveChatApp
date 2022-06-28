@@ -28,10 +28,6 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
     const defaultMapped = defaultValue.map((x) => x.id);
     const [selectedUsers, setSelectedUsers] = useState(defaultMapped);
 
-    useEffect(() => {
-      onChange(selectedUsers);
-    }, [selectedUsers, onChange]);
-
     let usersConverted = useMemo(() => {
       return users.map((u) => ({
         ...u,
@@ -50,7 +46,7 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
           valueComponent={UserValue}
           data={usersConverted}
           defaultValue={defaultMapped}
-          onChange={setSelectedUsers}
+          onChange={onChange}
           searchable
           nothingFound={nothingFound}
           maxDropdownHeight={400}
