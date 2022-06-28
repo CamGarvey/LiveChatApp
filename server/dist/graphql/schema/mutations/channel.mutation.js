@@ -116,6 +116,9 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
         name: (0, nexus_1.stringArg)({
             description: 'Name of Channel',
         }),
+        description: (0, nexus_1.stringArg)({
+            description: 'Description of Channel',
+        }),
         isPrivate: (0, nexus_1.booleanArg)({
             description: 'If the Channel should be private',
         }),
@@ -127,7 +130,7 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
         }))),
     },
     description: 'Update a Channel',
-    resolve: (_, { channelId, name, isPrivate, addMembersId, removeMembersId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { channelId, name, description, isPrivate, addMembersId, removeMembersId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const channel = yield prisma.channel.findUnique({
             select: {
                 createdById: true,
@@ -150,6 +153,7 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
         return yield prisma.channel.update({
             data: {
                 name,
+                description,
                 isPrivate,
                 members: {
                     connect: addMembersId === null || addMembersId === void 0 ? void 0 : addMembersId.map((x) => ({ id: x })),

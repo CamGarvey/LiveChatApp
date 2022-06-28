@@ -373,6 +373,7 @@ export interface NexusGenArgTypes {
     updateChannel: { // args
       addMembersId?: string[] | null; // [String!]
       channelId: string; // String!
+      description?: string | null; // String
       isPrivate?: boolean | null; // Boolean
       name?: string | null; // String
       removeMembersId?: string[] | null; // [String!]

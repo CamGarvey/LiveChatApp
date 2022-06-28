@@ -152,6 +152,9 @@ type Mutation {
     """Id of Channel to be updated"""
     channelId: String!
 
+    """Description of Channel"""
+    description: String
+
     """If the Channel should be private"""
     isPrivate: Boolean
 

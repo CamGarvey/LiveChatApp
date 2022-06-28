@@ -1,6 +1,7 @@
 mutation UpdateChannel(
   $channelId: String!
   $name: String
+  $description: String
   $isPrivate: Boolean
   $addMembersId: [String!]
   $removeMembersId: [String!]
@@ -8,6 +9,7 @@ mutation UpdateChannel(
   updateChannel(
     channelId: $channelId
     name: $name
+    description: $description
     isPrivate: $isPrivate
     addMembersId: $addMembersId
     removeMembersId: $removeMembersId

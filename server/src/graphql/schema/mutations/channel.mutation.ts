@@ -146,6 +146,9 @@ export const updateChannel = mutationField('updateChannel', {
     name: stringArg({
       description: 'Name of Channel',
     }),
+    description: stringArg({
+      description: 'Description of Channel',
+    }),
     isPrivate: booleanArg({
       description: 'If the Channel should be private',
     }),
@@ -167,7 +170,7 @@ export const updateChannel = mutationField('updateChannel', {
   description: 'Update a Channel',
   resolve: async (
     _,
-    { channelId, name, isPrivate, addMembersId, removeMembersId },
+    { channelId, name, description, isPrivate, addMembersId, removeMembersId },
     { prisma, userId }
   ) => {
     const channel = await prisma.channel.findUnique({
@@ -198,6 +201,7 @@ export const updateChannel = mutationField('updateChannel', {
     return await prisma.channel.update({
       data: {
         name,
+        description,
         isPrivate,
         members: {
           connect: addMembersId?.map((x) => ({ id: x })),
