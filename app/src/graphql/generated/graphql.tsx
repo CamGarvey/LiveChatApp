@@ -179,6 +179,7 @@ export type MutationSendFriendRequestArgs = {
 export type MutationUpdateChannelArgs = {
   addMembersId?: InputMaybe<Array<Scalars['String']>>;
   channelId: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
   removeMembersId?: InputMaybe<Array<Scalars['String']>>;
@@ -441,6 +442,7 @@ export type RemoveMembersFromChannelMutation = { __typename?: 'Mutation', remove
 export type UpdateChannelMutationVariables = Exact<{
   channelId: Scalars['String'];
   name?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   isPrivate?: InputMaybe<Scalars['Boolean']>;
   addMembersId?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
   removeMembersId?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
@@ -1140,10 +1142,11 @@ export type RemoveMembersFromChannelMutationHookResult = ReturnType<typeof useRe
 export type RemoveMembersFromChannelMutationResult = Apollo.MutationResult<RemoveMembersFromChannelMutation>;
 export type RemoveMembersFromChannelMutationOptions = Apollo.BaseMutationOptions<RemoveMembersFromChannelMutation, RemoveMembersFromChannelMutationVariables>;
 export const UpdateChannelDocument = gql`
-    mutation UpdateChannel($channelId: String!, $name: String, $isPrivate: Boolean, $addMembersId: [String!], $removeMembersId: [String!]) {
+    mutation UpdateChannel($channelId: String!, $name: String, $description: String, $isPrivate: Boolean, $addMembersId: [String!], $removeMembersId: [String!]) {
   updateChannel(
     channelId: $channelId
     name: $name
+    description: $description
     isPrivate: $isPrivate
     addMembersId: $addMembersId
     removeMembersId: $removeMembersId
@@ -1175,6 +1178,7 @@ export type UpdateChannelMutationFn = Apollo.MutationFunction<UpdateChannelMutat
  *   variables: {
  *      channelId: // value for 'channelId'
  *      name: // value for 'name'
+ *      description: // value for 'description'
  *      isPrivate: // value for 'isPrivate'
  *      addMembersId: // value for 'addMembersId'
  *      removeMembersId: // value for 'removeMembersId'

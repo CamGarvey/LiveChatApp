@@ -1058,6 +1058,18 @@
                 "deprecationReason": null
               },
               {
+                "name": "description",
+                "description": "Description of Channel",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "isPrivate",
                 "description": "If the Channel should be private",
                 "type": {

@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
   FriendStatus,
@@ -71,12 +71,15 @@ export const UpdateChannelModal = ({
       const membersAdded = values.memberIds.filter(
         (x) => !memberIds.includes(x)
       );
-      console.log({
-        membersAdded: totalUsers.filter((x) => membersAdded.includes(x.id)),
-        membersRemoved: channel.members.filter((x) =>
-          membersRemoved.includes(x.id)
-        ),
-      });
+      updateChannel({
+        variables: {
+          channelId: channel.id,
+          name: values.name,
+          description: values.description,
+          addMembersId: membersAdded,
+          removeMembersId: membersRemoved,
+        },
+      }).then(() => context.closeModal(id));
     },
   });
 
