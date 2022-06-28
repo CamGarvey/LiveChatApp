@@ -8,16 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeMembersFromChannel = exports.addMembersToChannel = exports.createDM = exports.updateChannel = exports.deleteChannel = exports.createChannel = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-const channel_1 = __importDefault(require("../types/channel"));
+const subscriptions_1 = require("../../backing-types/subscriptions");
 exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
-    type: channel_1.default,
+    type: 'Channel',
     args: {
         name: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Name of the Channel',
@@ -108,7 +105,7 @@ exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
     }),
 });
 exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
-    type: channel_1.default,
+    type: 'Channel',
     args: {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Channel to be updated',
@@ -130,7 +127,7 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
         }))),
     },
     description: 'Update a Channel',
-    resolve: (_, { channelId, name, description, isPrivate, addMembersId, removeMembersId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { channelId, name, description, isPrivate, addMembersId, removeMembersId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const channel = yield prisma.channel.findUnique({
             select: {
                 createdById: true,
@@ -150,7 +147,7 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
         if (channel.createdById != userId) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to update this channel');
         }
-        return yield prisma.channel.update({
+        const updatedChannel = yield prisma.channel.update({
             data: {
                 name,
                 description,
@@ -164,10 +161,23 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
                 id: channelId,
             },
         });
+        if ((addMembersId === null || addMembersId === void 0 ? void 0 : addMembersId.length) > 0) {
+            yield pubsub.publish(subscriptions_1.Subscriptions.CHANNEL_EVENT, {
+                channelId,
+                event: {},
+            });
+        }
+        if ((removeMembersId === null || removeMembersId === void 0 ? void 0 : removeMembersId.length) > 0) {
+            yield pubsub.publish(subscriptions_1.Subscriptions.CHANNEL_EVENT, {
+                channelId,
+                event: {},
+            });
+        }
+        return updatedChannel;
     }),
 });
 exports.createDM = (0, nexus_1.mutationField)('createDM', {
-    type: channel_1.default,
+    type: 'Channel',
     description: 'Create Direct Message Channel',
     resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         return yield prisma.channel.create({
@@ -188,7 +198,7 @@ exports.createDM = (0, nexus_1.mutationField)('createDM', {
     }),
 });
 exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', {
-    type: channel_1.default,
+    type: 'Channel',
     args: {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Channel to add Users to',
@@ -237,7 +247,7 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
     }),
 });
 exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFromChannel', {
-    type: channel_1.default,
+    type: 'Channel',
     args: {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
         membersIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)()))),

@@ -8,8 +8,7 @@ import {
   queryField,
   stringArg,
 } from 'nexus';
-import { Sort } from '../types/enums';
-import User from '../types/user';
+import { Sort } from '../types/sort';
 
 const UserOrderBy = inputObjectType({
   name: 'UserOrderBy',
@@ -43,7 +42,7 @@ export const Users = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.connectionField('users', {
-      type: User,
+      type: 'User',
       description: 'Find users',
       additionalArgs: {
         usernameFilter: stringArg({
@@ -109,7 +108,7 @@ export const FriendsQuery = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.list.nonNull.field('friends', {
-      type: User,
+      type: 'User',
       resolve: async (_, __, { prisma, userId }) => {
         return await prisma.user
           .findUnique({
@@ -124,7 +123,7 @@ export const FriendsQuery = extendType({
 });
 
 export const UserQuery = queryField('user', {
-  type: User,
+  type: 'User',
   args: {
     id: nonNull(
       stringArg({

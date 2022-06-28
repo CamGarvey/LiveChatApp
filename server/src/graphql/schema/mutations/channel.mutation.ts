@@ -11,10 +11,10 @@ import {
   nonNull,
   stringArg,
 } from 'nexus';
-import Channel from '../types/channel';
+import { Subscriptions } from '../../backing-types/subscriptions';
 
 export const createChannel = mutationField('createChannel', {
-  type: Channel,
+  type: 'Channel',
   args: {
     name: nonNull(
       stringArg({
@@ -136,7 +136,7 @@ export const deleteChannel = mutationField('deleteChannel', {
 });
 
 export const updateChannel = mutationField('updateChannel', {
-  type: Channel,
+  type: 'Channel',
   args: {
     channelId: nonNull(
       stringArg({
@@ -171,7 +171,7 @@ export const updateChannel = mutationField('updateChannel', {
   resolve: async (
     _,
     { channelId, name, description, isPrivate, addMembersId, removeMembersId },
-    { prisma, userId }
+    { prisma, userId, pubsub }
   ) => {
     const channel = await prisma.channel.findUnique({
       select: {
@@ -198,7 +198,7 @@ export const updateChannel = mutationField('updateChannel', {
       );
     }
 
-    return await prisma.channel.update({
+    const updatedChannel = await prisma.channel.update({
       data: {
         name,
         description,
@@ -212,11 +212,26 @@ export const updateChannel = mutationField('updateChannel', {
         id: channelId,
       },
     });
+
+    if (addMembersId?.length > 0) {
+      await pubsub.publish(Subscriptions.CHANNEL_EVENT, {
+        channelId,
+        event: {},
+      });
+    }
+    if (removeMembersId?.length > 0) {
+      await pubsub.publish(Subscriptions.CHANNEL_EVENT, {
+        channelId,
+        event: {},
+      });
+    }
+
+    return updatedChannel;
   },
 });
 
 export const createDM = mutationField('createDM', {
-  type: Channel,
+  type: 'Channel',
   description: 'Create Direct Message Channel',
   resolve: async (_, __, { prisma, userId }) => {
     return await prisma.channel.create({
@@ -238,7 +253,7 @@ export const createDM = mutationField('createDM', {
 });
 
 export const addMembersToChannel = mutationField('addMembersToChannel', {
-  type: Channel,
+  type: 'Channel',
   args: {
     channelId: nonNull(
       stringArg({
@@ -306,7 +321,7 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
 export const removeMembersFromChannel = mutationField(
   'removeMembersFromChannel',
   {
-    type: Channel,
+    type: 'Channel',
     args: {
       channelId: nonNull(stringArg()),
       membersIds: nonNull(list(nonNull(stringArg()))),

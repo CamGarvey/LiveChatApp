@@ -8,19 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.User = void 0;
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
-const channel_1 = __importDefault(require("./channel"));
-const friend_status_1 = __importDefault(require("./friend-status"));
 const scalars_1 = require("./scalars");
-const User = (0, nexus_1.objectType)({
+exports.User = (0, nexus_1.objectType)({
     name: 'User',
     definition(t) {
-        t.nonNull.string('id');
+        t.nonNull.id('id');
         t.string('name');
         t.nonNull.string('email');
         t.nonNull.string('username');
@@ -31,7 +27,7 @@ const User = (0, nexus_1.objectType)({
             type: scalars_1.DateScalar,
         });
         t.nonNull.field('friendStatus', {
-            type: friend_status_1.default,
+            type: 'FriendStatus',
             resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 const friends = yield prisma.user
                     .findUnique({
@@ -61,7 +57,7 @@ const User = (0, nexus_1.objectType)({
             }),
         });
         t.nonNull.list.nonNull.field('sentFriendRequests', {
-            type: User,
+            type: exports.User,
             resolve: (parent, _, { prisma }) => {
                 return prisma.user
                     .findUnique({
@@ -71,7 +67,7 @@ const User = (0, nexus_1.objectType)({
             },
         });
         t.nonNull.list.nonNull.field('receivedFriendRequests', {
-            type: User,
+            type: exports.User,
             resolve: (parent, _, { prisma }) => {
                 return prisma.user
                     .findUnique({
@@ -81,7 +77,7 @@ const User = (0, nexus_1.objectType)({
             },
         });
         t.nonNull.list.nonNull.field('channels', {
-            type: channel_1.default,
+            type: 'Channel',
             resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 if (parent.id == userId) {
                     return yield prisma.user
@@ -109,7 +105,7 @@ const User = (0, nexus_1.objectType)({
             }),
         });
         t.nonNull.connectionField('friends', {
-            type: User,
+            type: exports.User,
             resolve: (parent, { after, first }, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
                 if (isNaN(offset))
@@ -133,5 +129,4 @@ const User = (0, nexus_1.objectType)({
         });
     },
 });
-exports.default = User;
 //# sourceMappingURL=user.js.map

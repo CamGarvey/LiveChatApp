@@ -14,11 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./queries/user.query"), exports);
-__exportStar(require("./queries/channel.query"), exports);
-__exportStar(require("./mutations/user.mutation"), exports);
-__exportStar(require("./mutations/channel.mutation"), exports);
-__exportStar(require("./mutations/message.mutation"), exports);
-__exportStar(require("./subscriptions/message.subscription"), exports);
-__exportStar(require("./subscriptions/user.subscription"), exports);
+__exportStar(require("./types"), exports);
+__exportStar(require("./mutations"), exports);
+__exportStar(require("./queries"), exports);
+__exportStar(require("./subscriptions"), exports);
 //# sourceMappingURL=index.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"channel-event.js","sourceRoot":"","sources":["../../../../src/graphql/schema/types/channel-event.ts"],"names":[],"mappings":";;;AAAA,iCAAkC;AAErB,QAAA,YAAY,GAAG,IAAA,iBAAS,EAAC;IACpC,IAAI,EAAE,cAAc;IACpB,WAAW,EAAE,4CAA4C;IACzD,UAAU,CAAC,CAAC;QACV,CAAC,CAAC,OAAO,CAAC,SAAS,EAAE,cAAc,EAAE,gBAAgB,CAAC,CAAC;IACzD,CAAC;CAEF,CAAC,CAAC"}

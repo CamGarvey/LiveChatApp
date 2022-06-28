@@ -8,19 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Channel = void 0;
 const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const nexus_1 = require("nexus");
-const message_1 = __importDefault(require("./message"));
 const scalars_1 = require("./scalars");
-const user_1 = __importDefault(require("./user"));
-const Channel = (0, nexus_1.objectType)({
+exports.Channel = (0, nexus_1.objectType)({
     name: 'Channel',
     definition(t) {
-        t.nonNull.string('id');
+        t.nonNull.id('id');
         t.nonNull.string('name');
         t.string('description');
         t.nonNull.field('createdAt', {
@@ -30,7 +26,7 @@ const Channel = (0, nexus_1.objectType)({
             type: scalars_1.DateScalar,
         });
         t.nonNull.field('createdBy', {
-            type: user_1.default,
+            type: 'User',
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 const channel = yield prisma.channel.findUnique({
                     where: {
@@ -44,7 +40,7 @@ const Channel = (0, nexus_1.objectType)({
             }),
         });
         t.nonNull.connectionField('messages', {
-            type: message_1.default,
+            type: 'Message',
             resolve: (parent, args, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 return yield (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => prisma.message.findMany(Object.assign(Object.assign({}, args), { where: { channelId: parent.id } })), () => prisma.message.count(Object.assign({ where: { channelId: parent.id } })), args);
             }),
@@ -61,7 +57,7 @@ const Channel = (0, nexus_1.objectType)({
             }),
         });
         t.nonNull.list.nonNull.field('members', {
-            type: user_1.default,
+            type: 'User',
             resolve: (parent, _, { prisma }) => {
                 return prisma.channel
                     .findUnique({
@@ -72,5 +68,4 @@ const Channel = (0, nexus_1.objectType)({
         });
     },
 });
-exports.default = Channel;
 //# sourceMappingURL=channel.js.map

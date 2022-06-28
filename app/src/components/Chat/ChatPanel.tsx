@@ -29,7 +29,7 @@ type Props = {
 
 export const ChatPanel = ({ channelId }: Props) => {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
 
   // Get info about current user
   const {
@@ -115,10 +115,10 @@ export const ChatPanel = ({ channelId }: Props) => {
             >
               <Message
                 {...message}
-                isSelected={message.id === selectedMessage}
+                isSelected={message.id === selectedMessageId}
                 onClick={() =>
-                  setSelectedMessage(
-                    message.id === selectedMessage ? null : message.id
+                  setSelectedMessageId(
+                    message.id === selectedMessageId ? null : message.id
                   )
                 }
                 showAvatar={!isLastMessageInGroup && !isCurrentUser}

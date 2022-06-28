@@ -29,13 +29,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.schema = void 0;
 const nexus_1 = require("nexus");
 const path_1 = __importDefault(require("path"));
-const types = __importStar(require("./schema"));
+const allTypes = __importStar(require("./schema"));
 exports.schema = (0, nexus_1.makeSchema)({
-    types,
+    types: allTypes,
     plugins: [(0, nexus_1.connectionPlugin)()],
     outputs: {
         typegen: path_1.default.join(process.cwd(), 'src', 'nexus.d.ts'),
         schema: path_1.default.join(process.cwd(), 'src', 'graphql', 'schema.graphql'),
+    },
+    features: {
+        abstractTypeStrategies: {
+            resolveType: false,
+        },
     },
     contextType: {
         export: 'IContext',

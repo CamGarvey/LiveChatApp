@@ -8,21 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.channel = exports.channels = exports.channelMessages = void 0;
 const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-const channel_1 = __importDefault(require("../types/channel"));
-const message_1 = __importDefault(require("../types/message"));
 exports.channelMessages = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('channelMessages', {
-            type: message_1.default,
+            type: 'Message',
             additionalArgs: {
                 channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
                     description: 'If set, filters users by given filter',
@@ -59,7 +54,7 @@ exports.channels = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.list.nonNull.field('channels', {
-            type: channel_1.default,
+            type: 'Channel',
             resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.user
                     .findUnique({
@@ -76,7 +71,7 @@ exports.channel = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.field('channel', {
-            type: channel_1.default,
+            type: 'Channel',
             args: {
                 channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
                     description: 'Id of channel',

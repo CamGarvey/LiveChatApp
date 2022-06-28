@@ -1,19 +1,17 @@
 import { objectType } from 'nexus';
-import Channel from './channel';
 import { DateScalar } from './scalars';
-import User from './user';
 
 const Message = objectType({
   name: 'Message',
   definition(t) {
-    t.nonNull.string('id');
+    t.nonNull.id('id');
     t.nonNull.string('content');
     t.nonNull.field('createdAt', {
       type: DateScalar,
     });
     t.nonNull.string('createdById');
     t.nonNull.field('createdBy', {
-      type: User,
+      type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.user.findUnique({
           where: {
@@ -23,7 +21,7 @@ const Message = objectType({
       },
     });
     t.nonNull.list.nonNull.field('likedBy', {
-      type: User,
+      type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.message
           .findUnique({
@@ -36,7 +34,7 @@ const Message = objectType({
       type: DateScalar,
     });
     t.nonNull.field('channel', {
-      type: Channel,
+      type: 'Channel',
       resolve: (parent, _, { prisma }) => {
         return prisma.channel.findUnique({
           where: {

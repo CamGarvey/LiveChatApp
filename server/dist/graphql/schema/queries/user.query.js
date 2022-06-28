@@ -8,39 +8,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.Users = void 0;
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
-const enums_1 = require("../types/enums");
-const user_1 = __importDefault(require("../types/user"));
+const sort_1 = require("../types/sort");
 const UserOrderBy = (0, nexus_1.inputObjectType)({
     name: 'UserOrderBy',
     definition(t) {
         t.field('username', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
         t.field('id', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
         t.field('name', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
         t.field('email', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
         t.field('username', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
         t.field('createdAt', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
         t.field('updatedAt', {
-            type: enums_1.Sort,
+            type: sort_1.Sort,
         });
     },
 });
@@ -48,7 +44,7 @@ exports.Users = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('users', {
-            type: user_1.default,
+            type: 'User',
             description: 'Find users',
             additionalArgs: {
                 usernameFilter: (0, nexus_1.stringArg)({
@@ -103,7 +99,7 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.list.nonNull.field('friends', {
-            type: user_1.default,
+            type: 'User',
             resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.user
                     .findUnique({
@@ -117,7 +113,7 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
     },
 });
 exports.UserQuery = (0, nexus_1.queryField)('user', {
-    type: user_1.default,
+    type: 'User',
     args: {
         id: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'id of user',

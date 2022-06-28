@@ -1,15 +1,4 @@
-// Queries
-
-export * from './queries/user.query';
-export * from './queries/channel.query';
-
-// Mutations
-
-export * from './mutations/user.mutation';
-export * from './mutations/channel.mutation';
-export * from './mutations/message.mutation';
-
-// Subscriptions
-
-export * from './subscriptions/message.subscription';
-export * from './subscriptions/user.subscription';
+export * from './types';
+export * from './mutations';
+export * from './queries';
+export * from './subscriptions';

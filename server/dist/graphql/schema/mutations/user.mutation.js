@@ -8,17 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteFriend = exports.declineFriendRequest = exports.acceptFriendRequest = exports.cancelFriendRequest = exports.sendFriendRequest = exports.updateUser = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-const subscriptions_1 = require("../types/subscriptions");
-const user_1 = __importDefault(require("../types/user"));
+const subscriptions_1 = require("../../backing-types/subscriptions");
 exports.updateUser = (0, nexus_1.mutationField)('updateUser', {
-    type: user_1.default,
+    type: 'User',
     args: {
         email: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
         username: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
@@ -37,7 +33,7 @@ exports.updateUser = (0, nexus_1.mutationField)('updateUser', {
     },
 });
 exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
-    type: user_1.default,
+    type: 'User',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
@@ -97,7 +93,7 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
     }),
 });
 exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', {
-    type: user_1.default,
+    type: 'User',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
@@ -130,7 +126,7 @@ exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', 
     }),
 });
 exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', {
-    type: user_1.default,
+    type: 'User',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
@@ -172,7 +168,7 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
     }),
 });
 exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest', {
-    type: user_1.default,
+    type: 'User',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
@@ -205,7 +201,7 @@ exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest'
     }),
 });
 exports.deleteFriend = (0, nexus_1.mutationField)('deleteFriend', {
-    type: user_1.default,
+    type: 'User',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },

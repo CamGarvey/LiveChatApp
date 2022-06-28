@@ -1,10 +1,9 @@
 import { UserInputError, ForbiddenError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
-import { Subscriptions } from '../types/subscriptions';
-import User from '../types/user';
+import { Subscriptions } from '../../backing-types/subscriptions';
 
 export const updateUser = mutationField('updateUser', {
-  type: User,
+  type: 'User',
   args: {
     email: nonNull(stringArg()),
     username: nonNull(stringArg()),
@@ -24,7 +23,7 @@ export const updateUser = mutationField('updateUser', {
 });
 
 export const sendFriendRequest = mutationField('sendFriendRequest', {
-  type: User,
+  type: 'User',
   args: {
     friendId: nonNull(stringArg()),
   },
@@ -94,7 +93,7 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
 });
 
 export const cancelFriendRequest = mutationField('cancelFriendRequest', {
-  type: User,
+  type: 'User',
   args: {
     friendId: nonNull(stringArg()),
   },
@@ -131,7 +130,7 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
 });
 
 export const acceptFriendRequest = mutationField('acceptFriendRequest', {
-  type: User,
+  type: 'User',
   args: {
     friendId: nonNull(stringArg()),
   },
@@ -183,7 +182,7 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
 });
 
 export const declineFriendRequest = mutationField('declineFriendRequest', {
-  type: User,
+  type: 'User',
   args: {
     friendId: nonNull(stringArg()),
   },
@@ -220,7 +219,7 @@ export const declineFriendRequest = mutationField('declineFriendRequest', {
 });
 
 export const deleteFriend = mutationField('deleteFriend', {
-  type: User,
+  type: 'User',
   args: {
     friendId: nonNull(stringArg()),
   },

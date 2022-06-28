@@ -1,14 +1,12 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { ForbiddenError } from 'apollo-server-core';
 import { extendType, nonNull, stringArg } from 'nexus';
-import Channel from '../types/channel';
-import Message from '../types/message';
 
 export const channelMessages = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.connectionField('channelMessages', {
-      type: Message,
+      type: 'Message',
       additionalArgs: {
         channelId: nonNull(
           stringArg({
@@ -64,7 +62,7 @@ export const channels = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.list.nonNull.field('channels', {
-      type: Channel,
+      type: 'Channel',
       resolve: async (_, __, { prisma, userId }) => {
         return await prisma.user
           .findUnique({
@@ -82,7 +80,7 @@ export const channel = extendType({
   type: 'Query',
   definition(t) {
     t.field('channel', {
-      type: Channel,
+      type: 'Channel',
       args: {
         channelId: nonNull(
           stringArg({

@@ -1,13 +1,11 @@
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { objectType } from 'nexus';
-import Channel from './channel';
-import FriendStatus from './friend-status';
 import { DateScalar } from './scalars';
 
-const User = objectType({
+export const User = objectType({
   name: 'User',
   definition(t) {
-    t.nonNull.string('id');
+    t.nonNull.id('id');
     t.string('name');
     t.nonNull.string('email');
     t.nonNull.string('username');
@@ -18,7 +16,7 @@ const User = objectType({
       type: DateScalar,
     });
     t.nonNull.field('friendStatus', {
-      type: FriendStatus,
+      type: 'FriendStatus',
       resolve: async (parent, _, { prisma, userId }) => {
         const friends = await prisma.user
           .findUnique({
@@ -74,7 +72,7 @@ const User = objectType({
       },
     });
     t.nonNull.list.nonNull.field('channels', {
-      type: Channel,
+      type: 'Channel',
       resolve: async (parent, _, { prisma, userId }) => {
         if (parent.id == userId) {
           // Is current user, return all
@@ -135,5 +133,3 @@ const User = objectType({
     });
   },
 });
-
-export default User;

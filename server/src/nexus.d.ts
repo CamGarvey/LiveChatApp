@@ -17,6 +17,10 @@ declare global {
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
     /**
+     * Date custom scalar type
+     */
+    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "Date";
+    /**
      * Adds a Relay-style connection to the type, with numerous options for configuration
      *
      * @see https://nexusjs.org/docs/plugins/connection
@@ -25,10 +29,6 @@ declare global {
       fieldName: FieldName,
       config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName>
     ): void
-    /**
-     * Date custom scalar type
-     */
-    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "Date";
   }
 }
 
@@ -66,16 +66,24 @@ export interface NexusGenObjects {
   Channel: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
     description?: string | null; // String
-    id: string; // String!
+    id: string; // ID!
     isDM: boolean; // Boolean!
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
+  }
+  MembersAdded: { // root type
+    byUserId: string; // ID!
+    memberIds: string[]; // [ID!]!
+  }
+  MembersRemoved: { // root type
+    byUserId: string; // ID!
+    memberIds: string[]; // [ID!]!
   }
   Message: { // root type
     content: string; // String!
     createdAt: NexusGenScalars['Date']; // Date!
     createdById: string; // String!
-    id: string; // String!
+    id: string; // ID!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
   MessageConnection: { // root type
@@ -87,9 +95,9 @@ export interface NexusGenObjects {
     node?: NexusGenRootTypes['Message'] | null; // Message
   }
   Mutation: {};
-  NewMessagePayload: { // root type
+  NewChannelEventPayload: { // root type
     channelId: string; // String!
-    message: NexusGenRootTypes['Message']; // Message!
+    event: NexusGenRootTypes['ChannelEvent']; // ChannelEvent!
   }
   PageInfo: { // root type
     endCursor?: string | null; // String
@@ -102,7 +110,7 @@ export interface NexusGenObjects {
   User: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
     email: string; // String!
-    id: string; // String!
+    id: string; // ID!
     name?: string | null; // String
     updatedAt: NexusGenScalars['Date']; // Date!
     username: string; // String!
@@ -118,12 +126,14 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
+  MembersModified: NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'];
 }
 
 export interface NexusGenUnions {
+  ChannelEvent: NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'] | NexusGenRootTypes['Message'];
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects & NexusGenUnions
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
@@ -132,7 +142,7 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
     description: string | null; // String
-    id: string; // String!
+    id: string; // ID!
     isDM: boolean; // Boolean!
     memberCount: number; // Int!
     members: NexusGenRootTypes['User'][]; // [User!]!
@@ -140,13 +150,21 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
+  MembersAdded: { // field return type
+    byUserId: string; // ID!
+    memberIds: string[]; // [ID!]!
+  }
+  MembersRemoved: { // field return type
+    byUserId: string; // ID!
+    memberIds: string[]; // [ID!]!
+  }
   Message: { // field return type
     channel: NexusGenRootTypes['Channel']; // Channel!
     content: string; // String!
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
     createdById: string; // String!
-    id: string; // String!
+    id: string; // ID!
     likedBy: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
@@ -175,9 +193,9 @@ export interface NexusGenFieldTypes {
     updateChannel: NexusGenRootTypes['Channel'] | null; // Channel
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
-  NewMessagePayload: { // field return type
+  NewChannelEventPayload: { // field return type
     channelId: string; // String!
-    message: NexusGenRootTypes['Message']; // Message!
+    event: NexusGenRootTypes['ChannelEvent']; // ChannelEvent!
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -195,9 +213,9 @@ export interface NexusGenFieldTypes {
     users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
   Subscription: { // field return type
+    channelEventSubscription: NexusGenRootTypes['NewChannelEventPayload'] | null; // NewChannelEventPayload
     newFriend: NexusGenRootTypes['User'] | null; // User
     newFriendRequest: NexusGenRootTypes['User'] | null; // User
-    newMessage: NexusGenRootTypes['NewMessagePayload'] | null; // NewMessagePayload
   }
   User: { // field return type
     channels: NexusGenRootTypes['Channel'][]; // [Channel!]!
@@ -205,7 +223,7 @@ export interface NexusGenFieldTypes {
     email: string; // String!
     friendStatus: NexusGenEnums['FriendStatus']; // FriendStatus!
     friends: NexusGenRootTypes['UserConnection']; // UserConnection!
-    id: string; // String!
+    id: string; // ID!
     name: string | null; // String
     receivedFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
     sentFriendRequests: NexusGenRootTypes['User'][]; // [User!]!
@@ -220,6 +238,10 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['User'] | null; // User
   }
+  MembersModified: { // field return type
+    byUserId: string; // ID!
+    memberIds: string[]; // [ID!]!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
@@ -227,7 +249,7 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'Date'
     createdBy: 'User'
     description: 'String'
-    id: 'String'
+    id: 'ID'
     isDM: 'Boolean'
     memberCount: 'Int'
     members: 'User'
@@ -235,13 +257,21 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     updatedAt: 'Date'
   }
+  MembersAdded: { // field return type name
+    byUserId: 'ID'
+    memberIds: 'ID'
+  }
+  MembersRemoved: { // field return type name
+    byUserId: 'ID'
+    memberIds: 'ID'
+  }
   Message: { // field return type name
     channel: 'Channel'
     content: 'String'
     createdAt: 'Date'
     createdBy: 'User'
     createdById: 'String'
-    id: 'String'
+    id: 'ID'
     likedBy: 'User'
     updatedAt: 'Date'
   }
@@ -270,9 +300,9 @@ export interface NexusGenFieldTypeNames {
     updateChannel: 'Channel'
     updateUser: 'User'
   }
-  NewMessagePayload: { // field return type name
+  NewChannelEventPayload: { // field return type name
     channelId: 'String'
-    message: 'Message'
+    event: 'ChannelEvent'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -290,9 +320,9 @@ export interface NexusGenFieldTypeNames {
     users: 'UserConnection'
   }
   Subscription: { // field return type name
+    channelEventSubscription: 'NewChannelEventPayload'
     newFriend: 'User'
     newFriendRequest: 'User'
-    newMessage: 'NewMessagePayload'
   }
   User: { // field return type name
     channels: 'Channel'
@@ -300,7 +330,7 @@ export interface NexusGenFieldTypeNames {
     email: 'String'
     friendStatus: 'FriendStatus'
     friends: 'UserConnection'
-    id: 'String'
+    id: 'ID'
     name: 'String'
     receivedFriendRequests: 'User'
     sentFriendRequests: 'User'
@@ -314,6 +344,10 @@ export interface NexusGenFieldTypeNames {
   UserEdge: { // field return type name
     cursor: 'String'
     node: 'User'
+  }
+  MembersModified: { // field return type name
+    byUserId: 'ID'
+    memberIds: 'ID'
   }
 }
 
@@ -407,11 +441,11 @@ export interface NexusGenArgTypes {
     }
   }
   Subscription: {
+    channelEventSubscription: { // args
+      channelId: string; // String!
+    }
     newFriend: { // args
       userId: string; // String!
-    }
-    newMessage: { // args
-      channelId: string; // String!
     }
   }
   User: {
@@ -425,9 +459,13 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  ChannelEvent: "MembersAdded" | "MembersRemoved" | "Message"
+  MembersModified: "MembersAdded" | "MembersRemoved"
 }
 
 export interface NexusGenTypeInterfaces {
+  MembersAdded: "MembersModified"
+  MembersRemoved: "MembersModified"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -436,11 +474,11 @@ export type NexusGenInputNames = keyof NexusGenInputs;
 
 export type NexusGenEnumNames = keyof NexusGenEnums;
 
-export type NexusGenInterfaceNames = never;
+export type NexusGenInterfaceNames = keyof NexusGenInterfaces;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
-export type NexusGenUnionNames = never;
+export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
@@ -448,9 +486,9 @@ export type NexusGenAbstractsUsingStrategyResolveType = never;
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
-    isTypeOf: false
-    resolveType: true
+    resolveType: false
     __typename: false
+    isTypeOf: false
   }
 }
 

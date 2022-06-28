@@ -1,13 +1,11 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { objectType } from 'nexus';
-import Message from './message';
 import { DateScalar } from './scalars';
-import User from './user';
 
-const Channel = objectType({
+export const Channel = objectType({
   name: 'Channel',
   definition(t) {
-    t.nonNull.string('id');
+    t.nonNull.id('id');
     t.nonNull.string('name');
     t.string('description');
     t.nonNull.field('createdAt', {
@@ -17,7 +15,7 @@ const Channel = objectType({
       type: DateScalar,
     });
     t.nonNull.field('createdBy', {
-      type: User,
+      type: 'User',
       resolve: async (parent, _, { prisma }) => {
         const channel = await prisma.channel.findUnique({
           where: {
@@ -31,7 +29,7 @@ const Channel = objectType({
       },
     });
     t.nonNull.connectionField('messages', {
-      type: Message,
+      type: 'Message',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection(
           (args) =>
@@ -59,7 +57,7 @@ const Channel = objectType({
       },
     });
     t.nonNull.list.nonNull.field('members', {
-      type: User,
+      type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.channel
           .findUnique({
@@ -70,5 +68,3 @@ const Channel = objectType({
     });
   },
 });
-
-export default Channel;
