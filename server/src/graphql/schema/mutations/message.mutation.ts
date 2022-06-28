@@ -1,4 +1,4 @@
-import { intArg, mutationField, nonNull, stringArg } from 'nexus';
+import { mutationField, nonNull, stringArg } from 'nexus';
 import { UserInputError, ForbiddenError } from 'apollo-server-errors';
 import Message from '../types/message';
 import { Subscriptions } from '../types/subscriptions';

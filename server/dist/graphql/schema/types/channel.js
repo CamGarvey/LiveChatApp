@@ -22,6 +22,7 @@ const Channel = (0, nexus_1.objectType)({
     definition(t) {
         t.nonNull.string('id');
         t.nonNull.string('name');
+        t.string('description');
         t.nonNull.field('createdAt', {
             type: scalars_1.DateScalar,
         });

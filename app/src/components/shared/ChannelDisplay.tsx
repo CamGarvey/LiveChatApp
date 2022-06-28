@@ -36,13 +36,13 @@ const ChannelDisplay = ({ onChannelClick }: Props) => {
           setFilter(e.target.value.toLowerCase());
         }}
       />
-      <Stack spacing={0}>
+      <Stack spacing={4}>
         {!loading && data && filteredChannels.length > 0 ? (
           filteredChannels.map((channel) => (
             <ChannelItem
               key={channel.id}
               {...channel}
-              onClick={() => onChannelClick(channel)}
+              onClick={() => onChannelClick?.(channel)}
             />
           ))
         ) : (

@@ -1,8 +1,7 @@
-query GetFriendsForSearch {
+query GetFriends {
   friends {
     id
     name
-    email
     username
   }
 }

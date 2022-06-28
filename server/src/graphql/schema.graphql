@@ -5,6 +5,7 @@
 type Channel {
   createdAt: Date!
   createdBy: User!
+  description: String
   id: String!
   isDM: Boolean!
   memberCount: Int!
@@ -145,6 +146,9 @@ type Mutation {
 
   """Update a Channel"""
   updateChannel(
+    """Ids of Users to be added to Channel"""
+    addMembersId: [String!]
+
     """Id of Channel to be updated"""
     channelId: String!
 
@@ -153,6 +157,9 @@ type Mutation {
 
     """Name of Channel"""
     name: String
+
+    """Ids of Users to be removed from Channel"""
+    removeMembersId: [String!]
   ): Channel
 
   """Update current User"""

@@ -2,12 +2,13 @@ query GetChannelInfo($channelId: String!) {
   channel(channelId: $channelId) {
     id
     name
+    createdAt
+    description
     createdBy {
       id
       name
       username
     }
-    createdAt
     members {
       id
       name

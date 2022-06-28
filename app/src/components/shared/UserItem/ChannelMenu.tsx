@@ -1,13 +1,25 @@
 import { Menu } from '@mantine/core';
+import { useRemoveMembersFromChannelMutation } from '../../../graphql/generated/graphql';
 
 type Props = {
-  onRemoveMemberClick?: () => void;
+  user: {
+    id: string;
+  };
+  channel: {
+    id: string;
+  };
 };
 
-export const ChannelMenu = ({ onRemoveMemberClick }: Props) => {
+export const ChannelMenu = ({ user, channel }: Props) => {
+  const [removeMembers] = useRemoveMembersFromChannelMutation({
+    variables: {
+      channelId: channel.id,
+      membersIds: [user.id],
+    },
+  });
   return (
     <Menu>
-      <Menu.Item onClick={onRemoveMemberClick}>Remove from channel</Menu.Item>
+      <Menu.Item onClick={() => removeMembers()}>Remove from channel</Menu.Item>
     </Menu>
   );
 };

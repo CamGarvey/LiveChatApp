@@ -10,15 +10,23 @@ type Props = {
   placeholder?: string;
   nothingFound?: string;
   users: User[];
-  onChange: (users: User[]) => void;
+  defaultValue?: User[];
+  onChange: (ids: string[]) => void;
 };
 
 const UserSelector = forwardRef<HTMLInputElement, Props>(
   (
-    { users, onChange, nothingFound = 'Nobody Here', ...others }: Props,
+    {
+      users,
+      onChange,
+      nothingFound = 'Nobody Here',
+      defaultValue = [],
+      ...others
+    }: Props,
     ref
   ) => {
-    const [selectedUsers, setSelectedUsers] = useState([]);
+    const defaultMapped = defaultValue.map((x) => x.id);
+    const [selectedUsers, setSelectedUsers] = useState(defaultMapped);
 
     useEffect(() => {
       onChange(selectedUsers);
@@ -27,7 +35,7 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
     let usersConverted = useMemo(() => {
       return users.map((u) => ({
         ...u,
-        value: u.username,
+        value: u.id,
         label: u.username,
         image: `https://avatars.dicebear.com/api/pixel-art/${u.username}.svg`,
       }));
@@ -41,6 +49,8 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
           itemComponent={UserItem}
           valueComponent={UserValue}
           data={usersConverted}
+          defaultValue={defaultMapped}
+          onChange={setSelectedUsers}
           searchable
           nothingFound={nothingFound}
           maxDropdownHeight={400}

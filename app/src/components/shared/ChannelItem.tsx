@@ -60,6 +60,7 @@ const ChannelItem = ({ id, name, members, onClick }: Props) => {
             >
               {members.slice(0, 2).map((member) => (
                 <Avatar
+                  key={member.username}
                   src={`https://avatars.dicebear.com/api/initials/${member.username}.svg`}
                 />
               ))}

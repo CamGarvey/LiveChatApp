@@ -149,12 +149,35 @@ export const updateChannel = mutationField('updateChannel', {
     isPrivate: booleanArg({
       description: 'If the Channel should be private',
     }),
+    addMembersId: list(
+      nonNull(
+        stringArg({
+          description: 'Ids of Users to be added to Channel',
+        })
+      )
+    ),
+    removeMembersId: list(
+      nonNull(
+        stringArg({
+          description: 'Ids of Users to be removed from Channel',
+        })
+      )
+    ),
   },
   description: 'Update a Channel',
-  resolve: async (_, { channelId, name, isPrivate }, { prisma, userId }) => {
+  resolve: async (
+    _,
+    { channelId, name, isPrivate, addMembersId, removeMembersId },
+    { prisma, userId }
+  ) => {
     const channel = await prisma.channel.findUnique({
       select: {
         createdById: true,
+        members: {
+          select: {
+            id: true,
+          },
+        },
       },
       where: {
         id: channelId,
@@ -176,6 +199,10 @@ export const updateChannel = mutationField('updateChannel', {
       data: {
         name,
         isPrivate,
+        members: {
+          connect: addMembersId?.map((x) => ({ id: x })),
+          disconnect: removeMembersId?.map((x) => ({ id: x })),
+        },
       },
       where: {
         id: channelId,

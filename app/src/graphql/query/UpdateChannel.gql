@@ -1,0 +1,23 @@
+mutation UpdateChannel(
+  $channelId: String!
+  $name: String
+  $isPrivate: Boolean
+  $addMembersId: [String!]
+  $removeMembersId: [String!]
+) {
+  updateChannel(
+    channelId: $channelId
+    name: $name
+    isPrivate: $isPrivate
+    addMembersId: $addMembersId
+    removeMembersId: $removeMembersId
+  ) {
+    id
+    name
+    description
+    members {
+      id
+    }
+    updatedAt
+  }
+}

@@ -1,12 +1,6 @@
 import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
-import {
-  intArg,
-  nonNull,
-  objectType,
-  stringArg,
-  subscriptionField,
-} from 'nexus';
+import { nonNull, objectType, stringArg, subscriptionField } from 'nexus';
 import Message from '../types/message';
 import { Subscriptions } from '../types/subscriptions';
 

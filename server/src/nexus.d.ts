@@ -65,6 +65,7 @@ export interface NexusGenScalars {
 export interface NexusGenObjects {
   Channel: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
+    description?: string | null; // String
     id: string; // String!
     isDM: boolean; // Boolean!
     name: string; // String!
@@ -130,6 +131,7 @@ export interface NexusGenFieldTypes {
   Channel: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
+    description: string | null; // String
     id: string; // String!
     isDM: boolean; // Boolean!
     memberCount: number; // Int!
@@ -224,6 +226,7 @@ export interface NexusGenFieldTypeNames {
   Channel: { // field return type name
     createdAt: 'Date'
     createdBy: 'User'
+    description: 'String'
     id: 'String'
     isDM: 'Boolean'
     memberCount: 'Int'
@@ -368,9 +371,11 @@ export interface NexusGenArgTypes {
       friendId: string; // String!
     }
     updateChannel: { // args
+      addMembersId?: string[] | null; // [String!]
       channelId: string; // String!
       isPrivate?: boolean | null; // Boolean
       name?: string | null; // String
+      removeMembersId?: string[] | null; // [String!]
     }
     updateUser: { // args
       email: string; // String!

@@ -8,9 +8,9 @@ import Drawer from '../components/Layout/Drawer';
 import { ModalType } from '../models';
 import { useEffect } from 'react';
 import { useGetChannelInfoLazyQuery } from '../graphql/generated/graphql';
-import { useCreateChannelModal } from '../components/Modals/CreateChannelModal/CreateChannelModal';
 import { useField } from 'formik';
 import { useSetChannel } from '../components/store';
+import { useCreateChannelModal } from '../components/Modals/CreateChannelModal';
 
 const Chat = () => {
   const { channelId } = useParams();

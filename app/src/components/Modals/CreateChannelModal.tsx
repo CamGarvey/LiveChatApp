@@ -1,11 +1,10 @@
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useEffect, useRef } from 'react';
-import UserSelector from '../../UserSelector/UserSelector';
+import UserSelector from '../UserSelector/UserSelector';
 import {
   useCreateChannelMutation,
-  useGetFriendsForSearchQuery,
-} from '../../../graphql/generated/graphql';
+  useGetFriendsQuery,
+} from '../../graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -15,6 +14,7 @@ import {
   Stack,
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
+import { channelSchema } from '../../models/validation-schemas';
 
 export const CreateChannelModal = ({
   context,
@@ -26,7 +26,7 @@ export const CreateChannelModal = ({
     loading: loadingFriends,
     data: friendData,
     error: friendError,
-  } = useGetFriendsForSearchQuery();
+  } = useGetFriendsQuery();
 
   const [createChannelMutation, { loading: loadingCreateChannel }] =
     useCreateChannelMutation();
@@ -42,7 +42,7 @@ export const CreateChannelModal = ({
       isPrivate: true,
       memberIds: [],
     },
-    validationSchema: createChannelSchema,
+    validationSchema: channelSchema,
     onSubmit: (values) => {
       createChannelMutation({
         variables: values,
@@ -86,7 +86,7 @@ export const CreateChannelModal = ({
               label={'Friends'}
               users={friendData.friends}
               onChange={(users) => {
-                formik.values.memberIds = users.map((x) => x.id);
+                formik.values.memberIds = users.map((x) => x);
                 formik.handleChange('');
               }}
             />
@@ -108,13 +108,3 @@ export const useCreateChannelModal = () => {
       innerProps: {},
     });
 };
-
-const createChannelSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(3, 'Name too short!')
-    .max(30, 'Name too long!')
-    .required('Name is required'),
-  description: Yup.string().max(40, 'Description is too long'),
-});
-
-export default CreateChannelModal;

@@ -4,7 +4,6 @@ import {
   arg,
   extendType,
   inputObjectType,
-  intArg,
   nonNull,
   queryField,
   stringArg,

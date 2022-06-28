@@ -9,6 +9,7 @@ const Channel = objectType({
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('name');
+    t.string('description');
     t.nonNull.field('createdAt', {
       type: DateScalar,
     });

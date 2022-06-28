@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGetUsersLazyQuery } from '../../../graphql/generated/graphql';
+import { useGetUsersLazyQuery } from '../../graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -13,9 +13,9 @@ import {
 import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { ContextModalProps, useModals } from '@mantine/modals';
-import { FriendMenu } from '../../shared/UserItem/FriendMenu';
-import { UserItem } from '../../shared/UserItem';
-import { User } from '../../../models';
+import { FriendMenu } from '../shared/UserItem/FriendMenu';
+import { UserItem } from '../shared/UserItem';
+import { User } from '../../models';
 
 const USER_PAGINATION_COUNT = 5;
 

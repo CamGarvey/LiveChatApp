@@ -1,5 +1,5 @@
 import { UserInputError, ForbiddenError } from 'apollo-server-core';
-import { mutationField, nonNull, stringArg, intArg } from 'nexus';
+import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscriptions } from '../types/subscriptions';
 import User from '../types/user';
 

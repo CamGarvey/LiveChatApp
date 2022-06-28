@@ -25,6 +25,8 @@ model User {
   memberOfChannels       Channel[] @relation("UserMemberOfChannels")
   messages               Message[] @relation("WhoUserMessage")
   likedMessages          Message[] @relation("LikedByUserMessage")
+  adminOfChannels        Channel[] @relation("UserAdminOfChannels")
+  channelId              String?
 }
 
 model Channel {
@@ -38,7 +40,9 @@ model Channel {
   isDM        Boolean
   isPrivate   Boolean
   members     User[]    @relation("UserMemberOfChannels", references: [id])
+  admins      User[]    @relation("UserAdminOfChannels", references: [id])
   messages    Message[] @relation("ChannelMessagesMessage")
+  userId      String?
 }
 
 model Message {

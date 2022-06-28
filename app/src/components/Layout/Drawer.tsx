@@ -19,9 +19,9 @@ import { useGetMeLazyQuery } from '../../graphql/generated/graphql';
 import { ModalType } from '../../models';
 import { useToggleDrawer, useIsDrawerOpen } from '../store';
 import ChannelItem from '../shared/ChannelItem';
-import { useCreateChannelModal } from '../Modals/CreateChannelModal/CreateChannelModal';
-import { useUserSearchModal } from '../Modals/UserSearchModal/UserSearchModal';
+import { useUserSearchModal } from '../Modals/UserSearchModal';
 import ChannelDisplay from '../shared/ChannelDisplay';
+import { useCreateChannelModal } from '../Modals/CreateChannelModal';
 
 const Drawer = () => {
   const isDrawerOpen = useIsDrawerOpen();

@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
 import { ChannelInfo } from '../../models';
-import { UserItem } from '../shared/UserItem';
+import { ChannelMenu, UserItem } from '../shared/UserItem';
 
 type Props = {
   isLoading: boolean;
@@ -33,9 +33,26 @@ const ChannelInfoAside = ({ channel, isLoading }: Props) => {
                 </ActionIcon>
               </Group>
             </Aside.Section>
-            <Aside.Section grow component={ScrollArea} mx="-xs" px="xs">
+            <Aside.Section
+              grow
+              component={ScrollArea}
+              mx="-xs"
+              px="xs"
+              styles={{
+                viewport: {
+                  paddingLeft: '5px',
+                },
+              }}
+              offsetScrollbars={true}
+            >
               {channel.members.map((member) => {
-                return <UserItem key={member.id} user={{ ...member }} />;
+                return (
+                  <UserItem
+                    key={member.id}
+                    user={{ ...member }}
+                    menu={<ChannelMenu user={member} channel={channel} />}
+                  />
+                );
               })}
             </Aside.Section>
           </>
