@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeMembersFromChannel = exports.addMembersToChannel = exports.createDM = exports.updateChannel = exports.deleteChannel = exports.createChannel = void 0;
+exports.removeMembersFromChannel = exports.addMembersToChannel = exports.updateChannel = exports.deleteChannel = exports.createChannel = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
@@ -161,48 +161,27 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
                 id: channelId,
             },
         });
-        if ((addMembersId === null || addMembersId === void 0 ? void 0 : addMembersId.length) > 0) {
-            yield pubsub.publish(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT, {
-                channelId,
-                event: {
-                    __typename: 'MembersAdded',
-                    byUserId: userId,
-                    memberIds: addMembersId,
-                },
-            });
-        }
-        if ((removeMembersId === null || removeMembersId === void 0 ? void 0 : removeMembersId.length) > 0) {
-            yield pubsub.publish(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT, {
-                channelId,
-                event: {
-                    __typename: 'MembersRemoved',
-                    byUserId: userId,
-                    memberIds: addMembersId,
-                },
-            });
-        }
-        return updatedChannel;
-    }),
-});
-exports.createDM = (0, nexus_1.mutationField)('createDM', {
-    type: 'Channel',
-    description: 'Create Direct Message Channel',
-    resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield prisma.channel.create({
+        const update = yield prisma.channelUpdate.create({
             data: {
-                name: null,
-                createdById: userId,
-                isDM: true,
-                isPrivate: true,
-                members: {
-                    connect: [
-                        {
-                            id: userId,
-                        },
-                    ],
+                channel: {
+                    connect: {
+                        id: channelId,
+                    },
                 },
+                createdBy: {
+                    connect: {
+                        id: userId,
+                    },
+                },
+                name,
+                description,
+                memberIdsAdded: addMembersId,
+                memberIdsRemoved: removeMembersId,
             },
         });
+        console.log(update);
+        pubsub.publish(subscriptions_enum_1.Subscription.ChannelUpdated, update);
+        return updatedChannel;
     }),
 });
 exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', {
@@ -216,7 +195,7 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
         })))),
     },
     description: 'Add Members into Channel',
-    resolve: (_, { channelId, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { channelId, memberIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
                 id: userId,
@@ -242,7 +221,7 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
         if (user.friends.length != memberIds.length) {
             throw new apollo_server_core_1.ForbiddenError('You are not friends with all of these users');
         }
-        return yield prisma.channel.update({
+        const channel = yield prisma.channel.update({
             data: {
                 members: {
                     connect: memberIds.map((id) => ({ id })),
@@ -252,6 +231,23 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
                 id: channelId,
             },
         });
+        const update = yield prisma.channelUpdate.create({
+            data: {
+                channel: {
+                    connect: {
+                        id: channelId,
+                    },
+                },
+                createdBy: {
+                    connect: {
+                        id: userId,
+                    },
+                },
+                memberIdsAdded: memberIds,
+            },
+        });
+        pubsub.publish(subscriptions_enum_1.Subscription.ChannelUpdated, update);
+        return channel;
     }),
 });
 exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFromChannel', {
@@ -261,7 +257,7 @@ exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFrom
         membersIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)()))),
     },
     description: 'Remove Members from Channel',
-    resolve: (_, { channelId, membersIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { channelId, membersIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const members = yield prisma.channel
             .findUnique({
             where: {
@@ -272,7 +268,7 @@ exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFrom
         if (!members.find((member) => member.id == userId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to remove members from this channel');
         }
-        return yield prisma.channel.update({
+        const channel = yield prisma.channel.update({
             data: {
                 members: {
                     disconnect: membersIds.map((id) => ({ id })),
@@ -282,6 +278,23 @@ exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFrom
                 id: channelId,
             },
         });
+        const update = yield prisma.channelUpdate.create({
+            data: {
+                channel: {
+                    connect: {
+                        id: channelId,
+                    },
+                },
+                createdBy: {
+                    connect: {
+                        id: userId,
+                    },
+                },
+                memberIdsRemoved: membersIds,
+            },
+        });
+        pubsub.publish(subscriptions_enum_1.Subscription.ChannelUpdated, update);
+        return channel;
     }),
 });
 //# sourceMappingURL=channel.mutation.js.map

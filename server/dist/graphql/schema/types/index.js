@@ -15,8 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./channel"), exports);
-__exportStar(require("./channel-event"), exports);
-__exportStar(require("./channel-events"), exports);
+__exportStar(require("./channel-update"), exports);
 __exportStar(require("./friend-status"), exports);
 __exportStar(require("./scalars"), exports);
 __exportStar(require("./sort.enum"), exports);

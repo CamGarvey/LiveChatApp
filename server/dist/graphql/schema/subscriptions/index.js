@@ -14,6 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./channel-event.subscription"), exports);
+__exportStar(require("./channel.subscription"), exports);
 __exportStar(require("./user.subscription"), exports);
+__exportStar(require("./message.subscription"), exports);
 //# sourceMappingURL=index.js.map

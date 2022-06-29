@@ -44,6 +44,7 @@ const Message = (0, nexus_1.objectType)({
                 });
             },
         });
+        t.nonNull.id('channelId');
     },
 });
 exports.default = Message;

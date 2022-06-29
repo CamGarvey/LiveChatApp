@@ -1,5 +1,6 @@
-export enum Subscriptions {
-  CHANNEL_EVENT = 'CHANNEL_EVENT',
-  NEW_FRIEND_REQUEST = 'NEW_FRIEND_REQUEST',
-  NEW_FRIEND = 'NEW_FRIEND',
+export enum Subscription {
+  ChannelUpdated = 'CHANNEL_UPDATED',
+  MessageCreated = 'MESSAGE_CREATED',
+  FriendRequestCreated = 'FRIEND_REQUEST_CREATED',
+  FriendCreated = 'FRIEND_CREATED',
 }

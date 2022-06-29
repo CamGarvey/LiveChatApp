@@ -1,6 +1,6 @@
 import { UserInputError, ForbiddenError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
-import { Subscriptions } from '../../backing-types/subscriptions.enum';
+import { Subscription } from '../../backing-types/subscriptions.enum';
 
 export const updateUser = mutationField('updateUser', {
   type: 'User',
@@ -83,7 +83,7 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
     });
 
     // Publish new friend request
-    pubsub.publish(Subscriptions.NEW_FRIEND_REQUEST, {
+    pubsub.publish(Subscription.FriendRequestCreated, {
       receiverId: friendId,
       sender: user,
     });
@@ -172,7 +172,7 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
     });
 
     // Publish new friend
-    pubsub.publish(Subscriptions.NEW_FRIEND, {
+    pubsub.publish(Subscription.FriendCreated, {
       senderId: friendId,
       receiver: user,
     });

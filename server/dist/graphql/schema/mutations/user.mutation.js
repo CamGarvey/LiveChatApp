@@ -85,7 +85,7 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
                 },
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscriptions.NEW_FRIEND_REQUEST, {
+        pubsub.publish(subscriptions_enum_1.Subscription.FriendRequestCreated, {
             receiverId: friendId,
             sender: user,
         });
@@ -160,7 +160,7 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
                 },
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscriptions.NEW_FRIEND, {
+        pubsub.publish(subscriptions_enum_1.Subscription.FriendCreated, {
             senderId: friendId,
             receiver: user,
         });

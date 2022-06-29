@@ -39,7 +39,7 @@ exports.channelEventSubscription = (0, nexus_1.subscriptionField)('channelEventS
         if (!members.find((member) => member.id == context.userId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this channel ');
         }
-        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT), (payload, variables) => {
+        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.CHANNEL_EVENT), (payload, variables) => {
             return payload.channelId === variables.channelId;
         })(rootValue, args, context);
     }),

@@ -1,0 +1,12 @@
+subscription MessageCreated($channelId: String!) {
+  messageCreated(channelId: $channelId) {
+    id
+    content
+    createdAt
+    createdBy {
+      id
+      name
+      username
+    }
+  }
+}

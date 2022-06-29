@@ -1,7 +1,7 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { UserInputError, ForbiddenError } from 'apollo-server-errors';
 import Message from '../types/message';
-import { Subscriptions } from '../../backing-types/subscriptions.enum';
+import { Subscription } from '../../backing-types/subscriptions.enum';
 
 export const createMessage = mutationField('createMessage', {
   type: Message,
@@ -44,10 +44,7 @@ export const createMessage = mutationField('createMessage', {
       },
     });
 
-    pubsub.publish(Subscriptions.CHANNEL_EVENT, {
-      channelId,
-      event: message,
-    });
+    pubsub.publish(Subscription.MessageCreated, message);
 
     return message;
   },

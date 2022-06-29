@@ -1,6 +1,5 @@
 export * from './channel';
-export * from './channel-event';
-export * from './channel-events';
+export * from './channel-update';
 export * from './friend-status';
 export * from './scalars';
 export * from './sort.enum';

@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.messageCreatedSubscription = void 0;
+exports.channelUpdatedSubscription = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
-exports.messageCreatedSubscription = (0, nexus_1.subscriptionField)('messageCreated', {
-    type: 'Message',
+exports.channelUpdatedSubscription = (0, nexus_1.subscriptionField)('channelUpdated', {
+    type: 'ChannelUpdate',
     args: {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
@@ -28,9 +28,9 @@ exports.messageCreatedSubscription = (0, nexus_1.subscriptionField)('messageCrea
         })
             .members();
         if (!members.find((member) => member.id == context.userId)) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to events in this channel');
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this channel ');
         }
-        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.MessageCreated), (payload, variables) => {
+        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.ChannelUpdated), (payload, variables) => {
             return payload.channelId === variables.channelId;
         })(rootValue, args, context);
     }),
@@ -38,4 +38,4 @@ exports.messageCreatedSubscription = (0, nexus_1.subscriptionField)('messageCrea
         return payload;
     },
 });
-//# sourceMappingURL=message.subscription.js.map
+//# sourceMappingURL=channel.subscription.js.map

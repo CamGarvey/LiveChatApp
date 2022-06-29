@@ -22,7 +22,7 @@ export type Channel = {
   createdAt: Scalars['Date'];
   createdBy: User;
   description?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
+  id: Scalars['ID'];
   isDM: Scalars['Boolean'];
   memberCount: Scalars['Int'];
   members: Array<User>;
@@ -39,6 +39,20 @@ export type ChannelMessagesArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+export type ChannelUpdate = {
+  __typename?: 'ChannelUpdate';
+  channel: Channel;
+  channelId: Scalars['ID'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['ID'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  memberIdsAdded?: Maybe<Array<Scalars['ID']>>;
+  memberIdsRemoved?: Maybe<Array<Scalars['ID']>>;
+  name?: Maybe<Scalars['String']>;
+};
+
 export enum FriendStatus {
   Friend = 'FRIEND',
   NotFriend = 'NOT_FRIEND',
@@ -49,11 +63,12 @@ export enum FriendStatus {
 export type Message = {
   __typename?: 'Message';
   channel: Channel;
+  channelId: Scalars['ID'];
   content: Scalars['String'];
   createdAt: Scalars['Date'];
   createdBy: User;
   createdById: Scalars['String'];
-  id: Scalars['String'];
+  id: Scalars['ID'];
   likedBy: Array<User>;
   updatedAt: Scalars['Date'];
 };
@@ -84,8 +99,6 @@ export type Mutation = {
   cancelFriendRequest?: Maybe<User>;
   /** Create a Channel */
   createChannel?: Maybe<Channel>;
-  /** Create Direct Message Channel */
-  createDM?: Maybe<Channel>;
   /** Create a Message in a Channel */
   createMessage?: Maybe<Message>;
   /** Delete/Decline a received Friend Request */
@@ -191,12 +204,6 @@ export type MutationUpdateUserArgs = {
   username: Scalars['String'];
 };
 
-export type NewMessagePayload = {
-  __typename?: 'NewMessagePayload';
-  channelId: Scalars['String'];
-  message: Message;
-};
-
 /** PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo */
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -258,18 +265,24 @@ export enum Sort {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  newFriend?: Maybe<User>;
-  newFriendRequest?: Maybe<User>;
-  newMessage?: Maybe<NewMessagePayload>;
+  channelUpdated?: Maybe<ChannelUpdate>;
+  friendCreated?: Maybe<User>;
+  friendRequestCreated?: Maybe<User>;
+  messageCreated?: Maybe<Message>;
 };
 
 
-export type SubscriptionNewFriendArgs = {
+export type SubscriptionChannelUpdatedArgs = {
+  channelId: Scalars['String'];
+};
+
+
+export type SubscriptionFriendCreatedArgs = {
   userId: Scalars['String'];
 };
 
 
-export type SubscriptionNewMessageArgs = {
+export type SubscriptionMessageCreatedArgs = {
   channelId: Scalars['String'];
 };
 
@@ -280,7 +293,7 @@ export type User = {
   email: Scalars['String'];
   friendStatus: FriendStatus;
   friends: UserConnection;
-  id: Scalars['String'];
+  id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   receivedFriendRequests: Array<User>;
   sentFriendRequests: Array<User>;
@@ -451,17 +464,24 @@ export type UpdateChannelMutationVariables = Exact<{
 
 export type UpdateChannelMutation = { __typename?: 'Mutation', updateChannel?: { __typename?: 'Channel', id: string, name: string, description?: string | null, updatedAt: any, members: Array<{ __typename?: 'User', id: string }> } | null };
 
-export type NewFriendRequestSubscriptionVariables = Exact<{ [key: string]: never; }>;
-
-
-export type NewFriendRequestSubscription = { __typename?: 'Subscription', newFriendRequest?: { __typename?: 'User', id: string, name?: string | null, email: string, username: string } | null };
-
-export type GetNewMessagesSubscriptionVariables = Exact<{
+export type ChannelUpdatedSubscriptionVariables = Exact<{
   channelId: Scalars['String'];
 }>;
 
 
-export type GetNewMessagesSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'NewMessagePayload', message: { __typename?: 'Message', id: string, content: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string } } } | null };
+export type ChannelUpdatedSubscription = { __typename?: 'Subscription', channelUpdated?: { __typename?: 'ChannelUpdate', name?: string | null, description?: string | null, memberIdsAdded?: Array<string> | null, memberIdsRemoved?: Array<string> | null, channel: { __typename?: 'Channel', id: string, name: string, description?: string | null, members: Array<{ __typename?: 'User', id: string }> } } | null };
+
+export type FriendRequestCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FriendRequestCreatedSubscription = { __typename?: 'Subscription', friendRequestCreated?: { __typename?: 'User', id: string, name?: string | null, email: string, username: string } | null };
+
+export type MessageCreatedSubscriptionVariables = Exact<{
+  channelId: Scalars['String'];
+}>;
+
+
+export type MessageCreatedSubscription = { __typename?: 'Subscription', messageCreated?: { __typename?: 'Message', id: string, content: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string } } | null };
 
 
 export const AcceptFriendRequestDocument = gql`
@@ -1192,9 +1212,50 @@ export function useUpdateChannelMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateChannelMutationHookResult = ReturnType<typeof useUpdateChannelMutation>;
 export type UpdateChannelMutationResult = Apollo.MutationResult<UpdateChannelMutation>;
 export type UpdateChannelMutationOptions = Apollo.BaseMutationOptions<UpdateChannelMutation, UpdateChannelMutationVariables>;
-export const NewFriendRequestDocument = gql`
-    subscription NewFriendRequest {
-  newFriendRequest {
+export const ChannelUpdatedDocument = gql`
+    subscription ChannelUpdated($channelId: String!) {
+  channelUpdated(channelId: $channelId) {
+    channel {
+      id
+      name
+      description
+      members {
+        id
+      }
+    }
+    name
+    description
+    memberIdsAdded
+    memberIdsRemoved
+  }
+}
+    `;
+
+/**
+ * __useChannelUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useChannelUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useChannelUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChannelUpdatedSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useChannelUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<ChannelUpdatedSubscription, ChannelUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ChannelUpdatedSubscription, ChannelUpdatedSubscriptionVariables>(ChannelUpdatedDocument, options);
+      }
+export type ChannelUpdatedSubscriptionHookResult = ReturnType<typeof useChannelUpdatedSubscription>;
+export type ChannelUpdatedSubscriptionResult = Apollo.SubscriptionResult<ChannelUpdatedSubscription>;
+export const FriendRequestCreatedDocument = gql`
+    subscription FriendRequestCreated {
+  friendRequestCreated {
     id
     name
     email
@@ -1204,62 +1265,60 @@ export const NewFriendRequestDocument = gql`
     `;
 
 /**
- * __useNewFriendRequestSubscription__
+ * __useFriendRequestCreatedSubscription__
  *
- * To run a query within a React component, call `useNewFriendRequestSubscription` and pass it any options that fit your needs.
- * When your component renders, `useNewFriendRequestSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useFriendRequestCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useFriendRequestCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useNewFriendRequestSubscription({
+ * const { data, loading, error } = useFriendRequestCreatedSubscription({
  *   variables: {
  *   },
  * });
  */
-export function useNewFriendRequestSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NewFriendRequestSubscription, NewFriendRequestSubscriptionVariables>) {
+export function useFriendRequestCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<FriendRequestCreatedSubscription, FriendRequestCreatedSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<NewFriendRequestSubscription, NewFriendRequestSubscriptionVariables>(NewFriendRequestDocument, options);
+        return Apollo.useSubscription<FriendRequestCreatedSubscription, FriendRequestCreatedSubscriptionVariables>(FriendRequestCreatedDocument, options);
       }
-export type NewFriendRequestSubscriptionHookResult = ReturnType<typeof useNewFriendRequestSubscription>;
-export type NewFriendRequestSubscriptionResult = Apollo.SubscriptionResult<NewFriendRequestSubscription>;
-export const GetNewMessagesDocument = gql`
-    subscription GetNewMessages($channelId: String!) {
-  newMessage(channelId: $channelId) {
-    message {
+export type FriendRequestCreatedSubscriptionHookResult = ReturnType<typeof useFriendRequestCreatedSubscription>;
+export type FriendRequestCreatedSubscriptionResult = Apollo.SubscriptionResult<FriendRequestCreatedSubscription>;
+export const MessageCreatedDocument = gql`
+    subscription MessageCreated($channelId: String!) {
+  messageCreated(channelId: $channelId) {
+    id
+    content
+    createdAt
+    createdBy {
       id
-      content
-      createdAt
-      createdBy {
-        id
-        name
-        username
-      }
+      name
+      username
     }
   }
 }
     `;
 
 /**
- * __useGetNewMessagesSubscription__
+ * __useMessageCreatedSubscription__
  *
- * To run a query within a React component, call `useGetNewMessagesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useGetNewMessagesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useMessageCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useMessageCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetNewMessagesSubscription({
+ * const { data, loading, error } = useMessageCreatedSubscription({
  *   variables: {
  *      channelId: // value for 'channelId'
  *   },
  * });
  */
-export function useGetNewMessagesSubscription(baseOptions: Apollo.SubscriptionHookOptions<GetNewMessagesSubscription, GetNewMessagesSubscriptionVariables>) {
+export function useMessageCreatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<MessageCreatedSubscription, MessageCreatedSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<GetNewMessagesSubscription, GetNewMessagesSubscriptionVariables>(GetNewMessagesDocument, options);
+        return Apollo.useSubscription<MessageCreatedSubscription, MessageCreatedSubscriptionVariables>(MessageCreatedDocument, options);
       }
-export type GetNewMessagesSubscriptionHookResult = ReturnType<typeof useGetNewMessagesSubscription>;
-export type GetNewMessagesSubscriptionResult = Apollo.SubscriptionResult<GetNewMessagesSubscription>;
+export type MessageCreatedSubscriptionHookResult = ReturnType<typeof useMessageCreatedSubscription>;
+export type MessageCreatedSubscriptionResult = Apollo.SubscriptionResult<MessageCreatedSubscription>;

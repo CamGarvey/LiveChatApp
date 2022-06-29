@@ -43,6 +43,7 @@ const Message = objectType({
         });
       },
     });
+    t.nonNull.id('channelId');
   },
 });
 

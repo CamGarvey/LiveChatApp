@@ -51,10 +51,7 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
                 content,
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT, {
-            channelId,
-            event: message,
-        });
+        pubsub.publish(subscriptions_enum_1.Subscription.MessageCreated, message);
         return message;
     }),
 });

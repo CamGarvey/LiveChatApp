@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Subscriptions = void 0;
-var Subscriptions;
-(function (Subscriptions) {
-    Subscriptions["CHANNEL_EVENT"] = "CHANNEL_EVENT";
-    Subscriptions["NEW_FRIEND_REQUEST"] = "NEW_FRIEND_REQUEST";
-    Subscriptions["NEW_FRIEND"] = "NEW_FRIEND";
-})(Subscriptions = exports.Subscriptions || (exports.Subscriptions = {}));
+exports.Subscription = void 0;
+var Subscription;
+(function (Subscription) {
+    Subscription["ChannelUpdated"] = "CHANNEL_UPDATED";
+    Subscription["MessageCreated"] = "MESSAGE_CREATED";
+    Subscription["FriendRequestCreated"] = "FRIEND_REQUEST_CREATED";
+    Subscription["FriendCreated"] = "FRIEND_CREATED";
+})(Subscription = exports.Subscription || (exports.Subscription = {}));
 //# sourceMappingURL=subscriptions.enum.js.map

@@ -3,16 +3,8 @@ import {
   ForbiddenError,
   UserInputError,
 } from 'apollo-server-core';
-import {
-  booleanArg,
-  intArg,
-  list,
-  mutationField,
-  nonNull,
-  stringArg,
-} from 'nexus';
-import { ChannelEventPayload } from 'src/graphql/backing-types/channel-event-payload.interface';
-import { Subscriptions } from '../../backing-types/subscriptions.enum';
+import { booleanArg, list, mutationField, nonNull, stringArg } from 'nexus';
+import { Subscription } from '../../backing-types/subscriptions.enum';
 
 export const createChannel = mutationField('createChannel', {
   type: 'Channel',
@@ -214,50 +206,30 @@ export const updateChannel = mutationField('updateChannel', {
       },
     });
 
-    if (addMembersId?.length > 0) {
-      await pubsub.publish<ChannelEventPayload>(Subscriptions.CHANNEL_EVENT, {
-        channelId,
-        event: {
-          __typename: 'MembersAdded',
-          byUserId: userId,
-          memberIds: addMembersId,
-        },
-      });
-    }
-    if (removeMembersId?.length > 0) {
-      await pubsub.publish<ChannelEventPayload>(Subscriptions.CHANNEL_EVENT, {
-        channelId,
-        event: {
-          __typename: 'MembersRemoved',
-          byUserId: userId,
-          memberIds: addMembersId,
-        },
-      });
-    }
-
-    return updatedChannel;
-  },
-});
-
-export const createDM = mutationField('createDM', {
-  type: 'Channel',
-  description: 'Create Direct Message Channel',
-  resolve: async (_, __, { prisma, userId }) => {
-    return await prisma.channel.create({
+    const update = await prisma.channelUpdate.create({
       data: {
-        name: null,
-        createdById: userId,
-        isDM: true,
-        isPrivate: true,
-        members: {
-          connect: [
-            {
-              id: userId, // Add creator as member
-            },
-          ],
+        channel: {
+          connect: {
+            id: channelId,
+          },
         },
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        name,
+        description,
+        memberIdsAdded: addMembersId,
+        memberIdsRemoved: removeMembersId,
       },
     });
+
+    console.log(update);
+
+    pubsub.publish(Subscription.ChannelUpdated, update);
+
+    return updatedChannel;
   },
 });
 
@@ -280,7 +252,7 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
     ),
   },
   description: 'Add Members into Channel',
-  resolve: async (_, { channelId, memberIds }, { prisma, userId }) => {
+  resolve: async (_, { channelId, memberIds }, { prisma, userId, pubsub }) => {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -314,7 +286,7 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
     }
 
     // Connect new members to channel
-    return await prisma.channel.update({
+    const channel = await prisma.channel.update({
       data: {
         members: {
           connect: memberIds.map((id) => ({ id })),
@@ -324,6 +296,26 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
         id: channelId,
       },
     });
+
+    const update = await prisma.channelUpdate.create({
+      data: {
+        channel: {
+          connect: {
+            id: channelId,
+          },
+        },
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        memberIdsAdded: memberIds,
+      },
+    });
+
+    pubsub.publish(Subscription.ChannelUpdated, update);
+
+    return channel;
   },
 });
 
@@ -336,7 +328,11 @@ export const removeMembersFromChannel = mutationField(
       membersIds: nonNull(list(nonNull(stringArg()))),
     },
     description: 'Remove Members from Channel',
-    resolve: async (_, { channelId, membersIds }, { prisma, userId }) => {
+    resolve: async (
+      _,
+      { channelId, membersIds },
+      { prisma, userId, pubsub }
+    ) => {
       const members = await prisma.channel
         .findUnique({
           where: {
@@ -350,7 +346,8 @@ export const removeMembersFromChannel = mutationField(
           'You do not have permission to remove members from this channel'
         );
       }
-      return await prisma.channel.update({
+
+      const channel = await prisma.channel.update({
         data: {
           members: {
             disconnect: membersIds.map((id) => ({ id })),
@@ -360,6 +357,26 @@ export const removeMembersFromChannel = mutationField(
           id: channelId,
         },
       });
+
+      const update = await prisma.channelUpdate.create({
+        data: {
+          channel: {
+            connect: {
+              id: channelId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          memberIdsRemoved: membersIds,
+        },
+      });
+
+      pubsub.publish(Subscription.ChannelUpdated, update);
+
+      return channel;
     },
   }
 );

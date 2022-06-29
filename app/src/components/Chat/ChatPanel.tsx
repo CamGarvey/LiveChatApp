@@ -1,6 +1,6 @@
 import { Center, Stack, Text } from '@mantine/core';
 import {
-  GetNewMessagesDocument,
+  MessageCreatedDocument,
   useCreateMessageMutation,
   useGetChannelMessagesQuery,
   useGetMeQuery,
@@ -57,19 +57,19 @@ export const ChatPanel = ({ channelId }: Props) => {
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
-      document: GetNewMessagesDocument,
+      document: MessageCreatedDocument,
       variables: {
         channelId,
       },
       updateQuery: (prev, { subscriptionData }: any) => {
         if (!subscriptionData.data) return prev;
-        const subscriptionResponse = subscriptionData.data.newMessage.message;
+        const messageCreated = subscriptionData.data.messageCreated;
         const newCache = Object.assign({}, prev, {
           channelMessages: {
             edges: [
               ...prev.channelMessages.edges,
               {
-                node: subscriptionResponse,
+                node: messageCreated,
                 __typename: 'MessageEdge',
               },
             ],

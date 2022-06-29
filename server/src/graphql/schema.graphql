@@ -27,12 +27,17 @@ type Channel {
   updatedAt: Date!
 }
 
-"""Any event that can be rendered in the chat"""
-union ChannelEvent = MembersAdded | MembersRemoved | Message
-
-type ChannelEventPayload {
-  channelId: String!
-  event: ChannelEvent!
+type ChannelUpdate {
+  channel: Channel!
+  channelId: ID!
+  createdAt: Date!
+  createdBy: User!
+  createdById: ID!
+  description: String
+  id: ID!
+  memberIdsAdded: [ID!]
+  memberIdsRemoved: [ID!]
+  name: String
 }
 
 """Date custom scalar type"""
@@ -45,23 +50,9 @@ enum FriendStatus {
   REQUEST_SENT
 }
 
-interface IMembersModified {
-  byUserId: ID!
-  memberIds: [ID!]!
-}
-
-type MembersAdded implements IMembersModified {
-  byUserId: ID!
-  memberIds: [ID!]!
-}
-
-type MembersRemoved implements IMembersModified {
-  byUserId: ID!
-  memberIds: [ID!]!
-}
-
 type Message {
   channel: Channel!
+  channelId: ID!
   content: String!
   createdAt: Date!
   createdBy: User!
@@ -121,9 +112,6 @@ type Mutation {
     """Name of the Channel"""
     name: String!
   ): Channel
-
-  """Create Direct Message Channel"""
-  createDM: Channel
 
   """Create a Message in a Channel"""
   createMessage(
@@ -274,9 +262,10 @@ enum Sort {
 }
 
 type Subscription {
-  channelEventSubscription(channelId: String!): ChannelEventPayload
-  newFriend(userId: String!): User
-  newFriendRequest: User
+  channelUpdated(channelId: String!): ChannelUpdate
+  friendCreated(userId: String!): User
+  friendRequestCreated: User
+  messageCreated(channelId: String!): Message
 }
 
 type User {
