@@ -8,7 +8,7 @@ import {
   queryField,
   stringArg,
 } from 'nexus';
-import { Sort } from '../types/sort';
+import { Sort } from '../types/sort.enum';
 
 const UserOrderBy = inputObjectType({
   name: 'UserOrderBy',

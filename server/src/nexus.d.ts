@@ -71,6 +71,10 @@ export interface NexusGenObjects {
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
+  ChannelEventPayload: { // root type
+    channelId: string; // String!
+    event: NexusGenRootTypes['ChannelEvent']; // ChannelEvent!
+  }
   MembersAdded: { // root type
     byUserId: string; // ID!
     memberIds: string[]; // [ID!]!
@@ -95,10 +99,6 @@ export interface NexusGenObjects {
     node?: NexusGenRootTypes['Message'] | null; // Message
   }
   Mutation: {};
-  NewChannelEventPayload: { // root type
-    channelId: string; // String!
-    event: NexusGenRootTypes['ChannelEvent']; // ChannelEvent!
-  }
   PageInfo: { // root type
     endCursor?: string | null; // String
     hasNextPage: boolean; // Boolean!
@@ -126,7 +126,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  MembersModified: NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'];
+  IMembersModified: NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'];
 }
 
 export interface NexusGenUnions {
@@ -149,6 +149,10 @@ export interface NexusGenFieldTypes {
     messages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
+  }
+  ChannelEventPayload: { // field return type
+    channelId: string; // String!
+    event: NexusGenRootTypes['ChannelEvent']; // ChannelEvent!
   }
   MembersAdded: { // field return type
     byUserId: string; // ID!
@@ -193,10 +197,6 @@ export interface NexusGenFieldTypes {
     updateChannel: NexusGenRootTypes['Channel'] | null; // Channel
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
-  NewChannelEventPayload: { // field return type
-    channelId: string; // String!
-    event: NexusGenRootTypes['ChannelEvent']; // ChannelEvent!
-  }
   PageInfo: { // field return type
     endCursor: string | null; // String
     hasNextPage: boolean; // Boolean!
@@ -213,7 +213,7 @@ export interface NexusGenFieldTypes {
     users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
   Subscription: { // field return type
-    channelEventSubscription: NexusGenRootTypes['NewChannelEventPayload'] | null; // NewChannelEventPayload
+    channelEventSubscription: NexusGenRootTypes['ChannelEventPayload'] | null; // ChannelEventPayload
     newFriend: NexusGenRootTypes['User'] | null; // User
     newFriendRequest: NexusGenRootTypes['User'] | null; // User
   }
@@ -238,7 +238,7 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['User'] | null; // User
   }
-  MembersModified: { // field return type
+  IMembersModified: { // field return type
     byUserId: string; // ID!
     memberIds: string[]; // [ID!]!
   }
@@ -256,6 +256,10 @@ export interface NexusGenFieldTypeNames {
     messages: 'MessageConnection'
     name: 'String'
     updatedAt: 'Date'
+  }
+  ChannelEventPayload: { // field return type name
+    channelId: 'String'
+    event: 'ChannelEvent'
   }
   MembersAdded: { // field return type name
     byUserId: 'ID'
@@ -300,10 +304,6 @@ export interface NexusGenFieldTypeNames {
     updateChannel: 'Channel'
     updateUser: 'User'
   }
-  NewChannelEventPayload: { // field return type name
-    channelId: 'String'
-    event: 'ChannelEvent'
-  }
   PageInfo: { // field return type name
     endCursor: 'String'
     hasNextPage: 'Boolean'
@@ -320,7 +320,7 @@ export interface NexusGenFieldTypeNames {
     users: 'UserConnection'
   }
   Subscription: { // field return type name
-    channelEventSubscription: 'NewChannelEventPayload'
+    channelEventSubscription: 'ChannelEventPayload'
     newFriend: 'User'
     newFriendRequest: 'User'
   }
@@ -345,7 +345,7 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'User'
   }
-  MembersModified: { // field return type name
+  IMembersModified: { // field return type name
     byUserId: 'ID'
     memberIds: 'ID'
   }
@@ -460,12 +460,12 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   ChannelEvent: "MembersAdded" | "MembersRemoved" | "Message"
-  MembersModified: "MembersAdded" | "MembersRemoved"
+  IMembersModified: "MembersAdded" | "MembersRemoved"
 }
 
 export interface NexusGenTypeInterfaces {
-  MembersAdded: "MembersModified"
-  MembersRemoved: "MembersModified"
+  MembersAdded: "IMembersModified"
+  MembersRemoved: "IMembersModified"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeMembersFromChannel = exports.addMembersToChannel = exports.createDM = exports.updateChannel = exports.deleteChannel = exports.createChannel = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-const subscriptions_1 = require("../../backing-types/subscriptions");
+const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
 exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
     type: 'Channel',
     args: {
@@ -162,15 +162,23 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
             },
         });
         if ((addMembersId === null || addMembersId === void 0 ? void 0 : addMembersId.length) > 0) {
-            yield pubsub.publish(subscriptions_1.Subscriptions.CHANNEL_EVENT, {
+            yield pubsub.publish(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT, {
                 channelId,
-                event: {},
+                event: {
+                    __typename: 'MembersAdded',
+                    byUserId: userId,
+                    memberIds: addMembersId,
+                },
             });
         }
         if ((removeMembersId === null || removeMembersId === void 0 ? void 0 : removeMembersId.length) > 0) {
-            yield pubsub.publish(subscriptions_1.Subscriptions.CHANNEL_EVENT, {
+            yield pubsub.publish(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT, {
                 channelId,
-                event: {},
+                event: {
+                    __typename: 'MembersRemoved',
+                    byUserId: userId,
+                    memberIds: addMembersId,
+                },
             });
         }
         return updatedChannel;

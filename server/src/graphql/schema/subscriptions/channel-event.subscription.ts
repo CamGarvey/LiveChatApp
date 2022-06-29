@@ -1,10 +1,10 @@
 import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
 import { nonNull, objectType, stringArg, subscriptionField } from 'nexus';
-import { Subscriptions } from '../../backing-types/subscriptions';
+import { Subscriptions } from '../../backing-types/subscriptions.enum';
 
-const NewChannelEventPayload = objectType({
-  name: 'NewChannelEventPayload',
+const ChannelEventPayload = objectType({
+  name: 'ChannelEventPayload',
   definition(t) {
     t.nonNull.string('channelId');
     t.nonNull.field('event', {
@@ -16,7 +16,7 @@ const NewChannelEventPayload = objectType({
 export const channelEventSubscription = subscriptionField(
   'channelEventSubscription',
   {
-    type: NewChannelEventPayload,
+    type: ChannelEventPayload,
     args: {
       channelId: nonNull(stringArg()),
     },

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteFriend = exports.declineFriendRequest = exports.acceptFriendRequest = exports.cancelFriendRequest = exports.sendFriendRequest = exports.updateUser = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-const subscriptions_1 = require("../../backing-types/subscriptions");
+const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
 exports.updateUser = (0, nexus_1.mutationField)('updateUser', {
     type: 'User',
     args: {
@@ -85,7 +85,7 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
                 },
             },
         });
-        pubsub.publish(subscriptions_1.Subscriptions.NEW_FRIEND_REQUEST, {
+        pubsub.publish(subscriptions_enum_1.Subscriptions.NEW_FRIEND_REQUEST, {
             receiverId: friendId,
             sender: user,
         });
@@ -160,7 +160,7 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
                 },
             },
         });
-        pubsub.publish(subscriptions_1.Subscriptions.NEW_FRIEND, {
+        pubsub.publish(subscriptions_enum_1.Subscriptions.NEW_FRIEND, {
             senderId: friendId,
             receiver: user,
         });

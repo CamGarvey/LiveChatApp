@@ -1,0 +1,25 @@
+subscription ChannelEventSubscription($channelId: String!) {
+  channelEventSubscription(channelId: $channelId) {
+    channelId
+    event {
+      ... on Message {
+        id
+        content
+        createdAt
+        createdBy {
+          id
+          name
+          username
+        }
+      }
+      ... on MembersAdded {
+        byUserId
+        memberIds
+      }
+      ... on MembersRemoved {
+        byUserId
+        memberIds
+      }
+    }
+  }
+}

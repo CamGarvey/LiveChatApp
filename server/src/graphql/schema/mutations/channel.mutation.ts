@@ -11,7 +11,8 @@ import {
   nonNull,
   stringArg,
 } from 'nexus';
-import { Subscriptions } from '../../backing-types/subscriptions';
+import { ChannelEventPayload } from 'src/graphql/backing-types/channel-event-payload.interface';
+import { Subscriptions } from '../../backing-types/subscriptions.enum';
 
 export const createChannel = mutationField('createChannel', {
   type: 'Channel',
@@ -214,15 +215,23 @@ export const updateChannel = mutationField('updateChannel', {
     });
 
     if (addMembersId?.length > 0) {
-      await pubsub.publish(Subscriptions.CHANNEL_EVENT, {
+      await pubsub.publish<ChannelEventPayload>(Subscriptions.CHANNEL_EVENT, {
         channelId,
-        event: {},
+        event: {
+          __typename: 'MembersAdded',
+          byUserId: userId,
+          memberIds: addMembersId,
+        },
       });
     }
     if (removeMembersId?.length > 0) {
-      await pubsub.publish(Subscriptions.CHANNEL_EVENT, {
+      await pubsub.publish<ChannelEventPayload>(Subscriptions.CHANNEL_EVENT, {
         channelId,
-        event: {},
+        event: {
+          __typename: 'MembersRemoved',
+          byUserId: userId,
+          memberIds: addMembersId,
+        },
       });
     }
 

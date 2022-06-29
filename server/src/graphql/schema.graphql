@@ -30,6 +30,11 @@ type Channel {
 """Any event that can be rendered in the chat"""
 union ChannelEvent = MembersAdded | MembersRemoved | Message
 
+type ChannelEventPayload {
+  channelId: String!
+  event: ChannelEvent!
+}
+
 """Date custom scalar type"""
 scalar Date
 
@@ -40,17 +45,17 @@ enum FriendStatus {
   REQUEST_SENT
 }
 
-type MembersAdded implements MembersModified {
+interface IMembersModified {
   byUserId: ID!
   memberIds: [ID!]!
 }
 
-interface MembersModified {
+type MembersAdded implements IMembersModified {
   byUserId: ID!
   memberIds: [ID!]!
 }
 
-type MembersRemoved implements MembersModified {
+type MembersRemoved implements IMembersModified {
   byUserId: ID!
   memberIds: [ID!]!
 }
@@ -187,11 +192,6 @@ type Mutation {
   updateUser(email: String!, username: String!): User
 }
 
-type NewChannelEventPayload {
-  channelId: String!
-  event: ChannelEvent!
-}
-
 """
 PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
 """
@@ -274,7 +274,7 @@ enum Sort {
 }
 
 type Subscription {
-  channelEventSubscription(channelId: String!): NewChannelEventPayload
+  channelEventSubscription(channelId: String!): ChannelEventPayload
   newFriend(userId: String!): User
   newFriendRequest: User
 }

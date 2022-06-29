@@ -13,30 +13,30 @@ exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.Users = voi
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
-const sort_1 = require("../types/sort");
+const sort_enum_1 = require("../types/sort.enum");
 const UserOrderBy = (0, nexus_1.inputObjectType)({
     name: 'UserOrderBy',
     definition(t) {
         t.field('username', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
         t.field('id', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
         t.field('name', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
         t.field('email', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
         t.field('username', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
         t.field('createdAt', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
         t.field('updatedAt', {
-            type: sort_1.Sort,
+            type: sort_enum_1.Sort,
         });
     },
 });

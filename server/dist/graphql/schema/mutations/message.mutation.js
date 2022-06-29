@@ -16,7 +16,7 @@ exports.editMessage = exports.deleteMessage = exports.createMessage = void 0;
 const nexus_1 = require("nexus");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const message_1 = __importDefault(require("../types/message"));
-const subscriptions_1 = require("../../backing-types/subscriptions");
+const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
 exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
     type: message_1.default,
     args: {
@@ -51,7 +51,7 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
                 content,
             },
         });
-        pubsub.publish(subscriptions_1.Subscriptions.CHANNEL_EVENT, {
+        pubsub.publish(subscriptions_enum_1.Subscriptions.CHANNEL_EVENT, {
             channelId,
             event: message,
         });

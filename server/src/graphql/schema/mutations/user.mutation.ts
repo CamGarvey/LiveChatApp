@@ -1,6 +1,6 @@
 import { UserInputError, ForbiddenError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
-import { Subscriptions } from '../../backing-types/subscriptions';
+import { Subscriptions } from '../../backing-types/subscriptions.enum';
 
 export const updateUser = mutationField('updateUser', {
   type: 'User',

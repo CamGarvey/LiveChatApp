@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { nonNull, stringArg, subscriptionField } from 'nexus';
-import { Subscriptions } from '../../backing-types/subscriptions';
+import { Subscriptions } from '../../backing-types/subscriptions.enum';
 
 export const newFriendRequestSubscription = subscriptionField(
   'newFriendRequest',
