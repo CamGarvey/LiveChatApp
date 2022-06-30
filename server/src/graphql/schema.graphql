@@ -25,6 +25,7 @@ type Channel {
   ): MessageConnection!
   name: String!
   updatedAt: Date!
+  updates: [ChannelUpdate!]!
 }
 
 type ChannelUpdate {
@@ -37,6 +38,8 @@ type ChannelUpdate {
   id: ID!
   memberIdsAdded: [ID!]
   memberIdsRemoved: [ID!]
+  membersAdded: [User!]
+  membersRemoved: [User!]
   name: String
 }
 

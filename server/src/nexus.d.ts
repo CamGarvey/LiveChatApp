@@ -147,6 +147,7 @@ export interface NexusGenFieldTypes {
     messages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
     name: string; // String!
     updatedAt: NexusGenScalars['Date']; // Date!
+    updates: NexusGenRootTypes['ChannelUpdate'][]; // [ChannelUpdate!]!
   }
   ChannelUpdate: { // field return type
     channel: NexusGenRootTypes['Channel']; // Channel!
@@ -158,6 +159,8 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     memberIdsAdded: string[] | null; // [ID!]
     memberIdsRemoved: string[] | null; // [ID!]
+    membersAdded: NexusGenRootTypes['User'][] | null; // [User!]
+    membersRemoved: NexusGenRootTypes['User'][] | null; // [User!]
     name: string | null; // String
   }
   Message: { // field return type
@@ -251,6 +254,7 @@ export interface NexusGenFieldTypeNames {
     messages: 'MessageConnection'
     name: 'String'
     updatedAt: 'Date'
+    updates: 'ChannelUpdate'
   }
   ChannelUpdate: { // field return type name
     channel: 'Channel'
@@ -262,6 +266,8 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     memberIdsAdded: 'ID'
     memberIdsRemoved: 'ID'
+    membersAdded: 'User'
+    membersRemoved: 'User'
     name: 'String'
   }
   Message: { // field return type name

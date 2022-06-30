@@ -1,7 +1,4 @@
-import { Button, Input, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
-import { useGetChannelsForDisplayQuery } from '../../graphql/generated/graphql';
-import ChannelItem from '../shared/ChannelItem';
-import { Search } from 'tabler-icons-react';
+import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
 import ChannelDisplay from '../shared/ChannelDisplay';
 import { useCreateChannelModal } from '../Modals/CreateChannelModal';
 

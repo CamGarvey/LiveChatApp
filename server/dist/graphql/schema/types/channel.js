@@ -66,6 +66,16 @@ exports.Channel = (0, nexus_1.objectType)({
                     .members();
             },
         });
+        t.nonNull.list.nonNull.field('updates', {
+            type: 'ChannelUpdate',
+            resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+                return yield prisma.channel
+                    .findUnique({
+                    where: { id: parent.id || undefined },
+                })
+                    .updates();
+            }),
+        });
     },
 });
 //# sourceMappingURL=channel.js.map

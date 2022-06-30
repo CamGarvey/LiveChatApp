@@ -1,6 +1,6 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { ForbiddenError } from 'apollo-server-core';
-import { extendType, nonNull, stringArg } from 'nexus';
+import { extendType, nonNull, stringArg, unionType } from 'nexus';
 
 export const channelMessages = extendType({
   type: 'Query',

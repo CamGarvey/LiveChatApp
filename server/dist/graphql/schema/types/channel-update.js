@@ -19,12 +19,11 @@ exports.ChannelUpdate = (0, nexus_1.objectType)({
         t.nonNull.field('channel', {
             type: 'Channel',
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
-                const channel = yield prisma.channel.findUnique({
+                return yield prisma.channel.findUnique({
                     where: {
                         id: parent.channelId,
                     },
                 });
-                return channel;
             }),
         });
         t.nonNull.id('channelId');
@@ -39,6 +38,30 @@ exports.ChannelUpdate = (0, nexus_1.objectType)({
         t.string('description');
         t.list.nonNull.id('memberIdsAdded');
         t.list.nonNull.id('memberIdsRemoved');
+        t.list.nonNull.field('membersAdded', {
+            type: 'User',
+            resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+                return yield prisma.user.findMany({
+                    where: {
+                        id: {
+                            in: parent.memberIdsAdded,
+                        },
+                    },
+                });
+            }),
+        });
+        t.list.nonNull.field('membersRemoved', {
+            type: 'User',
+            resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
+                return yield prisma.user.findMany({
+                    where: {
+                        id: {
+                            in: parent.memberIdsRemoved,
+                        },
+                    },
+                });
+            }),
+        });
     },
 });
 //# sourceMappingURL=channel-update.js.map

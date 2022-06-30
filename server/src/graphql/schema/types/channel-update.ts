@@ -8,12 +8,11 @@ export const ChannelUpdate = objectType({
     t.nonNull.field('channel', {
       type: 'Channel',
       resolve: async (parent, _, { prisma }) => {
-        const channel = await prisma.channel.findUnique({
+        return await prisma.channel.findUnique({
           where: {
             id: parent.channelId,
           },
         });
-        return channel;
       },
     });
     t.nonNull.id('channelId');
@@ -29,5 +28,29 @@ export const ChannelUpdate = objectType({
     t.string('description');
     t.list.nonNull.id('memberIdsAdded');
     t.list.nonNull.id('memberIdsRemoved');
+    t.list.nonNull.field('membersAdded', {
+      type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.user.findMany({
+          where: {
+            id: {
+              in: parent.memberIdsAdded,
+            },
+          },
+        });
+      },
+    });
+    t.list.nonNull.field('membersRemoved', {
+      type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.user.findMany({
+          where: {
+            id: {
+              in: parent.memberIdsRemoved,
+            },
+          },
+        });
+      },
+    });
   },
 });

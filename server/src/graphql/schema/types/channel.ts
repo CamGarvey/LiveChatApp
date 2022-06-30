@@ -66,5 +66,15 @@ export const Channel = objectType({
           .members();
       },
     });
+    t.nonNull.list.nonNull.field('updates', {
+      type: 'ChannelUpdate',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.channel
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .updates();
+      },
+    });
   },
 });
