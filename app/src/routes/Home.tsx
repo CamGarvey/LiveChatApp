@@ -2,7 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { AppShell, Center } from '@mantine/core';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import Header from '../components/Layout/Header';
+import Header from '../components/Layout/Header/Header';
 
 const Home = () => {
   const { isAuthenticated } = useAuth0();

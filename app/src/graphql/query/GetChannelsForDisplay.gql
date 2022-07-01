@@ -2,11 +2,10 @@ query GetChannelsForDisplay {
   channels {
     id
     name
-    createdAt
-    updatedAt
-    isDM
+    description
     members {
       username
+      id
     }
   }
 }

@@ -3,30 +3,28 @@ import { useParams } from 'react-router-dom';
 import ChatPanel from '../components/Chat/ChatPanel';
 import ChannelInfoAside from '../components/Chat/ChannelInfoAside';
 import ChannelNav from '../components/Layout/ChannelNav';
-import Header from '../components/Layout/Header';
+import Header from '../components/Layout/Header/Header';
 import Drawer from '../components/Layout/Drawer';
-import { ModalType } from '../models';
 import { useEffect } from 'react';
-import { useGetChannelInfoLazyQuery } from '../graphql/generated/graphql';
-import { useField } from 'formik';
 import { useSetChannel } from '../components/store';
 import { useCreateChannelModal } from '../components/Modals/CreateChannelModal';
+import { useGetChannelLazyQuery } from '../graphql/generated/graphql';
 
 const Chat = () => {
   const { channelId } = useParams();
   const openCreateChannelModal = useCreateChannelModal();
-  const [getChannelInfo, { data, loading }] = useGetChannelInfoLazyQuery();
+  const [getChannel, { data, loading }] = useGetChannelLazyQuery();
   const setChannel = useSetChannel();
 
   useEffect(() => {
     if (channelId) {
-      getChannelInfo({
+      getChannel({
         variables: {
           channelId,
         },
       });
     }
-  }, [channelId, getChannelInfo]);
+  }, [channelId, getChannel]);
 
   return (
     <AppShell

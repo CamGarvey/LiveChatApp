@@ -8,10 +8,9 @@ type Props = {
   onChannelClick?: (channel: {
     id: string;
     name: string;
-    createdAt: any;
-    updatedAt: any;
-    isDM: boolean;
+    description?: string;
     members: {
+      id: string;
       username: string;
     }[];
   }) => void;
