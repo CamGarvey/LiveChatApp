@@ -11,5 +11,11 @@ mutation CreateChannel(
     memberIds: $memberIds
   ) {
     id
+    name
+    description
+    members {
+      username
+      id
+    }
   }
 }

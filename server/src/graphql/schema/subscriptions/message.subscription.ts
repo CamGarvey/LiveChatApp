@@ -1,6 +1,6 @@
 import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
-import { nonNull, objectType, stringArg, subscriptionField } from 'nexus';
+import { nonNull, stringArg, subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
 export const messageCreatedSubscription = subscriptionField('messageCreated', {

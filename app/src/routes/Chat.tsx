@@ -8,13 +8,20 @@ import Drawer from '../components/Layout/Drawer';
 import { useEffect } from 'react';
 import { useSetChannel } from '../components/store';
 import { useCreateChannelModal } from '../components/Modals/CreateChannelModal';
-import { useGetChannelLazyQuery } from '../graphql/generated/graphql';
+import {
+  useFriendRequestCreatedSubscription,
+  useGetChannelLazyQuery,
+  useGetMeLazyQuery,
+  useGetMeQuery,
+} from '../graphql/generated/graphql';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Chat = () => {
   const { channelId } = useParams();
   const openCreateChannelModal = useCreateChannelModal();
   const [getChannel, { data, loading }] = useGetChannelLazyQuery();
   const setChannel = useSetChannel();
+  const { data: friendRequests } = useFriendRequestCreatedSubscription();
 
   useEffect(() => {
     if (channelId) {

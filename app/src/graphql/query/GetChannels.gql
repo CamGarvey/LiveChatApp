@@ -1,4 +1,4 @@
-query GetChannelsForDisplay {
+query GetChannels {
   channels {
     id
     name

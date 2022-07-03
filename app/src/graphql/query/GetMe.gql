@@ -2,7 +2,12 @@ query GetMe {
   me {
     id
     name
-    email
     username
+    receivedFriendRequests {
+      id
+      name
+      username
+      friendStatus
+    }
   }
 }

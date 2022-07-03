@@ -2,6 +2,8 @@ import { useFormik } from 'formik';
 import { useEffect, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
+  GetChannelsDocument,
+  GetChannelsQuery,
   useCreateChannelMutation,
   useGetFriendsQuery,
 } from '../../graphql/generated/graphql';
@@ -15,6 +17,7 @@ import {
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { channelSchema } from '../../models/validation-schemas';
+import { showNotification } from '@mantine/notifications';
 
 export const CreateChannelModal = ({
   context,
@@ -29,7 +32,27 @@ export const CreateChannelModal = ({
   } = useGetFriendsQuery();
 
   const [createChannelMutation, { loading: loadingCreateChannel }] =
-    useCreateChannelMutation();
+    useCreateChannelMutation({
+      update: (cache, { data: { createChannel } }) => {
+        const { channels } = cache.readQuery<GetChannelsQuery>({
+          query: GetChannelsDocument,
+        });
+
+        const updatedChannels = [...channels, createChannel];
+
+        cache.writeQuery({
+          query: GetChannelsDocument,
+          data: {
+            channels: updatedChannels,
+          },
+        });
+      },
+      onCompleted: (data) =>
+        showNotification({
+          title: 'Created New Channel',
+          message: data.createChannel.name,
+        }),
+    });
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -78,7 +101,9 @@ export const CreateChannelModal = ({
         </InputWrapper>
         <InputWrapper>
           {loadingFriends ? (
-            <Loader />
+            <Center>
+              <Loader variant="bars" />
+            </Center>
           ) : friendError ? (
             <Center>Failed to load your friends 😥</Center>
           ) : (

@@ -1,7 +1,7 @@
 import { Center, Input, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
-import { useGetChannelsForDisplayQuery } from '../../graphql/generated/graphql';
+import { useGetChannelsQuery } from '../../graphql/generated/graphql';
 import ChannelItem from './ChannelItem';
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 };
 
 const ChannelDisplay = ({ onChannelClick }: Props) => {
-  const { loading, data } = useGetChannelsForDisplayQuery();
+  const { loading, data } = useGetChannelsQuery();
   const [filter, setFilter] = useState('');
 
   const filteredChannels =

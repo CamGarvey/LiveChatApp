@@ -86,8 +86,8 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
             },
         });
         pubsub.publish(subscriptions_enum_1.Subscription.FriendRequestCreated, {
-            receiverId: friendId,
             sender: user,
+            receiverId: friendId,
         });
         return friend;
     }),

@@ -7,10 +7,10 @@ const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
 exports.FriendRequestCreatedSubscription = (0, nexus_1.subscriptionField)('friendRequestCreated', {
     type: 'User',
     subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator(subscriptions_enum_1.Subscription.FriendRequestCreated), (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.receiverId === context.userId;
     }),
     resolve(payload) {
-        return payload.friend;
+        return payload.sender;
     },
 });
 exports.FriendCreatedSubscription = (0, nexus_1.subscriptionField)('friendCreated', {

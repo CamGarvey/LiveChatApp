@@ -22,22 +22,16 @@ import ChannelItem from '../shared/ChannelItem';
 import { useUserSearchModal } from '../Modals/UserSearchModal';
 import ChannelDisplay from '../shared/ChannelDisplay';
 import { useCreateChannelModal } from '../Modals/CreateChannelModal';
+import { useUser } from '../../context/UserContext';
 
 const Drawer = () => {
+  const { isAuthenticated, logout } = useAuth0();
+  const { user, isLoading } = useUser();
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
 
   const openCreateChannelModal = useCreateChannelModal();
   const openUserSearchModal = useUserSearchModal();
-  const { user, isAuthenticated, logout } = useAuth0();
-
-  const [getMeData, { data: meData, loading: loadingMe }] = useGetMeLazyQuery();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      getMeData();
-    }
-  }, [isAuthenticated, user, getMeData]);
 
   return (
     <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
@@ -62,7 +56,7 @@ const Drawer = () => {
       >
         {isAuthenticated ? (
           <>
-            {loadingMe || meData?.me == null ? (
+            {isLoading || user == null ? (
               <Group>
                 <Skeleton circle />
                 <Skeleton />
@@ -72,10 +66,10 @@ const Drawer = () => {
                 <Group>
                   <Avatar
                     size="md"
-                    src={`https://avatars.dicebear.com/api/initials/${meData.me.username}.svg`}
+                    src={`https://avatars.dicebear.com/api/initials/${user.username}.svg`}
                     style={{ marginTop: 'auto' }}
                   />
-                  <Title order={5}>{meData.me.username}</Title>
+                  <Title order={5}>{user.username}</Title>
                   <Group ml={'auto'}>
                     <ActionIcon
                       onClick={() => {

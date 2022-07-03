@@ -359,7 +359,7 @@ export type CreateChannelMutationVariables = Exact<{
 }>;
 
 
-export type CreateChannelMutation = { __typename?: 'Mutation', createChannel?: { __typename?: 'Channel', id: string } | null };
+export type CreateChannelMutation = { __typename?: 'Mutation', createChannel?: { __typename?: 'Channel', id: string, name: string, description?: string | null, members: Array<{ __typename?: 'User', username: string, id: string }> } | null };
 
 export type CreateMessageMutationVariables = Exact<{
   channelId: Scalars['String'];
@@ -428,15 +428,10 @@ export type GetChannelMessagesQueryVariables = Exact<{
 
 export type GetChannelMessagesQuery = { __typename?: 'Query', channelMessages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasPreviousPage: boolean, hasNextPage: boolean }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename?: 'Message', id: string, content: string, createdAt: any, createdBy: { __typename?: 'User', id: string, name?: string | null, username: string } } | null } | null> | null } };
 
-export type GetChannelsForDisplayQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetChannelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChannelsForDisplayQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: string, name: string, description?: string | null, members: Array<{ __typename?: 'User', username: string, id: string }> }> };
-
-export type GetDataForHeaderQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetDataForHeaderQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: string, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
+export type GetChannelsQuery = { __typename?: 'Query', channels: Array<{ __typename?: 'Channel', id: string, name: string, description?: string | null, members: Array<{ __typename?: 'User', username: string, id: string }> }> };
 
 export type GetFriendsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -446,7 +441,7 @@ export type GetFriendsQuery = { __typename?: 'Query', friends: Array<{ __typenam
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, email: string, username: string } | null };
+export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, username: string, receivedFriendRequests: Array<{ __typename?: 'User', id: string, name?: string | null, username: string, friendStatus: FriendStatus }> } | null };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -467,7 +462,7 @@ export type ChannelUpdatedSubscription = { __typename?: 'Subscription', channelU
 export type FriendRequestCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FriendRequestCreatedSubscription = { __typename?: 'Subscription', friendRequestCreated?: { __typename?: 'User', id: string, name?: string | null, email: string, username: string } | null };
+export type FriendRequestCreatedSubscription = { __typename?: 'Subscription', friendRequestCreated?: { __typename?: 'User', id: string, name?: string | null, username: string } | null };
 
 export type MessageCreatedSubscriptionVariables = Exact<{
   channelId: Scalars['String'];
@@ -554,6 +549,12 @@ export const CreateChannelDocument = gql`
     memberIds: $memberIds
   ) {
     id
+    name
+    description
+    members {
+      username
+      id
+    }
   }
 }
     `;
@@ -928,8 +929,8 @@ export function useGetChannelMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetChannelMessagesQueryHookResult = ReturnType<typeof useGetChannelMessagesQuery>;
 export type GetChannelMessagesLazyQueryHookResult = ReturnType<typeof useGetChannelMessagesLazyQuery>;
 export type GetChannelMessagesQueryResult = Apollo.QueryResult<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>;
-export const GetChannelsForDisplayDocument = gql`
-    query GetChannelsForDisplay {
+export const GetChannelsDocument = gql`
+    query GetChannels {
   channels {
     id
     name
@@ -943,73 +944,31 @@ export const GetChannelsForDisplayDocument = gql`
     `;
 
 /**
- * __useGetChannelsForDisplayQuery__
+ * __useGetChannelsQuery__
  *
- * To run a query within a React component, call `useGetChannelsForDisplayQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetChannelsForDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetChannelsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChannelsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetChannelsForDisplayQuery({
+ * const { data, loading, error } = useGetChannelsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetChannelsForDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChannelsForDisplayQuery, GetChannelsForDisplayQueryVariables>) {
+export function useGetChannelsQuery(baseOptions?: Apollo.QueryHookOptions<GetChannelsQuery, GetChannelsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetChannelsForDisplayQuery, GetChannelsForDisplayQueryVariables>(GetChannelsForDisplayDocument, options);
+        return Apollo.useQuery<GetChannelsQuery, GetChannelsQueryVariables>(GetChannelsDocument, options);
       }
-export function useGetChannelsForDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelsForDisplayQuery, GetChannelsForDisplayQueryVariables>) {
+export function useGetChannelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelsQuery, GetChannelsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetChannelsForDisplayQuery, GetChannelsForDisplayQueryVariables>(GetChannelsForDisplayDocument, options);
+          return Apollo.useLazyQuery<GetChannelsQuery, GetChannelsQueryVariables>(GetChannelsDocument, options);
         }
-export type GetChannelsForDisplayQueryHookResult = ReturnType<typeof useGetChannelsForDisplayQuery>;
-export type GetChannelsForDisplayLazyQueryHookResult = ReturnType<typeof useGetChannelsForDisplayLazyQuery>;
-export type GetChannelsForDisplayQueryResult = Apollo.QueryResult<GetChannelsForDisplayQuery, GetChannelsForDisplayQueryVariables>;
-export const GetDataForHeaderDocument = gql`
-    query GetDataForHeader {
-  me {
-    id
-    name
-    username
-    receivedFriendRequests {
-      id
-      name
-      username
-      friendStatus
-    }
-  }
-}
-    `;
-
-/**
- * __useGetDataForHeaderQuery__
- *
- * To run a query within a React component, call `useGetDataForHeaderQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetDataForHeaderQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetDataForHeaderQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetDataForHeaderQuery(baseOptions?: Apollo.QueryHookOptions<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>(GetDataForHeaderDocument, options);
-      }
-export function useGetDataForHeaderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>(GetDataForHeaderDocument, options);
-        }
-export type GetDataForHeaderQueryHookResult = ReturnType<typeof useGetDataForHeaderQuery>;
-export type GetDataForHeaderLazyQueryHookResult = ReturnType<typeof useGetDataForHeaderLazyQuery>;
-export type GetDataForHeaderQueryResult = Apollo.QueryResult<GetDataForHeaderQuery, GetDataForHeaderQueryVariables>;
+export type GetChannelsQueryHookResult = ReturnType<typeof useGetChannelsQuery>;
+export type GetChannelsLazyQueryHookResult = ReturnType<typeof useGetChannelsLazyQuery>;
+export type GetChannelsQueryResult = Apollo.QueryResult<GetChannelsQuery, GetChannelsQueryVariables>;
 export const GetFriendsDocument = gql`
     query GetFriends {
   friends {
@@ -1051,8 +1010,13 @@ export const GetMeDocument = gql`
   me {
     id
     name
-    email
     username
+    receivedFriendRequests {
+      id
+      name
+      username
+      friendStatus
+    }
   }
 }
     `;
@@ -1178,7 +1142,6 @@ export const FriendRequestCreatedDocument = gql`
   friendRequestCreated {
     id
     name
-    email
     username
   }
 }

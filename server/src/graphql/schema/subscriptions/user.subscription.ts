@@ -10,11 +10,11 @@ export const FriendRequestCreatedSubscription = subscriptionField(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator(Subscription.FriendRequestCreated),
       (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.receiverId === context.userId;
       }
     ),
     resolve(payload: any) {
-      return payload.friend;
+      return payload.sender;
     },
   }
 );

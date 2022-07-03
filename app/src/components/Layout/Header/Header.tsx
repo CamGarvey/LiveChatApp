@@ -30,7 +30,6 @@ import {
 } from 'tabler-icons-react';
 import {
   FriendStatus,
-  useGetDataForHeaderLazyQuery,
   useUpdateChannelMutation,
 } from '../../../graphql/generated/graphql';
 import { useIsDrawerOpen, useToggleDrawer } from '../../store';
@@ -43,6 +42,7 @@ import AnimatedTitle from './AnimatedTitle';
 import ColorModeSwitcher from './ThemeToggler';
 import NotificationMenu from './NotificationMenu';
 import AccountMenu from './AccountMenu';
+import { useUser } from '../../../context/UserContext';
 
 const ICON_SIZE = 16;
 
@@ -51,22 +51,15 @@ type Props = {
 };
 
 const Header = ({ channel }: Props) => {
+  const { isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0();
+  const { user } = useUser();
   const openUserSearchModal = useUserSearchModal();
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
-  const { user, isAuthenticated, isLoading, loginWithRedirect, logout } =
-    useAuth0();
-
-  const [getData, { data }] = useGetDataForHeaderLazyQuery();
-  useEffect(() => {
-    if (isAuthenticated) {
-      getData();
-    }
-  }, [isAuthenticated, user, getData]);
 
   // Filtering on Request Received for Apollo cache to filter out once clicked action
   const receivedFriendRequests =
-    data?.me?.receivedFriendRequests.filter(
+    user?.receivedFriendRequests.filter(
       (x) => x.friendStatus === FriendStatus.RequestReceived
     ) ?? [];
 
@@ -81,10 +74,10 @@ const Header = ({ channel }: Props) => {
             }}
           />
         </MediaQuery>
-        <AnimatedTitle channel={channel} user={data?.me} />
+        <AnimatedTitle channel={channel} user={user} />
         <Group sx={{ height: '100%' }} px={20} position="apart" ml={'auto'}>
           <ColorModeSwitcher size={ICON_SIZE} />
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <Group>
               <NotificationMenu
                 friendRequests={receivedFriendRequests}
@@ -99,7 +92,7 @@ const Header = ({ channel }: Props) => {
               </MediaQuery>
               <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
                 <AccountMenu
-                  username={data?.me.username}
+                  username={user.username}
                   onLogoutClick={() => logout()}
                 />
               </MediaQuery>

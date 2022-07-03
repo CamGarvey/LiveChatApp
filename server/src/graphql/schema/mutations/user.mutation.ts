@@ -84,8 +84,8 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
 
     // Publish new friend request
     pubsub.publish(Subscription.FriendRequestCreated, {
-      receiverId: friendId,
       sender: user,
+      receiverId: friendId,
     });
 
     return friend;

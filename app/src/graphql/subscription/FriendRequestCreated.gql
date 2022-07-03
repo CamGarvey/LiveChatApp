@@ -2,7 +2,6 @@ subscription FriendRequestCreated {
   friendRequestCreated {
     id
     name
-    email
     username
   }
 }
