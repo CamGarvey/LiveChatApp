@@ -21,7 +21,7 @@ const NotificationMenu = ({ friendRequests, size = 16 }: Props) => {
     <Menu
       size={'xl'}
       control={
-        <Indicator color={'red'} disabled>
+        <Indicator color={'red'} disabled={friendRequests.length === 0}>
           <ActionIcon variant="default">
             <Bell size={size} />
           </ActionIcon>

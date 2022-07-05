@@ -6,13 +6,11 @@ query GetChannel($channelId: String!) {
     description
     createdBy {
       id
-      name
-      username
+      ...NameParts
     }
     members {
       id
-      name
-      username
+      ...NameParts
       friendStatus
     }
   }

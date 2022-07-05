@@ -1,7 +1,5 @@
 subscription FriendRequestCreated {
   friendRequestCreated {
-    id
-    name
-    username
+    ...ReceivedFriendRequest
   }
 }

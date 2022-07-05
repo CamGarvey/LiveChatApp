@@ -4,8 +4,8 @@ query GetChannels {
     name
     description
     members {
-      username
       id
+      ...NameParts
     }
   }
 }

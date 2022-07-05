@@ -5,8 +5,7 @@ subscription MessageCreated($channelId: String!) {
     createdAt
     createdBy {
       id
-      name
-      username
+      ...NameParts
     }
   }
 }

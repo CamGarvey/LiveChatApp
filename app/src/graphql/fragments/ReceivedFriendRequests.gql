@@ -1,0 +1,7 @@
+fragment ReceivedFriendRequests on User {
+  receivedFriendRequests {
+    id
+    ...NameParts
+    friendStatus
+  }
+}
