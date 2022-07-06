@@ -51,7 +51,7 @@ type Props = {
 };
 
 const Header = ({ channel }: Props) => {
-  const { isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0();
+  const { isLoading, logout } = useAuth0();
   const { user } = useUser();
   const openUserSearchModal = useUserSearchModal();
   const isDrawerOpen = useIsDrawerOpen();
@@ -77,7 +77,7 @@ const Header = ({ channel }: Props) => {
         <AnimatedTitle channel={channel} user={user} />
         <Group sx={{ height: '100%' }} px={20} position="apart" ml={'auto'}>
           <ColorModeSwitcher size={ICON_SIZE} />
-          {isAuthenticated && user ? (
+          {user && (
             <Group>
               <NotificationMenu
                 friendRequests={receivedFriendRequests}
@@ -97,10 +97,6 @@ const Header = ({ channel }: Props) => {
                 />
               </MediaQuery>
             </Group>
-          ) : (
-            <Button loading={isLoading} onClick={() => loginWithRedirect()}>
-              Login
-            </Button>
           )}
         </Group>
       </Group>

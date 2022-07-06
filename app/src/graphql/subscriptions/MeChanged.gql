@@ -1,0 +1,7 @@
+subscription MeChanged {
+  meChanged {
+    id
+    ...NameParts
+    ...ReceivedFriendRequests
+  }
+}

@@ -89,6 +89,7 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
             sender: user,
             receiverId: friendId,
         });
+        pubsub.publish(subscriptions_enum_1.Subscription.MeChanged, friend);
         return friend;
     }),
 });
@@ -98,7 +99,7 @@ exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', 
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Cancel/Delete a sent Friend Request',
-    resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const sentRequests = yield prisma.user
             .findUnique({
             where: {
@@ -110,7 +111,7 @@ exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', 
         if (!friend) {
             throw new apollo_server_core_1.ForbiddenError('You have no sent requests to this user');
         }
-        yield prisma.user.update({
+        const user = yield prisma.user.update({
             where: {
                 id: userId,
             },
@@ -122,6 +123,11 @@ exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', 
                 },
             },
         });
+        pubsub.publish(subscriptions_enum_1.Subscription.FriendRequestDeleted, {
+            sender: user,
+            receiverId: friendId,
+        });
+        pubsub.publish(subscriptions_enum_1.Subscription.MeChanged, friend);
         return friend;
     }),
 });

@@ -217,6 +217,8 @@ export interface NexusGenFieldTypes {
     channelUpdated: NexusGenRootTypes['ChannelUpdate'] | null; // ChannelUpdate
     friendCreated: NexusGenRootTypes['User'] | null; // User
     friendRequestCreated: NexusGenRootTypes['User'] | null; // User
+    friendRequestDeleted: NexusGenRootTypes['User'] | null; // User
+    meChanged: NexusGenRootTypes['User'] | null; // User
     messageCreated: NexusGenRootTypes['Message'] | null; // Message
   }
   User: { // field return type
@@ -324,6 +326,8 @@ export interface NexusGenFieldTypeNames {
     channelUpdated: 'ChannelUpdate'
     friendCreated: 'User'
     friendRequestCreated: 'User'
+    friendRequestDeleted: 'User'
+    meChanged: 'User'
     messageCreated: 'Message'
   }
   User: { // field return type name

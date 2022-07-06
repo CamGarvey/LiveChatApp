@@ -87,6 +87,8 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
       sender: user,
       receiverId: friendId,
     });
+    // Publish me changed for the friend
+    pubsub.publish(Subscription.MeChanged, friend);
 
     return friend;
   },
@@ -98,7 +100,7 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
     friendId: nonNull(stringArg()),
   },
   description: 'Cancel/Delete a sent Friend Request',
-  resolve: async (_, { friendId }, { prisma, userId }) => {
+  resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     const sentRequests = await prisma.user
       .findUnique({
         where: {
@@ -113,7 +115,7 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
       throw new ForbiddenError('You have no sent requests to this user');
     }
 
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: {
         id: userId,
       },
@@ -125,6 +127,15 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
         },
       },
     });
+
+    // Publish new deleted friend request
+    pubsub.publish(Subscription.FriendRequestDeleted, {
+      sender: user,
+      receiverId: friendId,
+    });
+    // Publish me changed for the friend
+    pubsub.publish(Subscription.MeChanged, friend);
+
     return friend;
   },
 });
