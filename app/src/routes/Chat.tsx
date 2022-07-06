@@ -19,13 +19,13 @@ import {
 } from '../graphql/generated/graphql';
 import { useAuth0 } from '@auth0/auth0-react';
 import { UserContext } from '../context/UserContext';
+import PickChat from './PickChat';
 
 const Chat = () => {
   const { channelId } = useParams();
   const openCreateChannelModal = useCreateChannelModal();
   const [getChannel, { data, loading }] = useGetChannelLazyQuery();
   const setChannel = useSetChannel();
-  const { data: friendRequests } = useFriendRequestCreatedSubscription();
   const {
     data: userData,
     loading: isLoadingUser,
@@ -82,26 +82,7 @@ const Chat = () => {
         fixed
       >
         <Drawer />
-        {channelId ? (
-          <ChatPanel channelId={channelId} />
-        ) : (
-          <Center
-            style={{
-              height: '100%',
-            }}
-          >
-            <Group spacing={'xs'}>
-              <Text>Select or</Text>
-              <Button
-                onClick={openCreateChannelModal}
-                variant={'light'}
-                compact
-              >
-                Create a Channel
-              </Button>
-            </Group>
-          </Center>
-        )}
+        {channelId ? <ChatPanel channelId={channelId} /> : <PickChat />}
       </AppShell>
     </UserContext.Provider>
   );

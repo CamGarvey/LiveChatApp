@@ -25,6 +25,7 @@ import {
 import { useEffect } from 'react';
 import { NotificationsProvider } from '@mantine/notifications';
 import { useLazyQuery } from '@apollo/client';
+import { Login } from 'tabler-icons-react';
 
 export const App = () => {
   // const { user, isAuthenticated, isLoading } = useAuth0();
