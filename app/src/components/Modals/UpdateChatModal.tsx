@@ -4,7 +4,7 @@ import UserSelector from '../UserSelector/UserSelector';
 import {
   FriendStatus,
   useGetFriendsQuery,
-  useUpdateChannelMutation,
+  useUpdateChatMutation,
 } from '../../graphql/generated/graphql';
 import {
   Button,
@@ -15,29 +15,28 @@ import {
   Stack,
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
-import { channelSchema } from '../../models/validation-schemas';
-import { ChannelInfo } from '../../models';
+import { chatSchema } from '../../models/validation-schemas';
+import { ChatInfo } from '../../models';
 import _ from 'lodash';
 
 type Props = {
-  channel: ChannelInfo;
+  chat: ChatInfo;
 };
 
-export const UpdateChannelModal = ({
+export const UpdateChatModal = ({
   context,
   id,
-  innerProps: { channel },
+  innerProps: { chat },
 }: ContextModalProps<Props>) => {
   const inputRef = useRef<HTMLInputElement>();
-  const [updateChannel, { loading: loadingUpdate }] =
-    useUpdateChannelMutation();
+  const [updateChat, { loading: loadingUpdate }] = useUpdateChatMutation();
   const {
     loading: loadingFriends,
     data: friendData,
     error: friendError,
   } = useGetFriendsQuery();
 
-  const memberIds = useMemo(() => channel.members.map((x) => x.id), [channel]);
+  const memberIds = useMemo(() => chat.members.map((x) => x.id), [chat]);
 
   // Since other friends can add either friends
   // We need to make sure that we get all of the users in the chat
@@ -46,24 +45,24 @@ export const UpdateChannelModal = ({
   const totalUsers = useMemo(() => {
     if (friendData)
       return _.unionBy(
-        channel.members,
+        chat.members,
         friendData.friends.map((x) => ({
           ...x,
           friendStatus: FriendStatus.Friend,
         })),
         'id'
       );
-    return channel.members;
-  }, [channel, friendData]);
+    return chat.members;
+  }, [chat, friendData]);
 
   const formik = useFormik({
     initialValues: {
-      name: channel.name,
-      description: channel.description ?? '',
+      name: chat.name,
+      description: chat.description ?? '',
       isPrivate: true,
       memberIds,
     },
-    validationSchema: channelSchema,
+    validationSchema: chatSchema,
     onSubmit: (values) => {
       const membersRemoved = memberIds.filter(
         (x) => !values.memberIds.includes(x)
@@ -71,9 +70,9 @@ export const UpdateChannelModal = ({
       const membersAdded = values.memberIds.filter(
         (x) => !memberIds.includes(x)
       );
-      updateChannel({
+      updateChat({
         variables: {
-          channelId: channel.id,
+          chatId: chat.id,
           name: values.name,
           description: values.description,
           addMembersId: membersAdded,
@@ -125,7 +124,7 @@ export const UpdateChannelModal = ({
             <UserSelector
               label={'Friends'}
               users={totalUsers}
-              defaultValue={channel.members}
+              defaultValue={chat.members}
               onChange={handleChangeValue}
             />
           )}
@@ -142,11 +141,11 @@ export const UpdateChannelModal = ({
   );
 };
 
-export const useUpdateChannelModal = () => {
+export const useUpdateChatModal = () => {
   const modals = useModals();
   return (props: Props) =>
-    modals.openContextModal('updateChannel', {
-      title: 'Update Channel',
+    modals.openContextModal('updateChat', {
+      title: 'Update Chat',
       innerProps: props,
     });
 };

@@ -1,5 +1,5 @@
 export enum Subscription {
-  ChannelUpdated = 'CHANNEL_UPDATED',
+  ChatUpdated = 'CHANNEL_UPDATED',
   MessageCreated = 'MESSAGE_CREATED',
   MeChanged = 'ME_CHANGED',
   FriendRequestCreated = 'FRIEND_REQUEST_CREATED',

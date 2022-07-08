@@ -1,14 +1,14 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { ForbiddenError } from 'apollo-server-core';
-import { extendType, nonNull, stringArg, unionType } from 'nexus';
+import { extendType, nonNull, stringArg } from 'nexus';
 
-export const channelMessages = extendType({
+export const chatMessages = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.connectionField('channelMessages', {
+    t.nonNull.connectionField('chatMessages', {
       type: 'Message',
       additionalArgs: {
-        channelId: nonNull(
+        chatId: nonNull(
           stringArg({
             description: 'If set, filters users by given filter',
           })
@@ -16,28 +16,26 @@ export const channelMessages = extendType({
       },
       resolve: async (
         _,
-        { channelId, after, first, before, last },
+        { chatId, after, first, before, last },
         { prisma, userId }
       ) => {
-        const members = await prisma.channel
+        const members = await prisma.chat
           .findUnique({
             where: {
-              id: channelId,
+              id: chatId,
             },
           })
           .members();
 
         if (!members.find((member) => member.id == userId)) {
-          throw new ForbiddenError(
-            'You do not have permission to this channel'
-          );
+          throw new ForbiddenError('You do not have permission to this chat');
         }
         return findManyCursorConnection(
           (args) => {
             return prisma.message.findMany({
               ...args,
               ...{
-                where: { channelId },
+                where: { chatId },
                 orderBy: {
                   createdAt: 'asc',
                 },
@@ -48,7 +46,7 @@ export const channelMessages = extendType({
           () =>
             prisma.message.count({
               where: {
-                channelId,
+                chatId,
               },
             }),
           { after, first, before, last }
@@ -58,11 +56,11 @@ export const channelMessages = extendType({
   },
 });
 
-export const channels = extendType({
+export const chats = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('channels', {
-      type: 'Channel',
+    t.nonNull.list.nonNull.field('chats', {
+      type: 'Chat',
       resolve: async (_, __, { prisma, userId }) => {
         return await prisma.user
           .findUnique({
@@ -70,28 +68,28 @@ export const channels = extendType({
               id: userId,
             },
           })
-          .memberOfChannels();
+          .memberOfChats();
       },
     });
   },
 });
 
-export const channel = extendType({
+export const chat = extendType({
   type: 'Query',
   definition(t) {
-    t.field('channel', {
-      type: 'Channel',
+    t.field('chat', {
+      type: 'Chat',
       args: {
-        channelId: nonNull(
+        chatId: nonNull(
           stringArg({
-            description: 'Id of channel',
+            description: 'Id of chat',
           })
         ),
       },
-      resolve: async (_, { channelId }, { prisma, userId }) => {
-        const channel = await prisma.channel.findUnique({
+      resolve: async (_, { chatId }, { prisma, userId }) => {
+        const chat = await prisma.chat.findUnique({
           where: {
-            id: channelId,
+            id: chatId,
           },
           include: {
             members: {
@@ -102,12 +100,10 @@ export const channel = extendType({
           },
         });
 
-        if (!channel?.members.length) {
-          throw new ForbiddenError(
-            'You do not have permission to this channel'
-          );
+        if (!chat?.members.length) {
+          throw new ForbiddenError('You do not have permission to this chat');
         }
-        return channel;
+        return chat;
       },
     });
   },

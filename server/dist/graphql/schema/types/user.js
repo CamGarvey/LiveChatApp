@@ -76,17 +76,17 @@ exports.User = (0, nexus_1.objectType)({
                     .receivedFriendRequests();
             },
         });
-        t.nonNull.list.nonNull.field('channels', {
-            type: 'Channel',
+        t.nonNull.list.nonNull.field('chats', {
+            type: 'Chat',
             resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 if (parent.id == userId) {
                     return yield prisma.user
                         .findUnique({
                         where: { id: parent.id || undefined },
                     })
-                        .memberOfChannels();
+                        .memberOfChats();
                 }
-                return yield prisma.channel.findMany({
+                return yield prisma.chat.findMany({
                     where: {
                         OR: [
                             {

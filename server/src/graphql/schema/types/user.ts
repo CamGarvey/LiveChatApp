@@ -71,8 +71,8 @@ export const User = objectType({
           .receivedFriendRequests();
       },
     });
-    t.nonNull.list.nonNull.field('channels', {
-      type: 'Channel',
+    t.nonNull.list.nonNull.field('chats', {
+      type: 'Chat',
       resolve: async (parent, _, { prisma, userId }) => {
         if (parent.id == userId) {
           // Is current user, return all
@@ -80,12 +80,12 @@ export const User = objectType({
             .findUnique({
               where: { id: parent.id || undefined },
             })
-            .memberOfChannels();
+            .memberOfChats();
         }
 
-        // Only return non private channels
-        // or channels that the current user is in
-        return await prisma.channel.findMany({
+        // Only return non private chats
+        // or chats that the current user is in
+        return await prisma.chat.findMany({
           where: {
             OR: [
               {

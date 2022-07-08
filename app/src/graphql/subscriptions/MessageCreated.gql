@@ -1,5 +1,5 @@
-subscription MessageCreated($channelId: String!) {
-  messageCreated(channelId: $channelId) {
+subscription MessageCreated($chatId: String!) {
+  messageCreated(chatId: $chatId) {
     id
     content
     createdAt

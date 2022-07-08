@@ -11,46 +11,44 @@ datasource db {
 }
 
 model User {
-  id                     String          @id @default(uuid()) @map("id")
-  email                  String          @unique
+  id                     String       @id @default(uuid()) @map("id")
+  email                  String       @unique
   name                   String?
-  username               String          @unique
-  sentFriendRequests     User[]          @relation("UserFriendRequests", references: [id])
-  receivedFriendRequests User[]          @relation("UserFriendRequests", references: [id])
-  friends                User[]          @relation("UserFriendsUser", references: [id])
-  friendsOf              User[]          @relation("UserFriendsUser", references: [id])
-  updatedAt              DateTime        @updatedAt
-  createdAt              DateTime        @default(now())
-  channelsCreated        Channel[]       @relation("UserCreatedByChannel")
-  memberOfChannels       Channel[]       @relation("UserMemberOfChannels")
-  messages               Message[]       @relation("WhoUserMessage")
-  likedMessages          Message[]       @relation("LikedByUserMessage")
-  adminOfChannels        Channel[]       @relation("UserAdminOfChannels")
-  channelId              String?
-  channelUpdates         ChannelUpdate[]
+  username               String       @unique
+  sentFriendRequests     User[]       @relation("UserFriendRequests")
+  receivedFriendRequests User[]       @relation("UserFriendRequests")
+  friends                User[]       @relation("UserFriendsUser")
+  friendsOf              User[]       @relation("UserFriendsUser")
+  updatedAt              DateTime     @updatedAt
+  createdAt              DateTime     @default(now())
+  chatsCreated           Chat[]       @relation("UserCreatedByChat")
+  memberOfChats          Chat[]       @relation("UserMemberOfChats")
+  messages               Message[]    @relation("WhoUserMessage")
+  likedMessages          Message[]    @relation("LikedByUserMessage")
+  adminOfChats           Chat[]       @relation("UserAdminOfChats")
+  chatUpdates            ChatUpdate[]
 }
 
-model Channel {
-  id          String          @id @default(uuid())
+model Chat {
+  id          String       @id @default(uuid())
   name        String?
   description String?
-  updatedAt   DateTime        @updatedAt
-  createdAt   DateTime        @default(now())
-  createdBy   User            @relation("UserCreatedByChannel", fields: [createdById], references: [id])
+  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime     @default(now())
+  createdBy   User         @relation("UserCreatedByChat", fields: [createdById], references: [id])
   createdById String
   isDM        Boolean
   isPrivate   Boolean
-  members     User[]          @relation("UserMemberOfChannels", references: [id])
-  admins      User[]          @relation("UserAdminOfChannels", references: [id])
-  messages    Message[]       @relation("ChannelMessagesMessage")
-  userId      String?
-  updates     ChannelUpdate[]
+  members     User[]       @relation("UserMemberOfChats")
+  admins      User[]       @relation("UserAdminOfChats")
+  messages    Message[]    @relation("ChatMessagesMessage")
+  updates     ChatUpdate[]
 }
 
-model ChannelUpdate {
+model ChatUpdate {
   id               String   @id @default(uuid())
-  channel          Channel  @relation(fields: [channelId], references: [id])
-  channelId        String
+  chat             Chat     @relation(fields: [chatId], references: [id])
+  chatId           String
   createdAt        DateTime @default(now())
   createdBy        User     @relation(fields: [createdById], references: [id])
   createdById      String
@@ -67,8 +65,8 @@ model Message {
   createdAt   DateTime  @default(now())
   createdBy   User      @relation("WhoUserMessage", fields: [createdById], references: [id])
   createdById String
-  channel     Channel   @relation("ChannelMessagesMessage", fields: [channelId], references: [id])
-  channelId   String
-  likedBy     User[]    @relation("LikedByUserMessage", references: [id])
+  chat        Chat      @relation("ChatMessagesMessage", fields: [chatId], references: [id])
+  chatId      String
+  likedBy     User[]    @relation("LikedByUserMessage")
   deletedAt   DateTime?
 }

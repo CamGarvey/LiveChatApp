@@ -15,7 +15,7 @@ root.render(
     <Auth0Provider
       domain={process.env.REACT_APP_AUTH0_DOMAIN}
       clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
-      redirectUri={'http://localhost:3000/chat'}
+      redirectUri={'http://localhost:3000/chats'}
       audience={process.env.REACT_APP_AUTH0_AUDIENCE}
       scope="read:current_user update:current_user_metadata read:current_user_metadata email"
     >

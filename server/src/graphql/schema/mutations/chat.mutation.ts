@@ -6,30 +6,30 @@ import {
 import { booleanArg, list, mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
-export const createChannel = mutationField('createChannel', {
-  type: 'Channel',
+export const createChat = mutationField('createChat', {
+  type: 'Chat',
   args: {
     name: nonNull(
       stringArg({
-        description: 'Name of the Channel',
+        description: 'Name of the Chat',
       })
     ),
     description: stringArg({
-      description: 'Description of Channel',
+      description: 'Description of Chat',
     }),
     isPrivate: booleanArg({
-      description: 'If the Channel should be private',
+      description: 'If the Chat should be private',
       default: true,
     }),
     memberIds: list(
       nonNull(
         stringArg({
-          description: 'Ids of Users to be added to Channel',
+          description: 'Ids of Users to be added to Chat',
         })
       )
     ),
   },
-  description: 'Create a Channel',
+  description: 'Create a Chat',
   resolve: async (
     _,
     { name, description, isPrivate, memberIds },
@@ -74,7 +74,7 @@ export const createChannel = mutationField('createChannel', {
     // add creator as members
     memberIdSet.add(userId);
 
-    return await prisma.channel.create({
+    return await prisma.chat.create({
       data: {
         name,
         description,
@@ -89,84 +89,84 @@ export const createChannel = mutationField('createChannel', {
   },
 });
 
-export const deleteChannel = mutationField('deleteChannel', {
+export const deleteChat = mutationField('deleteChat', {
   type: 'Boolean',
   args: {
-    channelId: nonNull(
+    chatId: nonNull(
       stringArg({
-        description: 'Id of Channel to be deleted',
+        description: 'Id of Chat to be deleted',
       })
     ),
   },
-  description: 'Delete a Channel',
-  resolve: async (_, { channelId }, { prisma, userId }) => {
-    const channel = await prisma.channel.findUnique({
+  description: 'Delete a Chat',
+  resolve: async (_, { chatId }, { prisma, userId }) => {
+    const chat = await prisma.chat.findUnique({
       select: {
         createdById: true,
       },
       where: {
-        id: channelId,
+        id: chatId,
       },
     });
 
-    if (channel == null) {
-      throw new ApolloError('Channel does not exist');
+    if (chat == null) {
+      throw new ApolloError('Chat does not exist');
     }
 
-    if (channel.createdById != userId) {
+    if (chat.createdById != userId) {
       throw new ForbiddenError(
-        'You do not have permission to delete this channel'
+        'You do not have permission to delete this chat'
       );
     }
 
-    await prisma.channel.delete({
+    await prisma.chat.delete({
       where: {
-        id: channelId,
+        id: chatId,
       },
     });
     return true;
   },
 });
 
-export const updateChannel = mutationField('updateChannel', {
-  type: 'Channel',
+export const updateChat = mutationField('updateChat', {
+  type: 'Chat',
   args: {
-    channelId: nonNull(
+    chatId: nonNull(
       stringArg({
-        description: 'Id of Channel to be updated',
+        description: 'Id of Chat to be updated',
       })
     ),
     name: stringArg({
-      description: 'Name of Channel',
+      description: 'Name of Chat',
     }),
     description: stringArg({
-      description: 'Description of Channel',
+      description: 'Description of Chat',
     }),
     isPrivate: booleanArg({
-      description: 'If the Channel should be private',
+      description: 'If the Chat should be private',
     }),
     addMembersId: list(
       nonNull(
         stringArg({
-          description: 'Ids of Users to be added to Channel',
+          description: 'Ids of Users to be added to Chat',
         })
       )
     ),
     removeMembersId: list(
       nonNull(
         stringArg({
-          description: 'Ids of Users to be removed from Channel',
+          description: 'Ids of Users to be removed from Chat',
         })
       )
     ),
   },
-  description: 'Update a Channel',
+  description: 'Update a Chat',
   resolve: async (
     _,
-    { channelId, name, description, isPrivate, addMembersId, removeMembersId },
+    { chatId, name, description, isPrivate, addMembersId, removeMembersId },
     { prisma, userId, pubsub }
   ) => {
-    const channel = await prisma.channel.findUnique({
+    const chat = await prisma.chat.findUnique({
       select: {
         createdById: true,
         members: {
@@ -176,22 +176,22 @@ export const updateChannel = mutationField('updateChannel', {
         },
       },
       where: {
-        id: channelId,
+        id: chatId,
       },
     });
 
-    if (channel == null) {
-      throw new UserInputError(`Channel with id: ${channelId}, not found`);
+    if (chat == null) {
+      throw new UserInputError(`Chat with id: ${chatId}, not found`);
     }
 
-    if (channel.createdById != userId) {
-      // Can only update your own channels
+    if (chat.createdById != userId) {
+      // Can only update your own chats
       throw new ForbiddenError(
-        'You do not have permission to update this channel'
+        'You do not have permission to update this chat'
       );
     }
 
-    const updatedChannel = await prisma.channel.update({
+    const updatedChat = await prisma.chat.update({
       data: {
         name,
         description,
@@ -202,15 +202,15 @@ export const updateChannel = mutationField('updateChannel', {
         },
       },
       where: {
-        id: channelId,
+        id: chatId,
       },
     });
 
-    const update = await prisma.channelUpdate.create({
+    const update = await prisma.chatUpdate.create({
       data: {
-        channel: {
+        chat: {
           connect: {
-            id: channelId,
+            id: chatId,
           },
         },
         createdBy: {
@@ -227,40 +227,40 @@ export const updateChannel = mutationField('updateChannel', {
 
     console.log(update);
 
-    pubsub.publish(Subscription.ChannelUpdated, update);
+    pubsub.publish(Subscription.ChatUpdated, update);
 
-    return updatedChannel;
+    return updatedChat;
   },
 });
 
-export const addMembersToChannel = mutationField('addMembersToChannel', {
-  type: 'Channel',
+export const addMembersToChat = mutationField('addMembersToChat', {
+  type: 'Chat',
   args: {
-    channelId: nonNull(
+    chatId: nonNull(
       stringArg({
-        description: 'Id of Channel to add Users to',
+        description: 'Id of Chat to add Users to',
       })
     ),
     memberIds: nonNull(
       list(
         nonNull(
           stringArg({
-            description: 'Ids of Users to be added to Channel',
+            description: 'Ids of Users to be added to Chat',
           })
         )
       )
     ),
   },
-  description: 'Add Members into Channel',
-  resolve: async (_, { channelId, memberIds }, { prisma, userId, pubsub }) => {
+  description: 'Add Members into Chat',
+  resolve: async (_, { chatId, memberIds }, { prisma, userId, pubsub }) => {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
       },
       select: {
-        memberOfChannels: {
+        memberOfChats: {
           where: {
-            id: channelId,
+            id: chatId,
           },
         },
         friends: {
@@ -274,9 +274,9 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
     });
 
     // You have to be a member to add members
-    if (user.memberOfChannels.length == 0) {
+    if (user.memberOfChats.length == 0) {
       throw new ForbiddenError(
-        'You do not have permission to add members to this channel'
+        'You do not have permission to add members to this chat'
       );
     }
 
@@ -285,23 +285,23 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
       throw new ForbiddenError('You are not friends with all of these users');
     }
 
-    // Connect new members to channel
-    const channel = await prisma.channel.update({
+    // Connect new members to chat
+    const chat = await prisma.chat.update({
       data: {
         members: {
           connect: memberIds.map((id) => ({ id })),
         },
       },
       where: {
-        id: channelId,
+        id: chatId,
       },
     });
 
-    const update = await prisma.channelUpdate.create({
+    const update = await prisma.chatUpdate.create({
       data: {
-        channel: {
+        chat: {
           connect: {
-            id: channelId,
+            id: chatId,
           },
         },
         createdBy: {
@@ -313,70 +313,63 @@ export const addMembersToChannel = mutationField('addMembersToChannel', {
       },
     });
 
-    pubsub.publish(Subscription.ChannelUpdated, update);
+    pubsub.publish(Subscription.ChatUpdated, update);
 
-    return channel;
+    return chat;
   },
 });
 
-export const removeMembersFromChannel = mutationField(
-  'removeMembersFromChannel',
-  {
-    type: 'Channel',
-    args: {
-      channelId: nonNull(stringArg()),
-      membersIds: nonNull(list(nonNull(stringArg()))),
-    },
-    description: 'Remove Members from Channel',
-    resolve: async (
-      _,
-      { channelId, membersIds },
-      { prisma, userId, pubsub }
-    ) => {
-      const members = await prisma.channel
-        .findUnique({
-          where: {
-            id: channelId,
-          },
-        })
-        .members();
-
-      if (!members.find((member) => member.id == userId)) {
-        throw new ForbiddenError(
-          'You do not have permission to remove members from this channel'
-        );
-      }
-
-      const channel = await prisma.channel.update({
-        data: {
-          members: {
-            disconnect: membersIds.map((id) => ({ id })),
-          },
-        },
+export const removeMembersFromChat = mutationField('removeMembersFromChat', {
+  type: 'Chat',
+  args: {
+    chatId: nonNull(stringArg()),
+    membersIds: nonNull(list(nonNull(stringArg()))),
+  },
+  description: 'Remove Members from Chat',
+  resolve: async (_, { chatId, membersIds }, { prisma, userId, pubsub }) => {
+    const members = await prisma.chat
+      .findUnique({
         where: {
-          id: channelId,
+          id: chatId,
         },
-      });
+      })
+      .members();
 
-      const update = await prisma.channelUpdate.create({
-        data: {
-          channel: {
-            connect: {
-              id: channelId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          memberIdsRemoved: membersIds,
+    if (!members.find((member) => member.id == userId)) {
+      throw new ForbiddenError(
+        'You do not have permission to remove members from this chat'
+      );
+    }
+
+    const chat = await prisma.chat.update({
+      data: {
+        members: {
+          disconnect: membersIds.map((id) => ({ id })),
         },
-      });
+      },
+      where: {
+        id: chatId,
+      },
+    });
 
-      pubsub.publish(Subscription.ChannelUpdated, update);
+    const update = await prisma.chatUpdate.create({
+      data: {
+        chat: {
+          connect: {
+            id: chatId,
+          },
+        },
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        memberIdsRemoved: membersIds,
+      },
+    });
 
-      return channel;
-    },
-  }
-);
+    pubsub.publish(Subscription.ChatUpdated, update);
+
+    return chat;
+  },
+});

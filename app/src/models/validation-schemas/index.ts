@@ -1,1 +1,1 @@
-export * from './channel-schema';
+export * from './chat-schema';

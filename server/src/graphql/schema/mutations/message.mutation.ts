@@ -6,9 +6,9 @@ import { Subscription } from '../../backing-types/subscriptions.enum';
 export const createMessage = mutationField('createMessage', {
   type: Message,
   args: {
-    channelId: nonNull(
+    chatId: nonNull(
       stringArg({
-        description: 'Id of Channel to create Message in',
+        description: 'Id of Chat to create Message in',
       })
     ),
     content: nonNull(
@@ -17,28 +17,28 @@ export const createMessage = mutationField('createMessage', {
       })
     ),
   },
-  description: 'Create a Message in a Channel',
-  resolve: async (_, { channelId, content }, { prisma, pubsub, userId }) => {
+  description: 'Create a Message in a Chat',
+  resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
       },
       include: {
-        memberOfChannels: {
+        memberOfChats: {
           where: {
-            id: channelId,
+            id: chatId,
           },
         },
       },
     });
 
-    if (!user.memberOfChannels) {
-      throw new ForbiddenError('You are not a member of this Channel');
+    if (!user.memberOfChats) {
+      throw new ForbiddenError('You are not a member of this Chat');
     }
 
     const message = await prisma.message.create({
       data: {
-        channelId,
+        chatId,
         createdById: userId,
         content,
       },

@@ -20,33 +20,33 @@ const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
 exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
     type: message_1.default,
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Id of Channel to create Message in',
+        chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Id of Chat to create Message in',
         })),
         content: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Content of Message',
         })),
     },
-    description: 'Create a Message in a Channel',
-    resolve: (_, { channelId, content }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    description: 'Create a Message in a Chat',
+    resolve: (_, { chatId, content }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
                 id: userId,
             },
             include: {
-                memberOfChannels: {
+                memberOfChats: {
                     where: {
-                        id: channelId,
+                        id: chatId,
                     },
                 },
             },
         });
-        if (!user.memberOfChannels) {
-            throw new apollo_server_errors_1.ForbiddenError('You are not a member of this Channel');
+        if (!user.memberOfChats) {
+            throw new apollo_server_errors_1.ForbiddenError('You are not a member of this Chat');
         }
         const message = yield prisma.message.create({
             data: {
-                channelId,
+                chatId,
                 createdById: userId,
                 content,
             },

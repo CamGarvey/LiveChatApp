@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChannelUpdate = void 0;
+exports.ChatUpdate = void 0;
 const nexus_1 = require("nexus");
 const scalars_1 = require("./scalars");
-exports.ChannelUpdate = (0, nexus_1.objectType)({
-    name: 'ChannelUpdate',
+exports.ChatUpdate = (0, nexus_1.objectType)({
+    name: 'ChatUpdate',
     definition(t) {
         t.nonNull.id('id');
         t.nonNull.field('channel', {
-            type: 'Channel',
+            type: 'Chat',
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.channel.findUnique({
                     where: {

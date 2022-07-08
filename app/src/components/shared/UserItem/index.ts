@@ -1,2 +1,2 @@
 export * from './UserItem';
-export * from './ChannelMenu';
+export * from './ChatMenu';

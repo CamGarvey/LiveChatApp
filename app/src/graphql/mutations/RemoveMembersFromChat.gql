@@ -1,0 +1,8 @@
+mutation RemoveMembersFromChat($chatId: String!, $membersIds: [String!]!) {
+  removeMembersFromChat(chatId: $chatId, membersIds: $membersIds) {
+    id
+    members {
+      id
+    }
+  }
+}

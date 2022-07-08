@@ -22,7 +22,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "Channel",
+        "name": "Chat",
         "description": null,
         "fields": [
           {
@@ -253,7 +253,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "ChannelUpdate",
+                    "name": "ChatUpdate",
                     "ofType": null
                   }
                 }
@@ -270,11 +270,11 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ChannelUpdate",
+        "name": "ChatUpdate",
         "description": null,
         "fields": [
           {
-            "name": "channel",
+            "name": "chat",
             "description": null,
             "args": [],
             "type": {
@@ -282,7 +282,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Channel",
+                "name": "Chat",
                 "ofType": null
               }
             },
@@ -290,7 +290,7 @@
             "deprecationReason": null
           },
           {
-            "name": "channelId",
+            "name": "chatId",
             "description": null,
             "args": [],
             "type": {
@@ -326,13 +326,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "User",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -550,7 +546,7 @@
         "description": null,
         "fields": [
           {
-            "name": "channel",
+            "name": "chat",
             "description": null,
             "args": [],
             "type": {
@@ -558,7 +554,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Channel",
+                "name": "Chat",
                 "ofType": null
               }
             },
@@ -566,7 +562,7 @@
             "deprecationReason": null
           },
           {
-            "name": "channelId",
+            "name": "chatId",
             "description": null,
             "args": [],
             "type": {
@@ -824,12 +820,12 @@
             "deprecationReason": null
           },
           {
-            "name": "addMembersToChannel",
-            "description": "Add Members into Channel",
+            "name": "addMembersToChat",
+            "description": "Add Members into Chat",
             "args": [
               {
-                "name": "channelId",
-                "description": "Id of Channel to add Users to",
+                "name": "chatId",
+                "description": "Id of Chat to add Users to",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -845,7 +841,7 @@
               },
               {
                 "name": "memberIds",
-                "description": "Ids of Users to be added to Channel",
+                "description": "Ids of Users to be added to Chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -870,7 +866,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Channel",
+              "name": "Chat",
               "ofType": null
             },
             "isDeprecated": false,
@@ -906,12 +902,12 @@
             "deprecationReason": null
           },
           {
-            "name": "createChannel",
-            "description": "Create a Channel",
+            "name": "createChat",
+            "description": "Create a Chat",
             "args": [
               {
                 "name": "description",
-                "description": "Description of Channel",
+                "description": "Description of Chat",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -923,7 +919,7 @@
               },
               {
                 "name": "isPrivate",
-                "description": "If the Channel should be private",
+                "description": "If the Chat should be private",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Boolean",
@@ -935,7 +931,7 @@
               },
               {
                 "name": "memberIds",
-                "description": "Ids of Users to be added to Channel",
+                "description": "Ids of Users to be added to Chat",
                 "type": {
                   "kind": "LIST",
                   "name": null,
@@ -955,7 +951,7 @@
               },
               {
                 "name": "name",
-                "description": "Name of the Channel",
+                "description": "Name of the Chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -972,7 +968,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Channel",
+              "name": "Chat",
               "ofType": null
             },
             "isDeprecated": false,
@@ -980,11 +976,11 @@
           },
           {
             "name": "createMessage",
-            "description": "Create a Message in a Channel",
+            "description": "Create a Message in a Chat",
             "args": [
               {
-                "name": "channelId",
-                "description": "Id of Channel to create Message in",
+                "name": "chatId",
+                "description": "Id of Chat to create Message in",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1053,12 +1049,12 @@
             "deprecationReason": null
           },
           {
-            "name": "deleteChannel",
-            "description": "Delete a Channel",
+            "name": "deleteChat",
+            "description": "Delete a Chat",
             "args": [
               {
-                "name": "channelId",
-                "description": "Id of Channel to be deleted",
+                "name": "chatId",
+                "description": "Id of Chat to be deleted",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1185,11 +1181,11 @@
             "deprecationReason": null
           },
           {
-            "name": "removeMembersFromChannel",
-            "description": "Remove Members from Channel",
+            "name": "removeMembersFromChat",
+            "description": "Remove Members from Chat",
             "args": [
               {
-                "name": "channelId",
+                "name": "chatId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -1231,7 +1227,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Channel",
+              "name": "Chat",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1267,12 +1263,12 @@
             "deprecationReason": null
           },
           {
-            "name": "updateChannel",
-            "description": "Update a Channel",
+            "name": "updateChat",
+            "description": "Update a Chat",
             "args": [
               {
                 "name": "addMembersId",
-                "description": "Ids of Users to be added to Channel",
+                "description": "Ids of Users to be added to Chat",
                 "type": {
                   "kind": "LIST",
                   "name": null,
@@ -1291,8 +1287,8 @@
                 "deprecationReason": null
               },
               {
-                "name": "channelId",
-                "description": "Id of Channel to be updated",
+                "name": "chatId",
+                "description": "Id of Chat to be updated",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1308,7 +1304,7 @@
               },
               {
                 "name": "description",
-                "description": "Description of Channel",
+                "description": "Description of Chat",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -1320,7 +1316,7 @@
               },
               {
                 "name": "isPrivate",
-                "description": "If the Channel should be private",
+                "description": "If the Chat should be private",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Boolean",
@@ -1332,7 +1328,7 @@
               },
               {
                 "name": "name",
-                "description": "Name of Channel",
+                "description": "Name of Chat",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -1344,7 +1340,7 @@
               },
               {
                 "name": "removeMembersId",
-                "description": "Ids of Users to be removed from Channel",
+                "description": "Ids of Users to be removed from Chat",
                 "type": {
                   "kind": "LIST",
                   "name": null,
@@ -1365,7 +1361,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Channel",
+              "name": "Chat",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1495,12 +1491,12 @@
         "description": null,
         "fields": [
           {
-            "name": "channel",
+            "name": "chat",
             "description": null,
             "args": [
               {
-                "name": "channelId",
-                "description": "Id of channel",
+                "name": "chatId",
+                "description": "Id of chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1517,14 +1513,14 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Channel",
+              "name": "Chat",
               "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "channelMessages",
+            "name": "chatMessages",
             "description": null,
             "args": [
               {
@@ -1552,7 +1548,7 @@
                 "deprecationReason": null
               },
               {
-                "name": "channelId",
+                "name": "chatId",
                 "description": "If set, filters users by given filter",
                 "type": {
                   "kind": "NON_NULL",
@@ -1605,7 +1601,7 @@
             "deprecationReason": null
           },
           {
-            "name": "channels",
+            "name": "chats",
             "description": null,
             "args": [],
             "type": {
@@ -1619,7 +1615,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Channel",
+                    "name": "Chat",
                     "ofType": null
                   }
                 }
@@ -1827,11 +1823,11 @@
         "description": null,
         "fields": [
           {
-            "name": "channelUpdated",
+            "name": "chatUpdated",
             "description": null,
             "args": [
               {
-                "name": "channelId",
+                "name": "chatId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -1849,7 +1845,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "ChannelUpdate",
+              "name": "ChatUpdate",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1897,6 +1893,18 @@
             "deprecationReason": null
           },
           {
+            "name": "friendRequestDeleted",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "meChanged",
             "description": null,
             "args": [],
@@ -1913,7 +1921,7 @@
             "description": null,
             "args": [
               {
-                "name": "channelId",
+                "name": "chatId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -1949,7 +1957,7 @@
         "description": null,
         "fields": [
           {
-            "name": "channels",
+            "name": "chats",
             "description": null,
             "args": [],
             "type": {
@@ -1963,7 +1971,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "Channel",
+                    "name": "Chat",
                     "ofType": null
                   }
                 }

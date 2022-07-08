@@ -24,12 +24,12 @@ const loadUsers = async (prisma: PrismaClient) => {
   return { masterUser, otherUsers };
 };
 
-const loadChannels = async (
+const loadChats = async (
   prisma: PrismaClient,
   masterUser: User,
   otherUsers: User[]
 ) => {
-  const channelFun = await prisma.channel.create({
+  const chatFun = await prisma.chat.create({
     data: {
       name: 'FUN',
       isPrivate: false,
@@ -63,7 +63,7 @@ const loadChannels = async (
       isDM: false,
     },
   });
-  const channelBoring = await prisma.channel.create({
+  const chatBoring = await prisma.chat.create({
     data: {
       name: 'BORING',
       isPrivate: false,
@@ -97,13 +97,13 @@ const loadChannels = async (
       isDM: false,
     },
   });
-  return [channelFun, channelBoring];
+  return [chatFun, chatBoring];
 };
 
 const loadAll = async (prisma: PrismaClient) => {
   try {
     const { masterUser, otherUsers } = await loadUsers(prisma);
-    await loadChannels(prisma, masterUser, otherUsers);
+    await loadChats(prisma, masterUser, otherUsers);
     console.log('Database seeded');
   } catch (e) {
     console.error(e);

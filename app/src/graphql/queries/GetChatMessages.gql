@@ -1,12 +1,12 @@
-query GetChannelMessages(
-  $channelId: String!
+query GetChatMessages(
+  $chatId: String!
   $last: Int
   $after: String
   $first: Int
   $before: String
 ) {
-  channelMessages(
-    channelId: $channelId
+  chatMessages(
+    chatId: $chatId
     last: $last
     after: $after
     first: $first

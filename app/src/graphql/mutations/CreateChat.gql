@@ -1,10 +1,10 @@
-mutation CreateChannel(
+mutation CreateChat(
   $name: String!
   $description: String
   $isPrivate: Boolean
   $memberIds: [String!]
 ) {
-  createChannel(
+  createChat(
     name: $name
     description: $description
     isPrivate: $isPrivate

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Subscription = void 0;
 var Subscription;
 (function (Subscription) {
-    Subscription["ChannelUpdated"] = "CHANNEL_UPDATED";
+    Subscription["ChatUpdated"] = "CHANNEL_UPDATED";
     Subscription["MessageCreated"] = "MESSAGE_CREATED";
     Subscription["MeChanged"] = "ME_CHANGED";
     Subscription["FriendRequestCreated"] = "FRIEND_REQUEST_CREATED";

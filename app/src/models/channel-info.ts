@@ -1,6 +1,6 @@
 import { FriendStatus } from '../graphql/generated/graphql';
 
-export type ChannelInfo = {
+export type ChatInfo = {
   id: string;
   name: string;
   description?: string;

@@ -1,25 +1,25 @@
 import { objectType } from 'nexus';
 import { DateScalar } from './scalars';
 
-export const ChannelUpdate = objectType({
-  name: 'ChannelUpdate',
+export const ChatUpdate = objectType({
+  name: 'ChatUpdate',
   definition(t) {
     t.nonNull.id('id');
-    t.nonNull.field('channel', {
-      type: 'Channel',
+    t.nonNull.field('chat', {
+      type: 'Chat',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.channel.findUnique({
+        return await prisma.chat.findUnique({
           where: {
-            id: parent.channelId,
+            id: parent.chatId,
           },
         });
       },
     });
-    t.nonNull.id('channelId');
+    t.nonNull.id('chatId');
     t.nonNull.field('createdAt', {
       type: DateScalar,
     });
-    t.nonNull.field('createdBy', {
+    t.field('createdBy', {
       type: 'User',
     });
     t.nonNull.id('createdById');

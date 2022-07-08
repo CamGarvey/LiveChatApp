@@ -1,13 +1,13 @@
-mutation UpdateChannel(
-  $channelId: String!
+mutation UpdateChat(
+  $chatId: String!
   $name: String
   $description: String
   $isPrivate: Boolean
   $addMembersId: [String!]
   $removeMembersId: [String!]
 ) {
-  updateChannel(
-    channelId: $channelId
+  updateChat(
+    chatId: $chatId
     name: $name
     description: $description
     isPrivate: $isPrivate

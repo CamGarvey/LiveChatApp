@@ -1,5 +1,5 @@
-query GetChannel($channelId: String!) {
-  channel(channelId: $channelId) {
+query GetChat($chatId: String!) {
+  chat(chatId: $chatId) {
     id
     name
     createdAt

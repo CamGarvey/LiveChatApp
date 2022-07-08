@@ -1,8 +1,8 @@
 import { Button, Center, Group, Text } from '@mantine/core';
-import { useCreateChannelModal } from '../components/Modals/CreateChannelModal';
+import { useCreateChatModal } from '../components/Modals/CreateChatModal';
 
 const PickChat = () => {
-  const openCreateChannelModal = useCreateChannelModal();
+  const openCreateChatModal = useCreateChatModal();
   return (
     <Center
       style={{
@@ -11,8 +11,8 @@ const PickChat = () => {
     >
       <Group spacing={'xs'}>
         <Text>Select or</Text>
-        <Button onClick={openCreateChannelModal} variant={'light'} compact>
-          Create a Channel
+        <Button onClick={openCreateChatModal} variant={'light'} compact>
+          Create a Chat
         </Button>
       </Group>
     </Center>

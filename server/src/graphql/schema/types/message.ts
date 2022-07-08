@@ -33,17 +33,17 @@ const Message = objectType({
     t.nonNull.field('updatedAt', {
       type: DateScalar,
     });
-    t.nonNull.field('channel', {
-      type: 'Channel',
+    t.nonNull.field('chat', {
+      type: 'Chat',
       resolve: (parent, _, { prisma }) => {
-        return prisma.channel.findUnique({
+        return prisma.chat.findUnique({
           where: {
             id: parent.id,
           },
         });
       },
     });
-    t.nonNull.id('channelId');
+    t.nonNull.id('chatId');
   },
 });
 

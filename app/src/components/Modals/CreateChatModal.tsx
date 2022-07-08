@@ -2,9 +2,9 @@ import { useFormik } from 'formik';
 import { useEffect, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
-  GetChannelsDocument,
-  GetChannelsQuery,
-  useCreateChannelMutation,
+  GetChatsDocument,
+  GetChatsQuery,
+  useCreateChatMutation,
   useGetFriendsQuery,
 } from '../../graphql/generated/graphql';
 import {
@@ -16,10 +16,10 @@ import {
   Stack,
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
-import { channelSchema } from '../../models/validation-schemas';
+import { chatSchema } from '../../models/validation-schemas';
 import { showNotification } from '@mantine/notifications';
 
-export const CreateChannelModal = ({
+export const CreateChatModal = ({
   context,
   id,
   innerProps,
@@ -31,26 +31,26 @@ export const CreateChannelModal = ({
     error: friendError,
   } = useGetFriendsQuery();
 
-  const [createChannelMutation, { loading: loadingCreateChannel }] =
-    useCreateChannelMutation({
-      update: (cache, { data: { createChannel } }) => {
-        const { channels } = cache.readQuery<GetChannelsQuery>({
-          query: GetChannelsDocument,
+  const [createChatMutation, { loading: loadingCreateChat }] =
+    useCreateChatMutation({
+      update: (cache, { data: { createChat } }) => {
+        const { chats } = cache.readQuery<GetChatsQuery>({
+          query: GetChatsDocument,
         });
 
-        const updatedChannels = [...channels, createChannel];
+        const updatedChats = [...chats, createChat];
 
         cache.writeQuery({
-          query: GetChannelsDocument,
+          query: GetChatsDocument,
           data: {
-            channels: updatedChannels,
+            chats: updatedChats,
           },
         });
       },
       onCompleted: (data) =>
         showNotification({
-          title: 'Created New Channel',
-          message: data.createChannel.name,
+          title: 'Created New Chat',
+          message: data.createChat.name,
         }),
     });
 
@@ -65,9 +65,9 @@ export const CreateChannelModal = ({
       isPrivate: true,
       memberIds: [],
     },
-    validationSchema: channelSchema,
+    validationSchema: chatSchema,
     onSubmit: (values) => {
-      createChannelMutation({
+      createChatMutation({
         variables: values,
       }).then((c) => {
         context.closeModal(id);
@@ -117,7 +117,7 @@ export const CreateChannelModal = ({
             />
           )}
         </InputWrapper>
-        <Button type="submit" loading={loadingCreateChannel}>
+        <Button type="submit" loading={loadingCreateChat}>
           Create
         </Button>
       </Stack>
@@ -125,11 +125,11 @@ export const CreateChannelModal = ({
   );
 };
 
-export const useCreateChannelModal = () => {
+export const useCreateChatModal = () => {
   const modals = useModals();
   return () =>
-    modals.openContextModal('createChannel', {
-      title: 'Create Channel',
+    modals.openContextModal('createChat', {
+      title: 'Create Chat',
       innerProps: {},
     });
 };

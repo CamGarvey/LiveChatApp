@@ -9,12 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Channel = void 0;
+exports.Chat = void 0;
 const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const nexus_1 = require("nexus");
 const scalars_1 = require("./scalars");
-exports.Channel = (0, nexus_1.objectType)({
-    name: 'Channel',
+exports.Chat = (0, nexus_1.objectType)({
+    name: 'Chat',
     definition(t) {
         t.nonNull.id('id');
         t.nonNull.string('name');
@@ -67,7 +67,7 @@ exports.Channel = (0, nexus_1.objectType)({
             },
         });
         t.nonNull.list.nonNull.field('updates', {
-            type: 'ChannelUpdate',
+            type: 'ChatUpdate',
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.channel
                     .findUnique({

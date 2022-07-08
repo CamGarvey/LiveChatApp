@@ -54,7 +54,7 @@ exports.channels = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.list.nonNull.field('channels', {
-            type: 'Channel',
+            type: 'Chat',
             resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.user
                     .findUnique({
@@ -62,7 +62,7 @@ exports.channels = (0, nexus_1.extendType)({
                         id: userId,
                     },
                 })
-                    .memberOfChannels();
+                    .memberOfChats();
             }),
         });
     },
@@ -71,7 +71,7 @@ exports.channel = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.field('channel', {
-            type: 'Channel',
+            type: 'Chat',
             args: {
                 channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
                     description: 'Id of channel',

@@ -18,10 +18,10 @@ import { Logout, Search, SquarePlus } from 'tabler-icons-react';
 import { useGetMeLazyQuery } from '../../graphql/generated/graphql';
 import { ModalType } from '../../models';
 import { useToggleDrawer, useIsDrawerOpen } from '../store';
-import ChannelItem from '../shared/ChannelItem';
+import ChatItem from '../shared/ChatItem';
 import { useUserSearchModal } from '../Modals/UserSearchModal';
-import ChannelDisplay from '../shared/ChannelDisplay';
-import { useCreateChannelModal } from '../Modals/CreateChannelModal';
+import ChatDisplay from '../shared/ChatDisplay';
+import { useCreateChatModal } from '../Modals/CreateChatModal';
 import { useUser } from '../../context/UserContext';
 
 const Drawer = () => {
@@ -30,7 +30,7 @@ const Drawer = () => {
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
 
-  const openCreateChannelModal = useCreateChannelModal();
+  const openCreateChatModal = useCreateChatModal();
   const openUserSearchModal = useUserSearchModal();
 
   return (
@@ -86,18 +86,18 @@ const Drawer = () => {
                 </Group>
 
                 <Group>
-                  <Text>Channels</Text>
+                  <Text>Chats</Text>
                   <ActionIcon
                     ml={'auto'}
                     onClick={() => {
                       toggleDrawer();
-                      openCreateChannelModal();
+                      openCreateChatModal();
                     }}
                   >
                     <SquarePlus />
                   </ActionIcon>
                 </Group>
-                <ChannelDisplay onChannelClick={toggleDrawer} />
+                <ChatDisplay onChatClick={toggleDrawer} />
               </Stack>
             )}
           </>

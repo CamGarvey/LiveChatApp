@@ -1,5 +1,5 @@
-mutation CreateMessage($channelId: String!, $content: String!) {
-  createMessage(channelId: $channelId, content: $content) {
+mutation CreateMessage($chatId: String!, $content: String!) {
+  createMessage(chatId: $chatId, content: $content) {
     id
     content
     createdAt

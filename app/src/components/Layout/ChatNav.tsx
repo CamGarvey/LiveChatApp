@@ -1,9 +1,9 @@
 import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
-import ChannelDisplay from '../shared/ChannelDisplay';
-import { useCreateChannelModal } from '../Modals/CreateChannelModal';
+import ChatDisplay from '../shared/ChatDisplay';
+import { useCreateChatModal } from '../Modals/CreateChatModal';
 
-const ChannelNav = () => {
-  const openChannelModal = useCreateChannelModal();
+const ChatNav = () => {
+  const openChatModal = useCreateChatModal();
 
   return (
     <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
@@ -20,11 +20,11 @@ const ChannelNav = () => {
           }}
           offsetScrollbars={true}
         >
-          <ChannelDisplay />
+          <ChatDisplay />
         </Navbar.Section>
         <Navbar.Section>
-          <Button fullWidth onClick={openChannelModal}>
-            Create Channel
+          <Button fullWidth onClick={openChatModal}>
+            Create Chat
           </Button>
         </Navbar.Section>
       </Navbar>
@@ -32,4 +32,4 @@ const ChannelNav = () => {
   );
 };
 
-export default ChannelNav;
+export default ChatNav;

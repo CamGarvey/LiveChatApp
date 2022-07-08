@@ -1,19 +1,19 @@
 import { AppShell, Button, Center, Group, Text } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import ChatPanel from '../components/Chat/ChatPanel';
-import ChannelInfoAside from '../components/Chat/ChannelInfoAside';
-import ChannelNav from '../components/Layout/ChannelNav';
+import ChatInfoAside from '../components/Chat/ChatInfoAside';
+import ChatNav from '../components/Layout/ChatNav';
 import Header from '../components/Layout/Header/Header';
 import Drawer from '../components/Layout/Drawer';
 import { useEffect } from 'react';
-import { useSetChannel } from '../components/store';
-import { useCreateChannelModal } from '../components/Modals/CreateChannelModal';
+import { useSetChat } from '../components/store';
+import { useCreateChatModal } from '../components/Modals/CreateChatModal';
 import {
   GetMeQuery,
   MeChangedDocument,
   MeChangedSubscription,
   useFriendRequestCreatedSubscription,
-  useGetChannelLazyQuery,
+  useGetChatLazyQuery,
   useGetMeLazyQuery,
   useGetMeQuery,
 } from '../graphql/generated/graphql';
@@ -22,10 +22,10 @@ import { UserContext } from '../context/UserContext';
 import PickChat from './PickChat';
 
 const Chat = () => {
-  const { channelId } = useParams();
-  const openCreateChannelModal = useCreateChannelModal();
-  const [getChannel, { data, loading }] = useGetChannelLazyQuery();
-  const setChannel = useSetChannel();
+  const { chatId } = useParams();
+  const openCreateChatModal = useCreateChatModal();
+  const [getChat, { data, loading }] = useGetChatLazyQuery();
+  const setChat = useSetChat();
   const {
     data: userData,
     loading: isLoadingUser,
@@ -53,14 +53,14 @@ const Chat = () => {
   }, [userData?.me, subscribeToMore]);
 
   useEffect(() => {
-    if (channelId) {
-      getChannel({
+    if (chatId) {
+      getChat({
         variables: {
-          channelId,
+          chatId,
         },
       });
     }
-  }, [channelId, getChannel]);
+  }, [chatId, getChat]);
 
   return (
     <UserContext.Provider
@@ -72,17 +72,15 @@ const Chat = () => {
       <AppShell
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="md"
-        header={<Header channel={data?.channel} />}
-        navbar={<ChannelNav />}
+        header={<Header chat={data?.chat} />}
+        navbar={<ChatNav />}
         aside={
-          channelId && (
-            <ChannelInfoAside isLoading={loading} channel={data?.channel} />
-          )
+          chatId && <ChatInfoAside isLoading={loading} chat={data?.chat} />
         }
         fixed
       >
         <Drawer />
-        {channelId ? <ChatPanel channelId={channelId} /> : <PickChat />}
+        {chatId ? <ChatPanel chatId={chatId} /> : <PickChat />}
       </AppShell>
     </UserContext.Provider>
   );

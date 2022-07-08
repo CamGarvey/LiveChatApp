@@ -9,25 +9,25 @@ import {
   Group,
 } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
-import { ChannelInfo } from '../../models';
-import { ChannelMenu, UserItem } from '../shared/UserItem';
+import { ChatInfo } from '../../models';
+import { ChatMenu, UserItem } from '../shared/UserItem';
 
 type Props = {
   isLoading: boolean;
-  channel: ChannelInfo;
+  chat: ChatInfo;
 };
 
-const ChannelInfoAside = ({ channel, isLoading }: Props) => {
+const ChatInfoAside = ({ chat, isLoading }: Props) => {
   return (
     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
       <Aside p="md" hiddenBreakpoint="md" width={{ md: 300, lg: 300 }}>
         <LoadingOverlay visible={isLoading} />
-        {channel && (
+        {chat && (
           <>
             <Aside.Section>
-              <Title order={4}>{channel.name}</Title>
+              <Title order={4}>{chat.name}</Title>
               <Group>
-                <Text>Members ({channel.members.length})</Text>
+                <Text>Members ({chat.members.length})</Text>
                 <ActionIcon ml={'auto'} variant="light">
                   <UserPlus size={16} />
                 </ActionIcon>
@@ -45,12 +45,12 @@ const ChannelInfoAside = ({ channel, isLoading }: Props) => {
               }}
               offsetScrollbars={true}
             >
-              {channel.members.map((member) => {
+              {chat.members.map((member) => {
                 return (
                   <UserItem
                     key={member.id}
                     user={{ ...member }}
-                    menu={<ChannelMenu user={member} channel={channel} />}
+                    menu={<ChatMenu user={member} chat={chat} />}
                   />
                 );
               })}
@@ -62,4 +62,4 @@ const ChannelInfoAside = ({ channel, isLoading }: Props) => {
   );
 };
 
-export default ChannelInfoAside;
+export default ChatInfoAside;

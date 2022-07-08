@@ -1,7 +1,7 @@
-subscription ChannelUpdated($channelId: String!) {
-  channelUpdated(channelId: $channelId) {
-    channel {
-      # Added channel data so Apollo will replace what's in cache
+subscription ChatUpdated($chatId: String!) {
+  chatUpdated(chatId: $chatId) {
+    chat {
+      # Added chat data so Apollo will replace what's in cache
       # Subscription is not called very often so don't think we need
       # to worry about over fetching?
       id

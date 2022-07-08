@@ -9,29 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.channelUpdatedSubscription = void 0;
+exports.chatUpdatedSubscription = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
-exports.channelUpdatedSubscription = (0, nexus_1.subscriptionField)('channelUpdated', {
-    type: 'ChannelUpdate',
+exports.chatUpdatedSubscription = (0, nexus_1.subscriptionField)('chatUpdated', {
+    type: 'ChatUpdate',
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
+        chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
-        const members = yield context.prisma.channel
+        const members = yield context.prisma.chat
             .findUnique({
             where: {
-                id: args.channelId,
+                id: args.chatId,
             },
         })
             .members();
         if (!members.find((member) => member.id == context.userId)) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this channel ');
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this chat ');
         }
-        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.ChannelUpdated), (payload, variables) => {
-            return payload.channelId === variables.channelId;
+        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.ChatUpdated), (payload, variables) => {
+            return payload.chatId === variables.chatId;
         })(rootValue, args, context);
     }),
     resolve(payload) {

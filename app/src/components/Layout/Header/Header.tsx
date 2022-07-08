@@ -1,43 +1,16 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   Group,
-  Title,
-  ActionIcon,
   Input,
-  Button,
   Header as MantineHeader,
-  Menu,
-  useMantineColorScheme,
-  Text,
-  Center,
-  Stack,
   MediaQuery,
   Burger,
-  Indicator,
-  Transition,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
-import {
-  Sun,
-  MoonStars,
-  UserCircle,
-  Logout,
-  Bell,
-  Search,
-  InfoCircle,
-  Settings,
-} from 'tabler-icons-react';
-import {
-  FriendStatus,
-  useUpdateChannelMutation,
-} from '../../../graphql/generated/graphql';
+import { Search } from 'tabler-icons-react';
+import { FriendStatus } from '../../../graphql/generated/graphql';
 import { useIsDrawerOpen, useToggleDrawer } from '../../store';
-import FriendRequest from '../../shared/FriendRequest';
-import { ChannelInfo, ModalType } from '../../../models';
-import { AnimatePresence, motion } from 'framer-motion';
+import { ChatInfo } from '../../../models';
 import { useUserSearchModal } from '../../Modals/UserSearchModal';
-import { useUpdateChannelModal } from '../../Modals/UpdateChannelModal';
 import AnimatedTitle from './AnimatedTitle';
 import ColorModeSwitcher from './ThemeToggler';
 import NotificationMenu from './NotificationMenu';
@@ -47,10 +20,10 @@ import { useUser } from '../../../context/UserContext';
 const ICON_SIZE = 16;
 
 type Props = {
-  channel?: ChannelInfo;
+  chat?: ChatInfo;
 };
 
-const Header = ({ channel }: Props) => {
+const Header = ({ chat }: Props) => {
   const { isLoading, logout } = useAuth0();
   const { user } = useUser();
   const openUserSearchModal = useUserSearchModal();
@@ -74,7 +47,7 @@ const Header = ({ channel }: Props) => {
             }}
           />
         </MediaQuery>
-        <AnimatedTitle channel={channel} user={user} />
+        <AnimatedTitle chat={chat} user={user} />
         <Group sx={{ height: '100%' }} px={20} position="apart" ml={'auto'}>
           <ColorModeSwitcher size={ICON_SIZE} />
           {user && (

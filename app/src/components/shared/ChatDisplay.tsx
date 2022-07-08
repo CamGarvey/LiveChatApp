@@ -1,11 +1,11 @@
 import { Center, Input, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
-import { useGetChannelsQuery } from '../../graphql/generated/graphql';
-import ChannelItem from './ChannelItem';
+import { useGetChatsQuery } from '../../graphql/generated/graphql';
+import ChatItem from './ChatItem';
 
 type Props = {
-  onChannelClick?: (channel: {
+  onChatClick?: (chat: {
     id: string;
     name: string;
     description?: string;
@@ -16,12 +16,12 @@ type Props = {
   }) => void;
 };
 
-const ChannelDisplay = ({ onChannelClick }: Props) => {
-  const { loading, data } = useGetChannelsQuery();
+const ChatDisplay = ({ onChatClick }: Props) => {
+  const { loading, data } = useGetChatsQuery();
   const [filter, setFilter] = useState('');
 
-  const filteredChannels =
-    data?.channels.filter((c) => c.name.toLowerCase().includes(filter)) ?? [];
+  const filteredChats =
+    data?.chats.filter((c) => c.name.toLowerCase().includes(filter)) ?? [];
 
   return (
     <Stack spacing={'md'}>
@@ -36,12 +36,12 @@ const ChannelDisplay = ({ onChannelClick }: Props) => {
         }}
       />
       <Stack spacing={4}>
-        {!loading && data && filteredChannels.length > 0 ? (
-          filteredChannels.map((channel) => (
-            <ChannelItem
-              key={channel.id}
-              {...channel}
-              onClick={() => onChannelClick?.(channel)}
+        {!loading && data && filteredChats.length > 0 ? (
+          filteredChats.map((chat) => (
+            <ChatItem
+              key={chat.id}
+              {...chat}
+              onClick={() => onChatClick?.(chat)}
             />
           ))
         ) : (
@@ -54,4 +54,4 @@ const ChannelDisplay = ({ onChannelClick }: Props) => {
   );
 };
 
-export default ChannelDisplay;
+export default ChatDisplay;

@@ -14,7 +14,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const ChannelItem = ({ id, name, members, onClick }: Props) => {
+const ChatItem = ({ id, name, members, onClick }: Props) => {
   return (
     <NavLink
       to={`${id}`}
@@ -72,4 +72,4 @@ const ChannelItem = ({ id, name, members, onClick }: Props) => {
   );
 };
 
-export default ChannelItem;
+export default ChatItem;

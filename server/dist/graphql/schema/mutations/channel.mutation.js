@@ -9,28 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeMembersFromChannel = exports.addMembersToChannel = exports.updateChannel = exports.deleteChannel = exports.createChannel = void 0;
+exports.removeMembersFromChat = exports.addMembersToChat = exports.updateChat = exports.deleteChat = exports.createChat = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
-exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
-    type: 'Channel',
+exports.createChat = (0, nexus_1.mutationField)('createChat', {
+    type: 'Chat',
     args: {
         name: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Name of the Channel',
+            description: 'Name of the Chat',
         })),
         description: (0, nexus_1.stringArg)({
-            description: 'Description of Channel',
+            description: 'Description of Chat',
         }),
         isPrivate: (0, nexus_1.booleanArg)({
-            description: 'If the Channel should be private',
+            description: 'If the Chat should be private',
             default: true,
         }),
         memberIds: (0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Ids of Users to be added to Channel',
+            description: 'Ids of Users to be added to Chat',
         }))),
     },
-    description: 'Create a Channel',
+    description: 'Create a Chat',
     resolve: (_, { name, description, isPrivate, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const memberIdSet = new Set(memberIds);
         if (memberIdSet.has(userId)) {
@@ -59,7 +59,7 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
             }
         }
         memberIdSet.add(userId);
-        return yield prisma.channel.create({
+        return yield prisma.chat.create({
             data: {
                 name,
                 description,
@@ -73,62 +73,62 @@ exports.createChannel = (0, nexus_1.mutationField)('createChannel', {
         });
     }),
 });
-exports.deleteChannel = (0, nexus_1.mutationField)('deleteChannel', {
+exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
     type: 'Boolean',
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Id of Channel to be deleted',
+        chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Id of Chat to be deleted',
         })),
     },
-    description: 'Delete a Channel',
-    resolve: (_, { channelId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-        const channel = yield prisma.channel.findUnique({
+    description: 'Delete a Chat',
+    resolve: (_, { chatId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+        const chat = yield prisma.chat.findUnique({
             select: {
                 createdById: true,
             },
             where: {
-                id: channelId,
+                id: chatId,
             },
         });
-        if (channel == null) {
-            throw new apollo_server_core_1.ApolloError('Channel does not exist');
+        if (chat == null) {
+            throw new apollo_server_core_1.ApolloError('Chat does not exist');
         }
-        if (channel.createdById != userId) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to delete this channel');
+        if (chat.createdById != userId) {
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to delete this chat');
         }
-        yield prisma.channel.delete({
+        yield prisma.chat.delete({
             where: {
-                id: channelId,
+                id: chatId,
             },
         });
         return true;
     }),
 });
-exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
-    type: 'Channel',
+exports.updateChat = (0, nexus_1.mutationField)('updateChat', {
+    type: 'Chat',
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Id of Channel to be updated',
+        chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Id of Chat to be updated',
         })),
         name: (0, nexus_1.stringArg)({
-            description: 'Name of Channel',
+            description: 'Name of Chat',
         }),
         description: (0, nexus_1.stringArg)({
-            description: 'Description of Channel',
+            description: 'Description of Chat',
         }),
         isPrivate: (0, nexus_1.booleanArg)({
-            description: 'If the Channel should be private',
+            description: 'If the Chat should be private',
         }),
         addMembersId: (0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Ids of Users to be added to Channel',
+            description: 'Ids of Users to be added to Chat',
         }))),
         removeMembersId: (0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Ids of Users to be removed from Channel',
+            description: 'Ids of Users to be removed from Chat',
         }))),
     },
-    description: 'Update a Channel',
-    resolve: (_, { channelId, name, description, isPrivate, addMembersId, removeMembersId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
-        const channel = yield prisma.channel.findUnique({
+    description: 'Update a Chat',
+    resolve: (_, { chatId, name, description, isPrivate, addMembersId, removeMembersId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+        const chat = yield prisma.chat.findUnique({
             select: {
                 createdById: true,
                 members: {
@@ -138,16 +138,16 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
                 },
             },
             where: {
-                id: channelId,
+                id: chatId,
             },
         });
-        if (channel == null) {
-            throw new apollo_server_core_1.UserInputError(`Channel with id: ${channelId}, not found`);
+        if (chat == null) {
+            throw new apollo_server_core_1.UserInputError(`Chat with id: ${chatId}, not found`);
         }
-        if (channel.createdById != userId) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to update this channel');
+        if (chat.createdById != userId) {
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to update this chat');
         }
-        const updatedChannel = yield prisma.channel.update({
+        const updatedChat = yield prisma.chat.update({
             data: {
                 name,
                 description,
@@ -158,14 +158,14 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
                 },
             },
             where: {
-                id: channelId,
+                id: chatId,
             },
         });
-        const update = yield prisma.channelUpdate.create({
+        const update = yield prisma.chatUpdate.create({
             data: {
-                channel: {
+                chat: {
                     connect: {
-                        id: channelId,
+                        id: chatId,
                     },
                 },
                 createdBy: {
@@ -180,30 +180,30 @@ exports.updateChannel = (0, nexus_1.mutationField)('updateChannel', {
             },
         });
         console.log(update);
-        pubsub.publish(subscriptions_enum_1.Subscription.ChannelUpdated, update);
-        return updatedChannel;
+        pubsub.publish(subscriptions_enum_1.Subscription.ChatUpdated, update);
+        return updatedChat;
     }),
 });
-exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', {
-    type: 'Channel',
+exports.addMembersToChat = (0, nexus_1.mutationField)('addMembersToChat', {
+    type: 'Chat',
     args: {
-        channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Id of Channel to add Users to',
+        chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Id of Chat to add Users to',
         })),
         memberIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-            description: 'Ids of Users to be added to Channel',
+            description: 'Ids of Users to be added to Chat',
         })))),
     },
-    description: 'Add Members into Channel',
-    resolve: (_, { channelId, memberIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+    description: 'Add Members into Chat',
+    resolve: (_, { chatId, memberIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
                 id: userId,
             },
             select: {
-                memberOfChannels: {
+                memberOfChats: {
                     where: {
-                        id: channelId,
+                        id: chatId,
                     },
                 },
                 friends: {
@@ -215,20 +215,20 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
                 },
             },
         });
-        if (user.memberOfChannels.length == 0) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to add members to this channel');
+        if (user.memberOfChats.length == 0) {
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to add members to this chat');
         }
         if (user.friends.length != memberIds.length) {
             throw new apollo_server_core_1.ForbiddenError('You are not friends with all of these users');
         }
-        const channel = yield prisma.channel.update({
+        const chat = yield prisma.chat.update({
             data: {
                 members: {
                     connect: memberIds.map((id) => ({ id })),
                 },
             },
             where: {
-                id: channelId,
+                id: chatId,
             },
         });
         const update = yield prisma.channelUpdate.create({
@@ -246,17 +246,17 @@ exports.addMembersToChannel = (0, nexus_1.mutationField)('addMembersToChannel', 
                 memberIdsAdded: memberIds,
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.ChannelUpdated, update);
+        pubsub.publish(subscriptions_enum_1.Subscription.ChatUpdated, update);
         return channel;
     }),
 });
-exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFromChannel', {
-    type: 'Channel',
+exports.removeMembersFromChat = (0, nexus_1.mutationField)('removeMembersFromChat', {
+    type: 'Chat',
     args: {
         channelId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
         membersIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)()))),
     },
-    description: 'Remove Members from Channel',
+    description: 'Remove Members from Chat',
     resolve: (_, { channelId, membersIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const members = yield prisma.channel
             .findUnique({
@@ -293,7 +293,7 @@ exports.removeMembersFromChannel = (0, nexus_1.mutationField)('removeMembersFrom
                 memberIdsRemoved: membersIds,
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.ChannelUpdated, update);
+        pubsub.publish(subscriptions_enum_1.Subscription.ChatUpdated, update);
         return channel;
     }),
 });

@@ -1,20 +1,19 @@
 import create from 'zustand';
-import { ChannelInfo } from '../models';
+import { ChatInfo } from '../models';
 
 type Store = {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  channel: ChannelInfo;
+  chat: ChatInfo;
 };
 
 const useStore = create<Store>((set) => ({
   isDrawerOpen: false,
   toggleDrawer: () => set((state) => ({ isDrawerOpen: !state.isDrawerOpen })),
-  channel: null,
+  chat: null,
 }));
 
 export const useIsDrawerOpen = () => useStore((state) => state.isDrawerOpen);
 export const useToggleDrawer = () => useStore((state) => state.toggleDrawer);
-export const useChannel = () => useStore((store) => store.channel);
-export const useSetChannel = () => (channel: ChannelInfo) =>
-  useStore.setState({ channel });
+export const useChat = () => useStore((store) => store.chat);
+export const useSetChat = () => (chat: ChatInfo) => useStore.setState({ chat });

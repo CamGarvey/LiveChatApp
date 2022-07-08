@@ -3,30 +3,30 @@ import { withFilter } from 'graphql-subscriptions';
 import { nonNull, stringArg, subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
-export const channelUpdatedSubscription = subscriptionField('channelUpdated', {
-  type: 'ChannelUpdate',
+export const chatUpdatedSubscription = subscriptionField('chatUpdated', {
+  type: 'ChatUpdate',
   args: {
-    channelId: nonNull(stringArg()),
+    chatId: nonNull(stringArg()),
   },
   subscribe: async (rootValue, args, context) => {
-    const members = await context.prisma.channel
+    const members = await context.prisma.chat
       .findUnique({
         where: {
-          id: args.channelId,
+          id: args.chatId,
         },
       })
       .members();
 
     if (!members.find((member) => member.id == context.userId)) {
       throw new ForbiddenError(
-        'You do not have permission to subscribe to this channel '
+        'You do not have permission to subscribe to this chat '
       );
     }
 
     return withFilter(
-      () => context.pubsub.asyncIterator(Subscription.ChannelUpdated),
+      () => context.pubsub.asyncIterator(Subscription.ChatUpdated),
       (payload, variables) => {
-        return payload.channelId === variables.channelId;
+        return payload.chatId === variables.chatId;
       }
     )(rootValue, args, context);
   },

@@ -2,7 +2,7 @@ import { Center, Stack, Text } from '@mantine/core';
 import {
   MessageCreatedDocument,
   useCreateMessageMutation,
-  useGetChannelMessagesQuery,
+  useGetChatMessagesQuery,
   useGetMeQuery,
 } from '../../graphql/generated/graphql';
 import { useEffect, useState } from 'react';
@@ -24,10 +24,10 @@ type MessageData = {
 };
 
 type Props = {
-  channelId: string;
+  chatId: string;
 };
 
-export const ChatPanel = ({ channelId }: Props) => {
+export const ChatPanel = ({ chatId }: Props) => {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
 
@@ -44,49 +44,49 @@ export const ChatPanel = ({ channelId }: Props) => {
     error: messagesError,
     subscribeToMore,
     fetchMore,
-  } = useGetChannelMessagesQuery({
+  } = useGetChatMessagesQuery({
     variables: {
-      channelId,
+      chatId,
       last: 20,
     },
     fetchPolicy: 'network-only',
   });
 
   const hasPreviousPage =
-    data?.channelMessages?.pageInfo?.hasPreviousPage ?? false;
+    data?.chatMessages?.pageInfo?.hasPreviousPage ?? false;
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
       document: MessageCreatedDocument,
       variables: {
-        channelId,
+        chatId,
       },
       updateQuery: (prev, { subscriptionData }: any) => {
         if (!subscriptionData.data) return prev;
         const messageCreated = subscriptionData.data.messageCreated;
         const newCache = Object.assign({}, prev, {
-          channelMessages: {
+          chatMessages: {
             edges: [
-              ...prev.channelMessages.edges,
+              ...prev.chatMessages.edges,
               {
                 node: messageCreated,
                 __typename: 'MessageEdge',
               },
             ],
-            pageInfo: prev.channelMessages.pageInfo,
+            pageInfo: prev.chatMessages.pageInfo,
           },
         });
         return newCache;
       },
     });
     return () => unsubscribe();
-  }, [channelId, subscribeToMore]);
+  }, [chatId, subscribeToMore]);
 
   const [createMessageMutation, { loading: loadingCreateMessage }] =
     useCreateMessageMutation();
 
   let messages: MessageData[] =
-    data?.channelMessages?.edges?.map((x) => x.node) ?? [];
+    data?.chatMessages?.edges?.map((x) => x.node) ?? [];
 
   const groupedMessages: MessageData[][] = groupMessages(messages);
 
@@ -168,9 +168,9 @@ export const ChatPanel = ({ channelId }: Props) => {
               setIsFetchingMore(true);
               fetchMore({
                 variables: {
-                  channelId,
+                  chatId,
                   last: 20,
-                  before: data.channelMessages.pageInfo.startCursor,
+                  before: data.chatMessages.pageInfo.startCursor,
                 },
               }).finally(() => setIsFetchingMore(false));
             }
@@ -185,7 +185,7 @@ export const ChatPanel = ({ channelId }: Props) => {
         onSubmit={({ content }) =>
           createMessageMutation({
             variables: {
-              channelId,
+              chatId,
               content: content,
             },
           }).then((x) => !!!x.errors)

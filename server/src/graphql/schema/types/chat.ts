@@ -2,8 +2,8 @@ import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection
 import { objectType } from 'nexus';
 import { DateScalar } from './scalars';
 
-export const Channel = objectType({
-  name: 'Channel',
+export const Chat = objectType({
+  name: 'Chat',
   definition(t) {
     t.nonNull.id('id');
     t.nonNull.string('name');
@@ -17,7 +17,7 @@ export const Channel = objectType({
     t.nonNull.field('createdBy', {
       type: 'User',
       resolve: async (parent, _, { prisma }) => {
-        const channel = await prisma.channel.findUnique({
+        const chat = await prisma.chat.findUnique({
           where: {
             id: parent.id,
           },
@@ -25,7 +25,7 @@ export const Channel = objectType({
             createdBy: true,
           },
         });
-        return channel.createdBy;
+        return chat.createdBy;
       },
     });
     t.nonNull.connectionField('messages', {
@@ -35,11 +35,11 @@ export const Channel = objectType({
           (args) =>
             prisma.message.findMany({
               ...args,
-              ...{ where: { channelId: parent.id } },
+              ...{ where: { chatId: parent.id } },
             }),
           () =>
             prisma.message.count({
-              ...{ where: { channelId: parent.id } },
+              ...{ where: { chatId: parent.id } },
             }),
           args
         );
@@ -48,7 +48,7 @@ export const Channel = objectType({
     t.nonNull.boolean('isDM');
     t.nonNull.int('memberCount', {
       resolve: async (parent, _, { prisma }) => {
-        const members = await prisma.channel
+        const members = await prisma.chat
           .findUnique({
             where: { id: parent.id || undefined },
           })
@@ -59,7 +59,7 @@ export const Channel = objectType({
     t.nonNull.list.nonNull.field('members', {
       type: 'User',
       resolve: (parent, _, { prisma }) => {
-        return prisma.channel
+        return prisma.chat
           .findUnique({
             where: { id: parent.id || undefined },
           })
@@ -67,9 +67,9 @@ export const Channel = objectType({
       },
     });
     t.nonNull.list.nonNull.field('updates', {
-      type: 'ChannelUpdate',
+      type: 'ChatUpdate',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.channel
+        return await prisma.chat
           .findUnique({
             where: { id: parent.id || undefined },
           })
