@@ -164,6 +164,11 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
                         id: friendId,
                     },
                 },
+                friendsOf: {
+                    connect: {
+                        id: friendId,
+                    },
+                },
             },
         });
         pubsub.publish(subscriptions_enum_1.Subscription.FriendCreated, {

@@ -3,5 +3,14 @@ subscription MeChanged {
     id
     ...NameParts
     ...ReceivedFriendRequests
+    chats {
+      name
+      id
+      description
+      members {
+        id
+        username
+      }
+    }
   }
 }

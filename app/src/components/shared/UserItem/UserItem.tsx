@@ -1,23 +1,5 @@
 import React from 'react';
-import {
-  ActionIcon,
-  Avatar,
-  Box,
-  Center,
-  Menu,
-  Stack,
-  Text,
-  UnstyledButton,
-} from '@mantine/core';
-import { Mailbox, MailForward, UserMinus, UserPlus } from 'tabler-icons-react';
-import {
-  FriendStatus,
-  useAcceptFriendRequestMutation,
-  useCancelFriendRequestMutation,
-  useDeclineFriendRequestMutation,
-  useDeleteFriendMutation,
-  useSendFriendRequestMutation,
-} from '../../../graphql/generated/graphql';
+import { Avatar, Box, Stack, Text, UnstyledButton } from '@mantine/core';
 import { User } from '../../../models';
 
 type Props = {

@@ -82,6 +82,12 @@ export interface NexusGenObjects {
     memberIdsRemoved?: string[] | null; // [ID!]
     name?: string | null; // String
   }
+  DeletedChat: { // root type
+    createdBy: NexusGenRootTypes['User']; // User!
+    id: string; // ID!
+    members: Array<NexusGenRootTypes['User'] | null>; // [User]!
+    name: string; // String!
+  }
   Message: { // root type
     chatId: string; // ID!
     content: string; // String!
@@ -163,6 +169,12 @@ export interface NexusGenFieldTypes {
     membersRemoved: NexusGenRootTypes['User'][] | null; // [User!]
     name: string | null; // String
   }
+  DeletedChat: { // field return type
+    createdBy: NexusGenRootTypes['User']; // User!
+    id: string; // ID!
+    members: Array<NexusGenRootTypes['User'] | null>; // [User]!
+    name: string; // String!
+  }
   Message: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
     chatId: string; // ID!
@@ -189,7 +201,7 @@ export interface NexusGenFieldTypes {
     createChat: NexusGenRootTypes['Chat'] | null; // Chat
     createMessage: NexusGenRootTypes['Message'] | null; // Message
     declineFriendRequest: NexusGenRootTypes['User'] | null; // User
-    deleteChat: boolean | null; // Boolean
+    deleteChat: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     deleteFriend: NexusGenRootTypes['User'] | null; // User
     deleteMessage: NexusGenRootTypes['Message'] | null; // Message
     editMessage: NexusGenRootTypes['Message'] | null; // Message
@@ -214,6 +226,8 @@ export interface NexusGenFieldTypes {
     users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
   Subscription: { // field return type
+    chatCreated: NexusGenRootTypes['Chat'] | null; // Chat
+    chatDeleted: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     chatUpdated: NexusGenRootTypes['ChatUpdate'] | null; // ChatUpdate
     friendCreated: NexusGenRootTypes['User'] | null; // User
     friendRequestCreated: NexusGenRootTypes['User'] | null; // User
@@ -272,6 +286,12 @@ export interface NexusGenFieldTypeNames {
     membersRemoved: 'User'
     name: 'String'
   }
+  DeletedChat: { // field return type name
+    createdBy: 'User'
+    id: 'ID'
+    members: 'User'
+    name: 'String'
+  }
   Message: { // field return type name
     chat: 'Chat'
     chatId: 'ID'
@@ -298,7 +318,7 @@ export interface NexusGenFieldTypeNames {
     createChat: 'Chat'
     createMessage: 'Message'
     declineFriendRequest: 'User'
-    deleteChat: 'Boolean'
+    deleteChat: 'DeletedChat'
     deleteFriend: 'User'
     deleteMessage: 'Message'
     editMessage: 'Message'
@@ -323,6 +343,8 @@ export interface NexusGenFieldTypeNames {
     users: 'UserConnection'
   }
   Subscription: { // field return type name
+    chatCreated: 'Chat'
+    chatDeleted: 'DeletedChat'
     chatUpdated: 'ChatUpdate'
     friendCreated: 'User'
     friendRequestCreated: 'User'

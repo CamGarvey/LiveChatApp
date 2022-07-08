@@ -179,6 +179,11 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
             id: friendId,
           },
         },
+        friendsOf: {
+          connect: {
+            id: friendId,
+          },
+        },
       },
     });
 

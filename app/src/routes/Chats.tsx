@@ -1,4 +1,4 @@
-import { AppShell, Button, Center, Group, Text } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import ChatPanel from '../components/Chat/ChatPanel';
 import ChatInfoAside from '../components/Chat/ChatInfoAside';
@@ -6,28 +6,21 @@ import ChatNav from '../components/Layout/ChatNav';
 import Header from '../components/Layout/Header/Header';
 import Drawer from '../components/Layout/Drawer';
 import { useEffect } from 'react';
-import { useSetChat } from '../components/store';
-import { useCreateChatModal } from '../components/Modals/CreateChatModal';
 import {
   ChatUpdatedDocument,
   ChatUpdatedSubscription,
-  GetChatMessagesQuery,
   GetChatQuery,
   GetMeQuery,
   MeChangedDocument,
   MeChangedSubscription,
-  useFriendRequestCreatedSubscription,
   useGetChatLazyQuery,
-  useGetMeLazyQuery,
   useGetMeQuery,
 } from '../graphql/generated/graphql';
-import { useAuth0 } from '@auth0/auth0-react';
 import { UserContext } from '../context/UserContext';
 import PickChat from './PickChat';
 
 const Chats = () => {
   const { chatId } = useParams();
-  const openCreateChatModal = useCreateChatModal();
   const [
     getChat,
     {
@@ -37,15 +30,14 @@ const Chats = () => {
       subscribeToMore: subscribeToMoreChannel,
     },
   ] = useGetChatLazyQuery();
-  const setChat = useSetChat();
   const {
     data: userData,
     loading: isLoadingUser,
-    subscribeToMore,
+    subscribeToMore: subscribeToMoreUser,
   } = useGetMeQuery();
 
   useEffect(() => {
-    const unsubscribe = subscribeToMore<MeChangedSubscription>({
+    const unsubscribe = subscribeToMoreUser<MeChangedSubscription>({
       document: MeChangedDocument,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
@@ -62,7 +54,7 @@ const Chats = () => {
       },
     });
     return () => unsubscribe();
-  }, [userData?.me, subscribeToMore]);
+  }, [userData?.me, subscribeToMoreUser]);
 
   useEffect(() => {
     if (chatId) {
@@ -75,7 +67,6 @@ const Chats = () => {
   }, [chatId, getChat]);
 
   useEffect(() => {
-    console.log('test');
     if (called) {
       const unsubscribe = subscribeToMoreChannel<ChatUpdatedSubscription>({
         document: ChatUpdatedDocument,
@@ -90,8 +81,7 @@ const Chats = () => {
 
           const newCache = Object.assign({}, prev, {
             chat: {
-              ...prev.chat,
-              name: data.name,
+              ...data.chat,
             },
           } as GetChatQuery);
           return newCache;
@@ -101,7 +91,7 @@ const Chats = () => {
         unsubscribe();
       };
     }
-  }, [subscribeToMoreChannel, channelData, called]);
+  }, [subscribeToMoreChannel, channelData, called, chatId]);
 
   return (
     <UserContext.Provider

@@ -33,7 +33,7 @@ export const createChat = mutationField('createChat', {
   resolve: async (
     _,
     { name, description, isPrivate, memberIds },
-    { prisma, userId }
+    { prisma, userId, pubsub }
   ) => {
     // Remove duplicates
     const memberIdSet: Set<string> = new Set(memberIds);
@@ -74,7 +74,7 @@ export const createChat = mutationField('createChat', {
     // add creator as members
     memberIdSet.add(userId);
 
-    return await prisma.chat.create({
+    const chat = await prisma.chat.create({
       data: {
         name,
         description,
@@ -85,12 +85,23 @@ export const createChat = mutationField('createChat', {
           connect: [...memberIdSet].map((id) => ({ id })),
         },
       },
+      include: {
+        members: {
+          select: {
+            id: true, // selecting member ids for pubsub
+          },
+        },
+      },
     });
+
+    await pubsub.publish(Subscription.ChatCreated, chat);
+
+    return chat;
   },
 });
 
 export const deleteChat = mutationField('deleteChat', {
-  type: 'Boolean',
+  type: 'DeletedChat',
   args: {
     chatId: nonNull(
       stringArg({
@@ -99,10 +110,13 @@ export const deleteChat = mutationField('deleteChat', {
     ),
   },
   description: 'Delete a Chat',
-  resolve: async (_, { chatId }, { prisma, userId }) => {
+  resolve: async (_, { chatId }, { prisma, userId, pubsub }) => {
     const chat = await prisma.chat.findUnique({
       select: {
-        createdById: true,
+        id: true,
+        name: true,
+        createdBy: true,
+        members: true,
       },
       where: {
         id: chatId,
@@ -113,7 +127,7 @@ export const deleteChat = mutationField('deleteChat', {
       throw new ApolloError('Chat does not exist');
     }
 
-    if (chat.createdById != userId) {
+    if (chat.createdBy.id != userId) {
       throw new ForbiddenError(
         'You do not have permission to delete this chat'
       );
@@ -124,7 +138,11 @@ export const deleteChat = mutationField('deleteChat', {
         id: chatId,
       },
     });
-    return true;
+    console.log(chat);
+
+    await pubsub.publish(Subscription.ChatDeleted, chat);
+
+    return chat;
   },
 });
 

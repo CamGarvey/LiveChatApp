@@ -31,7 +31,7 @@ exports.createChat = (0, nexus_1.mutationField)('createChat', {
         }))),
     },
     description: 'Create a Chat',
-    resolve: (_, { name, description, isPrivate, memberIds }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { name, description, isPrivate, memberIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const memberIdSet = new Set(memberIds);
         if (memberIdSet.has(userId)) {
             memberIdSet.delete(userId);
@@ -59,7 +59,7 @@ exports.createChat = (0, nexus_1.mutationField)('createChat', {
             }
         }
         memberIdSet.add(userId);
-        return yield prisma.chat.create({
+        const chat = yield prisma.chat.create({
             data: {
                 name,
                 description,
@@ -70,21 +70,33 @@ exports.createChat = (0, nexus_1.mutationField)('createChat', {
                     connect: [...memberIdSet].map((id) => ({ id })),
                 },
             },
+            include: {
+                members: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
         });
+        yield pubsub.publish(subscriptions_enum_1.Subscription.ChatCreated, chat);
+        return chat;
     }),
 });
 exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
-    type: 'Boolean',
+    type: 'DeletedChat',
     args: {
         chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Chat to be deleted',
         })),
     },
     description: 'Delete a Chat',
-    resolve: (_, { chatId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { chatId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const chat = yield prisma.chat.findUnique({
             select: {
-                createdById: true,
+                id: true,
+                name: true,
+                createdBy: true,
+                members: true,
             },
             where: {
                 id: chatId,
@@ -93,7 +105,7 @@ exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
         if (chat == null) {
             throw new apollo_server_core_1.ApolloError('Chat does not exist');
         }
-        if (chat.createdById != userId) {
+        if (chat.createdBy.id != userId) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to delete this chat');
         }
         yield prisma.chat.delete({
@@ -101,7 +113,9 @@ exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
                 id: chatId,
             },
         });
-        return true;
+        console.log(chat);
+        yield pubsub.publish(subscriptions_enum_1.Subscription.ChatDeleted, chat);
+        return chat;
     }),
 });
 exports.updateChat = (0, nexus_1.mutationField)('updateChat', {

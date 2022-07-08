@@ -15,6 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./chat"), exports);
+__exportStar(require("./deleted-chat"), exports);
 __exportStar(require("./chat-update"), exports);
 __exportStar(require("./friend-status"), exports);
 __exportStar(require("./scalars"), exports);

@@ -29,7 +29,7 @@ export const CreateChatModal = ({
     loading: loadingFriends,
     data: friendData,
     error: friendError,
-  } = useGetFriendsQuery();
+  } = useGetFriendsQuery({ fetchPolicy: 'network-only' });
 
   const [createChatMutation, { loading: loadingCreateChat }] =
     useCreateChatMutation({

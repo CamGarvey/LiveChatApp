@@ -46,6 +46,13 @@ type ChatUpdate {
 """Date custom scalar type"""
 scalar Date
 
+type DeletedChat {
+  createdBy: User!
+  id: ID!
+  members: [User]!
+  name: String!
+}
+
 enum FriendStatus {
   FRIEND
   NOT_FRIEND
@@ -132,7 +139,7 @@ type Mutation {
   deleteChat(
     """Id of Chat to be deleted"""
     chatId: String!
-  ): Boolean
+  ): DeletedChat
 
   """Delete a Friend"""
   deleteFriend(friendId: String!): User
@@ -265,6 +272,8 @@ enum Sort {
 }
 
 type Subscription {
+  chatCreated: Chat
+  chatDeleted: DeletedChat
   chatUpdated(chatId: String!): ChatUpdate
   friendCreated(userId: String!): User
   friendRequestCreated: User

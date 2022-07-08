@@ -1,3 +1,4 @@
+import { Chat } from '@prisma/client';
 import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
 import { nonNull, stringArg, subscriptionField } from 'nexus';
@@ -27,6 +28,40 @@ export const chatUpdatedSubscription = subscriptionField('chatUpdated', {
       () => context.pubsub.asyncIterator(Subscription.ChatUpdated),
       (payload, variables) => {
         return payload.chatId === variables.chatId;
+      }
+    )(rootValue, args, context);
+  },
+  resolve(payload: any) {
+    return payload;
+  },
+});
+
+export const chatCreatedSubscription = subscriptionField('chatCreated', {
+  type: 'Chat',
+  subscribe: async (rootValue, args, context) => {
+    return withFilter(
+      () => context.pubsub.asyncIterator(Subscription.ChatCreated),
+      (payload, _, context) => {
+        return payload.members
+          .map((x: { id: string }) => x.id)
+          .includes(context.userId);
+      }
+    )(rootValue, args, context);
+  },
+  resolve(payload: any) {
+    return payload;
+  },
+});
+
+export const chatDeletedSubscription = subscriptionField('chatDeleted', {
+  type: 'DeletedChat',
+  subscribe: async (rootValue, args, context) => {
+    return withFilter(
+      () => context.pubsub.asyncIterator(Subscription.ChatDeleted),
+      (payload, _, context) => {
+        return payload.members
+          .map((x: { id: string }) => x.id)
+          .includes(context.userId);
       }
     )(rootValue, args, context);
   },
