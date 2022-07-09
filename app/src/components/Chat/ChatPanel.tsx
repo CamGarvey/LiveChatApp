@@ -69,8 +69,8 @@ export const ChatPanel = ({ chatId }: Props) => {
             edges: [
               ...prev.chatMessages.edges,
               {
-                node: messageCreated,
                 __typename: 'MessageEdge',
+                node: messageCreated,
               },
             ],
             pageInfo: prev.chatMessages.pageInfo,

@@ -9,29 +9,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chatDeletedSubscription = exports.chatCreatedSubscription = exports.chatUpdatedSubscription = void 0;
-const apollo_server_core_1 = require("apollo-server-core");
+exports.chatDeletedSubscription = exports.chatCreatedSubscription = exports.chatUpdatedSubscription = exports.chatsSubscription = exports.ChatPayload = void 0;
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
+exports.ChatPayload = (0, nexus_1.unionType)({
+    name: 'ChatPayload',
+    definition: (t) => {
+        t.members('ChatUpdate', 'Chat', 'DeletedChat');
+    },
+});
+exports.chatsSubscription = (0, nexus_1.subscriptionField)('chats', {
+    type: 'ChatPayload',
+    subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
+        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator('chat.*', { pattern: true }), (payload, _, context) => {
+            return payload.members
+                .map((x) => x.id)
+                .includes(context.userId);
+        })(rootValue, args, context);
+    }),
+    resolve(payload) {
+        return payload;
+    },
+});
 exports.chatUpdatedSubscription = (0, nexus_1.subscriptionField)('chatUpdated', {
     type: 'ChatUpdate',
-    args: {
-        chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
-    },
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
-        const members = yield context.prisma.chat
-            .findUnique({
-            where: {
-                id: args.chatId,
-            },
-        })
-            .members();
-        if (!members.find((member) => member.id == context.userId)) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to this chat ');
-        }
-        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.ChatUpdated), (payload, variables) => {
-            return payload.chatId === variables.chatId;
+        return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(subscriptions_enum_1.Subscription.ChatUpdated), (payload, _) => {
+            console.log(payload);
+            return true;
         })(rootValue, args, context);
     }),
     resolve(payload) {

@@ -28,6 +28,8 @@ type Chat {
   updates: [ChatUpdate!]!
 }
 
+union ChatPayload = Chat | ChatUpdate | DeletedChat
+
 type ChatUpdate {
   chat: Chat!
   chatId: ID!
@@ -187,7 +189,7 @@ type Mutation {
   ): Chat
 
   """Update current User"""
-  updateUser(email: String!, username: String!): User
+  updateMe(email: String!, username: String!): User
 }
 
 """
@@ -274,12 +276,41 @@ enum Sort {
 type Subscription {
   chatCreated: Chat
   chatDeleted: DeletedChat
-  chatUpdated(chatId: String!): ChatUpdate
-  friendCreated(userId: String!): User
-  friendRequestCreated: User
-  friendRequestDeleted: User
-  meChanged: User
+  chatUpdated: ChatUpdate
+  chats: ChatPayload
   messageCreated(chatId: String!): Message
+  messageDeleted(chatId: String!): Message
+  messageUpdated(chatId: String!): Message
+
+  """Subscribe to any created/updated/deleted messages"""
+  messages(chatId: String!): Message
+
+  """Subscribe to any changes to current user"""
+  user: User
+
+  """Subscribe to any changes to current user"""
+  userChats: User
+
+  """Subscribe to new friends"""
+  userFriendCreated: User
+
+  """Subscribe to unfriend events"""
+  userFriendDeleted: User
+
+  """Subscribe to new friend requests"""
+  userFriendRequestCreated: User
+
+  """Subscribe to deleted friend requests"""
+  userFriendRequestDeleted: User
+
+  """Subscribe to any changes to the friend requests of the current user"""
+  userFriendRequests: User
+
+  """
+  Subscribe to any changes to
+         the friendships of the current user (incl requests)
+  """
+  userFriends: User
 }
 
 type User {

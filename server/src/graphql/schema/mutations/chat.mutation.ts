@@ -138,7 +138,6 @@ export const deleteChat = mutationField('deleteChat', {
         id: chatId,
       },
     });
-    console.log(chat);
 
     await pubsub.publish(Subscription.ChatDeleted, chat);
 
@@ -241,9 +240,18 @@ export const updateChat = mutationField('updateChat', {
         memberIdsAdded: addMembersId,
         memberIdsRemoved: removeMembersId,
       },
+      include: {
+        chat: {
+          select: {
+            members: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
     });
-
-    console.log(update);
 
     pubsub.publish(Subscription.ChatUpdated, update);
 
@@ -331,7 +339,7 @@ export const addMembersToChat = mutationField('addMembersToChat', {
       },
     });
 
-    pubsub.publish(Subscription.ChatUpdated, update);
+    pubsub.publish(Subscription.ChatMembersAdded, update);
 
     return chat;
   },
@@ -386,7 +394,7 @@ export const removeMembersFromChat = mutationField('removeMembersFromChat', {
       },
     });
 
-    pubsub.publish(Subscription.ChatUpdated, update);
+    pubsub.publish(Subscription.ChatMembersDeleted, update);
 
     return chat;
   },

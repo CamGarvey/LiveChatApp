@@ -63,7 +63,7 @@ exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
         })),
     },
     description: 'Delete a Message',
-    resolve: (_, { messageId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { messageId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const message = yield prisma.message.findUnique({
             select: {
                 createdById: true,
@@ -78,7 +78,7 @@ exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
         if (message.createdById != userId) {
             throw new apollo_server_errors_1.ForbiddenError('You do not have permission to delete this Message');
         }
-        return prisma.message.update({
+        const updatedMessage = prisma.message.update({
             data: {
                 deletedAt: Date.now().toString(),
             },
@@ -86,6 +86,8 @@ exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
                 id: messageId,
             },
         });
+        pubsub.publish(subscriptions_enum_1.Subscription.MessageDeleted, updatedMessage);
+        return updatedMessage;
     }),
 });
 exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
@@ -99,7 +101,7 @@ exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
         })),
     },
     description: 'Edit a Message',
-    resolve: (_, { messageId, content }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { messageId, content }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const message = yield prisma.message.findUnique({
             select: {
                 createdById: true,
@@ -114,7 +116,7 @@ exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
         if (message.createdById != userId) {
             throw new apollo_server_errors_1.ForbiddenError('You do not have permission to edit this Message');
         }
-        return yield prisma.message.update({
+        const updatedMessage = yield prisma.message.update({
             data: {
                 content,
             },
@@ -122,6 +124,8 @@ exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
                 id: messageId,
             },
         });
+        pubsub.publish(subscriptions_enum_1.Subscription.MessageUpdated, updatedMessage);
+        return updatedMessage;
     }),
 });
 //# sourceMappingURL=message.mutation.js.map

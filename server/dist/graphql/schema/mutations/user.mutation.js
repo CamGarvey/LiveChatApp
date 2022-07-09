@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteFriend = exports.declineFriendRequest = exports.acceptFriendRequest = exports.cancelFriendRequest = exports.sendFriendRequest = exports.updateUser = void 0;
+exports.deleteFriend = exports.declineFriendRequest = exports.acceptFriendRequest = exports.cancelFriendRequest = exports.sendFriendRequest = exports.updateMe = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
-exports.updateUser = (0, nexus_1.mutationField)('updateUser', {
+exports.updateMe = (0, nexus_1.mutationField)('updateMe', {
     type: 'User',
     args: {
         email: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
@@ -85,11 +85,8 @@ exports.sendFriendRequest = (0, nexus_1.mutationField)('sendFriendRequest', {
                 },
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.FriendRequestCreated, {
-            sender: user,
-            receiverId: friendId,
-        });
-        pubsub.publish(subscriptions_enum_1.Subscription.MeChanged, friend);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendRequestSent, user);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendRequestReceived, friend);
         return friend;
     }),
 });
@@ -123,11 +120,8 @@ exports.cancelFriendRequest = (0, nexus_1.mutationField)('cancelFriendRequest', 
                 },
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.FriendRequestDeleted, {
-            sender: user,
-            receiverId: friendId,
-        });
-        pubsub.publish(subscriptions_enum_1.Subscription.MeChanged, friend);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendRequestDeleted, user);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendRequestDeleted, friend);
         return friend;
     }),
 });
@@ -171,10 +165,8 @@ exports.acceptFriendRequest = (0, nexus_1.mutationField)('acceptFriendRequest', 
                 },
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.FriendCreated, {
-            senderId: friendId,
-            receiver: user,
-        });
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendCreated, user);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendCreated, friend);
         return friend;
     }),
 });
@@ -184,7 +176,7 @@ exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest'
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Delete/Decline a received Friend Request',
-    resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const receivedRequests = yield prisma.user
             .findUnique({
             where: {
@@ -196,7 +188,7 @@ exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest'
         if (!friend) {
             throw new apollo_server_core_1.ForbiddenError('You do not have a request from this user');
         }
-        yield prisma.user.update({
+        const user = yield prisma.user.update({
             where: {
                 id: userId,
             },
@@ -208,6 +200,8 @@ exports.declineFriendRequest = (0, nexus_1.mutationField)('declineFriendRequest'
                 },
             },
         });
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendRequestDeleted, user);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendRequestDeleted, friend);
         return friend;
     }),
 });
@@ -217,7 +211,7 @@ exports.deleteFriend = (0, nexus_1.mutationField)('deleteFriend', {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     description: 'Delete a Friend',
-    resolve: (_, { friendId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
                 id: userId,
@@ -236,7 +230,7 @@ exports.deleteFriend = (0, nexus_1.mutationField)('deleteFriend', {
         if (user.friends.length == 0) {
             throw new Error('You are not friends with this user');
         }
-        yield prisma.user.update({
+        const newUser = yield prisma.user.update({
             where: {
                 id: userId,
             },
@@ -253,7 +247,9 @@ exports.deleteFriend = (0, nexus_1.mutationField)('deleteFriend', {
                 },
             },
         });
-        return user.friends[0];
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendDeleted, user);
+        pubsub.publish(subscriptions_enum_1.Subscription.UserFriendDeleted, { id: friendId });
+        return newUser;
     }),
 });
 //# sourceMappingURL=user.mutation.js.map

@@ -13,4 +13,4 @@ exports.FriendShip = (0, nexus_1.objectType)({
         });
     },
 });
-//# sourceMappingURL=friend-request.js.map
+//# sourceMappingURL=friend-ship.js.map

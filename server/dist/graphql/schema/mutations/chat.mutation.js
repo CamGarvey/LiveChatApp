@@ -113,7 +113,6 @@ exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
                 id: chatId,
             },
         });
-        console.log(chat);
         yield pubsub.publish(subscriptions_enum_1.Subscription.ChatDeleted, chat);
         return chat;
     }),
@@ -192,8 +191,18 @@ exports.updateChat = (0, nexus_1.mutationField)('updateChat', {
                 memberIdsAdded: addMembersId,
                 memberIdsRemoved: removeMembersId,
             },
+            include: {
+                chat: {
+                    select: {
+                        members: {
+                            select: {
+                                id: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
-        console.log(update);
         pubsub.publish(subscriptions_enum_1.Subscription.ChatUpdated, update);
         return updatedChat;
     }),
@@ -260,7 +269,7 @@ exports.addMembersToChat = (0, nexus_1.mutationField)('addMembersToChat', {
                 memberIdsAdded: memberIds,
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.ChatUpdated, update);
+        pubsub.publish(subscriptions_enum_1.Subscription.ChatMembersAdded, update);
         return chat;
     }),
 });
@@ -307,7 +316,7 @@ exports.removeMembersFromChat = (0, nexus_1.mutationField)('removeMembersFromCha
                 memberIdsRemoved: membersIds,
             },
         });
-        pubsub.publish(subscriptions_enum_1.Subscription.ChatUpdated, update);
+        pubsub.publish(subscriptions_enum_1.Subscription.ChatMembersDeleted, update);
         return chat;
     }),
 });

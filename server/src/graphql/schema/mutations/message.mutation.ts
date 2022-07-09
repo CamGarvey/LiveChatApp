@@ -60,7 +60,7 @@ export const deleteMessage = mutationField('deleteMessage', {
     ),
   },
   description: 'Delete a Message',
-  resolve: async (_, { messageId }, { prisma, userId }) => {
+  resolve: async (_, { messageId }, { prisma, userId, pubsub }) => {
     // Can only delete own messages
     const message = await prisma.message.findUnique({
       select: {
@@ -82,7 +82,7 @@ export const deleteMessage = mutationField('deleteMessage', {
       );
     }
 
-    return prisma.message.update({
+    const updatedMessage = prisma.message.update({
       data: {
         deletedAt: Date.now().toString(),
       },
@@ -90,6 +90,10 @@ export const deleteMessage = mutationField('deleteMessage', {
         id: messageId,
       },
     });
+
+    pubsub.publish(Subscription.MessageDeleted, updatedMessage);
+
+    return updatedMessage;
   },
 });
 
@@ -108,7 +112,7 @@ export const editMessage = mutationField('editMessage', {
     ),
   },
   description: 'Edit a Message',
-  resolve: async (_, { messageId, content }, { prisma, userId }) => {
+  resolve: async (_, { messageId, content }, { prisma, userId, pubsub }) => {
     const message = await prisma.message.findUnique({
       select: {
         createdById: true,
@@ -130,7 +134,7 @@ export const editMessage = mutationField('editMessage', {
     }
 
     // Update message
-    return await prisma.message.update({
+    const updatedMessage = await prisma.message.update({
       data: {
         content,
       },
@@ -138,5 +142,9 @@ export const editMessage = mutationField('editMessage', {
         id: messageId,
       },
     });
+
+    pubsub.publish(Subscription.MessageUpdated, updatedMessage);
+
+    return updatedMessage;
   },
 });

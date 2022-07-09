@@ -1,11 +1,12 @@
 import { withFilter } from 'graphql-subscriptions';
-import { nonNull, stringArg, subscriptionField } from 'nexus';
+import { subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
-export const MeSubscription = subscriptionField('meChanged', {
+export const UserSubscription = subscriptionField('user', {
   type: 'User',
+  description: 'Subscribe to any changes to current user',
   subscribe: withFilter(
-    (_, __, { pubsub }) => pubsub.asyncIterator(Subscription.MeChanged),
+    (_, __, { pubsub }) => pubsub.asyncIterator('user.*', { pattern: true }),
     (payload, _, context) => {
       return payload.id === context.userId;
     }
@@ -15,51 +16,123 @@ export const MeSubscription = subscriptionField('meChanged', {
   },
 });
 
-export const FriendRequestCreatedSubscription = subscriptionField(
-  'friendRequestCreated',
-  {
-    type: 'User',
-    subscribe: withFilter(
-      (_, __, { pubsub }) =>
-        pubsub.asyncIterator(Subscription.FriendRequestCreated),
-      (payload, _, context) => {
-        return payload.receiverId === context.userId;
-      }
-    ),
-    resolve(payload: any) {
-      return payload.sender;
-    },
-  }
-);
-
-export const FriendRequestDeletedSubscription = subscriptionField(
-  'friendRequestDeleted',
-  {
-    type: 'User',
-    subscribe: withFilter(
-      (_, __, { pubsub }) => pubsub.asyncIterator(Subscription.FriendDeleted),
-      (payload, _, context) => {
-        return payload.receiverId === context.userId;
-      }
-    ),
-    resolve(payload: any) {
-      return payload.sender;
-    },
-  }
-);
-
-export const FriendCreatedSubscription = subscriptionField('friendCreated', {
+export const UserChatsSubscription = subscriptionField('userChats', {
   type: 'User',
-  args: {
-    userId: nonNull(stringArg()),
-  },
+  description: 'Subscribe to any changes to current user',
   subscribe: withFilter(
-    (_, __, { pubsub }) => pubsub.asyncIterator(Subscription.FriendCreated),
+    (_, __, { pubsub }) => pubsub.asyncIterator('user.chat.created'),
     (payload, _, context) => {
-      return payload.receiverId === context.userId;
+      return payload.id === context.userId;
     }
   ),
   resolve(payload: any) {
-    return payload.friend;
+    return payload;
   },
 });
+
+export const FriendsSubscription = subscriptionField('userFriends', {
+  type: 'User',
+  description: `Subscribe to any changes to
+       the friendships of the current user (incl requests)`,
+  subscribe: withFilter(
+    (_, __, { pubsub }) =>
+      pubsub.asyncIterator('user.friend.*', { pattern: true }),
+    (payload, _, context) => {
+      return payload.id === context.userId;
+    }
+  ),
+  resolve(payload: any) {
+    return payload;
+  },
+});
+
+export const UserFriendCreatedSubscription = subscriptionField(
+  'userFriendCreated',
+  {
+    type: 'User',
+    description: 'Subscribe to new friends',
+    subscribe: withFilter(
+      (_, __, { pubsub }) =>
+        pubsub.asyncIterator(Subscription.UserFriendCreated),
+      (payload, _, context) => {
+        return payload.id === context.userId;
+      }
+    ),
+    resolve(payload: any) {
+      return payload;
+    },
+  }
+);
+
+export const UserFriendDeletedSubscription = subscriptionField(
+  'userFriendDeleted',
+  {
+    type: 'User',
+    description: 'Subscribe to unfriend events',
+    subscribe: withFilter(
+      (_, __, { pubsub }) =>
+        pubsub.asyncIterator(Subscription.UserFriendDeleted),
+      (payload, _, context) => {
+        return payload.id === context.userId;
+      }
+    ),
+    resolve(payload: any) {
+      return payload;
+    },
+  }
+);
+
+export const FriendRequestChangedSubscription = subscriptionField(
+  'userFriendRequests',
+  {
+    type: 'User',
+    description:
+      'Subscribe to any changes to the friend requests of the current user',
+    subscribe: withFilter(
+      (_, __, { pubsub }) =>
+        pubsub.asyncIterator('user.friend.request.*', { pattern: true }),
+      (payload, _, context) => {
+        return payload.id === context.userId;
+      }
+    ),
+    resolve(payload: any) {
+      return payload;
+    },
+  }
+);
+
+export const UserFriendRequestCreatedSubscription = subscriptionField(
+  'userFriendRequestCreated',
+  {
+    type: 'User',
+    description: 'Subscribe to new friend requests',
+    subscribe: withFilter(
+      (_, __, { pubsub }) =>
+        pubsub.asyncIterator(Subscription.UserFriendRequestReceived),
+      (payload, _, context) => {
+        return payload.id === context.userId;
+      }
+    ),
+    resolve(payload: any) {
+      return payload;
+    },
+  }
+);
+
+export const UserFriendRequestDeletedSubscription = subscriptionField(
+  'userFriendRequestDeleted',
+  {
+    type: 'User',
+    description: 'Subscribe to deleted friend requests',
+    subscribe: withFilter(
+      (_, __, { pubsub }) =>
+        pubsub.asyncIterator(Subscription.UserFriendRequestDeleted),
+      (payload, _, context) => {
+        return payload.id === context.userId;
+      }
+    ),
+    resolve(payload: any) {
+      return payload;
+    },
+  }
+);

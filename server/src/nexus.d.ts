@@ -135,9 +135,10 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
+  ChatPayload: NexusGenRootTypes['Chat'] | NexusGenRootTypes['ChatUpdate'] | NexusGenRootTypes['DeletedChat'];
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
@@ -208,7 +209,7 @@ export interface NexusGenFieldTypes {
     removeMembersFromChat: NexusGenRootTypes['Chat'] | null; // Chat
     sendFriendRequest: NexusGenRootTypes['User'] | null; // User
     updateChat: NexusGenRootTypes['Chat'] | null; // Chat
-    updateUser: NexusGenRootTypes['User'] | null; // User
+    updateMe: NexusGenRootTypes['User'] | null; // User
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -229,11 +230,19 @@ export interface NexusGenFieldTypes {
     chatCreated: NexusGenRootTypes['Chat'] | null; // Chat
     chatDeleted: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     chatUpdated: NexusGenRootTypes['ChatUpdate'] | null; // ChatUpdate
-    friendCreated: NexusGenRootTypes['User'] | null; // User
-    friendRequestCreated: NexusGenRootTypes['User'] | null; // User
-    friendRequestDeleted: NexusGenRootTypes['User'] | null; // User
-    meChanged: NexusGenRootTypes['User'] | null; // User
+    chats: NexusGenRootTypes['ChatPayload'] | null; // ChatPayload
     messageCreated: NexusGenRootTypes['Message'] | null; // Message
+    messageDeleted: NexusGenRootTypes['Message'] | null; // Message
+    messageUpdated: NexusGenRootTypes['Message'] | null; // Message
+    messages: NexusGenRootTypes['Message'] | null; // Message
+    user: NexusGenRootTypes['User'] | null; // User
+    userChats: NexusGenRootTypes['User'] | null; // User
+    userFriendCreated: NexusGenRootTypes['User'] | null; // User
+    userFriendDeleted: NexusGenRootTypes['User'] | null; // User
+    userFriendRequestCreated: NexusGenRootTypes['User'] | null; // User
+    userFriendRequestDeleted: NexusGenRootTypes['User'] | null; // User
+    userFriendRequests: NexusGenRootTypes['User'] | null; // User
+    userFriends: NexusGenRootTypes['User'] | null; // User
   }
   User: { // field return type
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
@@ -325,7 +334,7 @@ export interface NexusGenFieldTypeNames {
     removeMembersFromChat: 'Chat'
     sendFriendRequest: 'User'
     updateChat: 'Chat'
-    updateUser: 'User'
+    updateMe: 'User'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -346,11 +355,19 @@ export interface NexusGenFieldTypeNames {
     chatCreated: 'Chat'
     chatDeleted: 'DeletedChat'
     chatUpdated: 'ChatUpdate'
-    friendCreated: 'User'
-    friendRequestCreated: 'User'
-    friendRequestDeleted: 'User'
-    meChanged: 'User'
+    chats: 'ChatPayload'
     messageCreated: 'Message'
+    messageDeleted: 'Message'
+    messageUpdated: 'Message'
+    messages: 'Message'
+    user: 'User'
+    userChats: 'User'
+    userFriendCreated: 'User'
+    userFriendDeleted: 'User'
+    userFriendRequestCreated: 'User'
+    userFriendRequestDeleted: 'User'
+    userFriendRequests: 'User'
+    userFriends: 'User'
   }
   User: { // field return type name
     chats: 'Chat'
@@ -436,7 +453,7 @@ export interface NexusGenArgTypes {
       name?: string | null; // String
       removeMembersId?: string[] | null; // [String!]
     }
-    updateUser: { // args
+    updateMe: { // args
       email: string; // String!
       username: string; // String!
     }
@@ -465,13 +482,16 @@ export interface NexusGenArgTypes {
     }
   }
   Subscription: {
-    chatUpdated: { // args
+    messageCreated: { // args
       chatId: string; // String!
     }
-    friendCreated: { // args
-      userId: string; // String!
+    messageDeleted: { // args
+      chatId: string; // String!
     }
-    messageCreated: { // args
+    messageUpdated: { // args
+      chatId: string; // String!
+    }
+    messages: { // args
       chatId: string; // String!
     }
   }
@@ -486,6 +506,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  ChatPayload: "Chat" | "ChatUpdate" | "DeletedChat"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -501,7 +522,7 @@ export type NexusGenInterfaceNames = never;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
-export type NexusGenUnionNames = never;
+export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 

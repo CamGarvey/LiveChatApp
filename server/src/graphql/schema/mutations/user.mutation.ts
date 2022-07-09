@@ -2,7 +2,7 @@ import { UserInputError, ForbiddenError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
-export const updateUser = mutationField('updateUser', {
+export const updateMe = mutationField('updateMe', {
   type: 'User',
   args: {
     email: nonNull(stringArg()),
@@ -82,13 +82,8 @@ export const sendFriendRequest = mutationField('sendFriendRequest', {
       },
     });
 
-    // Publish new friend request
-    pubsub.publish(Subscription.FriendRequestCreated, {
-      sender: user,
-      receiverId: friendId,
-    });
-    // Publish me changed for the friend
-    pubsub.publish(Subscription.MeChanged, friend);
+    pubsub.publish(Subscription.UserFriendRequestSent, user);
+    pubsub.publish(Subscription.UserFriendRequestReceived, friend);
 
     return friend;
   },
@@ -128,13 +123,8 @@ export const cancelFriendRequest = mutationField('cancelFriendRequest', {
       },
     });
 
-    // Publish new deleted friend request
-    pubsub.publish(Subscription.FriendRequestDeleted, {
-      sender: user,
-      receiverId: friendId,
-    });
-    // Publish me changed for the friend
-    pubsub.publish(Subscription.MeChanged, friend);
+    pubsub.publish(Subscription.UserFriendRequestDeleted, user);
+    pubsub.publish(Subscription.UserFriendRequestDeleted, friend);
 
     return friend;
   },
@@ -187,11 +177,8 @@ export const acceptFriendRequest = mutationField('acceptFriendRequest', {
       },
     });
 
-    // Publish new friend
-    pubsub.publish(Subscription.FriendCreated, {
-      senderId: friendId,
-      receiver: user,
-    });
+    pubsub.publish(Subscription.UserFriendCreated, user);
+    pubsub.publish(Subscription.UserFriendCreated, friend);
 
     return friend;
   },
@@ -203,7 +190,7 @@ export const declineFriendRequest = mutationField('declineFriendRequest', {
     friendId: nonNull(stringArg()),
   },
   description: 'Delete/Decline a received Friend Request',
-  resolve: async (_, { friendId }, { prisma, userId }) => {
+  resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     const receivedRequests = await prisma.user
       .findUnique({
         where: {
@@ -218,7 +205,7 @@ export const declineFriendRequest = mutationField('declineFriendRequest', {
       throw new ForbiddenError('You do not have a request from this user');
     }
 
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: {
         id: userId,
       },
@@ -230,6 +217,10 @@ export const declineFriendRequest = mutationField('declineFriendRequest', {
         },
       },
     });
+
+    pubsub.publish(Subscription.UserFriendRequestDeleted, user);
+    pubsub.publish(Subscription.UserFriendRequestDeleted, friend);
+
     return friend;
   },
 });
@@ -240,7 +231,7 @@ export const deleteFriend = mutationField('deleteFriend', {
     friendId: nonNull(stringArg()),
   },
   description: 'Delete a Friend',
-  resolve: async (_, { friendId }, { prisma, userId }) => {
+  resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     // Validate
     const user = await prisma.user.findUnique({
       where: {
@@ -264,7 +255,7 @@ export const deleteFriend = mutationField('deleteFriend', {
     }
 
     // Delete user
-    await prisma.user.update({
+    const newUser = await prisma.user.update({
       where: {
         id: userId,
       },
@@ -282,6 +273,9 @@ export const deleteFriend = mutationField('deleteFriend', {
       },
     });
 
-    return user.friends[0];
+    pubsub.publish(Subscription.UserFriendDeleted, user);
+    pubsub.publish(Subscription.UserFriendDeleted, { id: friendId });
+
+    return newUser;
   },
 });
