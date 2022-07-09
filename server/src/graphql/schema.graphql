@@ -5,8 +5,10 @@
 type Chat {
   createdAt: Date!
   createdBy: User!
+  createdById: ID!
   description: String
   id: ID!
+  isCreator: Boolean!
   isDM: Boolean!
   memberCount: Int!
   members: [User!]!
@@ -70,6 +72,7 @@ type Message {
   createdBy: User!
   createdById: String!
   id: ID!
+  isCreator: Boolean!
   likedBy: [User!]!
   updatedAt: Date!
 }
@@ -222,7 +225,16 @@ type Query {
     """Id of chat"""
     chatId: String!
   ): Chat
-  chatMessages(
+  chats: [Chat!]!
+  friends: [User!]!
+  me: User
+
+  """Get a message by id"""
+  message(
+    """id of message"""
+    messageId: String!
+  ): Message
+  messages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -238,9 +250,6 @@ type Query {
     """Returns the last n elements from the list."""
     last: Int
   ): MessageConnection!
-  chats: [Chat!]!
-  friends: [User!]!
-  me: User
   user(
     """id of user"""
     id: String!
@@ -287,9 +296,6 @@ type Subscription {
 
   """Subscribe to any changes to current user"""
   user: User
-
-  """Subscribe to any changes to current user"""
-  userChats: User
 
   """Subscribe to new friends"""
   userFriendCreated: User

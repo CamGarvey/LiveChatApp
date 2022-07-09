@@ -14,6 +14,7 @@ export const Chat = objectType({
     t.nonNull.field('updatedAt', {
       type: DateScalar,
     });
+    t.nonNull.id('createdById');
     t.nonNull.field('createdBy', {
       type: 'User',
       resolve: async (parent, _, { prisma }) => {
@@ -26,6 +27,11 @@ export const Chat = objectType({
           },
         });
         return chat.createdBy;
+      },
+    });
+    t.nonNull.boolean('isCreator', {
+      resolve: (parent, _, { userId }) => {
+        return parent.createdById == userId;
       },
     });
     t.nonNull.connectionField('messages', {

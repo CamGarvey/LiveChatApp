@@ -25,6 +25,7 @@ exports.Chat = (0, nexus_1.objectType)({
         t.nonNull.field('updatedAt', {
             type: scalars_1.DateScalar,
         });
+        t.nonNull.id('createdById');
         t.nonNull.field('createdBy', {
             type: 'User',
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
@@ -38,6 +39,11 @@ exports.Chat = (0, nexus_1.objectType)({
                 });
                 return chat.createdBy;
             }),
+        });
+        t.nonNull.boolean('isCreator', {
+            resolve: (parent, _, { userId }) => {
+                return parent.createdById == userId;
+            },
         });
         t.nonNull.connectionField('messages', {
             type: 'Message',

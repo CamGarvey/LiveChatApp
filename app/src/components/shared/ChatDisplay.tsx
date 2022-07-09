@@ -1,4 +1,4 @@
-import { Center, Input, Stack, Text } from '@mantine/core';
+import { Center, Input, ScrollArea, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
 import { useGetChatsQuery } from '../../graphql/generated/graphql';
@@ -35,21 +35,23 @@ const ChatDisplay = ({ onChatClick }: Props) => {
           setFilter(e.target.value.toLowerCase());
         }}
       />
-      <Stack spacing={4}>
-        {!loading && data && filteredChats.length > 0 ? (
-          filteredChats.map((chat) => (
-            <ChatItem
-              key={chat.id}
-              {...chat}
-              onClick={() => onChatClick?.(chat)}
-            />
-          ))
-        ) : (
-          <Center>
-            <Text color={'dimmed'}>Nothing to show</Text>
-          </Center>
-        )}
-      </Stack>
+      <ScrollArea>
+        <Stack spacing={4}>
+          {!loading && data && filteredChats.length > 0 ? (
+            filteredChats.map((chat) => (
+              <ChatItem
+                key={chat.id}
+                {...chat}
+                onClick={() => onChatClick?.(chat)}
+              />
+            ))
+          ) : (
+            <Center>
+              <Text color={'dimmed'}>Nothing to show</Text>
+            </Center>
+          )}
+        </Stack>
+      </ScrollArea>
     </Stack>
   );
 };

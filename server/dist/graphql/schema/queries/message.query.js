@@ -8,26 +8,81 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageQuery = void 0;
+exports.messages = exports.message = void 0;
+const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
+const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-const message_1 = __importDefault(require("../types/message"));
-exports.MessageQuery = (0, nexus_1.queryField)('Message', {
-    type: message_1.default,
+exports.message = (0, nexus_1.queryField)('message', {
+    type: 'Message',
+    description: 'Get a message by id',
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.intArg)({
+        messageId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'id of message',
         })),
     },
-    resolve: (_, { id }, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
-        return prisma.message.findUnique({
+    resolve: (_, { messageId }, { userId, prisma }) => __awaiter(void 0, void 0, void 0, function* () {
+        const message = yield prisma.message.findUnique({
             where: {
-                id: id,
+                id: messageId,
+            },
+            include: {
+                chat: {
+                    include: {
+                        members: {
+                            select: {
+                                id: true,
+                            },
+                        },
+                    },
+                },
             },
         });
+        if (!message) {
+            throw new apollo_server_core_1.UserInputError('Not found');
+        }
+        console.log({ message });
+        if (!message.chat.members.map((x) => x.id).includes(userId)) {
+            throw new apollo_server_core_1.ForbiddenError('You do not have permission to view this message');
+        }
+        return message;
     }),
+});
+exports.messages = (0, nexus_1.extendType)({
+    type: 'Query',
+    definition(t) {
+        t.nonNull.connectionField('messages', {
+            type: 'Message',
+            additionalArgs: {
+                chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+                    description: 'If set, filters users by given filter',
+                })),
+            },
+            resolve: (_, { chatId, after, first, before, last }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
+                const members = yield prisma.chat
+                    .findUnique({
+                    where: {
+                        id: chatId,
+                    },
+                })
+                    .members();
+                if (!members.find((member) => member.id == userId)) {
+                    throw new apollo_server_core_1.ForbiddenError('You do not have permission to this chat');
+                }
+                return (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => {
+                    return prisma.message.findMany(Object.assign(Object.assign({}, args), {
+                        where: { chatId },
+                        orderBy: {
+                            createdAt: 'asc',
+                        },
+                    }));
+                }, () => prisma.message.count({
+                    where: {
+                        chatId,
+                    },
+                }), { after, first, before, last });
+            }),
+        });
+    },
 });
 //# sourceMappingURL=message.query.js.map

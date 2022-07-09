@@ -9,47 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chat = exports.chats = exports.chatMessages = void 0;
-const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
+exports.chat = exports.chats = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
-exports.chatMessages = (0, nexus_1.extendType)({
-    type: 'Query',
-    definition(t) {
-        t.nonNull.connectionField('chatMessages', {
-            type: 'Message',
-            additionalArgs: {
-                chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
-                    description: 'If set, filters users by given filter',
-                })),
-            },
-            resolve: (_, { chatId, after, first, before, last }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
-                const members = yield prisma.chat
-                    .findUnique({
-                    where: {
-                        id: chatId,
-                    },
-                })
-                    .members();
-                if (!members.find((member) => member.id == userId)) {
-                    throw new apollo_server_core_1.ForbiddenError('You do not have permission to this chat');
-                }
-                return (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => {
-                    return prisma.message.findMany(Object.assign(Object.assign({}, args), {
-                        where: { chatId },
-                        orderBy: {
-                            createdAt: 'asc',
-                        },
-                    }));
-                }, () => prisma.message.count({
-                    where: {
-                        chatId,
-                    },
-                }), { after, first, before, last });
-            }),
-        });
-    },
-});
 exports.chats = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
@@ -90,7 +52,10 @@ exports.chat = (0, nexus_1.extendType)({
                         },
                     },
                 });
-                if (!(chat === null || chat === void 0 ? void 0 : chat.members.length)) {
+                if (!chat) {
+                    throw new apollo_server_core_1.UserInputError('Not found');
+                }
+                if (!chat.members.length) {
                     throw new apollo_server_core_1.ForbiddenError('You do not have permission to this chat');
                 }
                 return chat;

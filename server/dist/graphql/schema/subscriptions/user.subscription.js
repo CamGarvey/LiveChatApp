@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserFriendRequestDeletedSubscription = exports.UserFriendRequestCreatedSubscription = exports.FriendRequestChangedSubscription = exports.UserFriendDeletedSubscription = exports.UserFriendCreatedSubscription = exports.FriendsSubscription = exports.UserChatsSubscription = exports.UserSubscription = void 0;
+exports.UserFriendRequestDeletedSubscription = exports.UserFriendRequestCreatedSubscription = exports.FriendRequestChangedSubscription = exports.UserFriendDeletedSubscription = exports.UserFriendCreatedSubscription = exports.FriendsSubscription = exports.UserSubscription = void 0;
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
@@ -8,16 +8,7 @@ exports.UserSubscription = (0, nexus_1.subscriptionField)('user', {
     type: 'User',
     description: 'Subscribe to any changes to current user',
     subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator('user.*', { pattern: true }), (payload, _, context) => {
-        return payload.id === context.userId;
-    }),
-    resolve(payload) {
-        return payload;
-    },
-});
-exports.UserChatsSubscription = (0, nexus_1.subscriptionField)('userChats', {
-    type: 'User',
-    description: 'Subscribe to any changes to current user',
-    subscribe: (0, graphql_subscriptions_1.withFilter)((_, __, { pubsub }) => pubsub.asyncIterator('user.chat.created'), (payload, _, context) => {
+        console.log(payload);
         return payload.id === context.userId;
     }),
     resolve(payload) {

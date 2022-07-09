@@ -10,6 +10,11 @@ const Message = objectType({
       type: DateScalar,
     });
     t.nonNull.string('createdById');
+    t.nonNull.boolean('isCreator', {
+      resolve: (parent, _, { userId }) => {
+        return parent.createdById === userId;
+      },
+    });
     t.nonNull.field('createdBy', {
       type: 'User',
       resolve: (parent, _, { prisma }) => {
@@ -38,7 +43,7 @@ const Message = objectType({
       resolve: (parent, _, { prisma }) => {
         return prisma.chat.findUnique({
           where: {
-            id: parent.id,
+            id: parent.chatId || undefined,
           },
         });
       },

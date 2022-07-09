@@ -11,6 +11,11 @@ const Message = (0, nexus_1.objectType)({
             type: scalars_1.DateScalar,
         });
         t.nonNull.string('createdById');
+        t.nonNull.boolean('isCreator', {
+            resolve: (parent, _, { userId }) => {
+                return parent.createdById === userId;
+            },
+        });
         t.nonNull.field('createdBy', {
             type: 'User',
             resolve: (parent, _, { prisma }) => {
@@ -39,7 +44,7 @@ const Message = (0, nexus_1.objectType)({
             resolve: (parent, _, { prisma }) => {
                 return prisma.chat.findUnique({
                     where: {
-                        id: parent.id,
+                        id: parent.chatId || undefined,
                     },
                 });
             },

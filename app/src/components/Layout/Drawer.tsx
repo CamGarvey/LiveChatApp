@@ -8,6 +8,7 @@ import {
   Group,
   Loader,
   MediaQuery,
+  ScrollArea,
   Skeleton,
   Stack,
   Text,
@@ -97,7 +98,9 @@ const Drawer = () => {
                     <SquarePlus />
                   </ActionIcon>
                 </Group>
-                <ChatDisplay onChatClick={toggleDrawer} />
+                <ScrollArea>
+                  <ChatDisplay onChatClick={toggleDrawer} />
+                </ScrollArea>
               </Stack>
             )}
           </>

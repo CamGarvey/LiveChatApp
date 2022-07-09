@@ -79,6 +79,7 @@ exports.createChat = (0, nexus_1.mutationField)('createChat', {
             },
         });
         yield pubsub.publish(subscriptions_enum_1.Subscription.ChatCreated, chat);
+        yield pubsub.publish(subscriptions_enum_1.Subscription.UserChatCreated, chat);
         return chat;
     }),
 });

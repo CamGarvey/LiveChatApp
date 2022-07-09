@@ -8,20 +8,8 @@ export const UserSubscription = subscriptionField('user', {
   subscribe: withFilter(
     (_, __, { pubsub }) => pubsub.asyncIterator('user.*', { pattern: true }),
     (payload, _, context) => {
-      return payload.id === context.userId;
-    }
-  ),
-  resolve(payload: any) {
-    return payload;
-  },
-});
+      console.log(payload);
 
-export const UserChatsSubscription = subscriptionField('userChats', {
-  type: 'User',
-  description: 'Subscribe to any changes to current user',
-  subscribe: withFilter(
-    (_, __, { pubsub }) => pubsub.asyncIterator('user.chat.created'),
-    (payload, _, context) => {
       return payload.id === context.userId;
     }
   ),

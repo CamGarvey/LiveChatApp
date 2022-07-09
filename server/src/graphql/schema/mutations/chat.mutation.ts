@@ -95,6 +95,7 @@ export const createChat = mutationField('createChat', {
     });
 
     await pubsub.publish(Subscription.ChatCreated, chat);
+    await pubsub.publish(Subscription.UserChatCreated, chat);
 
     return chat;
   },
