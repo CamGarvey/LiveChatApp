@@ -14,6 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./shared"), exports);
-__exportStar(require("./chat"), exports);
+__exportStar(require("./chat.interface"), exports);
+__exportStar(require("./chat.object"), exports);
+__exportStar(require("./deleted-chat.object"), exports);
+__exportStar(require("./chat-result.union"), exports);
 //# sourceMappingURL=index.js.map

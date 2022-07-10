@@ -1,6 +1,6 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { UserInputError, ForbiddenError } from 'apollo-server-errors';
-import Message from '../types/message';
+import Message from '../types';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
 export const createMessage = mutationField('createMessage', {

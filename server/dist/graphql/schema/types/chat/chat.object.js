@@ -9,35 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChatResult = exports.DeletedChat = exports.Chat = exports.IChat = void 0;
+exports.Chat = void 0;
 const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const nexus_1 = require("nexus");
-const scalars_1 = require("./scalars");
-exports.IChat = (0, nexus_1.interfaceType)({
-    name: 'IChat',
-    resolveType: (source) => (source.deletedAt == null ? 'Chat' : 'DeletedChat'),
-    definition: (t) => {
-        t.nonNull.id('id');
-        t.nonNull.string('name');
-        t.string('description');
-        t.nonNull.id('createdById');
-        t.field('createdBy', {
-            type: 'User',
-        });
-        t.nonNull.boolean('isCreator', {
-            resolve: (parent, _, { userId }) => {
-                return parent.createdById == userId;
-            },
-        });
-        t.field('deletedAt', {
-            type: scalars_1.DateScalar,
-        });
-        t.nonNull.field('updatedAt', {
-            type: scalars_1.DateScalar,
-        });
-        t.nonNull.boolean('isDM');
-    },
-});
 exports.Chat = (0, nexus_1.objectType)({
     name: 'Chat',
     definition(t) {
@@ -80,17 +54,4 @@ exports.Chat = (0, nexus_1.objectType)({
         });
     },
 });
-exports.DeletedChat = (0, nexus_1.objectType)({
-    name: 'DeletedChat',
-    definition: (t) => {
-        t.implements('IChat');
-    },
-});
-exports.ChatResult = (0, nexus_1.unionType)({
-    name: 'ChatResult',
-    resolveType: (source) => (source.deletedAt == null ? 'Chat' : 'DeletedChat'),
-    definition: (t) => {
-        t.members('Chat', 'DeletedChat');
-    },
-});
-//# sourceMappingURL=chat.js.map
+//# sourceMappingURL=chat.object.js.map

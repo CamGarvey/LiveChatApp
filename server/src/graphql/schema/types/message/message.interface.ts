@@ -1,5 +1,4 @@
 import { interfaceType } from 'nexus';
-import { DateScalar } from './scalars';
 
 export const IMessage = interfaceType({
   name: 'IMessage',
@@ -25,13 +24,13 @@ export const IMessage = interfaceType({
       },
     });
     t.nonNull.field('deletedAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.field('updatedAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.field('createdAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.string('chatId');
     t.nonNull.field('chat', {

@@ -13,7 +13,7 @@ exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.Users = voi
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
-const sort_enum_1 = require("../types/sort.enum");
+const sort_enum_1 = require("../types/shared/sort.enum");
 const UserOrderBy = (0, nexus_1.inputObjectType)({
     name: 'UserOrderBy',
     definition(t) {

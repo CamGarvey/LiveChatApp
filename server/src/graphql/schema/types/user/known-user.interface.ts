@@ -1,68 +1,12 @@
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
-import { objectType } from 'nexus';
-import { DateScalar } from './scalars';
+import { interfaceType } from 'nexus';
 
-export const User = objectType({
-  name: 'User',
-  definition(t) {
-    t.nonNull.id('id');
-    t.string('name');
-    t.nonNull.string('email');
-    t.nonNull.string('username');
-    t.nonNull.field('createdAt', {
-      type: DateScalar,
-    });
-    t.nonNull.field('updatedAt', {
-      type: DateScalar,
-    });
-    t.nonNull.field('friendStatus', {
-      type: 'FriendStatus',
-      resolve: async (parent, _, { prisma, userId }) => {
-        const friends = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .friends();
-
-        const receivedFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .receivedFriendRequests();
-
-        const sentFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .sentFriendRequests();
-
-        if (friends.find((x) => x.id == parent.id)) {
-          return 'FRIEND';
-        }
-
-        if (receivedFriendRequests.find((x) => x.id == parent.id)) {
-          return 'REQUEST_RECEIVED';
-        }
-
-        if (sentFriendRequests.find((x) => x.id == parent.id)) {
-          return 'REQUEST_SENT';
-        }
-
-        return 'NOT_FRIEND';
-      },
-    });
-    t.nonNull.list.nonNull.field('sentFriendRequests', {
-      type: User,
-      resolve: (parent, _, { prisma }) => {
-        return prisma.user
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .sentFriendRequests();
-      },
-    });
+export const IKnownUser = interfaceType({
+  name: 'IKnownUser',
+  resolveType: (source) => 'Friend',
+  definition: (t) => {
     t.nonNull.list.nonNull.field('receivedFriendRequests', {
-      type: User,
+      type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.user
           .findUnique({
@@ -104,7 +48,7 @@ export const User = objectType({
       },
     });
     t.nonNull.connectionField('friends', {
-      type: User,
+      type: 'User',
       resolve: async (parent, { after, first }, { prisma }) => {
         const offset = after ? cursorToOffset(after) + 1 : 0;
         if (isNaN(offset)) throw new Error('cursor is invalid');

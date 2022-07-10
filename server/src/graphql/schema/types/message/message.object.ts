@@ -1,6 +1,6 @@
 import { objectType } from 'nexus';
 
-const Message = objectType({
+export const Message = objectType({
   name: 'Message',
   definition(t) {
     t.implements('IMessage');
@@ -17,5 +17,3 @@ const Message = objectType({
     });
   },
 });
-
-export default Message;

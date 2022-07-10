@@ -1,17 +1,17 @@
-import { objectType } from 'nexus';
-import { DateScalar } from './scalars';
+import { interfaceType, objectType } from 'nexus';
 
-export const IUser = objectType({
+export const IUser = interfaceType({
   name: 'IUser',
+  resolveType: (source) => 'Friend',
   definition: (t) => {
     t.nonNull.id('id');
     t.string('name');
     t.nonNull.string('username');
     t.nonNull.field('createdAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.field('updatedAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.field('friendStatus', {
       type: 'FriendStatus',
@@ -34,15 +34,15 @@ export const IUser = objectType({
           })
           .sentFriendRequests();
 
-        if (friends.find((x) => x.id == parent.id)) {
+        if (friends.find((x: any) => x.id == parent.id)) {
           return 'FRIEND';
         }
 
-        if (receivedFriendRequests.find((x) => x.id == parent.id)) {
+        if (receivedFriendRequests.find((x: any) => x.id == parent.id)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (sentFriendRequests.find((x) => x.id == parent.id)) {
+        if (sentFriendRequests.find((x: any) => x.id == parent.id)) {
           return 'REQUEST_SENT';
         }
 

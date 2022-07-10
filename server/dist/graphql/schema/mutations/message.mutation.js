@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.editMessage = exports.deleteMessage = exports.createMessage = void 0;
 const nexus_1 = require("nexus");
 const apollo_server_errors_1 = require("apollo-server-errors");
-const message_1 = __importDefault(require("../types/message"));
+const types_1 = __importDefault(require("../types"));
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
 exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
-    type: message_1.default,
+    type: types_1.default,
     args: {
         chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Chat to create Message in',
@@ -56,7 +56,7 @@ exports.createMessage = (0, nexus_1.mutationField)('createMessage', {
     }),
 });
 exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
-    type: message_1.default,
+    type: types_1.default,
     args: {
         messageId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Message to delete',
@@ -92,7 +92,7 @@ exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
     }),
 });
 exports.editMessage = (0, nexus_1.mutationField)('editMessage', {
-    type: message_1.default,
+    type: types_1.default,
     args: {
         messageId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Message to edit',

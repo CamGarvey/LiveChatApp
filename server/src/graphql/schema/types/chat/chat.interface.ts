@@ -1,5 +1,4 @@
 import { interfaceType } from 'nexus';
-import { DateScalar } from './scalars';
 
 export const IChat = interfaceType({
   name: 'IChat',
@@ -18,10 +17,10 @@ export const IChat = interfaceType({
       },
     });
     t.field('deletedAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.field('updatedAt', {
-      type: DateScalar,
+      type: 'Date',
     });
     t.nonNull.boolean('isDM');
   },
