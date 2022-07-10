@@ -17,7 +17,7 @@ exports.ChatUpdate = (0, nexus_1.objectType)({
     definition(t) {
         t.nonNull.id('id');
         t.nonNull.field('chat', {
-            type: 'Chat',
+            type: 'ChatResult',
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.chat.findUnique({
                     where: {

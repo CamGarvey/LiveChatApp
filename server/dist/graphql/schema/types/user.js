@@ -77,7 +77,7 @@ exports.User = (0, nexus_1.objectType)({
             },
         });
         t.nonNull.list.nonNull.field('chats', {
-            type: 'Chat',
+            type: 'ChatResult',
             resolve: (parent, _, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 if (parent.id == userId) {
                     return yield prisma.user

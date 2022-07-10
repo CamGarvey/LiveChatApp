@@ -12,46 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chat = void 0;
 const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-connection");
 const nexus_1 = require("nexus");
-const scalars_1 = require("./scalars");
 exports.Chat = (0, nexus_1.objectType)({
     name: 'Chat',
     definition(t) {
-        t.nonNull.id('id');
-        t.nonNull.string('name');
-        t.string('description');
-        t.nonNull.field('createdAt', {
-            type: scalars_1.DateScalar,
-        });
-        t.nonNull.field('updatedAt', {
-            type: scalars_1.DateScalar,
-        });
-        t.nonNull.id('createdById');
-        t.nonNull.field('createdBy', {
-            type: 'User',
-            resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
-                const chat = yield prisma.chat.findUnique({
-                    where: {
-                        id: parent.id,
-                    },
-                    include: {
-                        createdBy: true,
-                    },
-                });
-                return chat.createdBy;
-            }),
-        });
-        t.nonNull.boolean('isCreator', {
-            resolve: (parent, _, { userId }) => {
-                return parent.createdById == userId;
-            },
-        });
+        t.implements('IChat');
         t.nonNull.connectionField('messages', {
-            type: 'Message',
+            type: 'MessageResult',
             resolve: (parent, args, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 return yield (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => prisma.message.findMany(Object.assign(Object.assign({}, args), { where: { chatId: parent.id } })), () => prisma.message.count(Object.assign({ where: { chatId: parent.id } })), args);
             }),
         });
-        t.nonNull.boolean('isDM');
         t.nonNull.int('memberCount', {
             resolve: (parent, _, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 const members = yield prisma.chat

@@ -70,13 +70,6 @@ exports.createChat = (0, nexus_1.mutationField)('createChat', {
                     connect: [...memberIdSet].map((id) => ({ id })),
                 },
             },
-            include: {
-                members: {
-                    select: {
-                        id: true,
-                    },
-                },
-            },
         });
         yield pubsub.publish(subscriptions_enum_1.Subscription.ChatCreated, chat);
         yield pubsub.publish(subscriptions_enum_1.Subscription.UserChatCreated, chat);

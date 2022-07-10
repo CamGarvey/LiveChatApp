@@ -74,6 +74,7 @@ export const deleteMessage = mutationField('deleteMessage', {
     if (message == null) {
       throw new UserInputError(`Message with id: ${messageId}, not found`);
     }
+    console.log({ message, userId });
 
     if (message.createdById != userId) {
       // You can only delete your own messages
@@ -84,7 +85,7 @@ export const deleteMessage = mutationField('deleteMessage', {
 
     const updatedMessage = prisma.message.update({
       data: {
-        deletedAt: Date.now().toString(),
+        deletedAt: new Date(),
       },
       where: {
         id: messageId,

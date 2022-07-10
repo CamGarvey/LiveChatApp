@@ -75,12 +75,13 @@ exports.deleteMessage = (0, nexus_1.mutationField)('deleteMessage', {
         if (message == null) {
             throw new apollo_server_errors_1.UserInputError(`Message with id: ${messageId}, not found`);
         }
+        console.log({ message, userId });
         if (message.createdById != userId) {
             throw new apollo_server_errors_1.ForbiddenError('You do not have permission to delete this Message');
         }
         const updatedMessage = prisma.message.update({
             data: {
-                deletedAt: Date.now().toString(),
+                deletedAt: new Date(),
             },
             where: {
                 id: messageId,

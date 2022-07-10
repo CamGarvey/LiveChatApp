@@ -4,7 +4,7 @@ import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { extendType, nonNull, queryField, stringArg } from 'nexus';
 
 export const message = queryField('message', {
-  type: 'Message',
+  type: 'MessageResult',
   description: 'Get a message by id',
   args: {
     messageId: nonNull(
@@ -13,6 +13,7 @@ export const message = queryField('message', {
       })
     ),
   },
+
   resolve: async (_, { messageId }, { userId, prisma }) => {
     const message: Message & {
       chat: Chat & {
@@ -57,7 +58,7 @@ export const messages = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.connectionField('messages', {
-      type: 'Message',
+      type: 'MessageResult',
       additionalArgs: {
         chatId: nonNull(
           stringArg({

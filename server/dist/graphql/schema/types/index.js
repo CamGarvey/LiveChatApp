@@ -14,12 +14,17 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./chat.interface"), exports);
 __exportStar(require("./chat"), exports);
 __exportStar(require("./deleted-chat"), exports);
+__exportStar(require("./chat-result"), exports);
 __exportStar(require("./chat-update"), exports);
 __exportStar(require("./friend-status"), exports);
 __exportStar(require("./scalars"), exports);
 __exportStar(require("./sort.enum"), exports);
 __exportStar(require("./user"), exports);
+__exportStar(require("./message.interface"), exports);
 __exportStar(require("./message"), exports);
+__exportStar(require("./deleted-message"), exports);
+__exportStar(require("./message-result"), exports);
 //# sourceMappingURL=index.js.map

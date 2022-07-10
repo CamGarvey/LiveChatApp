@@ -6,7 +6,7 @@ export const ChatUpdate = objectType({
   definition(t) {
     t.nonNull.id('id');
     t.nonNull.field('chat', {
-      type: 'Chat',
+      type: 'ChatResult',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUnique({
           where: {

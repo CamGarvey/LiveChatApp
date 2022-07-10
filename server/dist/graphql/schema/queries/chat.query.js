@@ -16,7 +16,7 @@ exports.chats = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.list.nonNull.field('chats', {
-            type: 'Chat',
+            type: 'ChatResult',
             resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.user
                     .findUnique({

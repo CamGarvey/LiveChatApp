@@ -9,18 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chatDeletedSubscription = exports.chatCreatedSubscription = exports.chatUpdatedSubscription = exports.chatsSubscription = exports.ChatPayload = void 0;
+exports.chatDeletedSubscription = exports.chatCreatedSubscription = exports.chatUpdatedSubscription = exports.chatsSubscription = void 0;
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 const nexus_1 = require("nexus");
 const subscriptions_enum_1 = require("../../backing-types/subscriptions.enum");
-exports.ChatPayload = (0, nexus_1.unionType)({
-    name: 'ChatPayload',
-    definition: (t) => {
-        t.members('ChatUpdate', 'Chat', 'DeletedChat');
-    },
-});
 exports.chatsSubscription = (0, nexus_1.subscriptionField)('chats', {
-    type: 'ChatPayload',
+    type: 'ChatResult',
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator('chat.*', { pattern: true }), (payload, _, context) => {
             return payload.members

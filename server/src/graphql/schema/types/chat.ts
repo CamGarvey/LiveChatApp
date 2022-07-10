@@ -1,41 +1,12 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { objectType } from 'nexus';
-import { DateScalar } from './scalars';
 
 export const Chat = objectType({
   name: 'Chat',
   definition(t) {
-    t.nonNull.id('id');
-    t.nonNull.string('name');
-    t.string('description');
-    t.nonNull.field('createdAt', {
-      type: DateScalar,
-    });
-    t.nonNull.field('updatedAt', {
-      type: DateScalar,
-    });
-    t.nonNull.id('createdById');
-    t.nonNull.field('createdBy', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        const chat = await prisma.chat.findUnique({
-          where: {
-            id: parent.id,
-          },
-          include: {
-            createdBy: true,
-          },
-        });
-        return chat.createdBy;
-      },
-    });
-    t.nonNull.boolean('isCreator', {
-      resolve: (parent, _, { userId }) => {
-        return parent.createdById == userId;
-      },
-    });
+    t.implements('IChat');
     t.nonNull.connectionField('messages', {
-      type: 'Message',
+      type: 'MessageResult',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection(
           (args) =>
@@ -51,7 +22,6 @@ export const Chat = objectType({
         );
       },
     });
-    t.nonNull.boolean('isDM');
     t.nonNull.int('memberCount', {
       resolve: async (parent, _, { prisma }) => {
         const members = await prisma.chat

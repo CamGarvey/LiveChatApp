@@ -72,7 +72,7 @@ export const User = objectType({
       },
     });
     t.nonNull.list.nonNull.field('chats', {
-      type: 'Chat',
+      type: 'ChatResult',
       resolve: async (parent, _, { prisma, userId }) => {
         if (parent.id == userId) {
           // Is current user, return all

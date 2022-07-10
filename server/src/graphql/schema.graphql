@@ -2,10 +2,10 @@
 ### Do not make changes to this file directly
 
 
-type Chat {
-  createdAt: Date!
-  createdBy: User!
+type Chat implements IChat {
+  createdBy: User
   createdById: ID!
+  deletedAt: Date
   description: String
   id: ID!
   isCreator: Boolean!
@@ -24,16 +24,16 @@ type Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageConnection!
+  ): MessageResultConnection!
   name: String!
   updatedAt: Date!
   updates: [ChatUpdate!]!
 }
 
-union ChatPayload = Chat | ChatUpdate | DeletedChat
+union ChatResult = Chat | DeletedChat
 
 type ChatUpdate {
-  chat: Chat!
+  chat: ChatResult!
   chatId: ID!
   createdAt: Date!
   createdBy: User
@@ -50,11 +50,28 @@ type ChatUpdate {
 """Date custom scalar type"""
 scalar Date
 
-type DeletedChat {
-  createdBy: User!
+type DeletedChat implements IChat {
+  createdBy: User
+  createdById: ID!
+  deletedAt: Date
+  description: String
   id: ID!
-  members: [User]!
+  isCreator: Boolean!
+  isDM: Boolean!
   name: String!
+  updatedAt: Date!
+}
+
+type DeletedMessage implements IMessage {
+  chat: ChatResult!
+  chatId: String!
+  createdAt: Date!
+  createdBy: User!
+  createdById: String!
+  deletedAt: Date!
+  id: ID!
+  isCreator: Boolean!
+  updatedAt: Date!
 }
 
 enum FriendStatus {
@@ -64,24 +81,51 @@ enum FriendStatus {
   REQUEST_SENT
 }
 
-type Message {
-  chat: Chat!
-  chatId: ID!
+interface IChat {
+  createdBy: User
+  createdById: ID!
+  deletedAt: Date
+  description: String
+  id: ID!
+  isCreator: Boolean!
+  isDM: Boolean!
+  name: String!
+  updatedAt: Date!
+}
+
+interface IMessage {
+  chat: ChatResult!
+  chatId: String!
+  createdAt: Date!
+  createdBy: User!
+  createdById: String!
+  deletedAt: Date!
+  id: ID!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+type Message implements IMessage {
+  chat: ChatResult!
+  chatId: String!
   content: String!
   createdAt: Date!
   createdBy: User!
   createdById: String!
+  deletedAt: Date!
   id: ID!
   isCreator: Boolean!
   likedBy: [User!]!
   updatedAt: Date!
 }
 
-type MessageConnection {
+union MessageResult = DeletedMessage | Message
+
+type MessageResultConnection {
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [MessageEdge]
+  edges: [MessageResultEdge]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -89,12 +133,12 @@ type MessageConnection {
   pageInfo: PageInfo!
 }
 
-type MessageEdge {
+type MessageResultEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: Message
+  node: MessageResult
 }
 
 type Mutation {
@@ -225,7 +269,7 @@ type Query {
     """Id of chat"""
     chatId: String!
   ): Chat
-  chats: [Chat!]!
+  chats: [ChatResult!]!
   friends: [User!]!
   me: User
 
@@ -233,7 +277,7 @@ type Query {
   message(
     """id of message"""
     messageId: String!
-  ): Message
+  ): MessageResult
   messages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -249,7 +293,7 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageConnection!
+  ): MessageResultConnection!
   user(
     """id of user"""
     id: String!
@@ -286,7 +330,7 @@ type Subscription {
   chatCreated: Chat
   chatDeleted: DeletedChat
   chatUpdated: ChatUpdate
-  chats: ChatPayload
+  chats: ChatResult
   messageCreated(chatId: String!): Message
   messageDeleted(chatId: String!): Message
   messageUpdated(chatId: String!): Message
@@ -320,7 +364,7 @@ type Subscription {
 }
 
 type User {
-  chats: [Chat!]!
+  chats: [ChatResult!]!
   createdAt: Date!
   email: String!
   friendStatus: FriendStatus!

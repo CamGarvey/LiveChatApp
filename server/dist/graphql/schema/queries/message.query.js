@@ -14,7 +14,7 @@ const prisma_relay_cursor_connection_1 = require("@devoxa/prisma-relay-cursor-co
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 exports.message = (0, nexus_1.queryField)('message', {
-    type: 'Message',
+    type: 'MessageResult',
     description: 'Get a message by id',
     args: {
         messageId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
@@ -52,7 +52,7 @@ exports.messages = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('messages', {
-            type: 'Message',
+            type: 'MessageResult',
             additionalArgs: {
                 chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
                     description: 'If set, filters users by given filter',

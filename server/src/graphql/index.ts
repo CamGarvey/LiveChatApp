@@ -9,11 +9,6 @@ export const schema = makeSchema({
     typegen: path.join(process.cwd(), 'src', 'nexus.d.ts'),
     schema: path.join(process.cwd(), 'src', 'graphql', 'schema.graphql'),
   },
-  features: {
-    abstractTypeStrategies: {
-      resolveType: false,
-    },
-  },
   contextType: {
     export: 'IContext',
     module: path.join(process.cwd(), 'src', 'graphql', 'context.interface.ts'),

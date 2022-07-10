@@ -2,15 +2,8 @@ import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField, unionType } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
-export const ChatPayload = unionType({
-  name: 'ChatPayload',
-  definition: (t) => {
-    t.members('ChatUpdate', 'Chat', 'DeletedChat');
-  },
-});
-
 export const chatsSubscription = subscriptionField('chats', {
-  type: 'ChatPayload',
+  type: 'ChatResult',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.*', { pattern: true }),

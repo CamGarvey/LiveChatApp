@@ -85,13 +85,13 @@ export const createChat = mutationField('createChat', {
           connect: [...memberIdSet].map((id) => ({ id })),
         },
       },
-      include: {
-        members: {
-          select: {
-            id: true, // selecting member ids for pubsub
-          },
-        },
-      },
+      // include: {
+      //   members: {
+      //     select: {
+      //       id: true, // selecting member ids for pubsub
+      //     },
+      //   },
+      // },
     });
 
     await pubsub.publish(Subscription.ChatCreated, chat);
