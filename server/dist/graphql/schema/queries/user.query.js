@@ -17,7 +17,7 @@ exports.users = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('users', {
-            type: 'User',
+            type: 'UserResult',
             description: 'Find users',
             additionalArgs: {
                 usernameFilter: (0, nexus_1.stringArg)({
@@ -75,7 +75,7 @@ exports.friendsQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.list.nonNull.field('friends', {
-            type: 'User',
+            type: 'Friend',
             resolve: (_, __, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 return yield prisma.user
                     .findUnique({
@@ -89,7 +89,7 @@ exports.friendsQuery = (0, nexus_1.extendType)({
     },
 });
 exports.userQuery = (0, nexus_1.queryField)('user', {
-    type: 'User',
+    type: 'UserResult',
     args: {
         id: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'id of user',
@@ -104,7 +104,7 @@ exports.userQuery = (0, nexus_1.queryField)('user', {
     }),
 });
 exports.meQuery = (0, nexus_1.queryField)('me', {
-    type: 'User',
+    type: 'Me',
     resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         return yield prisma.user.findUnique({
             where: {

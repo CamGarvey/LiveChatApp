@@ -11,7 +11,7 @@ type Chat implements IChat {
   isCreator: Boolean!
   isDM: Boolean!
   memberCount: Int!
-  members: [IUser!]!
+  members: [UserResult!]!
   messages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -24,7 +24,7 @@ type Chat implements IChat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): IMessageConnection!
+  ): MessageResultConnection!
   name: String!
   updatedAt: Date
 }
@@ -47,10 +47,10 @@ type DeletedChat implements IChat {
 }
 
 type DeletedMessage implements IMessage {
-  chat: IChat!
+  chat: ChatResult!
   chatId: String!
   createdAt: Date!
-  createdBy: IUser!
+  createdBy: UserResult!
   createdById: String!
   deletedAt: Date
   id: ID!
@@ -74,12 +74,32 @@ type Friend implements IKnownUser & IUser {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): IUserConnection!
+  ): FriendConnection!
   id: ID!
   name: String
-  receivedFriendRequests: [IUser!]!
+  receivedFriendRequests: [UserResult!]!
   updatedAt: Date!
   username: String!
+}
+
+type FriendConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [FriendEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type FriendEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: Friend
 }
 
 enum FriendStatus {
@@ -115,40 +135,20 @@ interface IKnownUser {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): IUserConnection!
-  receivedFriendRequests: [IUser!]!
+  ): FriendConnection!
+  receivedFriendRequests: [UserResult!]!
 }
 
 interface IMessage {
-  chat: IChat!
+  chat: ChatResult!
   chatId: String!
   createdAt: Date!
-  createdBy: IUser!
+  createdBy: UserResult!
   createdById: String!
   deletedAt: Date
   id: ID!
   isCreator: Boolean!
   updatedAt: Date!
-}
-
-type IMessageConnection {
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
-  """
-  edges: [IMessageEdge]
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
-  """
-  pageInfo: PageInfo!
-}
-
-type IMessageEdge {
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
-  cursor: String!
-
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: IMessage
 }
 
 interface IUser {
@@ -160,11 +160,51 @@ interface IUser {
   username: String!
 }
 
-type IUserConnection {
+type Me implements IKnownUser & IUser {
+  chats: [ChatResult!]!
+  createdAt: Date!
+  friendStatus: FriendStatus!
+  friends(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): FriendConnection!
+  id: ID!
+  name: String
+  receivedFriendRequests: [UserResult!]!
+  updatedAt: Date!
+  username: String!
+}
+
+type Message implements IMessage {
+  chat: ChatResult!
+  chatId: String!
+  content: String!
+  createdAt: Date!
+  createdBy: UserResult!
+  createdById: String!
+  deletedAt: Date
+  id: ID!
+  isCreator: Boolean!
+  likedBy: [UserResult!]!
+  updatedAt: Date!
+}
+
+union MessageResult = DeletedMessage | Message
+
+type MessageResultConnection {
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [IUserEdge]
+  edges: [MessageResultEdge]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -172,29 +212,105 @@ type IUserConnection {
   pageInfo: PageInfo!
 }
 
-type IUserEdge {
+type MessageResultEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: IUser
+  node: MessageResult
 }
 
-type Message implements IMessage {
-  chat: IChat!
-  chatId: String!
-  content: String!
-  createdAt: Date!
-  createdBy: IUser!
-  createdById: String!
-  deletedAt: Date
-  id: ID!
-  isCreator: Boolean!
-  likedBy: [IUser!]!
-  updatedAt: Date!
-}
+type Mutation {
+  """Accept a Users friend request"""
+  acceptFriendRequest(friendId: String!): Friend
 
-union MessageResult = DeletedMessage | Message
+  """Add Members into Chat"""
+  addMembersToChat(
+    """Id of Chat to add Users to"""
+    chatId: String!
+
+    """Ids of Users to be added to Chat"""
+    memberIds: [String!]!
+  ): Chat
+
+  """Cancel/Delete a sent Friend Request"""
+  cancelFriendRequest(friendId: String!): Stranger
+
+  """Create a Chat"""
+  createChat(
+    """Description of Chat"""
+    description: String
+
+    """If the Chat should be private"""
+    isPrivate: Boolean = true
+
+    """Ids of Users to be added to Chat"""
+    memberIds: [String!]
+
+    """Name of the Chat"""
+    name: String!
+  ): Chat
+
+  """Create a Message in a Chat"""
+  createMessage(
+    """Id of Chat to create Message in"""
+    chatId: String!
+
+    """Content of Message"""
+    content: String!
+  ): Message
+
+  """Delete/Decline a received Friend Request"""
+  declineFriendRequest(friendId: String!): Stranger
+
+  """Delete a Chat"""
+  deleteChat(
+    """Id of Chat to be deleted"""
+    chatId: String!
+  ): DeletedChat
+
+  """Delete a Friend"""
+  deleteFriend(friendId: String!): Stranger
+
+  """Remove Members from Chat"""
+  removeMembersFromChat(chatId: String!, membersIds: [String!]!): Chat
+
+  """Send a Friend Request to a User"""
+  sendFriendRequest(friendId: String!): Stranger
+
+  """Update a Chat"""
+  updateChat(
+    """Ids of Users to be added to Chat"""
+    addMembersId: [String!]
+
+    """Id of Chat to be updated"""
+    chatId: String!
+
+    """Description of Chat"""
+    description: String
+
+    """If the Chat should be private"""
+    isPrivate: Boolean
+
+    """Name of Chat"""
+    name: String
+
+    """Ids of Users to be removed from Chat"""
+    removeMembersId: [String!]
+  ): Chat
+
+  """Update current User"""
+  updateMe(email: String!, username: String!): Me
+
+  """Edit a Message"""
+  updateMessage(
+    """New content for Message"""
+    content: String!
+
+    """Id of Message to edit"""
+    messageId: String!
+  ): Message
+}
 
 """
 PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -222,7 +338,60 @@ type PageInfo {
 }
 
 type Query {
-  ok: Boolean!
+  chat(
+    """Id of chat"""
+    chatId: String!
+  ): Chat
+  chats: [ChatResult!]!
+  friends: [Friend!]!
+  me: Me
+
+  """Get a message by id"""
+  message(
+    """id of message"""
+    messageId: String!
+  ): MessageResult
+  messages(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """If set, filters users by given filter"""
+    chatId: String!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): MessageResultConnection!
+  user(
+    """id of user"""
+    id: String!
+  ): UserResult
+
+  """Find users"""
+  users(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+
+    """How to order query"""
+    orderBy: UserOrderBy
+
+    """If set, filters users by given filter"""
+    usernameFilter: String
+  ): UserResultConnection!
 }
 
 enum Sort {
@@ -248,4 +417,24 @@ input UserOrderBy {
   username: Sort
 }
 
-union UserResult = Friend | Stranger
+union UserResult = Friend | Me | Stranger
+
+type UserResultConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [UserResultEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type UserResultEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: UserResult
+}

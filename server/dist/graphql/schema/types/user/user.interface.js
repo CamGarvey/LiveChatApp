@@ -13,7 +13,7 @@ exports.IUser = void 0;
 const nexus_1 = require("nexus");
 exports.IUser = (0, nexus_1.interfaceType)({
     name: 'IUser',
-    resolveType: () => 'Friend',
+    resolveType: (source, { prisma }) => 'Stranger',
     definition: (t) => {
         t.nonNull.id('id');
         t.string('name');

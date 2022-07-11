@@ -9,7 +9,7 @@ export const IMessage = interfaceType({
     t.nonNull.id('id');
     t.nonNull.string('createdById');
     t.nonNull.field('createdBy', {
-      type: 'IUser',
+      type: 'UserResult',
       resolve: async (parent, __, { prisma }) => {
         return await prisma.user.findUnique({
           where: {
@@ -28,7 +28,7 @@ export const IMessage = interfaceType({
     t.nonNull.date('createdAt');
     t.nonNull.string('chatId');
     t.nonNull.field('chat', {
-      type: 'IChat',
+      type: 'ChatResult',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUnique({
           where: {

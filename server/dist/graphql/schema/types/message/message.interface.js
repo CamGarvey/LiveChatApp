@@ -20,7 +20,7 @@ exports.IMessage = (0, nexus_1.interfaceType)({
         t.nonNull.id('id');
         t.nonNull.string('createdById');
         t.nonNull.field('createdBy', {
-            type: 'IUser',
+            type: 'UserResult',
             resolve: (parent, __, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 return yield prisma.user.findUnique({
                     where: {
@@ -39,7 +39,7 @@ exports.IMessage = (0, nexus_1.interfaceType)({
         t.nonNull.date('createdAt');
         t.nonNull.string('chatId');
         t.nonNull.field('chat', {
-            type: 'IChat',
+            type: 'ChatResult',
             resolve: (parent, _, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 return yield prisma.chat.findUnique({
                     where: {

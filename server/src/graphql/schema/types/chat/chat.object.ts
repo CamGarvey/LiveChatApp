@@ -6,7 +6,7 @@ export const Chat = objectType({
   definition(t) {
     t.implements('IChat');
     t.nonNull.connectionField('messages', {
-      type: 'IMessage',
+      type: 'MessageResult',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection(
           (args) =>
@@ -33,7 +33,7 @@ export const Chat = objectType({
       },
     });
     t.nonNull.list.nonNull.field('members', {
-      type: 'IUser',
+      type: 'UserResult',
       resolve: (parent, _, { prisma }) => {
         return prisma.chat
           .findUnique({

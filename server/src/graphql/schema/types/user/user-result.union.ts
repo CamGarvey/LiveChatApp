@@ -2,8 +2,8 @@ import { unionType } from 'nexus';
 
 export const UserResult = unionType({
   name: 'UserResult',
-  resolveType: (t) => 'IUser',
+  resolveType: (t) => 'Friend',
   definition: (t) => {
-    t.members('Friend', 'Stranger');
+    t.members('Friend', 'Stranger', 'Me');
   },
 });

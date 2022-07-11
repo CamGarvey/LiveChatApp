@@ -18,5 +18,6 @@ __exportStar(require("./user.interface"), exports);
 __exportStar(require("./known-user.interface"), exports);
 __exportStar(require("./stranger.object"), exports);
 __exportStar(require("./friend.object"), exports);
+__exportStar(require("./me.object"), exports);
 __exportStar(require("./user-result.union"), exports);
 //# sourceMappingURL=index.js.map

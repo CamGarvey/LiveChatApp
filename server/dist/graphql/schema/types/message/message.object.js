@@ -8,7 +8,7 @@ exports.Message = (0, nexus_1.objectType)({
         t.implements('IMessage');
         t.nonNull.string('content');
         t.nonNull.list.nonNull.field('likedBy', {
-            type: 'IUser',
+            type: 'UserResult',
             resolve: (parent, _, { prisma }) => {
                 return prisma.message
                     .findUnique({

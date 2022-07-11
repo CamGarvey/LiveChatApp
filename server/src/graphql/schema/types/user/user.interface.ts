@@ -2,7 +2,7 @@ import { interfaceType } from 'nexus';
 
 export const IUser = interfaceType({
   name: 'IUser',
-  resolveType: () => 'Friend',
+  resolveType: (source, { prisma }) => 'Stranger',
   definition: (t) => {
     t.nonNull.id('id');
     t.string('name');

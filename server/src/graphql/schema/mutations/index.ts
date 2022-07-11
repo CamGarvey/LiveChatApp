@@ -1,3 +1,3 @@
-export * from './chat.mutation';
-export * from './message.mutation';
-export * from './user.mutation';
+export * from './chat';
+export * from './message';
+export * from './user';

@@ -1,3 +1,3 @@
-export * from './chat.query';
-export * from './user.query';
-export * from './message.query';
+export * from './chat';
+export * from './user';
+export * from './message';

@@ -17,7 +17,7 @@ exports.Chat = (0, nexus_1.objectType)({
     definition(t) {
         t.implements('IChat');
         t.nonNull.connectionField('messages', {
-            type: 'IMessage',
+            type: 'MessageResult',
             resolve: (parent, args, { prisma }) => __awaiter(this, void 0, void 0, function* () {
                 return yield (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => prisma.message.findMany(Object.assign(Object.assign({}, args), { where: { chatId: parent.id } })), () => prisma.message.count(Object.assign({ where: { chatId: parent.id } })), args);
             }),
@@ -33,7 +33,7 @@ exports.Chat = (0, nexus_1.objectType)({
             }),
         });
         t.nonNull.list.nonNull.field('members', {
-            type: 'IUser',
+            type: 'UserResult',
             resolve: (parent, _, { prisma }) => {
                 return prisma.chat
                     .findUnique({
