@@ -9,38 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MeQuery = exports.UserQuery = exports.FriendsQuery = exports.Users = void 0;
+exports.meQuery = exports.userQuery = exports.friendsQuery = exports.users = void 0;
 const client_1 = require("@prisma/client");
 const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
-const sort_enum_1 = require("../types/shared/sort.enum");
-const UserOrderBy = (0, nexus_1.inputObjectType)({
-    name: 'UserOrderBy',
-    definition(t) {
-        t.field('username', {
-            type: sort_enum_1.Sort,
-        });
-        t.field('id', {
-            type: sort_enum_1.Sort,
-        });
-        t.field('name', {
-            type: sort_enum_1.Sort,
-        });
-        t.field('email', {
-            type: sort_enum_1.Sort,
-        });
-        t.field('username', {
-            type: sort_enum_1.Sort,
-        });
-        t.field('createdAt', {
-            type: sort_enum_1.Sort,
-        });
-        t.field('updatedAt', {
-            type: sort_enum_1.Sort,
-        });
-    },
-});
-exports.Users = (0, nexus_1.extendType)({
+exports.users = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.connectionField('users', {
@@ -50,7 +23,10 @@ exports.Users = (0, nexus_1.extendType)({
                 usernameFilter: (0, nexus_1.stringArg)({
                     description: 'If set, filters users by given filter',
                 }),
-                orderBy: (0, nexus_1.arg)({ type: UserOrderBy, description: 'How to order query' }),
+                orderBy: (0, nexus_1.arg)({
+                    type: 'UserOrderBy',
+                    description: 'How to order query',
+                }),
             },
             resolve: (_, { after, first, usernameFilter, orderBy }, { prisma, userId }) => __awaiter(this, void 0, void 0, function* () {
                 const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
@@ -95,7 +71,7 @@ exports.Users = (0, nexus_1.extendType)({
         });
     },
 });
-exports.FriendsQuery = (0, nexus_1.extendType)({
+exports.friendsQuery = (0, nexus_1.extendType)({
     type: 'Query',
     definition(t) {
         t.nonNull.list.nonNull.field('friends', {
@@ -112,7 +88,7 @@ exports.FriendsQuery = (0, nexus_1.extendType)({
         });
     },
 });
-exports.UserQuery = (0, nexus_1.queryField)('user', {
+exports.userQuery = (0, nexus_1.queryField)('user', {
     type: 'User',
     args: {
         id: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
@@ -127,7 +103,7 @@ exports.UserQuery = (0, nexus_1.queryField)('user', {
         });
     }),
 });
-exports.MeQuery = (0, nexus_1.queryField)('me', {
+exports.meQuery = (0, nexus_1.queryField)('me', {
     type: 'User',
     resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         return yield prisma.user.findUnique({

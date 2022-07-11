@@ -20,7 +20,7 @@ exports.IMessage = (0, nexus_1.interfaceType)({
         t.nonNull.id('id');
         t.nonNull.string('createdById');
         t.nonNull.field('createdBy', {
-            type: 'User',
+            type: 'IUser',
             resolve: (parent, __, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 return yield prisma.user.findUnique({
                     where: {
@@ -34,18 +34,12 @@ exports.IMessage = (0, nexus_1.interfaceType)({
                 return parent.createdById === userId;
             },
         });
-        t.nonNull.field('deletedAt', {
-            type: 'Date',
-        });
-        t.nonNull.field('updatedAt', {
-            type: 'Date',
-        });
-        t.nonNull.field('createdAt', {
-            type: 'Date',
-        });
+        t.date('deletedAt');
+        t.nonNull.date('updatedAt');
+        t.nonNull.date('createdAt');
         t.nonNull.string('chatId');
         t.nonNull.field('chat', {
-            type: 'ChatResult',
+            type: 'IChat',
             resolve: (parent, _, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 return yield prisma.chat.findUnique({
                     where: {

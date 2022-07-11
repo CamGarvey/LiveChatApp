@@ -1,5 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
-import { subscriptionField, unionType } from 'nexus';
+import { subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types/subscriptions.enum';
 
 export const chatsSubscription = subscriptionField('chats', {

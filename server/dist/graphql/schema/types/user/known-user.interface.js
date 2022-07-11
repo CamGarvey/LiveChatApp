@@ -17,7 +17,7 @@ exports.IKnownUser = (0, nexus_1.interfaceType)({
     resolveType: (source) => 'Friend',
     definition: (t) => {
         t.nonNull.list.nonNull.field('receivedFriendRequests', {
-            type: 'User',
+            type: 'IUser',
             resolve: (parent, _, { prisma }) => {
                 return prisma.user
                     .findUnique({
@@ -55,7 +55,7 @@ exports.IKnownUser = (0, nexus_1.interfaceType)({
             }),
         });
         t.nonNull.connectionField('friends', {
-            type: 'User',
+            type: 'IUser',
             resolve: (parent, { after, first }, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 const offset = after ? (0, graphql_relay_1.cursorToOffset)(after) + 1 : 0;
                 if (isNaN(offset))

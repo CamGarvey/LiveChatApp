@@ -6,7 +6,7 @@ export const IKnownUser = interfaceType({
   resolveType: (source) => 'Friend',
   definition: (t) => {
     t.nonNull.list.nonNull.field('receivedFriendRequests', {
-      type: 'User',
+      type: 'IUser',
       resolve: (parent, _, { prisma }) => {
         return prisma.user
           .findUnique({
@@ -48,7 +48,7 @@ export const IKnownUser = interfaceType({
       },
     });
     t.nonNull.connectionField('friends', {
-      type: 'User',
+      type: 'IUser',
       resolve: async (parent, { after, first }, { prisma }) => {
         const offset = after ? cursorToOffset(after) + 1 : 0;
         if (isNaN(offset)) throw new Error('cursor is invalid');

@@ -86,12 +86,6 @@ exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
     description: 'Delete a Chat',
     resolve: (_, { chatId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const chat = yield prisma.chat.findUnique({
-            select: {
-                id: true,
-                name: true,
-                createdBy: true,
-                members: true,
-            },
             where: {
                 id: chatId,
             },
@@ -99,7 +93,7 @@ exports.deleteChat = (0, nexus_1.mutationField)('deleteChat', {
         if (chat == null) {
             throw new apollo_server_core_1.ApolloError('Chat does not exist');
         }
-        if (chat.createdBy.id != userId) {
+        if (chat.createdById != userId) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to delete this chat');
         }
         yield prisma.chat.delete({

@@ -113,12 +113,6 @@ export const deleteChat = mutationField('deleteChat', {
   description: 'Delete a Chat',
   resolve: async (_, { chatId }, { prisma, userId, pubsub }) => {
     const chat = await prisma.chat.findUnique({
-      select: {
-        id: true,
-        name: true,
-        createdBy: true,
-        members: true,
-      },
       where: {
         id: chatId,
       },
@@ -128,7 +122,7 @@ export const deleteChat = mutationField('deleteChat', {
       throw new ApolloError('Chat does not exist');
     }
 
-    if (chat.createdBy.id != userId) {
+    if (chat.createdById != userId) {
       throw new ForbiddenError(
         'You do not have permission to delete this chat'
       );

@@ -13,17 +13,13 @@ exports.IUser = void 0;
 const nexus_1 = require("nexus");
 exports.IUser = (0, nexus_1.interfaceType)({
     name: 'IUser',
-    resolveType: (source) => 'Friend',
+    resolveType: () => 'Friend',
     definition: (t) => {
         t.nonNull.id('id');
         t.string('name');
         t.nonNull.string('username');
-        t.nonNull.field('createdAt', {
-            type: 'Date',
-        });
-        t.nonNull.field('updatedAt', {
-            type: 'Date',
-        });
+        t.nonNull.date('createdAt');
+        t.nonNull.date('updatedAt');
         t.nonNull.field('friendStatus', {
             type: 'FriendStatus',
             resolve: (parent, _, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {

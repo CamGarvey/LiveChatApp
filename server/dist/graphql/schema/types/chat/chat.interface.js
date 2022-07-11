@@ -11,19 +11,15 @@ exports.IChat = (0, nexus_1.interfaceType)({
         t.string('description');
         t.nonNull.id('createdById');
         t.field('createdBy', {
-            type: 'User',
+            type: 'IUser',
         });
         t.nonNull.boolean('isCreator', {
             resolve: (parent, _, { userId }) => {
                 return parent.createdById == userId;
             },
         });
-        t.field('deletedAt', {
-            type: 'Date',
-        });
-        t.nonNull.field('updatedAt', {
-            type: 'Date',
-        });
+        t.date('deletedAt');
+        t.date('updatedAt');
         t.nonNull.boolean('isDM');
     },
 });

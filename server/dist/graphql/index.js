@@ -30,6 +30,7 @@ exports.schema = void 0;
 const nexus_1 = require("nexus");
 const path_1 = __importDefault(require("path"));
 const allTypes = __importStar(require("./schema"));
+console.log({ FoundTypes: allTypes });
 exports.schema = (0, nexus_1.makeSchema)({
     types: allTypes,
     plugins: [(0, nexus_1.connectionPlugin)()],

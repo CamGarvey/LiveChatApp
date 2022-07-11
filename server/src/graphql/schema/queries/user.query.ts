@@ -1,44 +1,9 @@
 import { Prisma } from '@prisma/client';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
-import {
-  arg,
-  extendType,
-  inputObjectType,
-  nonNull,
-  queryField,
-  stringArg,
-} from 'nexus';
-import { Sort } from '../types/shared/sort.enum';
-
-const UserOrderBy = inputObjectType({
-  name: 'UserOrderBy',
-  definition(t) {
-    t.field('username', {
-      type: Sort,
-    });
-    t.field('id', {
-      type: Sort,
-    });
-    t.field('name', {
-      type: Sort,
-    });
-    t.field('email', {
-      type: Sort,
-    });
-    t.field('username', {
-      type: Sort,
-    });
-    t.field('createdAt', {
-      type: Sort,
-    });
-    t.field('updatedAt', {
-      type: Sort,
-    });
-  },
-});
+import { arg, extendType, nonNull, queryField, stringArg } from 'nexus';
 
 // get All Users
-export const Users = extendType({
+export const users = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.connectionField('users', {
@@ -48,7 +13,10 @@ export const Users = extendType({
         usernameFilter: stringArg({
           description: 'If set, filters users by given filter',
         }),
-        orderBy: arg({ type: UserOrderBy, description: 'How to order query' }),
+        orderBy: arg({
+          type: 'UserOrderBy',
+          description: 'How to order query',
+        }),
       },
       resolve: async (
         _,
@@ -104,7 +72,7 @@ export const Users = extendType({
   },
 });
 
-export const FriendsQuery = extendType({
+export const friendsQuery = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.list.nonNull.field('friends', {
@@ -122,7 +90,7 @@ export const FriendsQuery = extendType({
   },
 });
 
-export const UserQuery = queryField('user', {
+export const userQuery = queryField('user', {
   type: 'User',
   args: {
     id: nonNull(
@@ -140,7 +108,7 @@ export const UserQuery = queryField('user', {
   },
 });
 
-export const MeQuery = queryField('me', {
+export const meQuery = queryField('me', {
   type: 'User',
   resolve: async (_, __, { prisma, userId }) => {
     return await prisma.user.findUnique({
