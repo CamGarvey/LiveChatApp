@@ -1,7 +1,7 @@
 import { inputObjectType } from 'nexus';
 
 export const CreateChatInput = inputObjectType({
-  name: 'CreateChatInputType',
+  name: 'CreateChatInput',
   definition: (t) => {
     t.nonNull.string('name', {
       description: 'Name of the chat',
@@ -20,7 +20,7 @@ export const CreateChatInput = inputObjectType({
 });
 
 export const UpdateChatInput = inputObjectType({
-  name: 'UpdateChatInputType',
+  name: 'UpdateChatInput',
   definition: (t) => {
     t.nonNull.id('id', {
       description: 'Id of chat to update',

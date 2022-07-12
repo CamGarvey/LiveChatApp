@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateChatInput = exports.CreateChatInput = void 0;
 const nexus_1 = require("nexus");
 exports.CreateChatInput = (0, nexus_1.inputObjectType)({
-    name: 'CreateChatInputType',
+    name: 'CreateChatInput',
     definition: (t) => {
         t.nonNull.string('name', {
             description: 'Name of the chat',
@@ -21,7 +21,7 @@ exports.CreateChatInput = (0, nexus_1.inputObjectType)({
     },
 });
 exports.UpdateChatInput = (0, nexus_1.inputObjectType)({
-    name: 'UpdateChatInputType',
+    name: 'UpdateChatInput',
     definition: (t) => {
         t.nonNull.id('id', {
             description: 'Id of chat to update',

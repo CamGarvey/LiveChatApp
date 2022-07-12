@@ -2,8 +2,8 @@
 ### Do not make changes to this file directly
 
 
-type Chat implements IChat {
-  createdBy: IUser
+type Chat implements ChatInterface {
+  createdBy: UserResult
   createdById: ID!
   deletedAt: Date
   description: String
@@ -29,13 +29,8 @@ type Chat implements IChat {
   updatedAt: Date
 }
 
-union ChatResult = Chat | DeletedChat
-
-"""Date custom scalar type"""
-scalar Date
-
-type DeletedChat implements IChat {
-  createdBy: IUser
+interface ChatInterface {
+  createdBy: UserResult
   createdById: ID!
   deletedAt: Date
   description: String
@@ -46,7 +41,38 @@ type DeletedChat implements IChat {
   updatedAt: Date
 }
 
-type DeletedMessage implements IMessage {
+union ChatResult = Chat | DeletedChat
+
+input CreateChatInput {
+  """Short description of the chat"""
+  description: String
+
+  """If the chat should be private"""
+  isPrivate: Boolean = true
+
+  """Ids of the users to be added to chat"""
+  memberIds: [ID!]
+
+  """Name of the chat"""
+  name: String!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+type DeletedChat implements ChatInterface {
+  createdBy: UserResult
+  createdById: ID!
+  deletedAt: Date
+  description: String
+  id: ID!
+  isCreator: Boolean!
+  isDM: Boolean!
+  name: String!
+  updatedAt: Date
+}
+
+type DeletedMessage implements MessageInterface {
   chat: ChatResult!
   chatId: String!
   createdAt: Date!
@@ -58,7 +84,7 @@ type DeletedMessage implements IMessage {
   updatedAt: Date!
 }
 
-type Friend implements IKnownUser & IUser {
+type Friend implements KnownUserInterface & UserInterface {
   chats: [ChatResult!]!
   createdAt: Date!
   friendStatus: FriendStatus!
@@ -109,19 +135,7 @@ enum FriendStatus {
   REQUEST_SENT
 }
 
-interface IChat {
-  createdBy: IUser
-  createdById: ID!
-  deletedAt: Date
-  description: String
-  id: ID!
-  isCreator: Boolean!
-  isDM: Boolean!
-  name: String!
-  updatedAt: Date
-}
-
-interface IKnownUser {
+interface KnownUserInterface {
   chats: [ChatResult!]!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
@@ -139,28 +153,7 @@ interface IKnownUser {
   receivedFriendRequests: [UserResult!]!
 }
 
-interface IMessage {
-  chat: ChatResult!
-  chatId: String!
-  createdAt: Date!
-  createdBy: UserResult!
-  createdById: String!
-  deletedAt: Date
-  id: ID!
-  isCreator: Boolean!
-  updatedAt: Date!
-}
-
-interface IUser {
-  createdAt: Date!
-  friendStatus: FriendStatus!
-  id: ID!
-  name: String
-  updatedAt: Date!
-  username: String!
-}
-
-type Me implements IKnownUser & IUser {
+type Me implements KnownUserInterface & UserInterface {
   chats: [ChatResult!]!
   createdAt: Date!
   friendStatus: FriendStatus!
@@ -184,7 +177,7 @@ type Me implements IKnownUser & IUser {
   username: String!
 }
 
-type Message implements IMessage {
+type Message implements MessageInterface {
   chat: ChatResult!
   chatId: String!
   content: String!
@@ -195,6 +188,18 @@ type Message implements IMessage {
   id: ID!
   isCreator: Boolean!
   likedBy: [UserResult!]!
+  updatedAt: Date!
+}
+
+interface MessageInterface {
+  chat: ChatResult!
+  chatId: String!
+  createdAt: Date!
+  createdBy: UserResult!
+  createdById: String!
+  deletedAt: Date
+  id: ID!
+  isCreator: Boolean!
   updatedAt: Date!
 }
 
@@ -237,19 +242,7 @@ type Mutation {
   cancelFriendRequest(friendId: String!): Stranger
 
   """Create a Chat"""
-  createChat(
-    """Description of Chat"""
-    description: String
-
-    """If the Chat should be private"""
-    isPrivate: Boolean = true
-
-    """Ids of Users to be added to Chat"""
-    memberIds: [String!]
-
-    """Name of the Chat"""
-    name: String!
-  ): Chat
+  createChat(data: CreateChatInput): Chat
 
   """Create a Message in a Chat"""
   createMessage(
@@ -272,6 +265,12 @@ type Mutation {
   """Delete a Friend"""
   deleteFriend(friendId: String!): Stranger
 
+  """Delete a Message"""
+  deleteMessage(
+    """Id of Message to delete"""
+    messageId: String!
+  ): Message
+
   """Remove Members from Chat"""
   removeMembersFromChat(chatId: String!, membersIds: [String!]!): Chat
 
@@ -279,30 +278,12 @@ type Mutation {
   sendFriendRequest(friendId: String!): Stranger
 
   """Update a Chat"""
-  updateChat(
-    """Ids of Users to be added to Chat"""
-    addMembersId: [String!]
-
-    """Id of Chat to be updated"""
-    chatId: String!
-
-    """Description of Chat"""
-    description: String
-
-    """If the Chat should be private"""
-    isPrivate: Boolean
-
-    """Name of Chat"""
-    name: String
-
-    """Ids of Users to be removed from Chat"""
-    removeMembersId: [String!]
-  ): Chat
+  updateChat(data: UpdateChatInput): Chat
 
   """Update current User"""
   updateMe(email: String!, username: String!): Me
 
-  """Edit a Message"""
+  """Update a Message"""
   updateMessage(
     """New content for Message"""
     content: String!
@@ -341,7 +322,7 @@ type Query {
   chat(
     """Id of chat"""
     chatId: String!
-  ): Chat
+  ): ChatResult
   chats: [ChatResult!]!
   friends: [Friend!]!
   me: Me
@@ -399,7 +380,51 @@ enum Sort {
   desc
 }
 
-type Stranger implements IUser {
+type Stranger implements UserInterface {
+  createdAt: Date!
+  friendStatus: FriendStatus!
+  id: ID!
+  name: String
+  updatedAt: Date!
+  username: String!
+}
+
+type Subscription {
+  chatCreated: Chat
+  chatDeleted: DeletedChat
+  chats: ChatResult
+
+  """SUbscribe to deleted message in chat"""
+  messageDeleted(chatId: String!): Message
+
+  """Subscribe to updated messages in chat"""
+  messageUpdated(chatId: String!): MessageResult
+
+  """Subscribe to any created/updated/deleted messages"""
+  messages(chatId: String!): Message
+}
+
+input UpdateChatInput {
+  """Ids of users to be add into the chat"""
+  addMemberIds: [ID!]
+
+  """New description for chat"""
+  description: String
+
+  """Id of chat to update"""
+  id: ID!
+
+  """Change if the chat is private"""
+  isPrivate: Boolean
+
+  """New name for chat"""
+  name: String
+
+  """Ids of users to be removed from chat"""
+  removeMemberIds: [ID!]
+}
+
+interface UserInterface {
   createdAt: Date!
   friendStatus: FriendStatus!
   id: ID!
