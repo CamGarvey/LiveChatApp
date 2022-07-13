@@ -18,7 +18,7 @@ exports.CreateChatMutation = (0, nexus_1.mutationField)('createChat', {
     type: 'Chat',
     args: { data: chat_input_1.CreateChatInput },
     description: 'Create a Chat',
-    resolve: (_, { name, description, isPrivate, memberIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { data: { name, description, isPrivate, memberIds } }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const memberIdSet = new Set(memberIds);
         if (memberIdSet.has(userId)) {
             memberIdSet.delete(userId);
@@ -180,7 +180,7 @@ exports.UpdateChatMutation = (0, nexus_1.mutationField)('updateChat', {
     type: 'Chat',
     args: { data: chat_input_1.UpdateChatInput },
     description: 'Update a Chat',
-    resolve: (_, { chatId, name, description, isPrivate, addMembersId, removeMembersId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { data: { chatId, name, description, isPrivate, addMemberIds, removeMemberIds, }, }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const chat = yield prisma.chat.findUnique({
             select: {
                 createdById: true,
@@ -206,8 +206,8 @@ exports.UpdateChatMutation = (0, nexus_1.mutationField)('updateChat', {
                 description,
                 isPrivate,
                 members: {
-                    connect: addMembersId === null || addMembersId === void 0 ? void 0 : addMembersId.map((x) => ({ id: x })),
-                    disconnect: removeMembersId === null || removeMembersId === void 0 ? void 0 : removeMembersId.map((x) => ({ id: x })),
+                    connect: addMemberIds === null || addMemberIds === void 0 ? void 0 : addMemberIds.map((x) => ({ id: x })),
+                    disconnect: removeMemberIds === null || removeMemberIds === void 0 ? void 0 : removeMemberIds.map((x) => ({ id: x })),
                 },
             },
             where: {
@@ -228,8 +228,8 @@ exports.UpdateChatMutation = (0, nexus_1.mutationField)('updateChat', {
                 },
                 name,
                 description,
-                memberIdsAdded: addMembersId,
-                memberIdsRemoved: removeMembersId,
+                memberIdsAdded: addMemberIds,
+                memberIdsRemoved: removeMemberIds,
             },
             include: {
                 chat: {

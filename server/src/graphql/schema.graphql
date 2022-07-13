@@ -408,11 +408,11 @@ input UpdateChatInput {
   """Ids of users to be add into the chat"""
   addMemberIds: [ID!]
 
+  """Id of chat to update"""
+  chatId: ID!
+
   """New description for chat"""
   description: String
-
-  """Id of chat to update"""
-  id: ID!
 
   """Change if the chat is private"""
   isPrivate: Boolean

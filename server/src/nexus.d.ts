@@ -6,6 +6,7 @@
 
 import type { IContext } from "./graphql/context.interface"
 import type { core, connectionPluginCore } from "nexus"
+import type { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
     /**
@@ -46,8 +47,8 @@ export interface NexusGenInputs {
   }
   UpdateChatInput: { // input type
     addMemberIds?: string[] | null; // [ID!]
+    chatId: string; // ID!
     description?: string | null; // String
-    id: string; // ID!
     isPrivate?: boolean | null; // Boolean
     name?: string | null; // String
     removeMemberIds?: string[] | null; // [ID!]
@@ -748,6 +749,15 @@ declare global {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
     
+    /**
+     * Authorization for an individual field. Returning "true"
+     * or "Promise<true>" means the field can be accessed.
+     * Returning "false" or "Promise<false>" will respond
+     * with a "Not Authorized" error for the field.
+     * Returning or throwing an error will also prevent the
+     * resolver from executing.
+     */
+    authorize?: FieldAuthorizeResolver<TypeName, FieldName>
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }

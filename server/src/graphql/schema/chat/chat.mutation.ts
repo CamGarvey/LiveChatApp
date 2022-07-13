@@ -13,7 +13,7 @@ export const CreateChatMutation = mutationField('createChat', {
   description: 'Create a Chat',
   resolve: async (
     _,
-    { name, description, isPrivate, memberIds },
+    { data: { name, description, isPrivate, memberIds } },
     { prisma, userId, pubsub }
   ) => {
     // Remove duplicates
@@ -232,7 +232,16 @@ export const UpdateChatMutation = mutationField('updateChat', {
   description: 'Update a Chat',
   resolve: async (
     _,
-    { chatId, name, description, isPrivate, addMembersId, removeMembersId },
+    {
+      data: {
+        chatId,
+        name,
+        description,
+        isPrivate,
+        addMemberIds,
+        removeMemberIds,
+      },
+    },
     { prisma, userId, pubsub }
   ) => {
     const chat = await prisma.chat.findUnique({
@@ -266,8 +275,8 @@ export const UpdateChatMutation = mutationField('updateChat', {
         description,
         isPrivate,
         members: {
-          connect: addMembersId?.map((x) => ({ id: x })),
-          disconnect: removeMembersId?.map((x) => ({ id: x })),
+          connect: addMemberIds?.map((x) => ({ id: x })),
+          disconnect: removeMemberIds?.map((x) => ({ id: x })),
         },
       },
       where: {
@@ -289,8 +298,8 @@ export const UpdateChatMutation = mutationField('updateChat', {
         },
         name,
         description,
-        memberIdsAdded: addMembersId,
-        memberIdsRemoved: removeMembersId,
+        memberIdsAdded: addMemberIds,
+        memberIdsRemoved: removeMemberIds,
       },
       include: {
         chat: {

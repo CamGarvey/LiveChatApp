@@ -22,7 +22,7 @@ export const CreateChatInput = inputObjectType({
 export const UpdateChatInput = inputObjectType({
   name: 'UpdateChatInput',
   definition: (t) => {
-    t.nonNull.id('id', {
+    t.nonNull.id('chatId', {
       description: 'Id of chat to update',
     });
     t.string('name', {

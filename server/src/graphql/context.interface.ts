@@ -4,4 +4,9 @@ export interface IContext {
   userId: string;
   prisma: PrismaClient;
   pubsub: RedisPubSub;
+  auth: IAuth;
+}
+
+export interface IAuth {
+  canViewChat: (userId: string, chatId: string) => Promise<boolean>;
 }

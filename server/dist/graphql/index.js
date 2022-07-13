@@ -33,7 +33,7 @@ const allTypes = __importStar(require("./schema"));
 console.log({ FoundTypes: allTypes });
 exports.schema = (0, nexus_1.makeSchema)({
     types: allTypes,
-    plugins: [(0, nexus_1.connectionPlugin)()],
+    plugins: [(0, nexus_1.connectionPlugin)(), (0, nexus_1.fieldAuthorizePlugin)()],
     outputs: {
         typegen: path_1.default.join(process.cwd(), 'src', 'nexus.d.ts'),
         schema: path_1.default.join(process.cwd(), 'src', 'graphql', 'schema.graphql'),

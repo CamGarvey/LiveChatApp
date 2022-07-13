@@ -23,7 +23,7 @@ exports.CreateChatInput = (0, nexus_1.inputObjectType)({
 exports.UpdateChatInput = (0, nexus_1.inputObjectType)({
     name: 'UpdateChatInput',
     definition: (t) => {
-        t.nonNull.id('id', {
+        t.nonNull.id('chatId', {
             description: 'Id of chat to update',
         });
         t.string('name', {
