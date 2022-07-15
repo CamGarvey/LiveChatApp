@@ -35,7 +35,7 @@ authRouter.post('/create-user-hook', async (req, res) => {
     }
 
     // Create new user in db
-    const user = await prisma.user.create({
+    const { userId } = await prisma.user.create({
       data: {
         name,
         username,
@@ -45,7 +45,7 @@ authRouter.post('/create-user-hook', async (req, res) => {
     // Send 201 response with user id for Auth0 user metadata
     // Then Auth0 can send the userId in the accesstoken
     res.status(201).send({
-      userId: user.id,
+      userId,
     });
   } catch (e) {
     console.error(e);

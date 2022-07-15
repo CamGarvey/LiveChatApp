@@ -2,16 +2,58 @@
 ### Do not make changes to this file directly
 
 
-type Chat implements ChatInterface {
+interface ChatInterface {
+  chatId: ID!
   createdBy: UserResult
   createdById: ID!
-  deletedAt: Date
-  description: String
-  id: ID!
   isCreator: Boolean!
-  isDM: Boolean!
-  memberCount: Int!
-  members: [UserResult!]!
+  updatedAt: Date
+}
+
+union ChatResult = DeletedChat | DirectMessageChat | GroupChat
+
+input CreateGroupChatInput {
+  """Short description of the group chat"""
+  description: String
+
+  """Ids of the users to be added to group chat"""
+  memberIds: [ID!]
+
+  """Name of the chat"""
+  name: String!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+type DeletedChat implements ChatInterface {
+  chatId: ID!
+  createdBy: UserResult
+  createdById: ID!
+  deletedAt: Date!
+  isCreator: Boolean!
+  updatedAt: Date
+}
+
+type DeletedMessage implements MessageInterface {
+  chat: ChatResult!
+  chatId: String!
+  createdAt: Date!
+  createdBy: UserResult!
+  createdById: String!
+  deletedAt: Date
+  isCreator: Boolean!
+  messageId: ID!
+  updatedAt: Date!
+}
+
+"""A Direct Message Chat is a conversation between 2 members"""
+type DirectMessageChat implements ChatInterface {
+  chatId: ID!
+  createdBy: UserResult
+  createdById: ID!
+  friend: Friend!
+  isCreator: Boolean!
   messages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -25,63 +67,7 @@ type Chat implements ChatInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): MessageResultConnection!
-  name: String!
   updatedAt: Date
-}
-
-interface ChatInterface {
-  createdBy: UserResult
-  createdById: ID!
-  deletedAt: Date
-  description: String
-  id: ID!
-  isCreator: Boolean!
-  isDM: Boolean!
-  name: String!
-  updatedAt: Date
-}
-
-union ChatResult = Chat | DeletedChat
-
-input CreateChatInput {
-  """Short description of the chat"""
-  description: String
-
-  """If the chat should be private"""
-  isPrivate: Boolean = true
-
-  """Ids of the users to be added to chat"""
-  memberIds: [ID!]
-
-  """Name of the chat"""
-  name: String!
-}
-
-"""Date custom scalar type"""
-scalar Date
-
-type DeletedChat implements ChatInterface {
-  createdBy: UserResult
-  createdById: ID!
-  deletedAt: Date
-  description: String
-  id: ID!
-  isCreator: Boolean!
-  isDM: Boolean!
-  name: String!
-  updatedAt: Date
-}
-
-type DeletedMessage implements MessageInterface {
-  chat: ChatResult!
-  chatId: String!
-  createdAt: Date!
-  createdBy: UserResult!
-  createdById: String!
-  deletedAt: Date
-  id: ID!
-  isCreator: Boolean!
-  updatedAt: Date!
 }
 
 type Friend implements KnownUserInterface & UserInterface {
@@ -101,10 +87,10 @@ type Friend implements KnownUserInterface & UserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
-  id: ID!
   name: String
   receivedFriendRequests: [UserResult!]!
   updatedAt: Date!
+  userId: ID!
   username: String!
 }
 
@@ -133,6 +119,19 @@ enum FriendStatus {
   NOT_FRIEND
   REQUEST_RECEIVED
   REQUEST_SENT
+}
+
+"""A Group Chat is a chat that contains more than 2 members"""
+type GroupChat implements ChatInterface {
+  chatId: ID!
+  createdBy: UserResult
+  createdById: ID!
+  description: String
+  isCreator: Boolean!
+  memberCount: Int!
+  members: [UserResult!]!
+  name: String!
+  updatedAt: Date
 }
 
 interface KnownUserInterface {
@@ -170,10 +169,10 @@ type Me implements KnownUserInterface & UserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
-  id: ID!
   name: String
   receivedFriendRequests: [UserResult!]!
   updatedAt: Date!
+  userId: ID!
   username: String!
 }
 
@@ -185,9 +184,9 @@ type Message implements MessageInterface {
   createdBy: UserResult!
   createdById: String!
   deletedAt: Date
-  id: ID!
   isCreator: Boolean!
   likedBy: [UserResult!]!
+  messageId: ID!
   updatedAt: Date!
 }
 
@@ -198,8 +197,8 @@ interface MessageInterface {
   createdBy: UserResult!
   createdById: String!
   deletedAt: Date
-  id: ID!
   isCreator: Boolean!
+  messageId: ID!
   updatedAt: Date!
 }
 
@@ -230,19 +229,25 @@ type Mutation {
   acceptFriendRequest(friendId: String!): Friend
 
   """Add Members into Chat"""
-  addMembersToChat(
+  addMembersToGroupChat(
     """Id of Chat to add Users to"""
     chatId: String!
 
     """Ids of Users to be added to Chat"""
     memberIds: [String!]!
-  ): Chat
+  ): ChatResult
 
   """Cancel/Delete a sent Friend Request"""
   cancelFriendRequest(friendId: String!): Stranger
 
   """Create a Chat"""
-  createChat(data: CreateChatInput): Chat
+  createDirectMessageChat(
+    """Id of friend to create a Direct Message Chat with"""
+    friendId: String!
+  ): DirectMessageChat
+
+  """Create a Chat"""
+  createGroupChat(data: CreateGroupChatInput): GroupChat
 
   """Create a Message in a Chat"""
   createMessage(
@@ -272,15 +277,15 @@ type Mutation {
   ): Message
 
   """Remove Members from Chat"""
-  removeMembersFromChat(chatId: String!, membersIds: [String!]!): Chat
+  removeMembersFromChat(chatId: String!, membersIds: [String!]!): ChatResult
 
-  """Send a Friend Request to a User"""
+  """Send a friend request to a user"""
   sendFriendRequest(friendId: String!): Stranger
 
   """Update a Chat"""
-  updateChat(data: UpdateChatInput): Chat
+  updateChat(data: UpdateChatInput): ChatResult
 
-  """Update current User"""
+  """Update current user"""
   updateMe(email: String!, username: String!): Me
 
   """Update a Message"""
@@ -350,7 +355,7 @@ type Query {
   ): MessageResultConnection!
   user(
     """id of user"""
-    id: String!
+    userId: String!
   ): UserResult
 
   """Find users"""
@@ -383,14 +388,14 @@ enum Sort {
 type Stranger implements UserInterface {
   createdAt: Date!
   friendStatus: FriendStatus!
-  id: ID!
   name: String
   updatedAt: Date!
+  userId: ID!
   username: String!
 }
 
 type Subscription {
-  chatCreated: Chat
+  chatCreated: ChatResult
   chatDeleted: DeletedChat
   chats: ChatResult
 
@@ -414,9 +419,6 @@ input UpdateChatInput {
   """New description for chat"""
   description: String
 
-  """Change if the chat is private"""
-  isPrivate: Boolean
-
   """New name for chat"""
   name: String
 
@@ -427,9 +429,9 @@ input UpdateChatInput {
 interface UserInterface {
   createdAt: Date!
   friendStatus: FriendStatus!
-  id: ID!
   name: String
   updatedAt: Date!
+  userId: ID!
   username: String!
 }
 

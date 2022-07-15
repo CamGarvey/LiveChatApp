@@ -4,9 +4,16 @@ export interface IContext {
   userId: string;
   prisma: PrismaClient;
   pubsub: RedisPubSub;
-  auth: IAuth;
+  auth: IAuthorizer;
 }
 
-export interface IAuth {
-  canViewChat: (userId: string, chatId: string) => Promise<boolean>;
+export interface IAuthorizer {
+  canCreateDirectMessageChat: (friendId: string) => Promise<boolean>;
+  canCreateGroupChat: (memberIds: string[]) => Promise<boolean>;
+  canViewChat: (chatId: string) => Promise<boolean>;
+  canAddMembersToChat: (
+    chatId: string,
+    memberIds: string[]
+  ) => Promise<boolean>;
+  canRemoveMembersFromChat: (chatId: string) => Promise<boolean>;
 }

@@ -15,7 +15,7 @@ const nexus_1 = require("nexus");
 const backing_types_1 = require("../../backing-types");
 exports.UpdateMeMutation = (0, nexus_1.mutationField)('updateMe', {
     type: 'Me',
-    description: 'Update current User',
+    description: 'Update current user',
     args: {
         email: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
         username: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
@@ -27,36 +27,36 @@ exports.UpdateMeMutation = (0, nexus_1.mutationField)('updateMe', {
                 username,
             },
             where: {
-                id: userId,
+                userId,
             },
         });
     },
 });
 exports.SendFriendRequestMutation = (0, nexus_1.mutationField)('sendFriendRequest', {
     type: 'Stranger',
-    description: 'Send a Friend Request to a User',
+    description: 'Send a friend request to a user',
     args: {
         friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
     },
     resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
-                id: userId,
+                userId,
             },
             include: {
                 friends: {
                     where: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
                 sentFriendRequests: {
                     where: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
                 receivedFriendRequests: {
                     where: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
             },
@@ -75,12 +75,12 @@ exports.SendFriendRequestMutation = (0, nexus_1.mutationField)('sendFriendReques
         }
         const friend = yield prisma.user.update({
             where: {
-                id: friendId,
+                userId: friendId,
             },
             data: {
                 receivedFriendRequests: {
                     connect: {
-                        id: userId,
+                        userId,
                     },
                 },
             },
@@ -100,22 +100,22 @@ exports.CancelFriendRequestMutation = (0, nexus_1.mutationField)('cancelFriendRe
         const sentRequests = yield prisma.user
             .findUnique({
             where: {
-                id: userId,
+                userId,
             },
         })
             .sentFriendRequests();
-        const friend = sentRequests.find((request) => request.id == friendId);
+        const friend = sentRequests.find((request) => request.userId == friendId);
         if (!friend) {
             throw new apollo_server_core_1.ForbiddenError('You have no sent requests to this user');
         }
         const user = yield prisma.user.update({
             where: {
-                id: userId,
+                userId,
             },
             data: {
                 sentFriendRequests: {
                     disconnect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
             },
@@ -135,22 +135,22 @@ exports.DeclineFriendRequestMutation = (0, nexus_1.mutationField)('declineFriend
         const receivedRequests = yield prisma.user
             .findUnique({
             where: {
-                id: userId,
+                userId,
             },
         })
             .receivedFriendRequests();
-        const friend = receivedRequests.find((request) => request.id == friendId);
+        const friend = receivedRequests.find((request) => request.userId == friendId);
         if (!friend) {
             throw new apollo_server_core_1.ForbiddenError('You do not have a request from this user');
         }
         const user = yield prisma.user.update({
             where: {
-                id: userId,
+                userId,
             },
             data: {
                 receivedFriendRequests: {
                     disconnect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
             },
@@ -170,32 +170,32 @@ exports.AcceptFriendRequestMutation = (0, nexus_1.mutationField)('acceptFriendRe
         const receivedRequests = yield prisma.user
             .findUnique({
             where: {
-                id: userId,
+                userId,
             },
         })
             .receivedFriendRequests();
-        const friend = receivedRequests.find((request) => request.id == friendId);
+        const friend = receivedRequests.find((request) => request.userId == friendId);
         if (!friend) {
             throw new apollo_server_core_1.ForbiddenError('You do not have a request from this user');
         }
         const user = yield prisma.user.update({
             where: {
-                id: userId,
+                userId,
             },
             data: {
                 receivedFriendRequests: {
                     disconnect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
                 friends: {
                     connect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
                 friendsOf: {
                     connect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
             },
@@ -214,12 +214,12 @@ exports.DeleteFriendMutation = (0, nexus_1.mutationField)('deleteFriend', {
     resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
-                id: userId,
+                userId,
             },
             include: {
                 friends: {
                     where: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
             },
@@ -232,17 +232,17 @@ exports.DeleteFriendMutation = (0, nexus_1.mutationField)('deleteFriend', {
         }
         const newUser = yield prisma.user.update({
             where: {
-                id: userId,
+                userId,
             },
             data: {
                 friends: {
                     disconnect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
                 friendsOf: {
                     disconnect: {
-                        id: friendId,
+                        userId: friendId,
                     },
                 },
             },

@@ -4,11 +4,13 @@ exports.ChatInterface = void 0;
 const nexus_1 = require("nexus");
 exports.ChatInterface = (0, nexus_1.interfaceType)({
     name: 'ChatInterface',
-    resolveType: (source) => (source.deletedAt == null ? 'Chat' : 'DeletedChat'),
+    resolveType: (chat) => {
+        if (chat.deletedAt !== null)
+            return 'DeletedChat';
+        return chat.isDM ? 'DirectMessageChat' : 'GroupChat';
+    },
     definition: (t) => {
-        t.nonNull.id('id');
-        t.nonNull.string('name');
-        t.string('description');
+        t.nonNull.id('chatId');
         t.nonNull.id('createdById');
         t.field('createdBy', {
             type: 'UserResult',
@@ -18,9 +20,7 @@ exports.ChatInterface = (0, nexus_1.interfaceType)({
                 return parent.createdById == userId;
             },
         });
-        t.date('deletedAt');
         t.date('updatedAt');
-        t.nonNull.boolean('isDM');
     },
 });
 //# sourceMappingURL=chat.interface.js.map

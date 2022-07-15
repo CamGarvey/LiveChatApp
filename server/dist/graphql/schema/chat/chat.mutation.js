@@ -9,42 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteChatMutation = exports.UpdateChatMutation = exports.RemoveMembersFromChatMutation = exports.AddMembersToChatMutation = exports.CreateChatMutation = void 0;
+exports.DeleteChatMutation = exports.UpdateChatMutation = exports.RemoveMembersFromGroupChatMutation = exports.AddMembersToGroupChatMutation = exports.CreateDirectMessageChatMutation = exports.CreateGroupChatMutation = void 0;
 const apollo_server_core_1 = require("apollo-server-core");
 const nexus_1 = require("nexus");
 const backing_types_1 = require("../../backing-types");
 const chat_input_1 = require("./chat.input");
-exports.CreateChatMutation = (0, nexus_1.mutationField)('createChat', {
-    type: 'Chat',
-    args: { data: chat_input_1.CreateChatInput },
+exports.CreateGroupChatMutation = (0, nexus_1.mutationField)('createGroupChat', {
+    type: 'GroupChat',
+    args: { data: chat_input_1.CreateGroupChatInput },
     description: 'Create a Chat',
-    resolve: (_, { data: { name, description, isPrivate, memberIds } }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+    authorize: (_, { data: { memberIds } }, { auth }) => __awaiter(void 0, void 0, void 0, function* () { return auth.canCreateGroupChat(memberIds); }),
+    resolve: (_, { data: { name, description, memberIds } }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const memberIdSet = new Set(memberIds);
-        if (memberIdSet.has(userId)) {
-            memberIdSet.delete(userId);
-        }
-        if (memberIdSet) {
-            const user = yield prisma.user.findUnique({
-                where: {
-                    id: userId,
-                },
-                select: {
-                    friends: {
-                        where: {
-                            id: {
-                                in: memberIds,
-                            },
-                        },
-                    },
-                },
-            });
-            if (!user) {
-                throw new Error('Failed to find user');
-            }
-            if (user.friends.length != memberIdSet.size) {
-                throw new apollo_server_core_1.ForbiddenError('You are not friends with all of the users provided');
-            }
-        }
         memberIdSet.add(userId);
         const chat = yield prisma.chat.create({
             data: {
@@ -52,9 +28,8 @@ exports.CreateChatMutation = (0, nexus_1.mutationField)('createChat', {
                 description,
                 createdById: userId,
                 isDM: false,
-                isPrivate,
                 members: {
-                    connect: [...memberIdSet].map((id) => ({ id })),
+                    connect: [...memberIdSet].map((id) => ({ userId: id })),
                 },
             },
         });
@@ -63,8 +38,33 @@ exports.CreateChatMutation = (0, nexus_1.mutationField)('createChat', {
         return chat;
     }),
 });
-exports.AddMembersToChatMutation = (0, nexus_1.mutationField)('addMembersToChat', {
-    type: 'Chat',
+exports.CreateDirectMessageChatMutation = (0, nexus_1.mutationField)('createDirectMessageChat', {
+    type: 'DirectMessageChat',
+    args: {
+        friendId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+            description: 'Id of friend to create a Direct Message Chat with',
+        })),
+    },
+    description: 'Create a Chat',
+    authorize: (_, { friendId }, { auth }) => __awaiter(void 0, void 0, void 0, function* () { return yield auth.canCreateDirectMessageChat(friendId); }),
+    resolve: (_, { friendId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+        const chat = yield prisma.chat.create({
+            data: {
+                name: `${userId}.${friendId}`,
+                createdById: userId,
+                isDM: true,
+                members: {
+                    connect: [userId, friendId].map((id) => ({ userId: id })),
+                },
+            },
+        });
+        yield pubsub.publish(backing_types_1.Subscription.ChatCreated, chat);
+        yield pubsub.publish(backing_types_1.Subscription.UserChatCreated, chat);
+        return chat;
+    }),
+});
+exports.AddMembersToGroupChatMutation = (0, nexus_1.mutationField)('addMembersToGroupChat', {
+    type: 'ChatResult',
     args: {
         chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'Id of Chat to add Users to',
@@ -74,52 +74,28 @@ exports.AddMembersToChatMutation = (0, nexus_1.mutationField)('addMembersToChat'
         })))),
     },
     description: 'Add Members into Chat',
+    authorize: (_, { chatId, memberIds }, { auth }) => auth.canAddMembersToChat(chatId, memberIds),
     resolve: (_, { chatId, memberIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
-        const user = yield prisma.user.findUnique({
-            where: {
-                id: userId,
-            },
-            select: {
-                memberOfChats: {
-                    where: {
-                        id: chatId,
-                    },
-                },
-                friends: {
-                    where: {
-                        id: {
-                            in: memberIds,
-                        },
-                    },
-                },
-            },
-        });
-        if (user.memberOfChats.length == 0) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to add members to this chat');
-        }
-        if (user.friends.length != memberIds.length) {
-            throw new apollo_server_core_1.ForbiddenError('You are not friends with all of these users');
-        }
         const chat = yield prisma.chat.update({
             data: {
                 members: {
-                    connect: memberIds.map((id) => ({ id })),
+                    connect: memberIds.map((id) => ({ userId: id })),
                 },
             },
             where: {
-                id: chatId,
+                chatId,
             },
         });
         const update = yield prisma.chatUpdate.create({
             data: {
                 chat: {
                     connect: {
-                        id: chatId,
+                        chatId,
                     },
                 },
                 createdBy: {
                     connect: {
-                        id: userId,
+                        userId,
                     },
                 },
                 memberIdsAdded: memberIds,
@@ -129,44 +105,35 @@ exports.AddMembersToChatMutation = (0, nexus_1.mutationField)('addMembersToChat'
         return chat;
     }),
 });
-exports.RemoveMembersFromChatMutation = (0, nexus_1.mutationField)('removeMembersFromChat', {
-    type: 'Chat',
+exports.RemoveMembersFromGroupChatMutation = (0, nexus_1.mutationField)('removeMembersFromChat', {
+    type: 'ChatResult',
     args: {
         chatId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
         membersIds: (0, nexus_1.nonNull)((0, nexus_1.list)((0, nexus_1.nonNull)((0, nexus_1.stringArg)()))),
     },
     description: 'Remove Members from Chat',
+    authorize: (_, { chatId }, { auth }) => auth.canRemoveMembersFromChat(chatId),
     resolve: (_, { chatId, membersIds }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
-        const members = yield prisma.chat
-            .findUnique({
-            where: {
-                id: chatId,
-            },
-        })
-            .members();
-        if (!members.find((member) => member.id == userId)) {
-            throw new apollo_server_core_1.ForbiddenError('You do not have permission to remove members from this chat');
-        }
         const chat = yield prisma.chat.update({
             data: {
                 members: {
-                    disconnect: membersIds.map((id) => ({ id })),
+                    disconnect: membersIds.map((id) => ({ userId: id })),
                 },
             },
             where: {
-                id: chatId,
+                chatId,
             },
         });
         const update = yield prisma.chatUpdate.create({
             data: {
                 chat: {
                     connect: {
-                        id: chatId,
+                        chatId,
                     },
                 },
                 createdBy: {
                     connect: {
-                        id: userId,
+                        userId,
                     },
                 },
                 memberIdsRemoved: membersIds,
@@ -177,21 +144,21 @@ exports.RemoveMembersFromChatMutation = (0, nexus_1.mutationField)('removeMember
     }),
 });
 exports.UpdateChatMutation = (0, nexus_1.mutationField)('updateChat', {
-    type: 'Chat',
+    type: 'ChatResult',
     args: { data: chat_input_1.UpdateChatInput },
     description: 'Update a Chat',
-    resolve: (_, { data: { chatId, name, description, isPrivate, addMemberIds, removeMemberIds, }, }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { data: { chatId, name, description, addMemberIds, removeMemberIds } }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const chat = yield prisma.chat.findUnique({
             select: {
                 createdById: true,
                 members: {
                     select: {
-                        id: true,
+                        userId: true,
                     },
                 },
             },
             where: {
-                id: chatId,
+                chatId,
             },
         });
         if (chat == null) {
@@ -204,26 +171,25 @@ exports.UpdateChatMutation = (0, nexus_1.mutationField)('updateChat', {
             data: {
                 name,
                 description,
-                isPrivate,
                 members: {
-                    connect: addMemberIds === null || addMemberIds === void 0 ? void 0 : addMemberIds.map((x) => ({ id: x })),
-                    disconnect: removeMemberIds === null || removeMemberIds === void 0 ? void 0 : removeMemberIds.map((x) => ({ id: x })),
+                    connect: addMemberIds === null || addMemberIds === void 0 ? void 0 : addMemberIds.map((x) => ({ userId: x })),
+                    disconnect: removeMemberIds === null || removeMemberIds === void 0 ? void 0 : removeMemberIds.map((x) => ({ userId: x })),
                 },
             },
             where: {
-                id: chatId,
+                chatId,
             },
         });
         const update = yield prisma.chatUpdate.create({
             data: {
                 chat: {
                     connect: {
-                        id: chatId,
+                        chatId,
                     },
                 },
                 createdBy: {
                     connect: {
-                        id: userId,
+                        userId,
                     },
                 },
                 name,
@@ -236,7 +202,7 @@ exports.UpdateChatMutation = (0, nexus_1.mutationField)('updateChat', {
                     select: {
                         members: {
                             select: {
-                                id: true,
+                                userId: true,
                             },
                         },
                     },
@@ -258,7 +224,7 @@ exports.DeleteChatMutation = (0, nexus_1.mutationField)('deleteChat', {
     resolve: (_, { chatId }, { prisma, userId, pubsub }) => __awaiter(void 0, void 0, void 0, function* () {
         const chat = yield prisma.chat.findUnique({
             where: {
-                id: chatId,
+                chatId,
             },
         });
         if (chat == null) {
@@ -269,7 +235,7 @@ exports.DeleteChatMutation = (0, nexus_1.mutationField)('deleteChat', {
         }
         yield prisma.chat.delete({
             where: {
-                id: chatId,
+                chatId,
             },
         });
         yield pubsub.publish(backing_types_1.Subscription.ChatDeleted, chat);

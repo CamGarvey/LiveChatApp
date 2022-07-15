@@ -6,14 +6,14 @@ export const MessageInterface = interfaceType({
     return t.deletedAt == null ? 'Message' : 'DeletedMessage';
   },
   definition: (t) => {
-    t.nonNull.id('id');
+    t.nonNull.id('messageId');
     t.nonNull.string('createdById');
     t.nonNull.field('createdBy', {
       type: 'UserResult',
       resolve: async (parent, __, { prisma }) => {
         return await prisma.user.findUnique({
           where: {
-            id: parent.createdById || undefined,
+            userId: parent.createdById || undefined,
           },
         });
       },
@@ -32,7 +32,7 @@ export const MessageInterface = interfaceType({
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUnique({
           where: {
-            id: parent.chatId || undefined,
+            chatId: parent.chatId || undefined,
           },
         });
       },

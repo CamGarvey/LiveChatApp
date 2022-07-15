@@ -2,11 +2,12 @@ import { interfaceType } from 'nexus';
 
 export const ChatInterface = interfaceType({
   name: 'ChatInterface',
-  resolveType: (source) => (source.deletedAt == null ? 'Chat' : 'DeletedChat'),
+  resolveType: (chat: any) => {
+    if (chat.deletedAt !== null) return 'DeletedChat';
+    return chat.isDM ? 'DirectMessageChat' : 'GroupChat';
+  },
   definition: (t) => {
-    t.nonNull.id('id');
-    t.nonNull.string('name');
-    t.string('description');
+    t.nonNull.id('chatId');
     t.nonNull.id('createdById');
     t.field('createdBy', {
       type: 'UserResult',
@@ -16,8 +17,6 @@ export const ChatInterface = interfaceType({
         return parent.createdById == userId;
       },
     });
-    t.date('deletedAt');
     t.date('updatedAt');
-    t.nonNull.boolean('isDM');
   },
 });

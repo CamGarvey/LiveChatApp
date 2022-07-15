@@ -24,14 +24,14 @@ exports.MessageQuery = (0, nexus_1.queryField)('message', {
     resolve: (_, { messageId }, { userId, prisma }) => __awaiter(void 0, void 0, void 0, function* () {
         const message = yield prisma.message.findUnique({
             where: {
-                id: messageId,
+                messageId,
             },
             include: {
                 chat: {
                     include: {
                         members: {
                             select: {
-                                id: true,
+                                userId: true,
                             },
                         },
                     },
@@ -42,7 +42,7 @@ exports.MessageQuery = (0, nexus_1.queryField)('message', {
             throw new apollo_server_core_1.UserInputError('Not found');
         }
         console.log({ message });
-        if (!message.chat.members.map((x) => x.id).includes(userId)) {
+        if (!message.chat.members.map((x) => x.userId).includes(userId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to view this message');
         }
         return message;
@@ -60,11 +60,11 @@ exports.MessagesQuery = (0, nexus_1.queryField)((t) => {
             const members = yield prisma.chat
                 .findUnique({
                 where: {
-                    id: chatId,
+                    chatId,
                 },
             })
                 .members();
-            if (!members.find((member) => member.id == userId)) {
+            if (!members.find((member) => member.userId == userId)) {
                 throw new apollo_server_core_1.ForbiddenError('You do not have permission to this chat');
             }
             return (0, prisma_relay_cursor_connection_1.findManyCursorConnection)((args) => {

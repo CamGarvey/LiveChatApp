@@ -1,22 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateChatInput = exports.CreateChatInput = void 0;
+exports.UpdateChatInput = exports.CreateGroupChatInput = void 0;
 const nexus_1 = require("nexus");
-exports.CreateChatInput = (0, nexus_1.inputObjectType)({
-    name: 'CreateChatInput',
+exports.CreateGroupChatInput = (0, nexus_1.inputObjectType)({
+    name: 'CreateGroupChatInput',
     definition: (t) => {
         t.nonNull.string('name', {
             description: 'Name of the chat',
         });
         t.string('description', {
-            description: 'Short description of the chat',
-        });
-        t.boolean('isPrivate', {
-            description: 'If the chat should be private',
-            default: true,
+            description: 'Short description of the group chat',
         });
         t.list.nonNull.id('memberIds', {
-            description: 'Ids of the users to be added to chat',
+            description: 'Ids of the users to be added to group chat',
         });
     },
 });
@@ -31,9 +27,6 @@ exports.UpdateChatInput = (0, nexus_1.inputObjectType)({
         });
         t.string('description', {
             description: 'New description for chat',
-        });
-        t.boolean('isPrivate', {
-            description: 'Change if the chat is private',
         });
         t.list.nonNull.id('addMemberIds', {
             description: 'Ids of users to be add into the chat',

@@ -22,12 +22,12 @@ class Authorizer {
             }
             const friend = yield this._prisma.user.findUnique({
                 where: {
-                    id: friendId,
+                    userId: friendId,
                 },
                 include: {
                     friends: {
                         where: {
-                            id: this.userId,
+                            userId: this.userId,
                         },
                     },
                 },
@@ -50,12 +50,12 @@ class Authorizer {
             if (memberIdSet) {
                 const user = yield this._prisma.user.findUnique({
                     where: {
-                        id: this.userId,
+                        userId: this.userId,
                     },
                     select: {
                         friends: {
                             where: {
-                                id: {
+                                userId: {
                                     in: memberIds,
                                 },
                             },
@@ -75,12 +75,12 @@ class Authorizer {
                 select: {
                     memberOfChats: {
                         where: {
-                            id: chatId,
+                            chatId,
                         },
                     },
                 },
                 where: {
-                    id: this.userId,
+                    userId: this.userId,
                 },
             });
             return user.memberOfChats.length !== 0;
@@ -90,25 +90,25 @@ class Authorizer {
         return __awaiter(this, void 0, void 0, function* () {
             const chat = yield this._prisma.chat.findUnique({
                 where: {
-                    id: chatId,
+                    chatId,
                 },
                 include: {
                     admins: {
                         select: {
-                            id: true,
+                            userId: true,
                             friends: {
                                 select: {
-                                    id: true,
+                                    userId: true,
                                 },
                                 where: {
-                                    id: {
+                                    userId: {
                                         in: memberIds,
                                     },
                                 },
                             },
                         },
                         where: {
-                            id: this.userId,
+                            userId: this.userId,
                         },
                     },
                 },
@@ -126,12 +126,12 @@ class Authorizer {
         return __awaiter(this, void 0, void 0, function* () {
             const chat = yield this._prisma.chat.findUnique({
                 where: {
-                    id: chatId,
+                    chatId,
                 },
                 include: {
                     admins: {
                         where: {
-                            id: this.userId,
+                            userId: this.userId,
                         },
                     },
                 },
@@ -143,4 +143,4 @@ class Authorizer {
     }
 }
 exports.Authorizer = Authorizer;
-//# sourceMappingURL=auth.js.map
+//# sourceMappingURL=authorizer.js.map

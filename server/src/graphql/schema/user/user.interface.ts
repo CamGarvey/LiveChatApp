@@ -3,9 +3,11 @@ import { interfaceType } from 'nexus';
 
 export const UserInterface = interfaceType({
   name: 'UserInterface',
-  resolveType: (source, { prisma }) => 'Stranger',
+  resolveType: async (source) => {
+    return 'Friend';
+  },
   definition: (t) => {
-    t.nonNull.id('id');
+    t.nonNull.id('userId');
     t.string('name');
     t.nonNull.string('username');
     t.nonNull.date('createdAt');
@@ -15,31 +17,31 @@ export const UserInterface = interfaceType({
       resolve: async (parent, _, { prisma, userId }) => {
         const friends = await prisma.user
           .findUnique({
-            where: { id: userId },
+            where: { userId },
           })
           .friends();
 
         const receivedFriendRequests = await prisma.user
           .findUnique({
-            where: { id: userId },
+            where: { userId },
           })
           .receivedFriendRequests();
 
         const sentFriendRequests = await prisma.user
           .findUnique({
-            where: { id: userId },
+            where: { userId },
           })
           .sentFriendRequests();
 
-        if (friends.find((x: any) => x.id == parent.id)) {
+        if (friends.find((x: any) => x.id == parent.userId)) {
           return 'FRIEND';
         }
 
-        if (receivedFriendRequests.find((x: any) => x.id == parent.id)) {
+        if (receivedFriendRequests.find((x: any) => x.id == parent.userId)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (sentFriendRequests.find((x: any) => x.id == parent.id)) {
+        if (sentFriendRequests.find((x: any) => x.id == parent.userId)) {
           return 'REQUEST_SENT';
         }
 
@@ -51,14 +53,16 @@ export const UserInterface = interfaceType({
 
 export const KnownUserInterface = interfaceType({
   name: 'KnownUserInterface',
-  resolveType: (source) => 'Friend',
+  resolveType: (source, { userId }) => {
+    return userId == source.userId ? 'Me' : 'Friend';
+  },
   definition: (t) => {
     t.nonNull.list.nonNull.field('receivedFriendRequests', {
       type: 'UserResult',
       resolve: (parent, _, { prisma }) => {
         return prisma.user
           .findUnique({
-            where: { id: parent.id || undefined },
+            where: { userId: parent.userId || undefined },
           })
           .receivedFriendRequests();
       },
@@ -66,27 +70,22 @@ export const KnownUserInterface = interfaceType({
     t.nonNull.list.nonNull.field('chats', {
       type: 'ChatResult',
       resolve: async (parent, _, { prisma, userId }) => {
-        if (parent.id == userId) {
+        if (parent.userId == userId) {
           // Is current user, return all
           return await prisma.user
             .findUnique({
-              where: { id: parent.id || undefined },
+              where: { userId: parent.userId || undefined },
             })
             .memberOfChats();
         }
 
-        // Only return non private chats
-        // or chats that the current user is in
         return await prisma.chat.findMany({
           where: {
             OR: [
               {
-                isPrivate: false,
-              },
-              {
                 members: {
                   every: {
-                    id: userId,
+                    userId,
                   },
                 },
               },
@@ -109,7 +108,7 @@ export const KnownUserInterface = interfaceType({
             where: {
               friendsOf: {
                 some: {
-                  id: parent.id,
+                  userId: parent.userId,
                 },
               },
             },

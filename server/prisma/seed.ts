@@ -14,10 +14,10 @@ const loadUsers = async (prisma: PrismaClient) => {
       name: 'Cameron g',
       username: 'Camgaroo',
       friends: {
-        connect: otherUsers.map((user) => ({ id: user.id })),
+        connect: otherUsers.map(({ userId }) => ({ userId })),
       },
       friendsOf: {
-        connect: otherUsers.map((user) => ({ id: user.id })),
+        connect: otherUsers.map(({ userId }) => ({ userId })),
       },
     },
   });
@@ -26,39 +26,35 @@ const loadUsers = async (prisma: PrismaClient) => {
 
 const loadChats = async (
   prisma: PrismaClient,
-  masterUser: User,
+  { userId }: User,
   otherUsers: User[]
 ) => {
   const chatFun = await prisma.chat.create({
     data: {
       name: 'FUN',
-      isPrivate: false,
       createdBy: {
         connect: {
-          id: masterUser.id,
+          userId,
         },
       },
       messages: {
         create: [
           {
             content: 'Sup',
-            createdById: masterUser.id,
+            createdById: userId,
           },
           {
             content: "yo! I'm having so much fun",
-            createdById: otherUsers[0].id,
+            createdById: otherUsers[0].userId,
           },
           {
             content: 'Yeah same here',
-            createdById: masterUser.id,
+            createdById: userId,
           },
         ],
       },
       members: {
-        connect: [
-          { id: masterUser.id },
-          ...otherUsers.map((user) => ({ id: user.id })),
-        ],
+        connect: [{ userId }, ...otherUsers.map(({ userId }) => ({ userId }))],
       },
       isDM: false,
     },
@@ -66,31 +62,27 @@ const loadChats = async (
   const chatBoring = await prisma.chat.create({
     data: {
       name: 'BORING',
-      isPrivate: false,
       createdBy: {
         connect: {
-          id: masterUser.id,
+          userId,
         },
       },
       members: {
-        connect: [
-          { id: masterUser.id },
-          ...otherUsers.map((user) => ({ id: user.id })),
-        ],
+        connect: [{ userId }, ...otherUsers.map(({ userId }) => ({ userId }))],
       },
       messages: {
         create: [
           {
             content: 'Yo',
-            createdById: masterUser.id,
+            createdById: userId,
           },
           {
             content: 'oh hey... im bored man',
-            createdById: otherUsers[0].id,
+            createdById: otherUsers[0].userId,
           },
           {
             content: 'Yeah same here',
-            createdById: masterUser.id,
+            createdById: userId,
           },
         ],
       },

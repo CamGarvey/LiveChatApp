@@ -17,6 +17,7 @@ import authRouter from './routes/auth';
 import { schema } from './graphql';
 import prisma from './lib/clients/prisma';
 import { IContext } from './graphql/context.interface';
+import { Authorizer } from './lib/clients/authorizer';
 
 const main = async () => {
   // Create Express app
@@ -62,6 +63,8 @@ const main = async () => {
     subscriber: new Redis(pubsubOptions),
   });
 
+  const authorizer = new Authorizer(prisma);
+
   // Set up WebSocketServer on graphql endpoint
   const wsServer = new WebSocketServer({
     server: httpServer,
@@ -91,10 +94,13 @@ const main = async () => {
         // to be {API domain}/{field name}
         const userId: string = payload[process.env.DOMAIN + '/user_id'];
 
+        authorizer.userId = userId;
+
         return {
           userId,
           prisma,
           pubsub,
+          auth: authorizer,
         };
       },
     },
@@ -120,10 +126,13 @@ const main = async () => {
         throw new ForbiddenError('Invalid user');
       }
 
+      authorizer.userId = userId;
+
       return {
         userId,
         prisma,
         pubsub,
+        auth: authorizer,
       };
     },
     plugins: [

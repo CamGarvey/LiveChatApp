@@ -26,6 +26,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const graphql_1 = require("./graphql");
 const prisma_1 = __importDefault(require("./lib/clients/prisma"));
+const authorizer_1 = require("./lib/clients/authorizer");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();
     app.use(express_1.default.json());
@@ -53,6 +54,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         publisher: new ioredis_1.default(pubsubOptions),
         subscriber: new ioredis_1.default(pubsubOptions),
     });
+    const authorizer = new authorizer_1.Authorizer(prisma_1.default);
     const wsServer = new ws_1.WebSocketServer({
         server: httpServer,
         path: '/graphql',
@@ -67,10 +69,12 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             const decoded = jsonwebtoken_1.default.decode(token);
             const payload = JSON.parse(JSON.stringify(decoded));
             const userId = payload[process.env.DOMAIN + '/user_id'];
+            authorizer.userId = userId;
             return {
                 userId,
                 prisma: prisma_1.default,
                 pubsub,
+                auth: authorizer,
             };
         },
     }, wsServer);
@@ -85,10 +89,12 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             if (!userId) {
                 throw new apollo_server_core_1.ForbiddenError('Invalid user');
             }
+            authorizer.userId = userId;
             return {
                 userId,
                 prisma: prisma_1.default,
                 pubsub,
+                auth: authorizer,
             };
         },
         plugins: [

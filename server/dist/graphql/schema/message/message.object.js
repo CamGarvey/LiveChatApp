@@ -12,7 +12,7 @@ exports.Message = (0, nexus_1.objectType)({
             resolve: (parent, _, { prisma }) => {
                 return prisma.message
                     .findUnique({
-                    where: { id: parent.id || undefined },
+                    where: { messageId: parent.messageId || undefined },
                 })
                     .likedBy();
             },

@@ -27,12 +27,12 @@ exports.CreateMessageMutation = (0, nexus_1.mutationField)('createMessage', {
     resolve: (_, { chatId, content }, { prisma, pubsub, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
             where: {
-                id: userId,
+                userId,
             },
             include: {
                 memberOfChats: {
                     where: {
-                        id: chatId,
+                        chatId,
                     },
                 },
             },
@@ -65,7 +65,7 @@ exports.DeleteMessageMutation = (0, nexus_1.mutationField)('deleteMessage', {
                 createdById: true,
             },
             where: {
-                id: messageId,
+                messageId,
             },
         });
         if (message == null) {
@@ -80,7 +80,7 @@ exports.DeleteMessageMutation = (0, nexus_1.mutationField)('deleteMessage', {
                 deletedAt: new Date(),
             },
             where: {
-                id: messageId,
+                messageId,
             },
         });
         pubsub.publish(backing_types_1.Subscription.MessageDeleted, updatedMessage);
@@ -104,7 +104,7 @@ exports.UpdateMessageMutation = (0, nexus_1.mutationField)('updateMessage', {
                 createdById: true,
             },
             where: {
-                id: messageId,
+                messageId,
             },
         });
         if (message == null) {
@@ -118,7 +118,7 @@ exports.UpdateMessageMutation = (0, nexus_1.mutationField)('updateMessage', {
                 content,
             },
             where: {
-                id: messageId,
+                messageId,
             },
         });
         pubsub.publish(backing_types_1.Subscription.MessageUpdated, updatedMessage);

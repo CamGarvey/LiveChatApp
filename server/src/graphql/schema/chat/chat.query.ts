@@ -13,12 +13,12 @@ export const ChatQuery = queryField('chat', {
   resolve: async (_, { chatId }, { prisma, userId }) => {
     const chat = await prisma.chat.findUnique({
       where: {
-        id: chatId,
+        chatId,
       },
       include: {
         members: {
           where: {
-            id: userId,
+            userId,
           },
         },
       },
@@ -42,7 +42,7 @@ export const ChatsQuery = queryField('chats', {
     return await prisma.user
       .findUnique({
         where: {
-          id: userId,
+          userId,
         },
       })
       .memberOfChats();

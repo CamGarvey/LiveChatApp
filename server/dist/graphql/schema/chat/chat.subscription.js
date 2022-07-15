@@ -18,7 +18,7 @@ exports.ChatsSubscription = (0, nexus_1.subscriptionField)('chats', {
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator('chat.*', { pattern: true }), (payload, _, context) => {
             return payload.members
-                .map((x) => x.id)
+                .map((x) => x.userId)
                 .includes(context.userId);
         })(rootValue, args, context);
     }),
@@ -27,11 +27,11 @@ exports.ChatsSubscription = (0, nexus_1.subscriptionField)('chats', {
     },
 });
 exports.ChatCreatedSubscription = (0, nexus_1.subscriptionField)('chatCreated', {
-    type: 'Chat',
+    type: 'ChatResult',
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(backing_types_1.Subscription.ChatCreated), (payload, _, context) => {
             return payload.members
-                .map((x) => x.id)
+                .map((x) => x.userId)
                 .includes(context.userId);
         })(rootValue, args, context);
     }),
@@ -44,7 +44,7 @@ exports.ChatDeletedSubscription = (0, nexus_1.subscriptionField)('chatDeleted', 
     subscribe: (rootValue, args, context) => __awaiter(void 0, void 0, void 0, function* () {
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(backing_types_1.Subscription.ChatDeleted), (payload, _, context) => {
             return payload.members
-                .map((x) => x.id)
+                .map((x) => x.userId)
                 .includes(context.userId);
         })(rootValue, args, context);
     }),

@@ -17,14 +17,14 @@ exports.MessageInterface = (0, nexus_1.interfaceType)({
         return t.deletedAt == null ? 'Message' : 'DeletedMessage';
     },
     definition: (t) => {
-        t.nonNull.id('id');
+        t.nonNull.id('messageId');
         t.nonNull.string('createdById');
         t.nonNull.field('createdBy', {
             type: 'UserResult',
             resolve: (parent, __, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 return yield prisma.user.findUnique({
                     where: {
-                        id: parent.createdById || undefined,
+                        userId: parent.createdById || undefined,
                     },
                 });
             }),
@@ -43,7 +43,7 @@ exports.MessageInterface = (0, nexus_1.interfaceType)({
             resolve: (parent, _, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
                 return yield prisma.chat.findUnique({
                     where: {
-                        id: parent.chatId || undefined,
+                        chatId: parent.chatId || undefined,
                     },
                 });
             }),

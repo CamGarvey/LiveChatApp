@@ -13,12 +13,12 @@ export const MessagesSubscription = subscriptionField('messages', {
     const members = await context.prisma.chat
       .findUnique({
         where: {
-          id: args.chatId,
+          chatId: args.chatId,
         },
       })
       .members();
 
-    if (!members.find((member) => member.id == context.userId)) {
+    if (!members.find((member) => member.userId == context.userId)) {
       throw new ForbiddenError(
         'You do not have permission to subscribe to events in this chat'
       );
@@ -46,12 +46,12 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
     const members = await context.prisma.chat
       .findUnique({
         where: {
-          id: args.chatId,
+          chatId: args.chatId,
         },
       })
       .members();
 
-    if (!members.find((member) => member.id == context.userId)) {
+    if (!members.find((member) => member.userId == context.userId)) {
       throw new ForbiddenError(
         'You do not have permission to subscribe to events in this chat'
       );
@@ -79,12 +79,12 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
     const members = await context.prisma.chat
       .findUnique({
         where: {
-          id: args.chatId,
+          chatId: args.chatId,
         },
       })
       .members();
 
-    if (!members.find((member) => member.id == context.userId)) {
+    if (!members.find((member) => member.userId == context.userId)) {
       throw new ForbiddenError(
         'You do not have permission to subscribe to events in this chat'
       );

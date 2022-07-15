@@ -18,7 +18,7 @@ exports.MeQuery = (0, nexus_1.queryField)('me', {
     resolve: (_, __, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         return yield prisma.user.findUnique({
             where: {
-                id: userId,
+                userId,
             },
         });
     }),
@@ -29,7 +29,7 @@ exports.FriendsQuery = (0, nexus_1.queryField)('friends', {
         return yield prisma.user
             .findUnique({
             where: {
-                id: userId,
+                userId,
             },
         })
             .friends();
@@ -38,14 +38,14 @@ exports.FriendsQuery = (0, nexus_1.queryField)('friends', {
 exports.UserQuery = (0, nexus_1.queryField)('user', {
     type: 'UserResult',
     args: {
-        id: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
+        userId: (0, nexus_1.nonNull)((0, nexus_1.stringArg)({
             description: 'id of user',
         })),
     },
-    resolve: (_, { id }, ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    resolve: (_, { userId }, ctx) => __awaiter(void 0, void 0, void 0, function* () {
         return yield ctx.prisma.user.findUnique({
             where: {
-                id: id,
+                userId,
             },
         });
     }),
@@ -70,7 +70,7 @@ exports.UsersQuery = (0, nexus_1.queryField)((t) => {
             const where = client_1.Prisma.validator()({
                 AND: [
                     {
-                        id: {
+                        userId: {
                             not: userId,
                         },
                         OR: [

@@ -38,7 +38,7 @@ authRouter.post('/create-user-hook', (req, res) => __awaiter(void 0, void 0, voi
             });
             return;
         }
-        const user = yield prisma_1.default.user.create({
+        const { userId } = yield prisma_1.default.user.create({
             data: {
                 name,
                 username,
@@ -46,7 +46,7 @@ authRouter.post('/create-user-hook', (req, res) => __awaiter(void 0, void 0, voi
             },
         });
         res.status(201).send({
-            userId: user.id,
+            userId,
         });
     }
     catch (e) {

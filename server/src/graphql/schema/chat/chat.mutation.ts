@@ -5,54 +5,21 @@ import {
 } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg, list } from 'nexus';
 import { Subscription } from '../../backing-types';
-import { CreateChatInput, UpdateChatInput } from './chat.input';
+import { CreateGroupChatInput, UpdateChatInput } from './chat.input';
 
-export const CreateChatMutation = mutationField('createChat', {
-  type: 'Chat',
-  args: { data: CreateChatInput },
+export const CreateGroupChatMutation = mutationField('createGroupChat', {
+  type: 'GroupChat',
+  args: { data: CreateGroupChatInput },
   description: 'Create a Chat',
+  authorize: async (_, { data: { memberIds } }, { auth }) =>
+    auth.canCreateGroupChat(memberIds),
   resolve: async (
     _,
-    { data: { name, description, isPrivate, memberIds } },
+    { data: { name, description, memberIds } },
     { prisma, userId, pubsub }
   ) => {
-    // Remove duplicates
+    // Remove duplicates & creator as members
     const memberIdSet: Set<string> = new Set(memberIds);
-
-    if (memberIdSet.has(userId)) {
-      // Remove self from memberIdSet
-      memberIdSet.delete(userId);
-    }
-
-    if (memberIdSet) {
-      // Check that the user is friends with all of these users
-      const user = await prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          friends: {
-            where: {
-              id: {
-                in: memberIds,
-              },
-            },
-          },
-        },
-      });
-
-      if (!user) {
-        throw new Error('Failed to find user');
-      }
-
-      if (user.friends.length != memberIdSet.size) {
-        throw new ForbiddenError(
-          'You are not friends with all of the users provided'
-        );
-      }
-    }
-
-    // add creator as members
     memberIdSet.add(userId);
 
     const chat = await prisma.chat.create({
@@ -61,9 +28,8 @@ export const CreateChatMutation = mutationField('createChat', {
         description,
         createdById: userId,
         isDM: false,
-        isPrivate,
         members: {
-          connect: [...memberIdSet].map((id) => ({ id })),
+          connect: [...memberIdSet].map((id) => ({ userId: id })),
         },
       },
       // include: {
@@ -82,124 +48,73 @@ export const CreateChatMutation = mutationField('createChat', {
   },
 });
 
-export const AddMembersToChatMutation = mutationField('addMembersToChat', {
-  type: 'Chat',
-  args: {
-    chatId: nonNull(
-      stringArg({
-        description: 'Id of Chat to add Users to',
-      })
-    ),
-    memberIds: nonNull(
-      list(
-        nonNull(
-          stringArg({
-            description: 'Ids of Users to be added to Chat',
-          })
-        )
-      )
-    ),
-  },
-  description: 'Add Members into Chat',
-  resolve: async (_, { chatId, memberIds }, { prisma, userId, pubsub }) => {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        memberOfChats: {
-          where: {
-            id: chatId,
-          },
-        },
-        friends: {
-          where: {
-            id: {
-              in: memberIds,
-            },
-          },
-        },
-      },
-    });
-
-    // You have to be a member to add members
-    if (user.memberOfChats.length == 0) {
-      throw new ForbiddenError(
-        'You do not have permission to add members to this chat'
-      );
-    }
-
-    // You have to be friends with all of the user provided
-    if (user.friends.length != memberIds.length) {
-      throw new ForbiddenError('You are not friends with all of these users');
-    }
-
-    // Connect new members to chat
-    const chat = await prisma.chat.update({
-      data: {
-        members: {
-          connect: memberIds.map((id) => ({ id })),
-        },
-      },
-      where: {
-        id: chatId,
-      },
-    });
-
-    const update = await prisma.chatUpdate.create({
-      data: {
-        chat: {
-          connect: {
-            id: chatId,
-          },
-        },
-        createdBy: {
-          connect: {
-            id: userId,
-          },
-        },
-        memberIdsAdded: memberIds,
-      },
-    });
-
-    pubsub.publish(Subscription.ChatMembersAdded, update);
-
-    return chat;
-  },
-});
-
-export const RemoveMembersFromChatMutation = mutationField(
-  'removeMembersFromChat',
+export const CreateDirectMessageChatMutation = mutationField(
+  'createDirectMessageChat',
   {
-    type: 'Chat',
+    type: 'DirectMessageChat',
     args: {
-      chatId: nonNull(stringArg()),
-      membersIds: nonNull(list(nonNull(stringArg()))),
-    },
-    description: 'Remove Members from Chat',
-    resolve: async (_, { chatId, membersIds }, { prisma, userId, pubsub }) => {
-      const members = await prisma.chat
-        .findUnique({
-          where: {
-            id: chatId,
-          },
+      friendId: nonNull(
+        stringArg({
+          description: 'Id of friend to create a Direct Message Chat with',
         })
-        .members();
+      ),
+    },
+    description: 'Create a Chat',
+    authorize: async (_, { friendId }, { auth }) =>
+      await auth.canCreateDirectMessageChat(friendId),
+    resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
+      const chat = await prisma.chat.create({
+        data: {
+          name: `${userId}.${friendId}`,
+          createdById: userId,
+          isDM: true,
+          members: {
+            connect: [userId, friendId].map((id) => ({ userId: id })),
+          },
+        },
+      });
 
-      if (!members.find((member) => member.id == userId)) {
-        throw new ForbiddenError(
-          'You do not have permission to remove members from this chat'
-        );
-      }
+      await pubsub.publish(Subscription.ChatCreated, chat);
+      await pubsub.publish(Subscription.UserChatCreated, chat);
 
+      return chat;
+    },
+  }
+);
+
+export const AddMembersToGroupChatMutation = mutationField(
+  'addMembersToGroupChat',
+  {
+    type: 'ChatResult',
+    args: {
+      chatId: nonNull(
+        stringArg({
+          description: 'Id of Chat to add Users to',
+        })
+      ),
+      memberIds: nonNull(
+        list(
+          nonNull(
+            stringArg({
+              description: 'Ids of Users to be added to Chat',
+            })
+          )
+        )
+      ),
+    },
+    description: 'Add Members into Chat',
+    authorize: (_, { chatId, memberIds }, { auth }) =>
+      auth.canAddMembersToChat(chatId, memberIds),
+    resolve: async (_, { chatId, memberIds }, { prisma, userId, pubsub }) => {
+      // Connect new members to chat
       const chat = await prisma.chat.update({
         data: {
           members: {
-            disconnect: membersIds.map((id) => ({ id })),
+            connect: memberIds.map((id) => ({ userId: id })),
           },
         },
         where: {
-          id: chatId,
+          chatId,
         },
       });
 
@@ -207,12 +122,58 @@ export const RemoveMembersFromChatMutation = mutationField(
         data: {
           chat: {
             connect: {
-              id: chatId,
+              chatId,
             },
           },
           createdBy: {
             connect: {
-              id: userId,
+              userId,
+            },
+          },
+          memberIdsAdded: memberIds,
+        },
+      });
+
+      pubsub.publish(Subscription.ChatMembersAdded, update);
+
+      return chat;
+    },
+  }
+);
+
+export const RemoveMembersFromGroupChatMutation = mutationField(
+  'removeMembersFromChat',
+  {
+    type: 'ChatResult',
+    args: {
+      chatId: nonNull(stringArg()),
+      membersIds: nonNull(list(nonNull(stringArg()))),
+    },
+    description: 'Remove Members from Chat',
+    authorize: (_, { chatId }, { auth }) =>
+      auth.canRemoveMembersFromChat(chatId),
+    resolve: async (_, { chatId, membersIds }, { prisma, userId, pubsub }) => {
+      const chat = await prisma.chat.update({
+        data: {
+          members: {
+            disconnect: membersIds.map((id) => ({ userId: id })),
+          },
+        },
+        where: {
+          chatId,
+        },
+      });
+
+      const update = await prisma.chatUpdate.create({
+        data: {
+          chat: {
+            connect: {
+              chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              userId,
             },
           },
           memberIdsRemoved: membersIds,
@@ -227,21 +188,12 @@ export const RemoveMembersFromChatMutation = mutationField(
 );
 
 export const UpdateChatMutation = mutationField('updateChat', {
-  type: 'Chat',
+  type: 'ChatResult',
   args: { data: UpdateChatInput },
   description: 'Update a Chat',
   resolve: async (
     _,
-    {
-      data: {
-        chatId,
-        name,
-        description,
-        isPrivate,
-        addMemberIds,
-        removeMemberIds,
-      },
-    },
+    { data: { chatId, name, description, addMemberIds, removeMemberIds } },
     { prisma, userId, pubsub }
   ) => {
     const chat = await prisma.chat.findUnique({
@@ -249,12 +201,12 @@ export const UpdateChatMutation = mutationField('updateChat', {
         createdById: true,
         members: {
           select: {
-            id: true,
+            userId: true,
           },
         },
       },
       where: {
-        id: chatId,
+        chatId,
       },
     });
 
@@ -273,14 +225,13 @@ export const UpdateChatMutation = mutationField('updateChat', {
       data: {
         name,
         description,
-        isPrivate,
         members: {
-          connect: addMemberIds?.map((x) => ({ id: x })),
-          disconnect: removeMemberIds?.map((x) => ({ id: x })),
+          connect: addMemberIds?.map((x) => ({ userId: x })),
+          disconnect: removeMemberIds?.map((x) => ({ userId: x })),
         },
       },
       where: {
-        id: chatId,
+        chatId,
       },
     });
 
@@ -288,12 +239,12 @@ export const UpdateChatMutation = mutationField('updateChat', {
       data: {
         chat: {
           connect: {
-            id: chatId,
+            chatId,
           },
         },
         createdBy: {
           connect: {
-            id: userId,
+            userId,
           },
         },
         name,
@@ -306,7 +257,7 @@ export const UpdateChatMutation = mutationField('updateChat', {
           select: {
             members: {
               select: {
-                id: true,
+                userId: true,
               },
             },
           },
@@ -333,7 +284,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
   resolve: async (_, { chatId }, { prisma, userId, pubsub }) => {
     const chat = await prisma.chat.findUnique({
       where: {
-        id: chatId,
+        chatId,
       },
     });
 
@@ -349,7 +300,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
 
     await prisma.chat.delete({
       where: {
-        id: chatId,
+        chatId,
       },
     });
 

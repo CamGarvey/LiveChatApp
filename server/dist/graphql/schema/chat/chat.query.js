@@ -22,12 +22,12 @@ exports.ChatQuery = (0, nexus_1.queryField)('chat', {
     resolve: (_, { chatId }, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
         const chat = yield prisma.chat.findUnique({
             where: {
-                id: chatId,
+                chatId,
             },
             include: {
                 members: {
                     where: {
-                        id: userId,
+                        userId,
                     },
                 },
             },
@@ -47,7 +47,7 @@ exports.ChatsQuery = (0, nexus_1.queryField)('chats', {
         return yield prisma.user
             .findUnique({
             where: {
-                id: userId,
+                userId,
             },
         })
             .memberOfChats();

@@ -24,11 +24,11 @@ exports.MessagesSubscription = (0, nexus_1.subscriptionField)('messages', {
         const members = yield context.prisma.chat
             .findUnique({
             where: {
-                id: args.chatId,
+                chatId: args.chatId,
             },
         })
             .members();
-        if (!members.find((member) => member.id == context.userId)) {
+        if (!members.find((member) => member.userId == context.userId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to events in this chat');
         }
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator('message.*', { pattern: true }), (payload, variables) => {
@@ -49,11 +49,11 @@ exports.MessageDeletedSubscription = (0, nexus_1.subscriptionField)('messageDele
         const members = yield context.prisma.chat
             .findUnique({
             where: {
-                id: args.chatId,
+                chatId: args.chatId,
             },
         })
             .members();
-        if (!members.find((member) => member.id == context.userId)) {
+        if (!members.find((member) => member.userId == context.userId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to events in this chat');
         }
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(backing_types_1.Subscription.MessageDeleted), (payload, variables) => {
@@ -74,11 +74,11 @@ exports.MessageUpdatedSubscription = (0, nexus_1.subscriptionField)('messageUpda
         const members = yield context.prisma.chat
             .findUnique({
             where: {
-                id: args.chatId,
+                chatId: args.chatId,
             },
         })
             .members();
-        if (!members.find((member) => member.id == context.userId)) {
+        if (!members.find((member) => member.userId == context.userId)) {
             throw new apollo_server_core_1.ForbiddenError('You do not have permission to subscribe to events in this chat');
         }
         return (0, graphql_subscriptions_1.withFilter)(() => context.pubsub.asyncIterator(backing_types_1.Subscription.MessageUpdated), (payload, variables) => {

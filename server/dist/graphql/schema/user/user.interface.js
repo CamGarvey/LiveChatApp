@@ -14,9 +14,11 @@ const graphql_relay_1 = require("graphql-relay");
 const nexus_1 = require("nexus");
 exports.UserInterface = (0, nexus_1.interfaceType)({
     name: 'UserInterface',
-    resolveType: (source, { prisma }) => 'Stranger',
+    resolveType: (source) => __awaiter(void 0, void 0, void 0, function* () {
+        return 'Friend';
+    }),
     definition: (t) => {
-        t.nonNull.id('id');
+        t.nonNull.id('userId');
         t.string('name');
         t.nonNull.string('username');
         t.nonNull.date('createdAt');
@@ -26,26 +28,26 @@ exports.UserInterface = (0, nexus_1.interfaceType)({
             resolve: (parent, _, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
                 const friends = yield prisma.user
                     .findUnique({
-                    where: { id: userId },
+                    where: { userId },
                 })
                     .friends();
                 const receivedFriendRequests = yield prisma.user
                     .findUnique({
-                    where: { id: userId },
+                    where: { userId },
                 })
                     .receivedFriendRequests();
                 const sentFriendRequests = yield prisma.user
                     .findUnique({
-                    where: { id: userId },
+                    where: { userId },
                 })
                     .sentFriendRequests();
-                if (friends.find((x) => x.id == parent.id)) {
+                if (friends.find((x) => x.id == parent.userId)) {
                     return 'FRIEND';
                 }
-                if (receivedFriendRequests.find((x) => x.id == parent.id)) {
+                if (receivedFriendRequests.find((x) => x.id == parent.userId)) {
                     return 'REQUEST_RECEIVED';
                 }
-                if (sentFriendRequests.find((x) => x.id == parent.id)) {
+                if (sentFriendRequests.find((x) => x.id == parent.userId)) {
                     return 'REQUEST_SENT';
                 }
                 return 'NOT_FRIEND';
@@ -55,14 +57,16 @@ exports.UserInterface = (0, nexus_1.interfaceType)({
 });
 exports.KnownUserInterface = (0, nexus_1.interfaceType)({
     name: 'KnownUserInterface',
-    resolveType: (source) => 'Friend',
+    resolveType: (source, { userId }) => {
+        return userId == source.userId ? 'Me' : 'Friend';
+    },
     definition: (t) => {
         t.nonNull.list.nonNull.field('receivedFriendRequests', {
             type: 'UserResult',
             resolve: (parent, _, { prisma }) => {
                 return prisma.user
                     .findUnique({
-                    where: { id: parent.id || undefined },
+                    where: { userId: parent.userId || undefined },
                 })
                     .receivedFriendRequests();
             },
@@ -70,10 +74,10 @@ exports.KnownUserInterface = (0, nexus_1.interfaceType)({
         t.nonNull.list.nonNull.field('chats', {
             type: 'ChatResult',
             resolve: (parent, _, { prisma, userId }) => __awaiter(void 0, void 0, void 0, function* () {
-                if (parent.id == userId) {
+                if (parent.userId == userId) {
                     return yield prisma.user
                         .findUnique({
-                        where: { id: parent.id || undefined },
+                        where: { userId: parent.userId || undefined },
                     })
                         .memberOfChats();
                 }
@@ -81,12 +85,9 @@ exports.KnownUserInterface = (0, nexus_1.interfaceType)({
                     where: {
                         OR: [
                             {
-                                isPrivate: false,
-                            },
-                            {
                                 members: {
                                     every: {
-                                        id: userId,
+                                        userId,
                                     },
                                 },
                             },
@@ -109,7 +110,7 @@ exports.KnownUserInterface = (0, nexus_1.interfaceType)({
                         where: {
                             friendsOf: {
                                 some: {
-                                    id: parent.id,
+                                    userId: parent.userId,
                                 },
                             },
                         },
