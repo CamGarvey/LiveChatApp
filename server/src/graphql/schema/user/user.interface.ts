@@ -3,9 +3,7 @@ import { interfaceType } from 'nexus';
 
 export const UserInterface = interfaceType({
   name: 'UserInterface',
-  resolveType: async (source) => {
-    return 'Friend';
-  },
+  resolveType: (source) => 'Friend',
   definition: (t) => {
     t.nonNull.id('id');
     t.string('name');
@@ -54,7 +52,7 @@ export const UserInterface = interfaceType({
 export const KnownUserInterface = interfaceType({
   name: 'KnownUserInterface',
   resolveType: (source, { userId }) => {
-    return userId == source.userId ? 'Me' : 'Friend';
+    return userId == source.id ? 'Me' : 'Friend';
   },
   definition: (t) => {
     t.nonNull.list.nonNull.field('receivedFriendRequests', {
@@ -62,7 +60,7 @@ export const KnownUserInterface = interfaceType({
       resolve: (parent, _, { prisma }) => {
         return prisma.user
           .findUnique({
-            where: { userId: parent.userId || undefined },
+            where: { id: parent.id || undefined },
           })
           .receivedFriendRequests();
       },
@@ -70,11 +68,11 @@ export const KnownUserInterface = interfaceType({
     t.nonNull.list.nonNull.field('chats', {
       type: 'ChatResult',
       resolve: async (parent, _, { prisma, userId }) => {
-        if (parent.userId == userId) {
+        if (parent.id == userId) {
           // Is current user, return all
           return await prisma.user
             .findUnique({
-              where: { userId: parent.userId || undefined },
+              where: { id: parent.id || undefined },
             })
             .memberOfChats();
         }
@@ -85,7 +83,7 @@ export const KnownUserInterface = interfaceType({
               {
                 members: {
                   every: {
-                    userId,
+                    id: userId,
                   },
                 },
               },
@@ -108,7 +106,7 @@ export const KnownUserInterface = interfaceType({
             where: {
               friendsOf: {
                 some: {
-                  userId: parent.userId,
+                  id: parent.id,
                 },
               },
             },

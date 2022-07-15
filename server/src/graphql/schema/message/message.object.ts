@@ -10,7 +10,7 @@ export const Message = objectType({
       resolve: (parent, _, { prisma }) => {
         return prisma.message
           .findUnique({
-            where: { id: parent.messageId || undefined },
+            where: { id: parent.id || undefined },
           })
           .likedBy();
       },

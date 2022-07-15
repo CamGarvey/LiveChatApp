@@ -2,15 +2,19 @@ import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types';
 
+type Chat = {
+  members: {
+    id: string;
+  }[];
+};
+
 export const ChatsSubscription = subscriptionField('chats', {
   type: 'ChatResult',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.*', { pattern: true }),
-      (payload, _, context) => {
-        return payload.members
-          .map((x: { id: string }) => x.id)
-          .includes(context.userId);
+      (payload: Chat, _, context) => {
+        return payload.members.map(({ id }) => id).includes(context.userId);
       }
     )(rootValue, args, context);
   },
@@ -24,10 +28,8 @@ export const ChatCreatedSubscription = subscriptionField('chatCreated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatCreated),
-      (payload, _, context) => {
-        return payload.members
-          .map((x: { id: string }) => x.id)
-          .includes(context.userId);
+      (payload: Chat, _, context) => {
+        return payload.members.map(({ id }) => id).includes(context.userId);
       }
     )(rootValue, args, context);
   },
@@ -41,10 +43,8 @@ export const ChatDeletedSubscription = subscriptionField('chatDeleted', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatDeleted),
-      (payload, _, context) => {
-        return payload.members
-          .map((x: { id: string }) => x.id)
-          .includes(context.userId);
+      (payload: Chat, _, context) => {
+        return payload.members.map(({ id }) => id).includes(context.userId);
       }
     )(rootValue, args, context);
   },

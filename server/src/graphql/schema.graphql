@@ -3,9 +3,9 @@
 
 
 interface ChatInterface {
-  chatId: ID!
   createdBy: UserResult
   createdById: ID!
+  id: ID!
   isCreator: Boolean!
   updatedAt: Date
 }
@@ -27,10 +27,10 @@ input CreateGroupChatInput {
 scalar Date
 
 type DeletedChat implements ChatInterface {
-  chatId: ID!
   createdBy: UserResult
   createdById: ID!
   deletedAt: Date!
+  id: ID!
   isCreator: Boolean!
   updatedAt: Date
 }
@@ -42,17 +42,17 @@ type DeletedMessage implements MessageInterface {
   createdBy: UserResult!
   createdById: String!
   deletedAt: Date
+  id: ID!
   isCreator: Boolean!
-  messageId: ID!
   updatedAt: Date!
 }
 
 """A Direct Message Chat is a conversation between 2 members"""
 type DirectMessageChat implements ChatInterface {
-  chatId: ID!
   createdBy: UserResult
   createdById: ID!
   friend: Friend!
+  id: ID!
   isCreator: Boolean!
   messages(
     """Returns the elements in the list that come after the specified cursor"""
@@ -87,10 +87,10 @@ type Friend implements KnownUserInterface & UserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
+  id: ID!
   name: String
   receivedFriendRequests: [UserResult!]!
   updatedAt: Date!
-  userId: ID!
   username: String!
 }
 
@@ -123,10 +123,10 @@ enum FriendStatus {
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements ChatInterface {
-  chatId: ID!
   createdBy: UserResult
   createdById: ID!
   description: String
+  id: ID!
   isCreator: Boolean!
   memberCount: Int!
   members: [UserResult!]!
@@ -169,10 +169,10 @@ type Me implements KnownUserInterface & UserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
+  id: ID!
   name: String
   receivedFriendRequests: [UserResult!]!
   updatedAt: Date!
-  userId: ID!
   username: String!
 }
 
@@ -184,9 +184,9 @@ type Message implements MessageInterface {
   createdBy: UserResult!
   createdById: String!
   deletedAt: Date
+  id: ID!
   isCreator: Boolean!
   likedBy: [UserResult!]!
-  messageId: ID!
   updatedAt: Date!
 }
 
@@ -197,8 +197,8 @@ interface MessageInterface {
   createdBy: UserResult!
   createdById: String!
   deletedAt: Date
+  id: ID!
   isCreator: Boolean!
-  messageId: ID!
   updatedAt: Date!
 }
 
@@ -388,9 +388,9 @@ enum Sort {
 type Stranger implements UserInterface {
   createdAt: Date!
   friendStatus: FriendStatus!
+  id: ID!
   name: String
   updatedAt: Date!
-  userId: ID!
   username: String!
 }
 
@@ -429,9 +429,9 @@ input UpdateChatInput {
 interface UserInterface {
   createdAt: Date!
   friendStatus: FriendStatus!
+  id: ID!
   name: String
   updatedAt: Date!
-  userId: ID!
   username: String!
 }
 

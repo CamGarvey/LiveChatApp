@@ -14,12 +14,12 @@ export class Authorizer implements IAuthorizer {
 
     const friend = await this._prisma.user.findUnique({
       where: {
-        userId: friendId,
+        id: friendId,
       },
       include: {
         friends: {
           where: {
-            userId: this.userId,
+            id: this.userId,
           },
         },
       },
@@ -49,12 +49,12 @@ export class Authorizer implements IAuthorizer {
       // Check that the user is friends with all of these users
       const user = await this._prisma.user.findUnique({
         where: {
-          userId: this.userId,
+          id: this.userId,
         },
         select: {
           friends: {
             where: {
-              userId: {
+              id: {
                 in: memberIds,
               },
             },
@@ -76,12 +76,12 @@ export class Authorizer implements IAuthorizer {
       select: {
         memberOfChats: {
           where: {
-            chatId,
+            id: chatId,
           },
         },
       },
       where: {
-        userId: this.userId,
+        id: this.userId,
       },
     });
     return user.memberOfChats.length !== 0;
@@ -96,25 +96,25 @@ export class Authorizer implements IAuthorizer {
   public async canAddMembersToChat(chatId: string, memberIds: string[]) {
     const chat = await this._prisma.chat.findUnique({
       where: {
-        chatId,
+        id: chatId,
       },
       include: {
         admins: {
           select: {
-            userId: true,
+            id: true,
             friends: {
               select: {
-                userId: true,
+                id: true,
               },
               where: {
-                userId: {
+                id: {
                   in: memberIds,
                 },
               },
             },
           },
           where: {
-            userId: this.userId,
+            id: this.userId,
           },
         },
       },
@@ -134,12 +134,12 @@ export class Authorizer implements IAuthorizer {
   public async canRemoveMembersFromChat(chatId: string) {
     const chat = await this._prisma.chat.findUnique({
       where: {
-        chatId,
+        id: chatId,
       },
       include: {
         admins: {
           where: {
-            userId: this.userId,
+            id: this.userId,
           },
         },
       },

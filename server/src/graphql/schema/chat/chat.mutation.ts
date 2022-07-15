@@ -29,7 +29,7 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
         createdById: userId,
         isDM: false,
         members: {
-          connect: [...memberIdSet].map((id) => ({ userId: id })),
+          connect: [...memberIdSet].map((id) => ({ id })),
         },
       },
       // include: {
@@ -69,7 +69,7 @@ export const CreateDirectMessageChatMutation = mutationField(
           createdById: userId,
           isDM: true,
           members: {
-            connect: [userId, friendId].map((id) => ({ userId: id })),
+            connect: [userId, friendId].map((id) => ({ id })),
           },
         },
       });
@@ -110,11 +110,11 @@ export const AddMembersToGroupChatMutation = mutationField(
       const chat = await prisma.chat.update({
         data: {
           members: {
-            connect: memberIds.map((id) => ({ userId: id })),
+            connect: memberIds.map((id) => ({ id })),
           },
         },
         where: {
-          chatId,
+          id: chatId,
         },
       });
 
@@ -122,12 +122,12 @@ export const AddMembersToGroupChatMutation = mutationField(
         data: {
           chat: {
             connect: {
-              chatId,
+              id: chatId,
             },
           },
           createdBy: {
             connect: {
-              userId,
+              id: userId,
             },
           },
           memberIdsAdded: memberIds,
@@ -156,11 +156,11 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
       const chat = await prisma.chat.update({
         data: {
           members: {
-            disconnect: membersIds.map((id) => ({ userId: id })),
+            disconnect: membersIds.map((id) => ({ id })),
           },
         },
         where: {
-          chatId,
+          id: chatId,
         },
       });
 
@@ -168,12 +168,12 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
         data: {
           chat: {
             connect: {
-              chatId,
+              id: chatId,
             },
           },
           createdBy: {
             connect: {
-              userId,
+              id: userId,
             },
           },
           memberIdsRemoved: membersIds,

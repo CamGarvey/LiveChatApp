@@ -150,9 +150,7 @@ export const DeclineFriendRequestMutation = mutationField(
         })
         .receivedFriendRequests();
 
-      const friend = receivedRequests.find(
-        (request) => request.userId == friendId
-      );
+      const friend = receivedRequests.find((request) => request.id == friendId);
 
       if (!friend) {
         throw new ForbiddenError('You do not have a request from this user');

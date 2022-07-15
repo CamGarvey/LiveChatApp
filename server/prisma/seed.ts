@@ -14,10 +14,10 @@ const loadUsers = async (prisma: PrismaClient) => {
       name: 'Cameron g',
       username: 'Camgaroo',
       friends: {
-        connect: otherUsers.map(({ userId }) => ({ userId })),
+        connect: otherUsers.map(({ id }) => ({ id })),
       },
       friendsOf: {
-        connect: otherUsers.map(({ userId }) => ({ userId })),
+        connect: otherUsers.map(({ id }) => ({ id })),
       },
     },
   });
@@ -26,7 +26,7 @@ const loadUsers = async (prisma: PrismaClient) => {
 
 const loadChats = async (
   prisma: PrismaClient,
-  { userId }: User,
+  masterUser: User,
   otherUsers: User[]
 ) => {
   const chatFun = await prisma.chat.create({
@@ -34,27 +34,30 @@ const loadChats = async (
       name: 'FUN',
       createdBy: {
         connect: {
-          userId,
+          id: masterUser.id,
         },
       },
       messages: {
         create: [
           {
             content: 'Sup',
-            createdById: userId,
+            createdById: masterUser.id,
           },
           {
             content: "yo! I'm having so much fun",
-            createdById: otherUsers[0].userId,
+            createdById: otherUsers[0].id,
           },
           {
             content: 'Yeah same here',
-            createdById: userId,
+            createdById: masterUser.id,
           },
         ],
       },
       members: {
-        connect: [{ userId }, ...otherUsers.map(({ userId }) => ({ userId }))],
+        connect: [
+          { id: masterUser.id },
+          ...otherUsers.map(({ id }) => ({ id })),
+        ],
       },
       isDM: false,
     },
@@ -64,25 +67,28 @@ const loadChats = async (
       name: 'BORING',
       createdBy: {
         connect: {
-          userId,
+          id: masterUser.id,
         },
       },
       members: {
-        connect: [{ userId }, ...otherUsers.map(({ userId }) => ({ userId }))],
+        connect: [
+          { id: masterUser.id },
+          ...otherUsers.map(({ id }) => ({ id })),
+        ],
       },
       messages: {
         create: [
           {
             content: 'Yo',
-            createdById: userId,
+            createdById: masterUser.id,
           },
           {
             content: 'oh hey... im bored man',
-            createdById: otherUsers[0].userId,
+            createdById: otherUsers[0].id,
           },
           {
             content: 'Yeah same here',
-            createdById: userId,
+            createdById: masterUser.id,
           },
         ],
       },

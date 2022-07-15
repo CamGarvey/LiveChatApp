@@ -1,5 +1,5 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Message, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { objectType } from 'nexus';
 
 export const DirectMessageChat = objectType({
@@ -12,26 +12,26 @@ export const DirectMessageChat = objectType({
       resolve: async (parent, __, { userId, prisma }) => {
         const members: User[] = await prisma.chat
           .findUnique({
-            where: { chatId: parent.chatId || undefined },
+            where: { id: parent.id || undefined },
           })
           .members();
 
         // There can only be 2 members in a Direct Message Chat so just grab other user
-        return members.find((x) => x.userId !== userId);
+        return members.find((x) => x.id !== userId);
       },
     });
     t.nonNull.connectionField('messages', {
       type: 'MessageResult',
       resolve: async (parent, args, { prisma }) => {
-        return await findManyCursorConnection<Message, { messageId: string }>(
+        return await findManyCursorConnection(
           (args) =>
             prisma.message.findMany({
               ...args,
-              ...{ where: { chatId: parent.chatId } },
+              ...{ where: { id: parent.id || undefined } },
             }),
           () =>
             prisma.message.count({
-              ...{ where: { chatId: parent.chatId } },
+              ...{ where: { id: parent.id || undefined } },
             }),
           args
         );
@@ -51,7 +51,7 @@ export const GroupChat = objectType({
       resolve: async (parent, _, { prisma }) => {
         const members = await prisma.chat
           .findUnique({
-            where: { chatId: parent.chatId || undefined },
+            where: { id: parent.id || undefined },
           })
           .members();
         return members.length;
@@ -62,7 +62,7 @@ export const GroupChat = objectType({
       resolve: (parent, _, { prisma }) => {
         return prisma.chat
           .findUnique({
-            where: { chatId: parent.chatId || undefined },
+            where: { id: parent.id || undefined },
           })
           .members();
       },
