@@ -201,12 +201,12 @@ export const UpdateChatMutation = mutationField('updateChat', {
         createdById: true,
         members: {
           select: {
-            userId: true,
+            id: true,
           },
         },
       },
       where: {
-        chatId,
+        id: chatId,
       },
     });
 
@@ -226,12 +226,12 @@ export const UpdateChatMutation = mutationField('updateChat', {
         name,
         description,
         members: {
-          connect: addMemberIds?.map((x) => ({ userId: x })),
-          disconnect: removeMemberIds?.map((x) => ({ userId: x })),
+          connect: addMemberIds?.map((id) => ({ id })),
+          disconnect: removeMemberIds?.map((id) => ({ id })),
         },
       },
       where: {
-        chatId,
+        id: chatId,
       },
     });
 
@@ -239,12 +239,12 @@ export const UpdateChatMutation = mutationField('updateChat', {
       data: {
         chat: {
           connect: {
-            chatId,
+            id: chatId,
           },
         },
         createdBy: {
           connect: {
-            userId,
+            id: userId,
           },
         },
         name,
@@ -257,7 +257,7 @@ export const UpdateChatMutation = mutationField('updateChat', {
           select: {
             members: {
               select: {
-                userId: true,
+                id: true,
               },
             },
           },
@@ -284,7 +284,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
   resolve: async (_, { chatId }, { prisma, userId, pubsub }) => {
     const chat = await prisma.chat.findUnique({
       where: {
-        chatId,
+        id: chatId,
       },
     });
 
@@ -300,7 +300,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
 
     await prisma.chat.delete({
       where: {
-        chatId,
+        id: chatId,
       },
     });
 

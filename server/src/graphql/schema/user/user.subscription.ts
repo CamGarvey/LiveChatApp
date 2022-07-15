@@ -8,7 +8,7 @@ export const UserSubscription = subscriptionField('user', {
   subscribe: withFilter(
     (_, __, { pubsub }) => pubsub.asyncIterator('user.*', { pattern: true }),
     (payload, _, context) => {
-      return payload.userId === context.userId;
+      return payload.id === context.userId;
     }
   ),
   resolve(payload: any) {
@@ -24,7 +24,7 @@ export const FriendsSubscription = subscriptionField('userFriends', {
     (_, __, { pubsub }) =>
       pubsub.asyncIterator('user.friend.*', { pattern: true }),
     (payload, _, context) => {
-      return payload.userId === context.userId;
+      return payload.id === context.userId;
     }
   ),
   resolve(payload: any) {
@@ -41,7 +41,7 @@ export const FriendCreatedSubscription = subscriptionField(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator(Subscription.UserFriendCreated),
       (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.id === context.userId;
       }
     ),
     resolve(payload: any) {
@@ -59,7 +59,7 @@ export const FriendDeletedSubscription = subscriptionField(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator(Subscription.UserFriendDeleted),
       (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.id === context.userId;
       }
     ),
     resolve(payload: any) {
@@ -78,7 +78,7 @@ export const RequestChangedSubscription = subscriptionField(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator('user.friend.request.*', { pattern: true }),
       (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.id === context.userId;
       }
     ),
     resolve(payload: any) {
@@ -96,7 +96,7 @@ export const FriendRequestCreatedSubscription = subscriptionField(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator(Subscription.UserFriendRequestReceived),
       (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.id === context.userId;
       }
     ),
     resolve(payload: any) {
@@ -114,7 +114,7 @@ export const FriendRequestDeletedSubscription = subscriptionField(
       (_, __, { pubsub }) =>
         pubsub.asyncIterator(Subscription.UserFriendRequestDeleted),
       (payload, _, context) => {
-        return payload.userId === context.userId;
+        return payload.id === context.userId;
       }
     ),
     resolve(payload: any) {

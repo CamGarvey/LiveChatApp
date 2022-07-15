@@ -20,12 +20,12 @@ export const CreateMessageMutation = mutationField('createMessage', {
   resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
     const user = await prisma.user.findUnique({
       where: {
-        userId,
+        id: userId,
       },
       include: {
         memberOfChats: {
           where: {
-            chatId,
+            id: chatId,
           },
         },
       },
@@ -66,7 +66,7 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
         createdById: true,
       },
       where: {
-        messageId,
+        id: messageId,
       },
     });
 
@@ -87,7 +87,7 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
         deletedAt: new Date(),
       },
       where: {
-        messageId,
+        id: messageId,
       },
     });
 
@@ -118,7 +118,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
         createdById: true,
       },
       where: {
-        messageId,
+        id: messageId,
       },
     });
 
@@ -139,7 +139,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
         content,
       },
       where: {
-        messageId,
+        id: messageId,
       },
     });
 

@@ -7,7 +7,7 @@ export const UserInterface = interfaceType({
     return 'Friend';
   },
   definition: (t) => {
-    t.nonNull.id('userId');
+    t.nonNull.id('id');
     t.string('name');
     t.nonNull.string('username');
     t.nonNull.date('createdAt');
@@ -17,31 +17,31 @@ export const UserInterface = interfaceType({
       resolve: async (parent, _, { prisma, userId }) => {
         const friends = await prisma.user
           .findUnique({
-            where: { userId },
+            where: { id: userId },
           })
           .friends();
 
         const receivedFriendRequests = await prisma.user
           .findUnique({
-            where: { userId },
+            where: { id: userId },
           })
           .receivedFriendRequests();
 
         const sentFriendRequests = await prisma.user
           .findUnique({
-            where: { userId },
+            where: { id: userId },
           })
           .sentFriendRequests();
 
-        if (friends.find((x: any) => x.id == parent.userId)) {
+        if (friends.find((x: any) => x.id == parent.id)) {
           return 'FRIEND';
         }
 
-        if (receivedFriendRequests.find((x: any) => x.id == parent.userId)) {
+        if (receivedFriendRequests.find((x: any) => x.id == parent.id)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (sentFriendRequests.find((x: any) => x.id == parent.userId)) {
+        if (sentFriendRequests.find((x: any) => x.id == parent.id)) {
           return 'REQUEST_SENT';
         }
 

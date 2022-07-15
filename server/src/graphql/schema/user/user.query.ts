@@ -7,7 +7,7 @@ export const MeQuery = queryField('me', {
   resolve: async (_, __, { prisma, userId }) => {
     return await prisma.user.findUnique({
       where: {
-        userId,
+        id: userId,
       },
     });
   },
@@ -19,7 +19,7 @@ export const FriendsQuery = queryField('friends', {
     return await prisma.user
       .findUnique({
         where: {
-          userId,
+          id: userId,
         },
       })
       .friends();
@@ -38,7 +38,7 @@ export const UserQuery = queryField('user', {
   resolve: async (_, { userId }, ctx) => {
     return await ctx.prisma.user.findUnique({
       where: {
-        userId,
+        id: userId,
       },
     });
   },
@@ -68,7 +68,7 @@ export const UsersQuery = queryField((t) => {
       const where = Prisma.validator<Prisma.UserWhereInput>()({
         AND: [
           {
-            userId: {
+            id: {
               not: userId, // Dont include self
             },
             OR: [

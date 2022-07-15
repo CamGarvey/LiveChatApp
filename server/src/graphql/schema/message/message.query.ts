@@ -1,5 +1,4 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Message } from '@prisma/client';
 import { UserInputError, ForbiddenError } from 'apollo-server-core';
 import { nonNull, queryField, stringArg } from 'nexus';
 
@@ -16,14 +15,14 @@ export const MessageQuery = queryField('message', {
   resolve: async (_, { messageId }, { userId, prisma }) => {
     const message = await prisma.message.findUnique({
       where: {
-        messageId,
+        id: messageId,
       },
       include: {
         chat: {
           include: {
             members: {
               select: {
-                userId: true,
+                id: true,
               },
             },
           },
@@ -37,7 +36,7 @@ export const MessageQuery = queryField('message', {
 
     console.log({ message });
 
-    if (!message.chat.members.map((x) => x.userId).includes(userId)) {
+    if (!message.chat.members.map((x) => x.id).includes(userId)) {
       throw new ForbiddenError(
         'You do not have permission to view this message'
       );
@@ -65,20 +64,20 @@ export const MessagesQuery = queryField((t) => {
       const members = await prisma.chat
         .findUnique({
           where: {
-            chatId,
+            id: chatId,
           },
         })
         .members();
 
-      if (!members.find((member) => member.userId == userId)) {
+      if (!members.find((member) => member.id == userId)) {
         throw new ForbiddenError('You do not have permission to this chat');
       }
-      return findManyCursorConnection<Message, { messageId: string }>(
+      return findManyCursorConnection(
         (args) => {
           return prisma.message.findMany({
             ...args,
             ...{
-              where: { chatId },
+              where: { id: chatId },
               orderBy: {
                 createdAt: 'asc',
               },
@@ -89,7 +88,7 @@ export const MessagesQuery = queryField((t) => {
         () =>
           prisma.message.count({
             where: {
-              chatId,
+              id: chatId,
             },
           }),
         { after, first, before, last }

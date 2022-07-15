@@ -13,12 +13,12 @@ export const MessagesSubscription = subscriptionField('messages', {
     const members = await context.prisma.chat
       .findUnique({
         where: {
-          chatId: args.chatId,
+          id: args.chatId,
         },
       })
       .members();
 
-    if (!members.find((member) => member.userId == context.userId)) {
+    if (!members.find((member) => member.id == context.userId)) {
       throw new ForbiddenError(
         'You do not have permission to subscribe to events in this chat'
       );
@@ -27,7 +27,7 @@ export const MessagesSubscription = subscriptionField('messages', {
     return withFilter(
       () => context.pubsub.asyncIterator('message.*', { pattern: true }),
       (payload, variables) => {
-        return payload.chatId === variables.chatId;
+        return payload.id === variables.chatId;
       }
     )(rootValue, args, context);
   },
@@ -46,12 +46,12 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
     const members = await context.prisma.chat
       .findUnique({
         where: {
-          chatId: args.chatId,
+          id: args.chatId,
         },
       })
       .members();
 
-    if (!members.find((member) => member.userId == context.userId)) {
+    if (!members.find((member) => member.id == context.userId)) {
       throw new ForbiddenError(
         'You do not have permission to subscribe to events in this chat'
       );
@@ -60,7 +60,7 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageDeleted),
       (payload, variables) => {
-        return payload.chatId === variables.chatId;
+        return payload.id === variables.chatId;
       }
     )(rootValue, args, context);
   },
@@ -79,12 +79,12 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
     const members = await context.prisma.chat
       .findUnique({
         where: {
-          chatId: args.chatId,
+          id: args.chatId,
         },
       })
       .members();
 
-    if (!members.find((member) => member.userId == context.userId)) {
+    if (!members.find((member) => member.id == context.userId)) {
       throw new ForbiddenError(
         'You do not have permission to subscribe to events in this chat'
       );
@@ -93,7 +93,7 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageUpdated),
       (payload, variables) => {
-        return payload.chatId === variables.chatId;
+        return payload.id === variables.chatId;
       }
     )(rootValue, args, context);
   },

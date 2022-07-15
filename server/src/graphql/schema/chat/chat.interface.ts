@@ -7,7 +7,7 @@ export const ChatInterface = interfaceType({
     return chat.isDM ? 'DirectMessageChat' : 'GroupChat';
   },
   definition: (t) => {
-    t.nonNull.id('chatId');
+    t.nonNull.id('id');
     t.nonNull.id('createdById');
     t.field('createdBy', {
       type: 'UserResult',

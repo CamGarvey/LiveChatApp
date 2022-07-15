@@ -16,7 +16,7 @@ export const UpdateMeMutation = mutationField('updateMe', {
         username,
       },
       where: {
-        userId,
+        id: userId,
       },
     });
   },
@@ -31,22 +31,22 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     const user = await prisma.user.findUnique({
       where: {
-        userId,
+        id: userId,
       },
       include: {
         friends: {
           where: {
-            userId: friendId,
+            id: friendId,
           },
         },
         sentFriendRequests: {
           where: {
-            userId: friendId,
+            id: friendId,
           },
         },
         receivedFriendRequests: {
           where: {
-            userId: friendId,
+            id: friendId,
           },
         },
       },
@@ -71,12 +71,12 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
     // Send request
     const friend = await prisma.user.update({
       where: {
-        userId: friendId,
+        id: friendId,
       },
       data: {
         receivedFriendRequests: {
           connect: {
-            userId,
+            id: userId,
           },
         },
       },
@@ -101,12 +101,12 @@ export const CancelFriendRequestMutation = mutationField(
       const sentRequests = await prisma.user
         .findUnique({
           where: {
-            userId,
+            id: userId,
           },
         })
         .sentFriendRequests();
 
-      const friend = sentRequests.find((request) => request.userId == friendId);
+      const friend = sentRequests.find((request) => request.id == friendId);
 
       if (!friend) {
         throw new ForbiddenError('You have no sent requests to this user');
@@ -114,12 +114,12 @@ export const CancelFriendRequestMutation = mutationField(
 
       const user = await prisma.user.update({
         where: {
-          userId,
+          id: userId,
         },
         data: {
           sentFriendRequests: {
             disconnect: {
-              userId: friendId,
+              id: friendId,
             },
           },
         },
@@ -145,7 +145,7 @@ export const DeclineFriendRequestMutation = mutationField(
       const receivedRequests = await prisma.user
         .findUnique({
           where: {
-            userId,
+            id: userId,
           },
         })
         .receivedFriendRequests();
@@ -160,12 +160,12 @@ export const DeclineFriendRequestMutation = mutationField(
 
       const user = await prisma.user.update({
         where: {
-          userId,
+          id: userId,
         },
         data: {
           receivedFriendRequests: {
             disconnect: {
-              userId: friendId,
+              id: friendId,
             },
           },
         },
@@ -191,14 +191,12 @@ export const AcceptFriendRequestMutation = mutationField(
       const receivedRequests = await prisma.user
         .findUnique({
           where: {
-            userId,
+            id: userId,
           },
         })
         .receivedFriendRequests();
 
-      const friend = receivedRequests.find(
-        (request) => request.userId == friendId
-      );
+      const friend = receivedRequests.find((request) => request.id == friendId);
 
       if (!friend) {
         throw new ForbiddenError('You do not have a request from this user');
@@ -207,24 +205,24 @@ export const AcceptFriendRequestMutation = mutationField(
       // Accept request
       const user = await prisma.user.update({
         where: {
-          userId,
+          id: userId,
         },
         data: {
           receivedFriendRequests: {
             // Remove received request
             disconnect: {
-              userId: friendId,
+              id: friendId,
             },
           },
           friends: {
             // And add as friend
             connect: {
-              userId: friendId,
+              id: friendId,
             },
           },
           friendsOf: {
             connect: {
-              userId: friendId,
+              id: friendId,
             },
           },
         },
@@ -248,12 +246,12 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     // Validate
     const user = await prisma.user.findUnique({
       where: {
-        userId,
+        id: userId,
       },
       include: {
         friends: {
           where: {
-            userId: friendId,
+            id: friendId,
           },
         },
       },
@@ -270,17 +268,17 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     // Delete user
     const newUser = await prisma.user.update({
       where: {
-        userId,
+        id: userId,
       },
       data: {
         friends: {
           disconnect: {
-            userId: friendId,
+            id: friendId,
           },
         },
         friendsOf: {
           disconnect: {
-            userId: friendId,
+            id: friendId,
           },
         },
       },
