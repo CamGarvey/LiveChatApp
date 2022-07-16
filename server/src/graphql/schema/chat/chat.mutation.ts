@@ -1,11 +1,6 @@
-import {
-  UserInputError,
-  ForbiddenError,
-  ApolloError,
-} from 'apollo-server-core';
-import { mutationField, nonNull, stringArg, list } from 'nexus';
+import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types';
-import { CreateGroupChatInput, UpdateChatInput } from './chat.input';
+import { CreateGroupChatInput, UpdateGroupChatInput } from './chat.input';
 
 export const CreateGroupChatMutation = mutationField('createGroupChat', {
   type: 'GroupChat',
@@ -82,145 +77,17 @@ export const CreateDirectMessageChatMutation = mutationField(
   }
 );
 
-export const AddMembersToGroupChatMutation = mutationField(
-  'addMembersToGroupChat',
-  {
-    type: 'ChatResult',
-    args: {
-      chatId: nonNull(
-        stringArg({
-          description: 'Id of Chat to add Users to',
-        })
-      ),
-      memberIds: nonNull(
-        list(
-          nonNull(
-            stringArg({
-              description: 'Ids of Users to be added to Chat',
-            })
-          )
-        )
-      ),
-    },
-    description: 'Add Members into Chat',
-    authorize: (_, { chatId, memberIds }, { auth }) =>
-      auth.canAddMembersToChat(chatId, memberIds),
-    resolve: async (_, { chatId, memberIds }, { prisma, userId, pubsub }) => {
-      // Connect new members to chat
-      const chat = await prisma.chat.update({
-        data: {
-          members: {
-            connect: memberIds.map((id) => ({ id })),
-          },
-        },
-        where: {
-          id: chatId,
-        },
-      });
-
-      const update = await prisma.chatUpdate.create({
-        data: {
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          memberIdsAdded: memberIds,
-        },
-      });
-
-      pubsub.publish(Subscription.ChatMembersAdded, update);
-
-      return chat;
-    },
-  }
-);
-
-export const RemoveMembersFromGroupChatMutation = mutationField(
-  'removeMembersFromChat',
-  {
-    type: 'ChatResult',
-    args: {
-      chatId: nonNull(stringArg()),
-      membersIds: nonNull(list(nonNull(stringArg()))),
-    },
-    description: 'Remove Members from Chat',
-    authorize: (_, { chatId }, { auth }) =>
-      auth.canRemoveMembersFromChat(chatId),
-    resolve: async (_, { chatId, membersIds }, { prisma, userId, pubsub }) => {
-      const chat = await prisma.chat.update({
-        data: {
-          members: {
-            disconnect: membersIds.map((id) => ({ id })),
-          },
-        },
-        where: {
-          id: chatId,
-        },
-      });
-
-      const update = await prisma.chatUpdate.create({
-        data: {
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          memberIdsRemoved: membersIds,
-        },
-      });
-
-      pubsub.publish(Subscription.ChatMembersDeleted, update);
-
-      return chat;
-    },
-  }
-);
-
-export const UpdateChatMutation = mutationField('updateChat', {
-  type: 'ChatResult',
-  args: { data: UpdateChatInput },
+export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
+  type: 'GroupChat',
+  args: { data: UpdateGroupChatInput },
   description: 'Update a Chat',
+  authorize: async (_, { data: { chatId, addMemberIds } }, { auth }) =>
+    await auth.canUpdateGroupChat(chatId, addMemberIds),
   resolve: async (
     _,
     { data: { chatId, name, description, addMemberIds, removeMemberIds } },
     { prisma, userId, pubsub }
   ) => {
-    const chat = await prisma.chat.findUnique({
-      select: {
-        createdById: true,
-        members: {
-          select: {
-            id: true,
-          },
-        },
-      },
-      where: {
-        id: chatId,
-      },
-    });
-
-    if (chat == null) {
-      throw new UserInputError(`Chat with id: ${chatId}, not found`);
-    }
-
-    if (chat.createdById != userId) {
-      // Can only update your own chats
-      throw new ForbiddenError(
-        'You do not have permission to update this chat'
-      );
-    }
-
     const updatedChat = await prisma.chat.update({
       data: {
         name,
@@ -281,24 +148,10 @@ export const DeleteChatMutation = mutationField('deleteChat', {
     ),
   },
   description: 'Delete a Chat',
-  resolve: async (_, { chatId }, { prisma, userId, pubsub }) => {
-    const chat = await prisma.chat.findUnique({
-      where: {
-        id: chatId,
-      },
-    });
-
-    if (chat == null) {
-      throw new ApolloError('Chat does not exist');
-    }
-
-    if (chat.createdById != userId) {
-      throw new ForbiddenError(
-        'You do not have permission to delete this chat'
-      );
-    }
-
-    await prisma.chat.delete({
+  authorize: async (_, { chatId }, { auth }) =>
+    await auth.canDeleteChat(chatId),
+  resolve: async (_, { chatId }, { prisma, pubsub }) => {
+    const chat = await prisma.chat.delete({
       where: {
         id: chatId,
       },

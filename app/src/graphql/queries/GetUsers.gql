@@ -7,9 +7,18 @@ query GetUsers($usernameFilter: String, $first: Int, $after: String) {
     edges {
       cursor
       node {
-        id
-        ...NameParts
-        friendStatus
+        __typename
+        ... on Stranger {
+          id
+          ...NameParts
+        }
+        ... on Me {
+          id
+        }
+        ... on Friend {
+          id
+          ...NameParts
+        }
       }
     }
   }

@@ -4,9 +4,18 @@ mutation CreateMessage($chatId: String!, $content: String!) {
     content
     createdAt
     createdBy {
-      id
-      name
-      username
+      __typename
+      ... on Stranger {
+        id
+        ...NameParts
+      }
+      ... on Me {
+        id
+      }
+      ... on Friend {
+        id
+        ...NameParts
+      }
     }
   }
 }

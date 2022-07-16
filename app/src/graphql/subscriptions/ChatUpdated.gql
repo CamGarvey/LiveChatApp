@@ -8,7 +8,19 @@ subscription ChatUpdated($chatId: String!) {
       name
       description
       members {
-        id
+        __typename
+        ... on Friend {
+          id
+          ...NameParts
+        }
+        ... on Stranger {
+          id
+          ...NameParts
+        }
+        ... on Me {
+          id
+          ...NameParts
+        }
       }
     }
     name

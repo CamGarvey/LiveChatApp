@@ -3,7 +3,6 @@
 
 
 interface ChatInterface {
-  createdBy: UserResult
   createdById: ID!
   id: ID!
   isCreator: Boolean!
@@ -49,7 +48,7 @@ type DeletedMessage implements MessageInterface {
 
 """A Direct Message Chat is a conversation between 2 members"""
 type DirectMessageChat implements ChatInterface {
-  createdBy: UserResult
+  createdBy: KnownUserInterface
   createdById: ID!
   friend: Friend!
   id: ID!
@@ -89,7 +88,6 @@ type Friend implements KnownUserInterface & UserInterface {
   ): FriendConnection!
   id: ID!
   name: String
-  receivedFriendRequests: [UserResult!]!
   updatedAt: Date!
   username: String!
 }
@@ -149,7 +147,6 @@ interface KnownUserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
-  receivedFriendRequests: [UserResult!]!
 }
 
 type Me implements KnownUserInterface & UserInterface {
@@ -171,7 +168,7 @@ type Me implements KnownUserInterface & UserInterface {
   ): FriendConnection!
   id: ID!
   name: String
-  receivedFriendRequests: [UserResult!]!
+  receivedFriendRequests: [Stranger!]!
   updatedAt: Date!
   username: String!
 }
@@ -228,15 +225,6 @@ type Mutation {
   """Accept a Users friend request"""
   acceptFriendRequest(friendId: String!): Friend
 
-  """Add Members into Chat"""
-  addMembersToGroupChat(
-    """Id of Chat to add Users to"""
-    chatId: String!
-
-    """Ids of Users to be added to Chat"""
-    memberIds: [String!]!
-  ): ChatResult
-
   """Cancel/Delete a sent Friend Request"""
   cancelFriendRequest(friendId: String!): Stranger
 
@@ -276,14 +264,11 @@ type Mutation {
     messageId: String!
   ): Message
 
-  """Remove Members from Chat"""
-  removeMembersFromChat(chatId: String!, membersIds: [String!]!): ChatResult
-
   """Send a friend request to a user"""
   sendFriendRequest(friendId: String!): Stranger
 
   """Update a Chat"""
-  updateChat(data: UpdateChatInput): ChatResult
+  updateGroupChat(data: UpdateGroupChatInput): GroupChat
 
   """Update current user"""
   updateMe(email: String!, username: String!): Me
@@ -407,9 +392,33 @@ type Subscription {
 
   """Subscribe to any created/updated/deleted messages"""
   messages(chatId: String!): Message
+
+  """Subscribe to any changes to current user"""
+  user: Me
+
+  """Subscribe to new friends"""
+  userFriendCreated: Me
+
+  """Subscribe to unfriend events"""
+  userFriendDeleted: Me
+
+  """Subscribe to new friend requests"""
+  userFriendRequestCreated: Me
+
+  """Subscribe to deleted friend requests"""
+  userFriendRequestDeleted: Me
+
+  """Subscribe to any changes to the friend requests of the current user"""
+  userFriendRequests: Me
+
+  """
+  Subscribe to any changes to
+         the friendships of the current user (incl requests)
+  """
+  userFriends: Me
 }
 
-input UpdateChatInput {
+input UpdateGroupChatInput {
   """Ids of users to be add into the chat"""
   addMemberIds: [ID!]
 

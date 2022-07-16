@@ -9,9 +9,6 @@ export const ChatInterface = interfaceType({
   definition: (t) => {
     t.nonNull.id('id');
     t.nonNull.id('createdById');
-    t.field('createdBy', {
-      type: 'UserResult',
-    });
     t.nonNull.boolean('isCreator', {
       resolve: (parent, _, { userId }) => {
         return parent.createdById == userId;

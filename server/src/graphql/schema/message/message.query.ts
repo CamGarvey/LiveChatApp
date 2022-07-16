@@ -12,37 +12,14 @@ export const MessageQuery = queryField('message', {
       })
     ),
   },
-  resolve: async (_, { messageId }, { userId, prisma }) => {
-    const message = await prisma.message.findUnique({
+  authorize: async (_, { messageId }, { auth }) =>
+    await auth.canViewMessage(messageId),
+  resolve: async (_, { messageId }, { prisma }) => {
+    return await prisma.message.findUnique({
       where: {
         id: messageId,
       },
-      include: {
-        chat: {
-          include: {
-            members: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
-      },
     });
-
-    if (!message) {
-      throw new UserInputError('Not found');
-    }
-
-    console.log({ message });
-
-    if (!message.chat.members.map((x) => x.id).includes(userId)) {
-      throw new ForbiddenError(
-        'You do not have permission to view this message'
-      );
-    }
-
-    return message;
   },
 });
 
@@ -56,22 +33,9 @@ export const MessagesQuery = queryField((t) => {
         })
       ),
     },
-    resolve: async (
-      _,
-      { chatId, after, first, before, last },
-      { prisma, userId }
-    ) => {
-      const members = await prisma.chat
-        .findUnique({
-          where: {
-            id: chatId,
-          },
-        })
-        .members();
-
-      if (!members.find((member) => member.id == userId)) {
-        throw new ForbiddenError('You do not have permission to this chat');
-      }
+    authorize: async (_, { chatId }, { auth }) =>
+      await auth.canViewChat(chatId),
+    resolve: async (_, { chatId, after, first, before, last }, { prisma }) => {
       return findManyCursorConnection(
         (args) => {
           return prisma.message.findMany({

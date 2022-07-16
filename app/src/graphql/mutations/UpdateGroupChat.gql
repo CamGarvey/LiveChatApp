@@ -1,0 +1,23 @@
+mutation UpdateGroupChat($data: UpdateGroupChatInput) {
+  updateGroupChat(data: $data) {
+    id
+    name
+    description
+    updatedAt
+    members {
+      __typename
+      ... on Friend {
+        id
+        ...NameParts
+      }
+      ... on Stranger {
+        id
+        ...NameParts
+      }
+      ... on Me {
+        id
+        ...NameParts
+      }
+    }
+  }
+}

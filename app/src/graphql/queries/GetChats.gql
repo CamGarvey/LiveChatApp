@@ -1,11 +1,35 @@
-query GetChats {
+query Chats {
   chats {
-    id
-    name
-    description
-    members {
+    ... on DirectMessageChat {
       id
-      ...NameParts
+      friend {
+        id
+        ...NameParts
+      }
+    }
+    ... on GroupChat {
+      id
+      name
+      description
+      members {
+        __typename
+        ... on Friend {
+          id
+          ...NameParts
+        }
+        ... on Stranger {
+          id
+          ...NameParts
+        }
+        ... on Me {
+          id
+          ...NameParts
+        }
+      }
+    }
+    ... on DeletedChat {
+      id
+      deletedAt
     }
   }
 }

@@ -17,24 +17,9 @@ export const CreateMessageMutation = mutationField('createMessage', {
       })
     ),
   },
+  authorize: async (_, { chatId }, { auth }) =>
+    await auth.canCreateMessage(chatId),
   resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        memberOfChats: {
-          where: {
-            id: chatId,
-          },
-        },
-      },
-    });
-
-    if (!user.memberOfChats) {
-      throw new ForbiddenError('You are not a member of this Chat');
-    }
-
     const message = await prisma.message.create({
       data: {
         chatId,

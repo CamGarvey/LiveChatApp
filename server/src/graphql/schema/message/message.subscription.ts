@@ -9,21 +9,8 @@ export const MessagesSubscription = subscriptionField('messages', {
   args: {
     chatId: nonNull(stringArg()),
   },
+  authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
   subscribe: async (rootValue, args, context) => {
-    const members = await context.prisma.chat
-      .findUnique({
-        where: {
-          id: args.chatId,
-        },
-      })
-      .members();
-
-    if (!members.find((member) => member.id == context.userId)) {
-      throw new ForbiddenError(
-        'You do not have permission to subscribe to events in this chat'
-      );
-    }
-
     return withFilter(
       () => context.pubsub.asyncIterator('message.*', { pattern: true }),
       (payload, variables) => {
@@ -42,21 +29,8 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
   args: {
     chatId: nonNull(stringArg()),
   },
+  authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
   subscribe: async (rootValue, args, context) => {
-    const members = await context.prisma.chat
-      .findUnique({
-        where: {
-          id: args.chatId,
-        },
-      })
-      .members();
-
-    if (!members.find((member) => member.id == context.userId)) {
-      throw new ForbiddenError(
-        'You do not have permission to subscribe to events in this chat'
-      );
-    }
-
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageDeleted),
       (payload, variables) => {
@@ -75,21 +49,8 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
   args: {
     chatId: nonNull(stringArg()),
   },
+  authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
   subscribe: async (rootValue, args, context) => {
-    const members = await context.prisma.chat
-      .findUnique({
-        where: {
-          id: args.chatId,
-        },
-      })
-      .members();
-
-    if (!members.find((member) => member.id == context.userId)) {
-      throw new ForbiddenError(
-        'You do not have permission to subscribe to events in this chat'
-      );
-    }
-
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageUpdated),
       (payload, variables) => {

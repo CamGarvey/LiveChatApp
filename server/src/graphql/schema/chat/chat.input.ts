@@ -15,8 +15,8 @@ export const CreateGroupChatInput = inputObjectType({
   },
 });
 
-export const UpdateChatInput = inputObjectType({
-  name: 'UpdateChatInput',
+export const UpdateGroupChatInput = inputObjectType({
+  name: 'UpdateGroupChatInput',
   definition: (t) => {
     t.nonNull.id('chatId', {
       description: 'Id of chat to update',

@@ -2,7 +2,16 @@ mutation RemoveMembersFromChat($chatId: String!, $membersIds: [String!]!) {
   removeMembersFromChat(chatId: $chatId, membersIds: $membersIds) {
     id
     members {
-      id
+      __typename
+      ... on Stranger {
+        id
+      }
+      ... on Me {
+        id
+      }
+      ... on Friend {
+        id
+      }
     }
   }
 }

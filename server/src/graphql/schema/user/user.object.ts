@@ -11,6 +11,16 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('UserInterface', 'KnownUserInterface');
+    t.nonNull.list.nonNull.field('receivedFriendRequests', {
+      type: 'Stranger',
+      resolve: (parent, _, { prisma }) => {
+        return prisma.user
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .receivedFriendRequests();
+      },
+    });
   },
 });
 

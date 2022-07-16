@@ -1,10 +1,10 @@
-mutation CreateChat(
+mutation CreateGroupChat(
   $name: String!
   $description: String
   $isPrivate: Boolean
   $memberIds: [String!]
 ) {
-  createChat(
+  createGroupChat(
     name: $name
     description: $description
     isPrivate: $isPrivate
@@ -14,8 +14,18 @@ mutation CreateChat(
     name
     description
     members {
-      username
-      id
+      __typename
+      ... on Stranger {
+        id
+        ...NameParts
+      }
+      ... on Me {
+        id
+      }
+      ... on Friend {
+        id
+        ...NameParts
+      }
     }
   }
 }

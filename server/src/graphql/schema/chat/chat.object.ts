@@ -7,6 +7,9 @@ export const DirectMessageChat = objectType({
   description: 'A Direct Message Chat is a conversation between 2 members',
   definition: (t) => {
     t.implements('ChatInterface');
+    t.field('createdBy', {
+      type: 'KnownUserInterface',
+    });
     t.nonNull.field('friend', {
       type: 'Friend',
       resolve: async (parent, __, { userId, prisma }) => {
@@ -47,6 +50,9 @@ export const GroupChat = objectType({
     t.implements('ChatInterface');
     t.nonNull.string('name');
     t.string('description');
+    t.field('createdBy', {
+      type: 'UserResult',
+    });
     t.nonNull.int('memberCount', {
       resolve: async (parent, _, { prisma }) => {
         const members = await prisma.chat
@@ -85,5 +91,8 @@ export const DeletedChat = objectType({
   definition: (t) => {
     t.implements('ChatInterface');
     t.nonNull.date('deletedAt');
+    t.field('createdBy', {
+      type: 'UserResult',
+    });
   },
 });

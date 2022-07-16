@@ -55,16 +55,6 @@ export const KnownUserInterface = interfaceType({
     return userId == source.id ? 'Me' : 'Friend';
   },
   definition: (t) => {
-    t.nonNull.list.nonNull.field('receivedFriendRequests', {
-      type: 'UserResult',
-      resolve: (parent, _, { prisma }) => {
-        return prisma.user
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .receivedFriendRequests();
-      },
-    });
     t.nonNull.list.nonNull.field('chats', {
       type: 'ChatResult',
       resolve: async (parent, _, { prisma, userId }) => {

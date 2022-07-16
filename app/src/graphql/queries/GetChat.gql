@@ -1,17 +1,34 @@
 query GetChat($chatId: String!) {
   chat(chatId: $chatId) {
-    id
-    name
-    createdAt
-    description
-    createdBy {
+    __typename
+    ... on DirectMessageChat {
       id
-      ...NameParts
+      friend {
+        id
+        ...NameParts
+      }
     }
-    members {
+    ... on GroupChat {
       id
-      ...NameParts
-      friendStatus
+      name
+      description
+      members {
+        __typename
+        ... on Stranger {
+          id
+          ...NameParts
+        }
+        ... on Me {
+          id
+        }
+        ... on Friend {
+          id
+          ...NameParts
+        }
+      }
+    }
+    ... on DeletedChat {
+      id
     }
   }
 }

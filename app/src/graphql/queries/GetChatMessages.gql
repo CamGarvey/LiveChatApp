@@ -24,8 +24,18 @@ query GetChatMessages(
         content
         createdAt
         createdBy {
-          id
-          ...NameParts
+          __typename
+          ... on Stranger {
+            id
+            ...NameParts
+          }
+          ... on Me {
+            id
+          }
+          ... on Friend {
+            id
+            ...NameParts
+          }
         }
       }
     }

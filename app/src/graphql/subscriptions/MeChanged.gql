@@ -8,8 +8,19 @@ subscription MeChanged {
       id
       description
       members {
-        id
-        username
+        __typename
+        ... on Friend {
+          id
+          ...NameParts
+        }
+        ... on Stranger {
+          id
+          ...NameParts
+        }
+        ... on Me {
+          id
+          ...NameParts
+        }
       }
     }
   }

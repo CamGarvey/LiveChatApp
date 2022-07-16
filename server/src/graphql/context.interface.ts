@@ -11,9 +11,11 @@ export interface IAuthorizer {
   canCreateDirectMessageChat: (friendId: string) => Promise<boolean>;
   canCreateGroupChat: (memberIds: string[]) => Promise<boolean>;
   canViewChat: (chatId: string) => Promise<boolean>;
-  canAddMembersToChat: (
+  canUpdateGroupChat: (
     chatId: string,
-    memberIds: string[]
+    addMemberIds: string[]
   ) => Promise<boolean>;
-  canRemoveMembersFromChat: (chatId: string) => Promise<boolean>;
+  canDeleteChat: (chatId: string) => Promise<boolean>;
+  canCreateMessage: (chatId: string) => Promise<boolean>;
+  canViewMessage: (messageId: string) => Promise<boolean>;
 }
