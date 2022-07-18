@@ -1,13 +1,14 @@
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types';
+import { hashIdArg } from '../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
   type: 'Message',
   description: 'Create a Message in a Chat',
   args: {
     chatId: nonNull(
-      stringArg({
+      hashIdArg({
         description: 'Id of Chat to create Message in',
       })
     ),
@@ -38,7 +39,7 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
   type: 'Message',
   args: {
     messageId: nonNull(
-      stringArg({
+      hashIdArg({
         description: 'Id of Message to delete',
       })
     ),
@@ -86,7 +87,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
   type: 'Message',
   args: {
     messageId: nonNull(
-      stringArg({
+      hashIdArg({
         description: 'Id of Message to edit',
       })
     ),

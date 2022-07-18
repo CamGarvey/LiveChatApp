@@ -2,12 +2,13 @@ import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
 import { nonNull, stringArg, subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types';
+import { hashIdArg } from '../shared';
 
 export const MessagesSubscription = subscriptionField('messages', {
-  type: 'Message',
+  type: 'MessageResult',
   description: 'Subscribe to any created/updated/deleted messages',
   args: {
-    chatId: nonNull(stringArg()),
+    chatId: nonNull(hashIdArg()),
   },
   authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
   subscribe: async (rootValue, args, context) => {
@@ -24,10 +25,10 @@ export const MessagesSubscription = subscriptionField('messages', {
 });
 
 export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
-  type: 'Message',
+  type: 'DeletedMessage',
   description: 'SUbscribe to deleted message in chat',
   args: {
-    chatId: nonNull(stringArg()),
+    chatId: nonNull(hashIdArg()),
   },
   authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
   subscribe: async (rootValue, args, context) => {
@@ -47,7 +48,7 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
   type: 'MessageResult',
   description: 'Subscribe to updated messages in chat',
   args: {
-    chatId: nonNull(stringArg()),
+    chatId: nonNull(hashIdArg()),
   },
   authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
   subscribe: async (rootValue, args, context) => {

@@ -9,7 +9,7 @@ export const CreateGroupChatInput = inputObjectType({
     t.string('description', {
       description: 'Short description of the group chat',
     });
-    t.list.nonNull.id('memberIds', {
+    t.list.nonNull.hashId('memberIds', {
       description: 'Ids of the users to be added to group chat',
     });
   },
@@ -18,7 +18,7 @@ export const CreateGroupChatInput = inputObjectType({
 export const UpdateGroupChatInput = inputObjectType({
   name: 'UpdateGroupChatInput',
   definition: (t) => {
-    t.nonNull.id('chatId', {
+    t.nonNull.hashId('chatId', {
       description: 'Id of chat to update',
     });
     t.string('name', {
@@ -27,10 +27,10 @@ export const UpdateGroupChatInput = inputObjectType({
     t.string('description', {
       description: 'New description for chat',
     });
-    t.list.nonNull.id('addMemberIds', {
+    t.list.nonNull.hashId('addMemberIds', {
       description: 'Ids of users to be add into the chat',
     });
-    t.list.nonNull.id('removeMemberIds', {
+    t.list.nonNull.hashId('removeMemberIds', {
       description: 'Ids of users to be removed from chat',
     });
   },

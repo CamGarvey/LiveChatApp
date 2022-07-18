@@ -4,11 +4,11 @@ import { list } from 'nexus';
 import { IAuthorizer } from 'src/graphql/context.interface';
 
 export class Authorizer implements IAuthorizer {
-  public userId: string;
+  public userId: number;
 
   constructor(private _prisma: PrismaClient) {}
 
-  public async canCreateDirectMessageChat(friendId: string) {
+  public async canCreateDirectMessageChat(friendId: number) {
     if (friendId == this.userId) {
       throw new UserInputError('friendId can not be null or own user');
     }
@@ -37,9 +37,9 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canCreateGroupChat(memberIds: string[]) {
+  public async canCreateGroupChat(memberIds: number[]) {
     // Remove duplicates
-    const memberIdSet: Set<string> = new Set(memberIds);
+    const memberIdSet: Set<number> = new Set(memberIds);
 
     if (memberIdSet.has(this.userId)) {
       // Remove self from memberIdSet
@@ -71,7 +71,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canUpdateGroupChat(chatId: string, addMemberIds: string[]) {
+  public async canUpdateGroupChat(chatId: number, addMemberIds: number[]) {
     const chat = await this._prisma.chat.findUnique({
       select: {
         isDM: true,
@@ -100,7 +100,7 @@ export class Authorizer implements IAuthorizer {
 
     if (addMemberIds.length) {
       // Remove duplicates
-      const memberIdSet: Set<string> = new Set(addMemberIds);
+      const memberIdSet: Set<number> = new Set(addMemberIds);
 
       if (memberIdSet.has(this.userId)) {
         // Remove self from memberIdSet
@@ -134,7 +134,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canDeleteChat(chatId: string) {
+  public async canDeleteChat(chatId: number) {
     const chat = await this._prisma.chat.findUnique({
       select: {
         createdById: true,
@@ -157,7 +157,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canViewChat(chatId: string) {
+  public async canViewChat(chatId: number) {
     // check if user is a member of the chat
     const chat = await this._prisma.chat.findUnique({
       where: {
@@ -186,7 +186,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canCreateMessage(chatId: string) {
+  public async canCreateMessage(chatId: number) {
     const chat = await this._prisma.chat.findUnique({
       select: {
         members: {
@@ -214,7 +214,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canViewMessage(messageId: string) {
+  public async canViewMessage(messageId: number) {
     const message = await this._prisma.message.findUnique({
       where: {
         id: messageId,

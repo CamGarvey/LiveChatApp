@@ -1,11 +1,12 @@
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
-import { list, nonNull, queryField, stringArg } from 'nexus';
+import { list, nonNull, queryField } from 'nexus';
+import { hashIdArg } from '../shared';
 
 export const ChatQuery = queryField('chat', {
-  type: 'ChatResult',
+  type: 'Chat',
   args: {
     chatId: nonNull(
-      stringArg({
+      hashIdArg({
         description: 'Id of chat',
       })
     ),
@@ -37,7 +38,7 @@ export const ChatQuery = queryField('chat', {
 });
 
 export const ChatsQuery = queryField('chats', {
-  type: nonNull(list(nonNull('ChatResult'))),
+  type: nonNull(list(nonNull('Chat'))),
   resolve: async (_, __, { prisma, userId }) => {
     return await prisma.user
       .findUnique({

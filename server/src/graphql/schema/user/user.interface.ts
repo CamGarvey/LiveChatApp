@@ -2,61 +2,27 @@ import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { interfaceType } from 'nexus';
 
 export const UserInterface = interfaceType({
-  name: 'UserInterface',
-  resolveType: (source) => 'Friend',
+  name: 'User',
+  resolveType: (source, { userId }) => {
+    return source.id == userId ? 'Me' : 'Friend';
+  },
   definition: (t) => {
-    t.nonNull.id('id');
+    t.nonNull.hashId('id');
     t.string('name');
     t.nonNull.string('username');
     t.nonNull.date('createdAt');
     t.nonNull.date('updatedAt');
-    t.nonNull.field('friendStatus', {
-      type: 'FriendStatus',
-      resolve: async (parent, _, { prisma, userId }) => {
-        const friends = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .friends();
-
-        const receivedFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .receivedFriendRequests();
-
-        const sentFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .sentFriendRequests();
-
-        if (friends.find((x: any) => x.id == parent.id)) {
-          return 'FRIEND';
-        }
-
-        if (receivedFriendRequests.find((x: any) => x.id == parent.id)) {
-          return 'REQUEST_RECEIVED';
-        }
-
-        if (sentFriendRequests.find((x: any) => x.id == parent.id)) {
-          return 'REQUEST_SENT';
-        }
-
-        return 'NOT_FRIEND';
-      },
-    });
   },
 });
 
 export const KnownUserInterface = interfaceType({
-  name: 'KnownUserInterface',
+  name: 'KnownUser',
   resolveType: (source, { userId }) => {
     return userId == source.id ? 'Me' : 'Friend';
   },
   definition: (t) => {
     t.nonNull.list.nonNull.field('chats', {
-      type: 'ChatResult',
+      type: 'Chat',
       resolve: async (parent, _, { prisma, userId }) => {
         if (parent.id == userId) {
           // Is current user, return all

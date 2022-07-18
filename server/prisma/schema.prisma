@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id                     String       @id @default(uuid()) @map("id")
+  id                     Int          @id @default(autoincrement()) @map("id")
   email                  String       @unique
   name                   String?
   username               String       @unique
@@ -30,14 +30,14 @@ model User {
 }
 
 model Chat {
-  id          String       @id @default(uuid())
+  id          Int          @id @default(autoincrement())
   name        String?
   description String?
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
   deletedAt   DateTime?
   createdBy   User         @relation("UserCreatedByChat", fields: [createdById], references: [id])
-  createdById String
+  createdById Int
   isDM        Boolean
   members     User[]       @relation("UserMemberOfChats")
   admins      User[]       @relation("UserAdminOfChats")
@@ -46,12 +46,12 @@ model Chat {
 }
 
 model ChatUpdate {
-  id               String   @id @default(uuid())
+  id               Int      @id @default(autoincrement())
   chat             Chat     @relation(fields: [chatId], references: [id])
-  chatId           String
+  chatId           Int
   createdAt        DateTime @default(now())
   createdBy        User     @relation(fields: [createdById], references: [id])
-  createdById      String
+  createdById      Int
   name             String?
   description      String?
   memberIdsAdded   String[]
@@ -59,14 +59,14 @@ model ChatUpdate {
 }
 
 model Message {
-  id          String    @id @default(uuid())
+  id          Int       @id @default(autoincrement())
   content     String
   updatedAt   DateTime  @updatedAt
   createdAt   DateTime  @default(now())
   createdBy   User      @relation("WhoUserMessage", fields: [createdById], references: [id])
-  createdById String
+  createdById Int
   chat        Chat      @relation("ChatMessagesMessage", fields: [chatId], references: [id])
-  chatId      String
+  chatId      Int
   likedBy     User[]    @relation("LikedByUserMessage")
   deletedAt   DateTime?
 }

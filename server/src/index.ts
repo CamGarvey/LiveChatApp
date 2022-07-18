@@ -18,6 +18,7 @@ import { schema } from './graphql';
 import prisma from './lib/clients/prisma';
 import { IContext } from './graphql/context.interface';
 import { Authorizer } from './lib/clients/authorizer';
+import hashids from 'hashids';
 
 const main = async () => {
   // Create Express app
@@ -71,6 +72,13 @@ const main = async () => {
     path: '/graphql',
   });
 
+  const hash = new hashids(
+    process.env.HASH_SALT,
+    parseInt(process.env.HASH_MIN_LENGTH)
+  );
+
+  console.log(hash.encode(13));
+
   // Hand in the schema we just created and have the
   // WebSocketServer start listening.
   const serverCleanup = useServer(
@@ -92,9 +100,10 @@ const main = async () => {
         // Get user id from token payload
         // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
         // to be {API domain}/{field name}
-        const userId: string = payload[process.env.DOMAIN + '/user_id'];
+        let [userId] = hash.decode(payload[process.env.DOMAIN + '/user_id']);
 
-        authorizer.userId = userId;
+        userId = Number(userId);
+        authorizer.userId = Number(userId);
 
         return {
           userId,
@@ -120,7 +129,9 @@ const main = async () => {
       // Get user id from token payload
       // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
       // to be {API domain}/{field name}
-      const userId = payload[process.env.DOMAIN + '/user_id'];
+      let [userId] = hash.decode(payload[process.env.DOMAIN + '/user_id']);
+
+      userId = Number(userId);
 
       if (!userId) {
         throw new ForbiddenError('Invalid user');

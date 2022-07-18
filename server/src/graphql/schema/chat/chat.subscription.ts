@@ -9,7 +9,7 @@ type Chat = {
 };
 
 export const ChatsSubscription = subscriptionField('chats', {
-  type: 'ChatResult',
+  type: 'Chat',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.*', { pattern: true }),
@@ -24,7 +24,7 @@ export const ChatsSubscription = subscriptionField('chats', {
 });
 
 export const ChatCreatedSubscription = subscriptionField('chatCreated', {
-  type: 'ChatResult',
+  type: 'Chat',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatCreated),

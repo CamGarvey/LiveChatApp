@@ -6,7 +6,7 @@ export const Message = objectType({
     t.implements('MessageInterface');
     t.nonNull.string('content');
     t.nonNull.list.nonNull.field('likedBy', {
-      type: 'UserResult',
+      type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.message
           .findUnique({

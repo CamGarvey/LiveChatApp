@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { arg, list, nonNull, queryField, stringArg } from 'nexus';
+import { hashIdArg } from '../shared';
 
 export const MeQuery = queryField('me', {
   type: 'Me',
@@ -27,10 +28,10 @@ export const FriendsQuery = queryField('friends', {
 });
 
 export const UserQuery = queryField('user', {
-  type: 'UserResult',
+  type: 'User',
   args: {
     userId: nonNull(
-      stringArg({
+      hashIdArg({
         description: 'id of user',
       })
     ),
@@ -46,7 +47,7 @@ export const UserQuery = queryField('user', {
 
 export const UsersQuery = queryField((t) => {
   t.nonNull.connectionField('users', {
-    type: 'UserResult',
+    type: 'User',
     description: 'Find users',
     additionalArgs: {
       usernameFilter: stringArg({

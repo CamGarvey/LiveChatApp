@@ -1,14 +1,14 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { User } from '@prisma/client';
+import { Message, Prisma, User } from '@prisma/client';
 import { objectType } from 'nexus';
 
 export const DirectMessageChat = objectType({
   name: 'DirectMessageChat',
   description: 'A Direct Message Chat is a conversation between 2 members',
   definition: (t) => {
-    t.implements('ChatInterface');
+    t.implements('Chat');
     t.field('createdBy', {
-      type: 'KnownUserInterface',
+      type: 'KnownUser',
     });
     t.nonNull.field('friend', {
       type: 'Friend',
@@ -26,7 +26,10 @@ export const DirectMessageChat = objectType({
     t.nonNull.connectionField('messages', {
       type: 'MessageResult',
       resolve: async (parent, args, { prisma }) => {
-        return await findManyCursorConnection(
+        return await findManyCursorConnection<
+          Message,
+          Pick<Prisma.MessageWhereUniqueInput, 'id'>
+        >(
           (args) =>
             prisma.message.findMany({
               ...args,
@@ -36,7 +39,14 @@ export const DirectMessageChat = objectType({
             prisma.message.count({
               ...{ where: { id: parent.id || undefined } },
             }),
-          args
+          args,
+          {
+            getCursor: (record) => ({ id: record.id }),
+            encodeCursor: (cursor) =>
+              Buffer.from(JSON.stringify(cursor)).toString('base64'),
+            decodeCursor: (cursor) =>
+              JSON.parse(Buffer.from(cursor, 'base64').toString('ascii')),
+          }
         );
       },
     });
@@ -47,11 +57,11 @@ export const GroupChat = objectType({
   name: 'GroupChat',
   description: 'A Group Chat is a chat that contains more than 2 members',
   definition: (t) => {
-    t.implements('ChatInterface');
+    t.implements('Chat');
     t.nonNull.string('name');
     t.string('description');
     t.field('createdBy', {
-      type: 'UserResult',
+      type: 'User',
     });
     t.nonNull.int('memberCount', {
       resolve: async (parent, _, { prisma }) => {
@@ -64,7 +74,7 @@ export const GroupChat = objectType({
       },
     });
     t.nonNull.list.nonNull.field('members', {
-      type: 'UserResult',
+      type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.chat
           .findUnique({
@@ -89,10 +99,10 @@ export const GroupChat = objectType({
 export const DeletedChat = objectType({
   name: 'DeletedChat',
   definition: (t) => {
-    t.implements('ChatInterface');
+    t.implements('Chat');
     t.nonNull.date('deletedAt');
     t.field('createdBy', {
-      type: 'UserResult',
+      type: 'User',
     });
   },
 });

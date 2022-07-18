@@ -1,6 +1,7 @@
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types';
+import { hashIdArg } from '../shared';
 
 export const UpdateMeMutation = mutationField('updateMe', {
   type: 'Me',
@@ -26,7 +27,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   type: 'Stranger',
   description: 'Send a friend request to a user',
   args: {
-    friendId: nonNull(stringArg()),
+    friendId: nonNull(hashIdArg()),
   },
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     const user = await prisma.user.findUnique({
@@ -95,7 +96,7 @@ export const CancelFriendRequestMutation = mutationField(
     type: 'Stranger',
     description: 'Cancel/Delete a sent Friend Request',
     args: {
-      friendId: nonNull(stringArg()),
+      friendId: nonNull(hashIdArg()),
     },
     resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
       const sentRequests = await prisma.user
@@ -139,7 +140,7 @@ export const DeclineFriendRequestMutation = mutationField(
     type: 'Stranger',
     description: 'Delete/Decline a received Friend Request',
     args: {
-      friendId: nonNull(stringArg()),
+      friendId: nonNull(hashIdArg()),
     },
     resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
       const receivedRequests = await prisma.user
@@ -183,7 +184,7 @@ export const AcceptFriendRequestMutation = mutationField(
     type: 'Friend',
     description: 'Accept a Users friend request',
     args: {
-      friendId: nonNull(stringArg()),
+      friendId: nonNull(hashIdArg()),
     },
     resolve: async (_, { friendId }, { prisma, pubsub, userId }) => {
       const receivedRequests = await prisma.user
@@ -238,7 +239,7 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
   type: 'Stranger',
   description: 'Delete a Friend',
   args: {
-    friendId: nonNull(stringArg()),
+    friendId: nonNull(hashIdArg()),
   },
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     // Validate

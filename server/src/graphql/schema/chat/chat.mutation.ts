@@ -1,5 +1,6 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types';
+import { hashIdArg } from '../shared';
 import { CreateGroupChatInput, UpdateGroupChatInput } from './chat.input';
 
 export const CreateGroupChatMutation = mutationField('createGroupChat', {
@@ -14,7 +15,7 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
     { prisma, userId, pubsub }
   ) => {
     // Remove duplicates & creator as members
-    const memberIdSet: Set<string> = new Set(memberIds);
+    const memberIdSet: Set<number> = new Set(memberIds);
     memberIdSet.add(userId);
 
     const chat = await prisma.chat.create({
@@ -49,7 +50,7 @@ export const CreateDirectMessageChatMutation = mutationField(
     type: 'DirectMessageChat',
     args: {
       friendId: nonNull(
-        stringArg({
+        hashIdArg({
           description: 'Id of friend to create a Direct Message Chat with',
         })
       ),
@@ -142,7 +143,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
   type: 'DeletedChat',
   args: {
     chatId: nonNull(
-      stringArg({
+      hashIdArg({
         description: 'Id of Chat to be deleted',
       })
     ),

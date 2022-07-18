@@ -6,10 +6,10 @@ export const MessageInterface = interfaceType({
     return t.deletedAt == null ? 'Message' : 'DeletedMessage';
   },
   definition: (t) => {
-    t.nonNull.id('id');
-    t.nonNull.string('createdById');
+    t.nonNull.hashId('id');
+    t.nonNull.hashId('createdById');
     t.nonNull.field('createdBy', {
-      type: 'UserResult',
+      type: 'User',
       resolve: async (parent, __, { prisma }) => {
         return await prisma.user.findUnique({
           where: {
@@ -26,9 +26,9 @@ export const MessageInterface = interfaceType({
     t.date('deletedAt');
     t.nonNull.date('updatedAt');
     t.nonNull.date('createdAt');
-    t.nonNull.string('chatId');
+    t.nonNull.hashId('chatId');
     t.nonNull.field('chat', {
-      type: 'ChatResult',
+      type: 'Chat',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUnique({
           where: {

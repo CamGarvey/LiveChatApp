@@ -11,5 +11,7 @@ declare namespace NodeJS {
     AUTH0_JWKS_URI: string;
     AUTH0_SIGNING_ALG: string;
     AUTH0_ISSUER_BASE_URL: string;
+    HASH_SALT: string;
+    HASH_MIN_LENGTH: string;
   }
 }

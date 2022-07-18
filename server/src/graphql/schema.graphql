@@ -2,21 +2,19 @@
 ### Do not make changes to this file directly
 
 
-interface ChatInterface {
-  createdById: ID!
-  id: ID!
+interface Chat {
+  createdById: HashId!
+  id: HashId!
   isCreator: Boolean!
   updatedAt: Date
 }
-
-union ChatResult = DeletedChat | DirectMessageChat | GroupChat
 
 input CreateGroupChatInput {
   """Short description of the group chat"""
   description: String
 
   """Ids of the users to be added to group chat"""
-  memberIds: [ID!]
+  memberIds: [HashId!]
 
   """Name of the chat"""
   name: String!
@@ -25,33 +23,33 @@ input CreateGroupChatInput {
 """Date custom scalar type"""
 scalar Date
 
-type DeletedChat implements ChatInterface {
-  createdBy: UserResult
-  createdById: ID!
+type DeletedChat implements Chat {
+  createdBy: User
+  createdById: HashId!
   deletedAt: Date!
-  id: ID!
+  id: HashId!
   isCreator: Boolean!
   updatedAt: Date
 }
 
 type DeletedMessage implements MessageInterface {
-  chat: ChatResult!
-  chatId: String!
+  chat: Chat!
+  chatId: HashId!
   createdAt: Date!
-  createdBy: UserResult!
-  createdById: String!
+  createdBy: User!
+  createdById: HashId!
   deletedAt: Date
-  id: ID!
+  id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
 }
 
 """A Direct Message Chat is a conversation between 2 members"""
-type DirectMessageChat implements ChatInterface {
-  createdBy: KnownUserInterface
-  createdById: ID!
+type DirectMessageChat implements Chat {
+  createdBy: KnownUser
+  createdById: HashId!
   friend: Friend!
-  id: ID!
+  id: HashId!
   isCreator: Boolean!
   messages(
     """Returns the elements in the list that come after the specified cursor"""
@@ -69,10 +67,9 @@ type DirectMessageChat implements ChatInterface {
   updatedAt: Date
 }
 
-type Friend implements KnownUserInterface & UserInterface {
-  chats: [ChatResult!]!
+type Friend implements KnownUser & User {
+  chats: [Chat!]!
   createdAt: Date!
-  friendStatus: FriendStatus!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -86,7 +83,7 @@ type Friend implements KnownUserInterface & UserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
-  id: ID!
+  id: HashId!
   name: String
   updatedAt: Date!
   username: String!
@@ -120,20 +117,22 @@ enum FriendStatus {
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
-type GroupChat implements ChatInterface {
-  createdBy: UserResult
-  createdById: ID!
+type GroupChat implements Chat {
+  createdBy: User
+  createdById: HashId!
   description: String
-  id: ID!
+  id: HashId!
   isCreator: Boolean!
   memberCount: Int!
-  members: [UserResult!]!
+  members: [User!]!
   name: String!
   updatedAt: Date
 }
 
-interface KnownUserInterface {
-  chats: [ChatResult!]!
+scalar HashId
+
+interface KnownUser {
+  chats: [Chat!]!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -149,10 +148,9 @@ interface KnownUserInterface {
   ): FriendConnection!
 }
 
-type Me implements KnownUserInterface & UserInterface {
-  chats: [ChatResult!]!
+type Me implements KnownUser & User {
+  chats: [Chat!]!
   createdAt: Date!
-  friendStatus: FriendStatus!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -166,7 +164,7 @@ type Me implements KnownUserInterface & UserInterface {
     """Returns the last n elements from the list."""
     last: Int
   ): FriendConnection!
-  id: ID!
+  id: HashId!
   name: String
   receivedFriendRequests: [Stranger!]!
   updatedAt: Date!
@@ -174,27 +172,27 @@ type Me implements KnownUserInterface & UserInterface {
 }
 
 type Message implements MessageInterface {
-  chat: ChatResult!
-  chatId: String!
+  chat: Chat!
+  chatId: HashId!
   content: String!
   createdAt: Date!
-  createdBy: UserResult!
-  createdById: String!
+  createdBy: User!
+  createdById: HashId!
   deletedAt: Date
-  id: ID!
+  id: HashId!
   isCreator: Boolean!
-  likedBy: [UserResult!]!
+  likedBy: [User!]!
   updatedAt: Date!
 }
 
 interface MessageInterface {
-  chat: ChatResult!
-  chatId: String!
+  chat: Chat!
+  chatId: HashId!
   createdAt: Date!
-  createdBy: UserResult!
-  createdById: String!
+  createdBy: User!
+  createdById: HashId!
   deletedAt: Date
-  id: ID!
+  id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
 }
@@ -223,15 +221,15 @@ type MessageResultEdge {
 
 type Mutation {
   """Accept a Users friend request"""
-  acceptFriendRequest(friendId: String!): Friend
+  acceptFriendRequest(friendId: HashId!): Friend
 
   """Cancel/Delete a sent Friend Request"""
-  cancelFriendRequest(friendId: String!): Stranger
+  cancelFriendRequest(friendId: HashId!): Stranger
 
   """Create a Chat"""
   createDirectMessageChat(
     """Id of friend to create a Direct Message Chat with"""
-    friendId: String!
+    friendId: HashId!
   ): DirectMessageChat
 
   """Create a Chat"""
@@ -240,32 +238,32 @@ type Mutation {
   """Create a Message in a Chat"""
   createMessage(
     """Id of Chat to create Message in"""
-    chatId: String!
+    chatId: HashId!
 
     """Content of Message"""
     content: String!
   ): Message
 
   """Delete/Decline a received Friend Request"""
-  declineFriendRequest(friendId: String!): Stranger
+  declineFriendRequest(friendId: HashId!): Stranger
 
   """Delete a Chat"""
   deleteChat(
     """Id of Chat to be deleted"""
-    chatId: String!
+    chatId: HashId!
   ): DeletedChat
 
   """Delete a Friend"""
-  deleteFriend(friendId: String!): Stranger
+  deleteFriend(friendId: HashId!): Stranger
 
   """Delete a Message"""
   deleteMessage(
     """Id of Message to delete"""
-    messageId: String!
+    messageId: HashId!
   ): Message
 
   """Send a friend request to a user"""
-  sendFriendRequest(friendId: String!): Stranger
+  sendFriendRequest(friendId: HashId!): Stranger
 
   """Update a Chat"""
   updateGroupChat(data: UpdateGroupChatInput): GroupChat
@@ -279,7 +277,7 @@ type Mutation {
     content: String!
 
     """Id of Message to edit"""
-    messageId: String!
+    messageId: HashId!
   ): Message
 }
 
@@ -311,16 +309,16 @@ type PageInfo {
 type Query {
   chat(
     """Id of chat"""
-    chatId: String!
-  ): ChatResult
-  chats: [ChatResult!]!
+    chatId: HashId!
+  ): Chat
+  chats: [Chat!]!
   friends: [Friend!]!
   me: Me
 
   """Get a message by id"""
   message(
     """id of message"""
-    messageId: String!
+    messageId: HashId!
   ): MessageResult
   messages(
     """Returns the elements in the list that come after the specified cursor"""
@@ -328,9 +326,7 @@ type Query {
 
     """Returns the elements in the list that come before the specified cursor"""
     before: String
-
-    """If set, filters users by given filter"""
-    chatId: String!
+    chatId: HashId!
 
     """Returns the first n elements from the list."""
     first: Int
@@ -340,8 +336,8 @@ type Query {
   ): MessageResultConnection!
   user(
     """id of user"""
-    userId: String!
-  ): UserResult
+    userId: HashId!
+  ): User
 
   """Find users"""
   users(
@@ -362,7 +358,7 @@ type Query {
 
     """If set, filters users by given filter"""
     usernameFilter: String
-  ): UserResultConnection!
+  ): UserConnection!
 }
 
 enum Sort {
@@ -370,28 +366,28 @@ enum Sort {
   desc
 }
 
-type Stranger implements UserInterface {
+type Stranger implements User {
   createdAt: Date!
   friendStatus: FriendStatus!
-  id: ID!
+  id: HashId!
   name: String
   updatedAt: Date!
   username: String!
 }
 
 type Subscription {
-  chatCreated: ChatResult
+  chatCreated: Chat
   chatDeleted: DeletedChat
-  chats: ChatResult
+  chats: Chat
 
   """SUbscribe to deleted message in chat"""
-  messageDeleted(chatId: String!): Message
+  messageDeleted(chatId: HashId!): DeletedMessage
 
   """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: String!): MessageResult
+  messageUpdated(chatId: HashId!): MessageResult
 
   """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: String!): Message
+  messages(chatId: HashId!): MessageResult
 
   """Subscribe to any changes to current user"""
   user: Me
@@ -420,10 +416,10 @@ type Subscription {
 
 input UpdateGroupChatInput {
   """Ids of users to be add into the chat"""
-  addMemberIds: [ID!]
+  addMemberIds: [HashId!]
 
   """Id of chat to update"""
-  chatId: ID!
+  chatId: HashId!
 
   """New description for chat"""
   description: String
@@ -432,16 +428,35 @@ input UpdateGroupChatInput {
   name: String
 
   """Ids of users to be removed from chat"""
-  removeMemberIds: [ID!]
+  removeMemberIds: [HashId!]
 }
 
-interface UserInterface {
+interface User {
   createdAt: Date!
-  friendStatus: FriendStatus!
-  id: ID!
+  id: HashId!
   name: String
   updatedAt: Date!
   username: String!
+}
+
+type UserConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [UserEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: User
 }
 
 input UserOrderBy {
@@ -451,26 +466,4 @@ input UserOrderBy {
   name: Sort
   updatedAt: Sort
   username: Sort
-}
-
-union UserResult = Friend | Me | Stranger
-
-type UserResultConnection {
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
-  """
-  edges: [UserResultEdge]
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
-  """
-  pageInfo: PageInfo!
-}
-
-type UserResultEdge {
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
-  cursor: String!
-
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: UserResult
 }

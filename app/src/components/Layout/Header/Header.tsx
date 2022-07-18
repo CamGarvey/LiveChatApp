@@ -5,6 +5,7 @@ import {
   Header as MantineHeader,
   MediaQuery,
   Burger,
+  Button,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
 import { FriendStatus } from '../../../graphql/generated/graphql';
@@ -39,6 +40,7 @@ const Header = ({ chat }: Props) => {
   return (
     <MantineHeader height={70} p="md">
       <Group spacing={3}>
+        <Button onClick={() => logout()} />
         <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
           <Burger
             opened={isDrawerOpen}

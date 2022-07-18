@@ -1,5 +1,11 @@
 import express from 'express';
 import prisma from '../lib/clients/prisma';
+import hashids from 'hashids';
+
+const hash = new hashids(
+  process.env.HASH_SALT,
+  parseInt(process.env.HASH_MIN_LENGTH)
+);
 
 const authRouter = express.Router();
 
@@ -45,7 +51,7 @@ authRouter.post('/create-user-hook', async (req, res) => {
     // Send 201 response with user id for Auth0 user metadata
     // Then Auth0 can send the userId in the accesstoken
     res.status(201).send({
-      id,
+      userId: hash.encode(id),
     });
   } catch (e) {
     console.error(e);
