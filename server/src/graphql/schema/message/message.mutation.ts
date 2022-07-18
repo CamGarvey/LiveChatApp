@@ -4,7 +4,7 @@ import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
-  type: 'Message',
+  type: 'InstantMessage',
   description: 'Create a Message in a Chat',
   args: {
     chatId: nonNull(
@@ -36,7 +36,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
 });
 
 export const DeleteMessageMutation = mutationField('deleteMessage', {
-  type: 'Message',
+  type: 'InstantMessage',
   args: {
     messageId: nonNull(
       hashIdArg({
@@ -84,7 +84,7 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
 });
 
 export const UpdateMessageMutation = mutationField('updateMessage', {
-  type: 'Message',
+  type: 'InstantMessage',
   args: {
     messageId: nonNull(
       hashIdArg({

@@ -13,7 +13,7 @@ function decodeCursor(cursor: string) {
 }
 
 export const MessageQuery = queryField('message', {
-  type: 'MessageResult',
+  type: 'InstantMessage',
   description: 'Get a message by id',
   args: {
     messageId: nonNull(
@@ -35,7 +35,7 @@ export const MessageQuery = queryField('message', {
 
 export const MessagesQuery = queryField((t) => {
   t.nonNull.connectionField('messages', {
-    type: 'MessageResult',
+    type: 'InstantMessage',
     additionalArgs: {
       chatId: nonNull(hashIdArg()),
     },

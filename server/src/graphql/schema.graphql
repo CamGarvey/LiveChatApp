@@ -32,7 +32,7 @@ type DeletedChat implements Chat {
   updatedAt: Date
 }
 
-type DeletedMessage implements MessageInterface {
+type DeletedMessage implements Message {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -63,7 +63,7 @@ type DirectMessageChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): MessageConnection!
   updatedAt: Date
 }
 
@@ -131,6 +131,40 @@ type GroupChat implements Chat {
 
 scalar HashId
 
+type InstantMessage implements Message {
+  chat: Chat!
+  chatId: HashId!
+  content: String!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  deletedAt: Date
+  id: HashId!
+  isCreator: Boolean!
+  likedBy: [User!]!
+  updatedAt: Date!
+}
+
+type InstantMessageConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [InstantMessageEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type InstantMessageEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: InstantMessage
+}
+
 interface KnownUser {
   chats: [Chat!]!
   friends(
@@ -171,21 +205,7 @@ type Me implements KnownUser & User {
   username: String!
 }
 
-type Message implements MessageInterface {
-  chat: Chat!
-  chatId: HashId!
-  content: String!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  deletedAt: Date
-  id: HashId!
-  isCreator: Boolean!
-  likedBy: [User!]!
-  updatedAt: Date!
-}
-
-interface MessageInterface {
+interface Message {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -197,13 +217,11 @@ interface MessageInterface {
   updatedAt: Date!
 }
 
-union MessageResult = DeletedMessage | Message
-
-type MessageResultConnection {
+type MessageConnection {
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [MessageResultEdge]
+  edges: [MessageEdge]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -211,12 +229,12 @@ type MessageResultConnection {
   pageInfo: PageInfo!
 }
 
-type MessageResultEdge {
+type MessageEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: MessageResult
+  node: Message
 }
 
 type Mutation {
@@ -242,7 +260,7 @@ type Mutation {
 
     """Content of Message"""
     content: String!
-  ): Message
+  ): InstantMessage
 
   """Delete/Decline a received Friend Request"""
   declineFriendRequest(friendId: HashId!): Stranger
@@ -260,7 +278,7 @@ type Mutation {
   deleteMessage(
     """Id of Message to delete"""
     messageId: HashId!
-  ): Message
+  ): InstantMessage
 
   """Send a friend request to a user"""
   sendFriendRequest(friendId: HashId!): Stranger
@@ -278,7 +296,7 @@ type Mutation {
 
     """Id of Message to edit"""
     messageId: HashId!
-  ): Message
+  ): InstantMessage
 }
 
 """
@@ -319,7 +337,7 @@ type Query {
   message(
     """id of message"""
     messageId: HashId!
-  ): MessageResult
+  ): InstantMessage
   messages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -333,7 +351,7 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): InstantMessageConnection!
   user(
     """id of user"""
     userId: HashId!
@@ -384,10 +402,10 @@ type Subscription {
   messageDeleted(chatId: HashId!): DeletedMessage
 
   """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId!): MessageResult
+  messageUpdated(chatId: HashId!): Message
 
   """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId!): MessageResult
+  messages(chatId: HashId!): InstantMessage
 
   """Subscribe to any changes to current user"""
   user: Me

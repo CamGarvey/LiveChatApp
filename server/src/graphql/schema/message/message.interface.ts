@@ -1,9 +1,9 @@
 import { interfaceType } from 'nexus';
 
 export const MessageInterface = interfaceType({
-  name: 'MessageInterface',
+  name: 'Message',
   resolveType: (t) => {
-    return t.deletedAt == null ? 'Message' : 'DeletedMessage';
+    return t.deletedAt == null ? 'InstantMessage' : 'DeletedMessage';
   },
   definition: (t) => {
     t.nonNull.hashId('id');

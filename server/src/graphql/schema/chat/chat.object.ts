@@ -24,7 +24,7 @@ export const DirectMessageChat = objectType({
       },
     });
     t.nonNull.connectionField('messages', {
-      type: 'MessageResult',
+      type: 'Message',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
           Message,

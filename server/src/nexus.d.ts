@@ -123,14 +123,7 @@ export interface NexusGenObjects {
     name: string; // String!
     updatedAt?: NexusGenScalars['Date'] | null; // Date
   }
-  Me: { // root type
-    createdAt: NexusGenScalars['Date']; // Date!
-    id: NexusGenScalars['HashId']; // HashId!
-    name?: string | null; // String
-    updatedAt: NexusGenScalars['Date']; // Date!
-    username: string; // String!
-  }
-  Message: { // root type
+  InstantMessage: { // root type
     chatId: NexusGenScalars['HashId']; // HashId!
     content: string; // String!
     createdAt: NexusGenScalars['Date']; // Date!
@@ -139,13 +132,28 @@ export interface NexusGenObjects {
     id: NexusGenScalars['HashId']; // HashId!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
-  MessageResultConnection: { // root type
-    edges?: Array<NexusGenRootTypes['MessageResultEdge'] | null> | null; // [MessageResultEdge]
+  InstantMessageConnection: { // root type
+    edges?: Array<NexusGenRootTypes['InstantMessageEdge'] | null> | null; // [InstantMessageEdge]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
   }
-  MessageResultEdge: { // root type
+  InstantMessageEdge: { // root type
     cursor: string; // String!
-    node?: NexusGenRootTypes['MessageResult'] | null; // MessageResult
+    node?: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
+  }
+  Me: { // root type
+    createdAt: NexusGenScalars['Date']; // Date!
+    id: NexusGenScalars['HashId']; // HashId!
+    name?: string | null; // String
+    updatedAt: NexusGenScalars['Date']; // Date!
+    username: string; // String!
+  }
+  MessageConnection: { // root type
+    edges?: Array<NexusGenRootTypes['MessageEdge'] | null> | null; // [MessageEdge]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  MessageEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['Message'] | null; // Message
   }
   Mutation: {};
   PageInfo: { // root type
@@ -176,15 +184,14 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   Chat: NexusGenRootTypes['DeletedChat'] | NexusGenRootTypes['DirectMessageChat'] | NexusGenRootTypes['GroupChat'];
   KnownUser: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'];
-  MessageInterface: NexusGenRootTypes['DeletedMessage'] | NexusGenRootTypes['Message'];
+  Message: NexusGenRootTypes['DeletedMessage'] | NexusGenRootTypes['InstantMessage'];
   User: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'] | NexusGenRootTypes['Stranger'];
 }
 
 export interface NexusGenUnions {
-  MessageResult: NexusGenRootTypes['DeletedMessage'] | NexusGenRootTypes['Message'];
 }
 
-export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects & NexusGenUnions
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
@@ -214,7 +221,7 @@ export interface NexusGenFieldTypes {
     friend: NexusGenRootTypes['Friend']; // Friend!
     id: NexusGenScalars['HashId']; // HashId!
     isCreator: boolean; // Boolean!
-    messages: NexusGenRootTypes['MessageResultConnection']; // MessageResultConnection!
+    messages: NexusGenRootTypes['MessageConnection']; // MessageConnection!
     updatedAt: NexusGenScalars['Date'] | null; // Date
   }
   Friend: { // field return type
@@ -245,17 +252,7 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     updatedAt: NexusGenScalars['Date'] | null; // Date
   }
-  Me: { // field return type
-    chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
-    createdAt: NexusGenScalars['Date']; // Date!
-    friends: NexusGenRootTypes['FriendConnection']; // FriendConnection!
-    id: NexusGenScalars['HashId']; // HashId!
-    name: string | null; // String
-    receivedFriendRequests: NexusGenRootTypes['Stranger'][]; // [Stranger!]!
-    updatedAt: NexusGenScalars['Date']; // Date!
-    username: string; // String!
-  }
-  Message: { // field return type
+  InstantMessage: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
     chatId: NexusGenScalars['HashId']; // HashId!
     content: string; // String!
@@ -268,28 +265,46 @@ export interface NexusGenFieldTypes {
     likedBy: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!
   }
-  MessageResultConnection: { // field return type
-    edges: Array<NexusGenRootTypes['MessageResultEdge'] | null> | null; // [MessageResultEdge]
+  InstantMessageConnection: { // field return type
+    edges: Array<NexusGenRootTypes['InstantMessageEdge'] | null> | null; // [InstantMessageEdge]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
   }
-  MessageResultEdge: { // field return type
+  InstantMessageEdge: { // field return type
     cursor: string; // String!
-    node: NexusGenRootTypes['MessageResult'] | null; // MessageResult
+    node: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
+  }
+  Me: { // field return type
+    chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
+    createdAt: NexusGenScalars['Date']; // Date!
+    friends: NexusGenRootTypes['FriendConnection']; // FriendConnection!
+    id: NexusGenScalars['HashId']; // HashId!
+    name: string | null; // String
+    receivedFriendRequests: NexusGenRootTypes['Stranger'][]; // [Stranger!]!
+    updatedAt: NexusGenScalars['Date']; // Date!
+    username: string; // String!
+  }
+  MessageConnection: { // field return type
+    edges: Array<NexusGenRootTypes['MessageEdge'] | null> | null; // [MessageEdge]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  MessageEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['Message'] | null; // Message
   }
   Mutation: { // field return type
     acceptFriendRequest: NexusGenRootTypes['Friend'] | null; // Friend
     cancelFriendRequest: NexusGenRootTypes['Stranger'] | null; // Stranger
     createDirectMessageChat: NexusGenRootTypes['DirectMessageChat'] | null; // DirectMessageChat
     createGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
-    createMessage: NexusGenRootTypes['Message'] | null; // Message
+    createMessage: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
     declineFriendRequest: NexusGenRootTypes['Stranger'] | null; // Stranger
     deleteChat: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     deleteFriend: NexusGenRootTypes['Stranger'] | null; // Stranger
-    deleteMessage: NexusGenRootTypes['Message'] | null; // Message
+    deleteMessage: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
     sendFriendRequest: NexusGenRootTypes['Stranger'] | null; // Stranger
     updateGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
     updateMe: NexusGenRootTypes['Me'] | null; // Me
-    updateMessage: NexusGenRootTypes['Message'] | null; // Message
+    updateMessage: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -302,8 +317,8 @@ export interface NexusGenFieldTypes {
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
     friends: NexusGenRootTypes['Friend'][]; // [Friend!]!
     me: NexusGenRootTypes['Me'] | null; // Me
-    message: NexusGenRootTypes['MessageResult'] | null; // MessageResult
-    messages: NexusGenRootTypes['MessageResultConnection']; // MessageResultConnection!
+    message: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
+    messages: NexusGenRootTypes['InstantMessageConnection']; // InstantMessageConnection!
     user: NexusGenRootTypes['User'] | null; // User
     users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
@@ -320,8 +335,8 @@ export interface NexusGenFieldTypes {
     chatDeleted: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     chats: NexusGenRootTypes['Chat'] | null; // Chat
     messageDeleted: NexusGenRootTypes['DeletedMessage'] | null; // DeletedMessage
-    messageUpdated: NexusGenRootTypes['MessageResult'] | null; // MessageResult
-    messages: NexusGenRootTypes['MessageResult'] | null; // MessageResult
+    messageUpdated: NexusGenRootTypes['Message'] | null; // Message
+    messages: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
     user: NexusGenRootTypes['Me'] | null; // Me
     userFriendCreated: NexusGenRootTypes['Me'] | null; // Me
     userFriendDeleted: NexusGenRootTypes['Me'] | null; // Me
@@ -348,7 +363,7 @@ export interface NexusGenFieldTypes {
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
     friends: NexusGenRootTypes['FriendConnection']; // FriendConnection!
   }
-  MessageInterface: { // field return type
+  Message: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
     chatId: NexusGenScalars['HashId']; // HashId!
     createdAt: NexusGenScalars['Date']; // Date!
@@ -394,7 +409,7 @@ export interface NexusGenFieldTypeNames {
     friend: 'Friend'
     id: 'HashId'
     isCreator: 'Boolean'
-    messages: 'MessageResultConnection'
+    messages: 'MessageConnection'
     updatedAt: 'Date'
   }
   Friend: { // field return type name
@@ -425,17 +440,7 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     updatedAt: 'Date'
   }
-  Me: { // field return type name
-    chats: 'Chat'
-    createdAt: 'Date'
-    friends: 'FriendConnection'
-    id: 'HashId'
-    name: 'String'
-    receivedFriendRequests: 'Stranger'
-    updatedAt: 'Date'
-    username: 'String'
-  }
-  Message: { // field return type name
+  InstantMessage: { // field return type name
     chat: 'Chat'
     chatId: 'HashId'
     content: 'String'
@@ -448,28 +453,46 @@ export interface NexusGenFieldTypeNames {
     likedBy: 'User'
     updatedAt: 'Date'
   }
-  MessageResultConnection: { // field return type name
-    edges: 'MessageResultEdge'
+  InstantMessageConnection: { // field return type name
+    edges: 'InstantMessageEdge'
     pageInfo: 'PageInfo'
   }
-  MessageResultEdge: { // field return type name
+  InstantMessageEdge: { // field return type name
     cursor: 'String'
-    node: 'MessageResult'
+    node: 'InstantMessage'
+  }
+  Me: { // field return type name
+    chats: 'Chat'
+    createdAt: 'Date'
+    friends: 'FriendConnection'
+    id: 'HashId'
+    name: 'String'
+    receivedFriendRequests: 'Stranger'
+    updatedAt: 'Date'
+    username: 'String'
+  }
+  MessageConnection: { // field return type name
+    edges: 'MessageEdge'
+    pageInfo: 'PageInfo'
+  }
+  MessageEdge: { // field return type name
+    cursor: 'String'
+    node: 'Message'
   }
   Mutation: { // field return type name
     acceptFriendRequest: 'Friend'
     cancelFriendRequest: 'Stranger'
     createDirectMessageChat: 'DirectMessageChat'
     createGroupChat: 'GroupChat'
-    createMessage: 'Message'
+    createMessage: 'InstantMessage'
     declineFriendRequest: 'Stranger'
     deleteChat: 'DeletedChat'
     deleteFriend: 'Stranger'
-    deleteMessage: 'Message'
+    deleteMessage: 'InstantMessage'
     sendFriendRequest: 'Stranger'
     updateGroupChat: 'GroupChat'
     updateMe: 'Me'
-    updateMessage: 'Message'
+    updateMessage: 'InstantMessage'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -482,8 +505,8 @@ export interface NexusGenFieldTypeNames {
     chats: 'Chat'
     friends: 'Friend'
     me: 'Me'
-    message: 'MessageResult'
-    messages: 'MessageResultConnection'
+    message: 'InstantMessage'
+    messages: 'InstantMessageConnection'
     user: 'User'
     users: 'UserConnection'
   }
@@ -500,8 +523,8 @@ export interface NexusGenFieldTypeNames {
     chatDeleted: 'DeletedChat'
     chats: 'Chat'
     messageDeleted: 'DeletedMessage'
-    messageUpdated: 'MessageResult'
-    messages: 'MessageResult'
+    messageUpdated: 'Message'
+    messages: 'InstantMessage'
     user: 'Me'
     userFriendCreated: 'Me'
     userFriendDeleted: 'Me'
@@ -528,7 +551,7 @@ export interface NexusGenFieldTypeNames {
     chats: 'Chat'
     friends: 'FriendConnection'
   }
-  MessageInterface: { // field return type name
+  Message: { // field return type name
     chat: 'Chat'
     chatId: 'HashId'
     createdAt: 'Date'
@@ -665,21 +688,20 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  MessageResult: "DeletedMessage" | "Message"
   Chat: "DeletedChat" | "DirectMessageChat" | "GroupChat"
   KnownUser: "Friend" | "Me"
-  MessageInterface: "DeletedMessage" | "Message"
+  Message: "DeletedMessage" | "InstantMessage"
   User: "Friend" | "Me" | "Stranger"
 }
 
 export interface NexusGenTypeInterfaces {
   DeletedChat: "Chat"
-  DeletedMessage: "MessageInterface"
+  DeletedMessage: "Message"
   DirectMessageChat: "Chat"
   Friend: "KnownUser" | "User"
   GroupChat: "Chat"
+  InstantMessage: "Message"
   Me: "KnownUser" | "User"
-  Message: "MessageInterface"
   Stranger: "User"
 }
 
@@ -693,11 +715,11 @@ export type NexusGenInterfaceNames = keyof NexusGenInterfaces;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
-export type NexusGenUnionNames = keyof NexusGenUnions;
+export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "Chat" | "KnownUser" | "MessageInterface" | "MessageResult" | "User";
+export type NexusGenAbstractsUsingStrategyResolveType = "Chat" | "KnownUser" | "Message" | "User";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

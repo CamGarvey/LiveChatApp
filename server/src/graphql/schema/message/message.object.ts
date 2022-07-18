@@ -1,9 +1,9 @@
 import { objectType } from 'nexus';
 
-export const Message = objectType({
-  name: 'Message',
+export const InstantMessage = objectType({
+  name: 'InstantMessage',
   definition(t) {
-    t.implements('MessageInterface');
+    t.implements('Message');
     t.nonNull.string('content');
     t.nonNull.list.nonNull.field('likedBy', {
       type: 'User',
@@ -21,6 +21,6 @@ export const Message = objectType({
 export const DeletedMessage = objectType({
   name: 'DeletedMessage',
   definition: (t) => {
-    t.implements('MessageInterface');
+    t.implements('Message');
   },
 });

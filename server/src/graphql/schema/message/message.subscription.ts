@@ -1,11 +1,10 @@
-import { ForbiddenError } from 'apollo-server-core';
 import { withFilter } from 'graphql-subscriptions';
-import { nonNull, stringArg, subscriptionField } from 'nexus';
+import { nonNull, subscriptionField } from 'nexus';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 
 export const MessagesSubscription = subscriptionField('messages', {
-  type: 'MessageResult',
+  type: 'InstantMessage',
   description: 'Subscribe to any created/updated/deleted messages',
   args: {
     chatId: nonNull(hashIdArg()),
@@ -45,7 +44,7 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
 });
 
 export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
-  type: 'MessageResult',
+  type: 'Message',
   description: 'Subscribe to updated messages in chat',
   args: {
     chatId: nonNull(hashIdArg()),
