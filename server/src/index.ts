@@ -77,7 +77,24 @@ const main = async () => {
     parseInt(process.env.HASH_MIN_LENGTH)
   );
 
-  console.log(hash.encode(13));
+  const getPayloadFromBearerToken = (token: string) => {
+    // Take off Bearer part of token e.g Bearer eyJhbGciOiJSUzI1NiIs...
+    const strippedToken = token.replace('Bearer ', '');
+
+    // Decode token. No need to verify since auth middleware takes care of that
+    const decoded = jwt.decode(strippedToken);
+    console.log(decoded);
+    // Parse decoded token
+    return JSON.parse(JSON.stringify(decoded));
+  };
+
+  const getUserIdFromTokenPayload = (payload: any): number => {
+    // Get user id from token payload
+    // Since user_id is a custom field in the Auth0 accesstoken Auth0 requires name of field
+    // to be {API domain}/{field name}
+    let [userId] = hash.decode(payload[process.env.DOMAIN + '/user_id']);
+    return Number(userId);
+  };
 
   // Hand in the schema we just created and have the
   // WebSocketServer start listening.
@@ -85,25 +102,16 @@ const main = async () => {
     {
       schema,
       context: (req) => {
-        if (!req.connectionParams.Authorization) {
+        const token = req.connectionParams.Authorization;
+        if (!token) {
           throw new ForbiddenError('No token');
         }
-        // Get access token from request
-        const token = req.connectionParams.Authorization.toString().replace(
-          'Bearer ',
-          ''
-        );
-        // Decode token. No need to verify since auth middleware takes care of that
-        const decoded = jwt.decode(token);
-        // Parse decoded token
-        const payload = JSON.parse(JSON.stringify(decoded));
-        // Get user id from token payload
-        // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
-        // to be {API domain}/{field name}
-        let [userId] = hash.decode(payload[process.env.DOMAIN + '/user_id']);
-
-        userId = Number(userId);
-        authorizer.userId = Number(userId);
+        const payload = getPayloadFromBearerToken(token.toString());
+        if (!payload) {
+          throw new ForbiddenError('Invalid token');
+        }
+        const userId = getUserIdFromTokenPayload(payload);
+        authorizer.userId = userId;
 
         return {
           userId,
@@ -121,17 +129,15 @@ const main = async () => {
     csrfPrevention: true,
     context: ({ req }): IContext => {
       // Get access token from request
-      const token = req.headers.authorization.replace('Bearer ', '');
-      // Decode token. No need to verify since auth middleware takes care of that
-      const decoded = jwt.decode(token);
-      // Parse decoded token
-      const payload = JSON.parse(JSON.stringify(decoded));
-      // Get user id from token payload
-      // Since user_id is a custom field inthe Auth0 accesstoken Auth0 requires name of field
-      // to be {API domain}/{field name}
-      let [userId] = hash.decode(payload[process.env.DOMAIN + '/user_id']);
-
-      userId = Number(userId);
+      const token = req.headers.authorization;
+      if (!token) {
+        throw new ForbiddenError('No token');
+      }
+      const payload = getPayloadFromBearerToken(token);
+      if (!payload) {
+        throw new ForbiddenError('Invalid token');
+      }
+      const userId = getUserIdFromTokenPayload(payload);
 
       if (!userId) {
         throw new ForbiddenError('Invalid user');
