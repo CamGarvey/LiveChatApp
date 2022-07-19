@@ -15,58 +15,58 @@ model User {
   email                  String       @unique
   name                   String?
   username               String       @unique
-  sentFriendRequests     User[]       @relation("UserFriendRequests")
-  receivedFriendRequests User[]       @relation("UserFriendRequests")
-  friends                User[]       @relation("UserFriendsUser")
-  friendsOf              User[]       @relation("UserFriendsUser")
+  sentFriendRequests     User[]       @relation("FriendRequests")
+  receivedFriendRequests User[]       @relation("FriendRequests")
+  friends                User[]       @relation("Friends")
+  friendsOf              User[]       @relation("Friends")
+  chatsCreated           Chat[]       @relation("ChatCreatedBy")
+  memberOfChats          Chat[]       @relation("ChatMembers")
+  messages               Message[]    @relation("MessageCreatedBy")
+  likedMessages          Message[]    @relation("MessageLikedBy")
+  adminOfChats           Chat[]       @relation("ChatAdmins")
+  chatUpdates            ChatUpdate[]
   updatedAt              DateTime     @updatedAt
   createdAt              DateTime     @default(now())
-  chatsCreated           Chat[]       @relation("UserCreatedByChat")
-  memberOfChats          Chat[]       @relation("UserMemberOfChats")
-  messages               Message[]    @relation("WhoUserMessage")
-  likedMessages          Message[]    @relation("LikedByUserMessage")
-  adminOfChats           Chat[]       @relation("UserAdminOfChats")
-  chatUpdates            ChatUpdate[]
 }
 
 model Chat {
   id          Int          @id @default(autoincrement())
   name        String?
   description String?
+  createdBy   User         @relation("ChatCreatedBy", fields: [createdById], references: [id])
+  createdById Int
+  isDM        Boolean
+  members     User[]       @relation("ChatMembers")
+  admins      User[]       @relation("ChatAdmins")
+  messages    Message[]    @relation("ChatMessages")
+  updates     ChatUpdate[]
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
   deletedAt   DateTime?
-  createdBy   User         @relation("UserCreatedByChat", fields: [createdById], references: [id])
-  createdById Int
-  isDM        Boolean
-  members     User[]       @relation("UserMemberOfChats")
-  admins      User[]       @relation("UserAdminOfChats")
-  messages    Message[]    @relation("ChatMessagesMessage")
-  updates     ChatUpdate[]
 }
 
 model ChatUpdate {
   id               Int      @id @default(autoincrement())
   chat             Chat     @relation(fields: [chatId], references: [id])
   chatId           Int
-  createdAt        DateTime @default(now())
-  createdBy        User     @relation(fields: [createdById], references: [id])
-  createdById      Int
   name             String?
   description      String?
   memberIdsAdded   String[]
   memberIdsRemoved String[]
+  createdAt        DateTime @default(now())
+  createdBy        User     @relation(fields: [createdById], references: [id])
+  createdById      Int
 }
 
 model Message {
   id          Int       @id @default(autoincrement())
   content     String
+  chat        Chat      @relation("ChatMessages", fields: [chatId], references: [id])
+  chatId      Int
+  likedBy     User[]    @relation("MessageLikedBy")
+  createdBy   User      @relation("MessageCreatedBy", fields: [createdById], references: [id])
+  createdById Int
   updatedAt   DateTime  @updatedAt
   createdAt   DateTime  @default(now())
-  createdBy   User      @relation("WhoUserMessage", fields: [createdById], references: [id])
-  createdById Int
-  chat        Chat      @relation("ChatMessagesMessage", fields: [chatId], references: [id])
-  chatId      Int
-  likedBy     User[]    @relation("LikedByUserMessage")
   deletedAt   DateTime?
 }
