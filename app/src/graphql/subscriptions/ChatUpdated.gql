@@ -1,31 +1,26 @@
-subscription ChatUpdated($chatId: String!) {
-  chatUpdated(chatId: $chatId) {
-    chat {
-      # Added chat data so Apollo will replace what's in cache
-      # Subscription is not called very often so don't think we need
-      # to worry about over fetching?
+subscription Chats {
+  chats {
+    __typename
+    id
+    createdById
+    createdBy {
       id
-      name
-      description
-      members {
-        __typename
-        ... on Friend {
-          id
-          ...NameParts
-        }
-        ... on Stranger {
-          id
-          ...NameParts
-        }
-        ... on Me {
-          id
-          ...NameParts
-        }
+      ...NameParts
+    }
+    ... on DirectMessageChat {
+      friend {
+        id
+        ...NameParts
       }
     }
-    name
-    description
-    memberIdsAdded
-    memberIdsRemoved
+    ... on GroupChat {
+      members {
+        id
+        ...NameParts
+      }
+    }
+    ... on DeletedChat {
+      deletedAt
+    }
   }
 }

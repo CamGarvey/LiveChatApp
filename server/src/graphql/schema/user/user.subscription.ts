@@ -68,10 +68,10 @@ export const FriendDeletedSubscription = subscriptionField(
   }
 );
 
-export const RequestChangedSubscription = subscriptionField(
-  'userFriendRequests',
+export const FriendRequestChangedSubscription = subscriptionField(
+  'friendRequests',
   {
-    type: 'Me',
+    type: 'Stranger',
     description:
       'Subscribe to any changes to the friend requests of the current user',
     subscribe: withFilter(
@@ -88,9 +88,9 @@ export const RequestChangedSubscription = subscriptionField(
 );
 
 export const FriendRequestCreatedSubscription = subscriptionField(
-  'userFriendRequestCreated',
+  'friendRequestCreated',
   {
-    type: 'Me',
+    type: 'Stranger',
     description: 'Subscribe to new friend requests',
     subscribe: withFilter(
       (_, __, { pubsub }) =>
@@ -106,9 +106,9 @@ export const FriendRequestCreatedSubscription = subscriptionField(
 );
 
 export const FriendRequestDeletedSubscription = subscriptionField(
-  'userFriendRequestDeleted',
+  'friendRequestDeleted',
   {
-    type: 'Me',
+    type: 'Stranger',
     description: 'Subscribe to deleted friend requests',
     subscribe: withFilter(
       (_, __, { pubsub }) =>

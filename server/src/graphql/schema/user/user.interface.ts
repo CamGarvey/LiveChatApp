@@ -4,7 +4,8 @@ import { interfaceType } from 'nexus';
 export const UserInterface = interfaceType({
   name: 'User',
   resolveType: (source, { userId }) => {
-    return source.id == userId ? 'Me' : 'Friend';
+    // return source.id == userId ? 'Me' : 'Friend';
+    return 'Stranger';
   },
   definition: (t) => {
     t.nonNull.hashId('id');

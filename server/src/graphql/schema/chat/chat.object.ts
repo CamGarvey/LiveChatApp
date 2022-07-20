@@ -7,9 +7,6 @@ export const DirectMessageChat = objectType({
   description: 'A Direct Message Chat is a conversation between 2 members',
   definition: (t) => {
     t.implements('Chat');
-    t.field('createdBy', {
-      type: 'KnownUser',
-    });
     t.nonNull.field('friend', {
       type: 'Friend',
       resolve: async (parent, __, { userId, prisma }) => {
@@ -60,9 +57,6 @@ export const GroupChat = objectType({
     t.implements('Chat');
     t.nonNull.string('name');
     t.string('description');
-    t.field('createdBy', {
-      type: 'User',
-    });
     t.nonNull.int('memberCount', {
       resolve: async (parent, _, { prisma }) => {
         const members = await prisma.chat
@@ -83,6 +77,33 @@ export const GroupChat = objectType({
           .members();
       },
     });
+    t.nonNull.connectionField('messages', {
+      type: 'Message',
+      resolve: async (parent, args, { prisma }) => {
+        return await findManyCursorConnection<
+          Message,
+          Pick<Prisma.MessageWhereUniqueInput, 'id'>
+        >(
+          (args) =>
+            prisma.message.findMany({
+              ...args,
+              ...{ where: { id: parent.id || undefined } },
+            }),
+          () =>
+            prisma.message.count({
+              ...{ where: { id: parent.id || undefined } },
+            }),
+          args,
+          {
+            getCursor: (record) => ({ id: record.id }),
+            encodeCursor: (cursor) =>
+              Buffer.from(JSON.stringify(cursor)).toString('base64'),
+            decodeCursor: (cursor) =>
+              JSON.parse(Buffer.from(cursor, 'base64').toString('ascii')),
+          }
+        );
+      },
+    });
     // t.nonNull.list.nonNull.field('updates', {
     //   type: 'IChat',
     //   resolve: async (parent, _, { prisma }) => {
@@ -101,8 +122,5 @@ export const DeletedChat = objectType({
   definition: (t) => {
     t.implements('Chat');
     t.nonNull.date('deletedAt');
-    t.field('createdBy', {
-      type: 'User',
-    });
   },
 });

@@ -3,6 +3,8 @@
 
 
 interface Chat {
+  createdAt: Date
+  createdBy: User
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
@@ -24,6 +26,7 @@ input CreateGroupChatInput {
 scalar Date
 
 type DeletedChat implements Chat {
+  createdAt: Date
   createdBy: User
   createdById: HashId!
   deletedAt: Date!
@@ -46,7 +49,8 @@ type DeletedMessage implements Message {
 
 """A Direct Message Chat is a conversation between 2 members"""
 type DirectMessageChat implements Chat {
-  createdBy: KnownUser
+  createdAt: Date
+  createdBy: User
   createdById: HashId!
   friend: Friend!
   id: HashId!
@@ -118,6 +122,7 @@ enum FriendStatus {
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements Chat {
+  createdAt: Date
   createdBy: User
   createdById: HashId!
   description: String
@@ -125,6 +130,19 @@ type GroupChat implements Chat {
   isCreator: Boolean!
   memberCount: Int!
   members: [User!]!
+  messages(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): MessageConnection!
   name: String!
   updatedAt: Date
 }
@@ -185,6 +203,7 @@ interface KnownUser {
 type Me implements KnownUser & User {
   chats: [Chat!]!
   createdAt: Date!
+  friendRequests: [Stranger!]!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -200,7 +219,6 @@ type Me implements KnownUser & User {
   ): FriendConnection!
   id: HashId!
   name: String
-  receivedFriendRequests: [Stranger!]!
   updatedAt: Date!
   username: String!
 }
@@ -388,6 +406,19 @@ type Stranger implements User {
   createdAt: Date!
   friendStatus: FriendStatus!
   id: HashId!
+  mutualFriends(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): FriendConnection!
   name: String
   updatedAt: Date!
   username: String!
@@ -398,14 +429,26 @@ type Subscription {
   chatDeleted: DeletedChat
   chats: Chat
 
-  """SUbscribe to deleted message in chat"""
+  """Subscribe to new friend requests"""
+  friendRequestCreated: Stranger
+
+  """Subscribe to deleted friend requests"""
+  friendRequestDeleted: Stranger
+
+  """Subscribe to any changes to the friend requests of the current user"""
+  friendRequests: Stranger
+
+  """SUbscribe to created messages in chat"""
+  messageCreated(chatId: HashId!): InstantMessage
+
+  """SUbscribe to deleted messages in chat"""
   messageDeleted(chatId: HashId!): DeletedMessage
 
   """Subscribe to updated messages in chat"""
   messageUpdated(chatId: HashId!): Message
 
   """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId!): InstantMessage
+  messages(chatId: HashId!): Message
 
   """Subscribe to any changes to current user"""
   user: Me
@@ -415,15 +458,6 @@ type Subscription {
 
   """Subscribe to unfriend events"""
   userFriendDeleted: Me
-
-  """Subscribe to new friend requests"""
-  userFriendRequestCreated: Me
-
-  """Subscribe to deleted friend requests"""
-  userFriendRequestDeleted: Me
-
-  """Subscribe to any changes to the friend requests of the current user"""
-  userFriendRequests: Me
 
   """
   Subscribe to any changes to
