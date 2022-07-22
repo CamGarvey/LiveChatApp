@@ -35,6 +35,16 @@ type DeletedChat implements Chat {
   updatedAt: Date
 }
 
+type DeletedFriendRequestNotification implements Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  deletedAt: Date!
+  id: HashId!
+  recipients: [User!]!
+  updatedAt: Date!
+}
+
 type DeletedMessage implements Message {
   chat: Chat!
   chatId: HashId!
@@ -112,6 +122,17 @@ type FriendEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
   node: Friend
 }
+
+type FriendNotification implements Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  recipients: [User!]!
+  updatedAt: Date!
+}
+
+union FriendRequestNotification = DeletedFriendRequestNotification | OpenFriendRequestNotification
 
 enum FriendStatus {
   FRIEND
@@ -203,7 +224,6 @@ interface KnownUser {
 type Me implements KnownUser & User {
   chats: [Chat!]!
   createdAt: Date!
-  friendRequests: [Stranger!]!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -219,6 +239,7 @@ type Me implements KnownUser & User {
   ): FriendConnection!
   id: HashId!
   name: String
+  notifications: [Notification!]!
   updatedAt: Date!
   username: String!
 }
@@ -260,7 +281,7 @@ type Mutation {
   acceptFriendRequest(friendId: HashId!): Friend
 
   """Cancel/Delete a sent Friend Request"""
-  cancelFriendRequest(friendId: HashId!): Stranger
+  cancelFriendRequest(notificationId: HashId!): DeletedFriendRequestNotification
 
   """Create a Chat"""
   createDirectMessageChat(
@@ -281,7 +302,7 @@ type Mutation {
   ): InstantMessage
 
   """Delete/Decline a received Friend Request"""
-  declineFriendRequest(friendId: HashId!): Stranger
+  declineFriendRequest(notificationId: HashId!): DeletedFriendRequestNotification
 
   """Delete a Chat"""
   deleteChat(
@@ -299,7 +320,7 @@ type Mutation {
   ): InstantMessage
 
   """Send a friend request to a user"""
-  sendFriendRequest(friendId: HashId!): Stranger
+  sendFriendRequest(friendId: HashId!): OpenFriendRequestNotification
 
   """Update a Chat"""
   updateGroupChat(data: UpdateGroupChatInput): GroupChat
@@ -315,6 +336,29 @@ type Mutation {
     """Id of Message to edit"""
     messageId: HashId!
   ): InstantMessage
+}
+
+interface Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  recipients: [User!]!
+  updatedAt: Date!
+}
+
+"""The types of notifications available"""
+enum NotificationType {
+  FRIEND_REQUEST
+}
+
+type OpenFriendRequestNotification implements Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  recipients: [User!]!
+  updatedAt: Date!
 }
 
 """
@@ -370,6 +414,7 @@ type Query {
     """Returns the last n elements from the list."""
     last: Int
   ): InstantMessageConnection!
+  notifications: [Notification!]!
   user(
     """id of user"""
     userId: HashId!
@@ -429,14 +474,8 @@ type Subscription {
   chatDeleted: DeletedChat
   chats: Chat
 
-  """Subscribe to new friend requests"""
-  friendRequestCreated: Stranger
-
-  """Subscribe to deleted friend requests"""
-  friendRequestDeleted: Stranger
-
-  """Subscribe to any changes to the friend requests of the current user"""
-  friendRequests: Stranger
+  """Subscribe to friend request notifications"""
+  friendRequestNotifications: FriendRequestNotification
 
   """SUbscribe to created messages in chat"""
   messageCreated(chatId: HashId!): InstantMessage
@@ -450,20 +489,11 @@ type Subscription {
   """Subscribe to any created/updated/deleted messages"""
   messages(chatId: HashId!): Message
 
+  """Subscribe to any notification"""
+  notifications: Notification
+
   """Subscribe to any changes to current user"""
   user: Me
-
-  """Subscribe to new friends"""
-  userFriendCreated: Me
-
-  """Subscribe to unfriend events"""
-  userFriendDeleted: Me
-
-  """
-  Subscribe to any changes to
-         the friendships of the current user (incl requests)
-  """
-  userFriends: Me
 }
 
 input UpdateGroupChatInput {

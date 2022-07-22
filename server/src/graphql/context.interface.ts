@@ -18,4 +18,6 @@ export interface IAuthorizer {
   canDeleteChat: (chatId: number) => Promise<boolean>;
   canCreateMessage: (chatId: number) => Promise<boolean>;
   canViewMessage: (messageId: number) => Promise<boolean>;
+
+  canSendFriendRequest: (friendId: number) => Promise<boolean>;
 }

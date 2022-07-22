@@ -24,112 +24,65 @@ export const UpdateMeMutation = mutationField('updateMe', {
 });
 
 export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
-  type: 'Stranger',
+  type: 'OpenFriendRequestNotification',
   description: 'Send a friend request to a user',
   args: {
     friendId: nonNull(hashIdArg()),
   },
+  authorize: async (_, { friendId }, { auth }) =>
+    await auth.canSendFriendRequest(friendId),
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
+    // Send request
+    const request = await prisma.notification.create({
+      data: {
+        type: 'FRIEND_REQUEST',
+        createdById: userId,
+        recipients: {
+          connect: {
+            id: friendId,
+          },
+        },
       },
       include: {
-        friends: {
-          where: {
-            id: friendId,
-          },
-        },
-        sentFriendRequests: {
-          where: {
-            id: friendId,
-          },
-        },
-        receivedFriendRequests: {
-          where: {
-            id: friendId,
+        recipients: {
+          select: {
+            id: true,
           },
         },
       },
     });
 
-    if (user == null) {
-      throw new UserInputError('User does not exist');
-    }
+    pubsub.publish(Subscription.FriendRequestCreated, request);
 
-    if (user.friends.length) {
-      throw new ForbiddenError('Already friends with this user');
-    }
-
-    if (user.sentFriendRequests.length) {
-      throw new ForbiddenError('Friend request already sent');
-    }
-
-    if (user.receivedFriendRequests.length) {
-      throw new ForbiddenError('You have a request from this user');
-    }
-
-    // Send request
-    const friend = await prisma.user.update({
-      where: {
-        id: friendId,
-      },
-      data: {
-        receivedFriendRequests: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
-
-    pubsub.publish(Subscription.UserFriendRequestSent, user);
-    pubsub.publish(Subscription.UserFriendRequestReceived, friend);
-
-    return friend;
+    return request;
   },
 });
 
 export const CancelFriendRequestMutation = mutationField(
   'cancelFriendRequest',
   {
-    type: 'Stranger',
+    type: 'DeletedFriendRequestNotification',
     description: 'Cancel/Delete a sent Friend Request',
     args: {
-      friendId: nonNull(hashIdArg()),
+      notificationId: nonNull(hashIdArg()),
     },
-    resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-      const sentRequests = await prisma.user
-        .findUnique({
-          where: {
-            id: userId,
-          },
-        })
-        .sentFriendRequests();
-
-      const friend = sentRequests.find((request) => request.id == friendId);
-
-      if (!friend) {
-        throw new ForbiddenError('You have no sent requests to this user');
-      }
-
-      const user = await prisma.user.update({
+    resolve: async (_, { notificationId }, { prisma, userId, pubsub }) => {
+      const notification = await prisma.notification.update({
         where: {
-          id: userId,
+          id: notificationId,
         },
         data: {
-          sentFriendRequests: {
-            disconnect: {
-              id: friendId,
-            },
-          },
+          deletedAt: Date.now().toString(),
         },
       });
 
-      pubsub.publish(Subscription.UserFriendRequestDeleted, user);
-      pubsub.publish(Subscription.UserFriendRequestDeleted, friend);
+      if (!notification) {
+        throw new UserInputError('Could not find notification');
+      }
 
-      return friend;
+      pubsub.publish(Subscription.FriendRequestDeleted, notification);
+
+      return notification;
     },
   }
 );
@@ -137,43 +90,28 @@ export const CancelFriendRequestMutation = mutationField(
 export const DeclineFriendRequestMutation = mutationField(
   'declineFriendRequest',
   {
-    type: 'Stranger',
+    type: 'DeletedFriendRequestNotification',
     description: 'Delete/Decline a received Friend Request',
     args: {
-      friendId: nonNull(hashIdArg()),
+      notificationId: nonNull(hashIdArg()),
     },
-    resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-      const receivedRequests = await prisma.user
-        .findUnique({
-          where: {
-            id: userId,
-          },
-        })
-        .receivedFriendRequests();
-
-      const friend = receivedRequests.find((request) => request.id == friendId);
-
-      if (!friend) {
-        throw new ForbiddenError('You do not have a request from this user');
-      }
-
-      const user = await prisma.user.update({
+    resolve: async (_, { notificationId }, { prisma, pubsub }) => {
+      const notification = await prisma.notification.update({
         where: {
-          id: userId,
+          id: notificationId,
         },
         data: {
-          receivedFriendRequests: {
-            disconnect: {
-              id: friendId,
-            },
-          },
+          deletedAt: Date.now().toString(),
         },
       });
 
-      pubsub.publish(Subscription.UserFriendRequestDeleted, user);
-      pubsub.publish(Subscription.UserFriendRequestDeleted, friend);
+      if (!notification) {
+        throw new UserInputError('Could not find notification');
+      }
 
-      return friend;
+      pubsub.publish(Subscription.FriendRequestDeleted, notification);
+
+      return notification;
     },
   }
 );
@@ -184,21 +122,20 @@ export const AcceptFriendRequestMutation = mutationField(
     type: 'Friend',
     description: 'Accept a Users friend request',
     args: {
-      friendId: nonNull(hashIdArg()),
+      notificationId: nonNull(hashIdArg()),
     },
-    resolve: async (_, { friendId }, { prisma, pubsub, userId }) => {
-      const receivedRequests = await prisma.user
-        .findUnique({
-          where: {
-            id: userId,
-          },
-        })
-        .receivedFriendRequests();
+    resolve: async (_, { notificationId }, { prisma, pubsub, userId }) => {
+      const notification = await prisma.notification.update({
+        where: {
+          id: notificationId,
+        },
+        data: {
+          deletedAt: Date.now().toString(),
+        },
+      });
 
-      const friend = receivedRequests.find((request) => request.id == friendId);
-
-      if (!friend) {
-        throw new ForbiddenError('You do not have a request from this user');
+      if (!notification) {
+        throw new UserInputError('Could not find notification');
       }
 
       // Accept request
@@ -242,48 +179,25 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     friendId: nonNull(hashIdArg()),
   },
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-    // Validate
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        friends: {
-          where: {
-            id: friendId,
-          },
-        },
-      },
-    });
-
-    if (user == null) {
-      throw new Error('User does not exist');
-    }
-
-    if (user.friends.length == 0) {
-      throw new Error('You are not friends with this user');
-    }
-
     // Delete user
-    const newUser = await prisma.user.update({
+    const user = await prisma.user.update({
       where: {
-        id: userId,
+        id: friendId,
       },
       data: {
         friends: {
           disconnect: {
-            id: friendId,
+            id: userId,
           },
         },
         friendsOf: {
           disconnect: {
-            id: friendId,
+            id: userId,
           },
         },
       },
     });
 
-    pubsub.publish(Subscription.UserFriendDeleted, user);
     pubsub.publish(Subscription.UserFriendDeleted, { id: friendId });
 
     return newUser;

@@ -249,4 +249,55 @@ export class Authorizer implements IAuthorizer {
 
     return true;
   }
+
+  public async canSendFriendRequest(friendId: number) {
+    const friend = await this._prisma.user.findUnique({
+      where: {
+        id: friendId,
+      },
+      include: {
+        friends: {
+          where: {
+            id: this.userId,
+          },
+        },
+        sentNotifications: {
+          where: {
+            type: 'FRIEND_REQUEST',
+            recipients: {
+              some: { id: this.userId },
+            },
+          },
+        },
+        receivedNotifications: {
+          where: {
+            type: 'FRIEND_REQUEST',
+            createdById: this.userId,
+          },
+        },
+      },
+    });
+
+    console.log(friend);
+
+    if (!friend) {
+      throw new UserInputError('User does not exist');
+    }
+
+    if (friend.friends.length !== 0) {
+      throw new ForbiddenError('Already friends with this user');
+    }
+
+    if (friend.receivedNotifications.length !== 0) {
+      throw new ForbiddenError('Already sent a friend request to this user');
+    }
+
+    if (friend.sentNotifications.length !== 0) {
+      throw new ForbiddenError(
+        'Already received a friend requets from this user'
+      );
+    }
+
+    return true;
+  }
 }

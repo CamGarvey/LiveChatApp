@@ -80,10 +80,8 @@ const main = async () => {
   const getPayloadFromBearerToken = (token: string) => {
     // Take off Bearer part of token e.g Bearer eyJhbGciOiJSUzI1NiIs...
     const strippedToken = token.replace('Bearer ', '');
-
     // Decode token. No need to verify since auth middleware takes care of that
     const decoded = jwt.decode(strippedToken);
-    console.log(decoded);
     // Parse decoded token
     return JSON.parse(JSON.stringify(decoded));
   };

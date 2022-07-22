@@ -13,14 +13,14 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('User', 'KnownUser');
-    t.nonNull.list.nonNull.field('friendRequests', {
-      type: 'Stranger',
+    t.nonNull.list.nonNull.field('notifications', {
+      type: 'Notification',
       resolve: (parent, _, { prisma }) => {
         return prisma.user
           .findUnique({
             where: { id: parent.id || undefined },
           })
-          .receivedFriendRequests();
+          .receivedNotifications();
       },
     });
   },
@@ -79,31 +79,33 @@ export const Stranger = objectType({
       resolve: async (parent, _, { prisma, userId }) => {
         const friends = await prisma.user
           .findUnique({
-            where: { id: userId },
+            where: { id: parent.id },
           })
           .friends();
 
-        const receivedFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .receivedFriendRequests();
-
-        const sentFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: userId },
-          })
-          .sentFriendRequests();
-
-        if (friends.find((x: any) => x.id == parent.id)) {
+        if (friends.find((x: any) => x.id == userId)) {
           return 'FRIEND';
         }
 
-        if (receivedFriendRequests.find((x: any) => x.id == parent.id)) {
+        const receivedFriendRequests = await prisma.user
+          .findUnique({
+            where: { id: parent.id },
+          })
+          .receivedNotifications()
+          .then((n) => n.filter((x) => x.type == 'FRIEND_REQUEST'));
+
+        if (receivedFriendRequests.find((x: any) => x.id == userId)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (sentFriendRequests.find((x: any) => x.id == parent.id)) {
+        const sentFriendRequests = await prisma.user
+          .findUnique({
+            where: { id: parent.id },
+          })
+          .sentNotifications()
+          .then((n) => n.filter((x) => x.type == 'FRIEND_REQUEST'));
+
+        if (sentFriendRequests.find((x: any) => x.id == userId)) {
           return 'REQUEST_SENT';
         }
 
