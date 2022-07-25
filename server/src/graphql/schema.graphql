@@ -11,6 +11,17 @@ interface Chat {
   updatedAt: Date
 }
 
+type ChatRequest implements Request {
+  chat: GroupChat!
+  chatId: HashId!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  recipient: User!
+  recipientId: HashId!
+  status: RequestStatus!
+}
+
 input CreateGroupChatInput {
   """Short description of the group chat"""
   description: String
@@ -132,6 +143,15 @@ type FriendNotification implements Notification {
   updatedAt: Date!
 }
 
+type FriendRequest implements Request {
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  recipient: User!
+  recipientId: HashId!
+  status: RequestStatus!
+}
+
 union FriendRequestNotification = DeletedFriendRequestNotification | OpenFriendRequestNotification
 
 enum FriendStatus {
@@ -240,6 +260,7 @@ type Me implements KnownUser & User {
   id: HashId!
   name: String
   notifications: [Notification!]!
+  requests(status: RequestStatus): [Request!]!
   updatedAt: Date!
   username: String!
 }
@@ -277,9 +298,6 @@ type MessageEdge {
 }
 
 type Mutation {
-  """Accept a Users friend request"""
-  acceptFriendRequest(friendId: HashId!): Friend
-
   """Cancel/Delete a sent Friend Request"""
   cancelFriendRequest(notificationId: HashId!): DeletedFriendRequestNotification
 
@@ -309,9 +327,6 @@ type Mutation {
     """Id of Chat to be deleted"""
     chatId: HashId!
   ): DeletedChat
-
-  """Delete a Friend"""
-  deleteFriend(friendId: HashId!): Stranger
 
   """Delete a Message"""
   deleteMessage(
@@ -392,6 +407,7 @@ type Query {
     chatId: HashId!
   ): Chat
   chats: [Chat!]!
+  friendRequests: [FriendRequest!]!
   friends: [Friend!]!
   me: Me
 
@@ -415,6 +431,7 @@ type Query {
     last: Int
   ): InstantMessageConnection!
   notifications: [Notification!]!
+  pendingRequests: [Request!]!
   user(
     """id of user"""
     userId: HashId!
@@ -440,6 +457,22 @@ type Query {
     """If set, filters users by given filter"""
     usernameFilter: String
   ): UserConnection!
+}
+
+interface Request {
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  recipient: User!
+  recipientId: HashId!
+  status: RequestStatus!
+}
+
+enum RequestStatus {
+  ACCEPTED
+  CANCELLED
+  DECLINED
+  PENDING
 }
 
 enum Sort {

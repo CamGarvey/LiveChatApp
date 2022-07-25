@@ -27,6 +27,8 @@ model User {
   receivedNotifications Notification[]
   updatedAt             DateTime       @updatedAt
   createdAt             DateTime       @default(now())
+  requests              Request[]
+  sentRequests          Request[]      @relation("RequestCreated")
 }
 
 model Notification {
@@ -41,8 +43,36 @@ model Notification {
 }
 
 enum NotificationType {
-  FRIEND_REQUEST
   FRIEND
+  CHAT_UPDATE
+}
+
+model Request {
+  id          Int           @id @default(autoincrement())
+  type        RequestType
+  recipient   User          @relation(fields: [recipientId], references: [id])
+  recipientId Int
+  createdBy   User          @relation("RequestCreated", fields: [createdById], references: [id])
+  createdById Int
+  status      RequestStatus @default(SENT)
+  chat        Chat?         @relation(fields: [chatId], references: [id])
+  chatId      Int?
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
+  deletedAt   DateTime?
+}
+
+enum RequestType {
+  FRIEND_REQUEST
+  CHAT_REQUEST
+}
+
+enum RequestStatus {
+  SENT
+  SEEN
+  CANCELLED
+  ACCEPTED
+  DECLINED
 }
 
 model Chat {
@@ -59,6 +89,7 @@ model Chat {
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
   deletedAt   DateTime?
+  requests    Request[]
 }
 
 model ChatUpdate {

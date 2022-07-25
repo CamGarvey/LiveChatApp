@@ -10,7 +10,8 @@
     "prisma:gen": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "prisma db seed"
+    "prisma:seed": "prisma db seed",
+    "ngrok": "npx ngrok http 4000"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

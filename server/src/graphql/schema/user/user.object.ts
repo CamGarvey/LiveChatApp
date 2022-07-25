@@ -13,6 +13,23 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('User', 'KnownUser');
+    t.nonNull.list.nonNull.field('requests', {
+      type: 'Request',
+      args: {
+        status: 'RequestStatus',
+      },
+      resolve: async (parent, { status }, { prisma }) => {
+        return await prisma.request.findMany({
+          where: {
+            recipientId: parent.id,
+            status,
+          },
+          include: {
+            recipient: true,
+          },
+        });
+      },
+    });
     t.nonNull.list.nonNull.field('notifications', {
       type: 'Notification',
       resolve: (parent, _, { prisma }) => {
@@ -91,8 +108,7 @@ export const Stranger = objectType({
           .findUnique({
             where: { id: parent.id },
           })
-          .receivedNotifications()
-          .then((n) => n.filter((x) => x.type == 'FRIEND_REQUEST'));
+          .requests();
 
         if (receivedFriendRequests.find((x: any) => x.id == userId)) {
           return 'REQUEST_RECEIVED';
@@ -102,8 +118,7 @@ export const Stranger = objectType({
           .findUnique({
             where: { id: parent.id },
           })
-          .sentNotifications()
-          .then((n) => n.filter((x) => x.type == 'FRIEND_REQUEST'));
+          .sentRequests();
 
         if (sentFriendRequests.find((x: any) => x.id == userId)) {
           return 'REQUEST_SENT';
