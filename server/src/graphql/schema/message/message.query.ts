@@ -1,16 +1,7 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { Message, Prisma } from '@prisma/client';
-import { UserInputError, ForbiddenError } from 'apollo-server-core';
-import { nonNull, queryField, stringArg } from 'nexus';
+import { nonNull, queryField } from 'nexus';
 import { hashIdArg } from '../shared';
-
-function encodeCursor<Cursor>(prismaCursor: Cursor) {
-  return Buffer.from(JSON.stringify(prismaCursor)).toString('base64');
-}
-
-function decodeCursor(cursor: string) {
-  return JSON.parse(Buffer.from(cursor, 'base64').toString('ascii'));
-}
 
 export const MessageQuery = queryField('message', {
   type: 'InstantMessage',

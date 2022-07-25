@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
-import { list } from 'nexus';
 import { IAuthorizer } from 'src/graphql/context.interface';
 
 export class Authorizer implements IAuthorizer {
@@ -261,24 +260,18 @@ export class Authorizer implements IAuthorizer {
             id: this.userId,
           },
         },
-        sentNotifications: {
+        sentFriendRequests: {
           where: {
-            type: 'FRIEND_REQUEST',
-            recipients: {
-              some: { id: this.userId },
-            },
+            recipientId: this.userId,
           },
         },
-        receivedNotifications: {
+        receivedFriendRequests: {
           where: {
-            type: 'FRIEND_REQUEST',
             createdById: this.userId,
           },
         },
       },
     });
-
-    console.log(friend);
 
     if (!friend) {
       throw new UserInputError('User does not exist');
@@ -288,14 +281,102 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Already friends with this user');
     }
 
-    if (friend.receivedNotifications.length !== 0) {
+    if (friend.receivedFriendRequests.length !== 0) {
       throw new ForbiddenError('Already sent a friend request to this user');
     }
 
-    if (friend.sentNotifications.length !== 0) {
+    if (friend.sentFriendRequests.length !== 0) {
       throw new ForbiddenError(
         'Already received a friend requets from this user'
       );
+    }
+
+    return true;
+  }
+
+  public async canCancelFriendRequest(requestId: number) {
+    const request = await this._prisma.friendRequest.findUnique({
+      where: {
+        id: requestId,
+      },
+    });
+
+    if (!request) {
+      throw new Error('Request does not exist');
+    }
+
+    if (request.createdById !== this.userId) {
+      throw new ForbiddenError(
+        'You do not have permission to cancel this friend request'
+      );
+    }
+
+    return true;
+  }
+
+  public async canDeclineFriendRequest(requestId: number) {
+    const request = await this._prisma.friendRequest.findUnique({
+      where: {
+        id: requestId,
+      },
+    });
+
+    if (!request) {
+      throw new Error('Request does not exist');
+    }
+
+    if (request.recipientId !== this.userId) {
+      throw new ForbiddenError(
+        'You do not have permission to accept this friend request'
+      );
+    }
+
+    return true;
+  }
+
+  public async canAcceptFriendRequest(requestId: number) {
+    const request = await this._prisma.friendRequest.findUnique({
+      where: {
+        id: requestId,
+      },
+    });
+
+    if (!request) {
+      throw new Error('Request does not exist');
+    }
+
+    if (request.recipientId !== this.userId) {
+      throw new ForbiddenError('You do not have permission to accept request');
+    }
+
+    return true;
+  }
+
+  public async canDeleteFriend(friendId: number) {
+    console.log('HELLO');
+
+    const user = await this._prisma.user.findUnique({
+      where: {
+        id: friendId,
+      },
+      include: {
+        friends: {
+          select: {
+            id: true,
+          },
+          where: {
+            id: this.userId,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    if (user.friends.length == 0) {
+      throw new ForbiddenError('You are not friends with this user');
     }
 
     return true;

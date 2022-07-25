@@ -36,8 +36,8 @@ export const UserQuery = queryField('user', {
       })
     ),
   },
-  resolve: async (_, { userId }, ctx) => {
-    return await ctx.prisma.user.findUnique({
+  resolve: async (_, { userId }, { prisma }) => {
+    return await prisma.user.findUnique({
       where: {
         id: userId,
       },

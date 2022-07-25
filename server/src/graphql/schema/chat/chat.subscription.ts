@@ -38,6 +38,21 @@ export const ChatCreatedSubscription = subscriptionField('chatCreated', {
   },
 });
 
+export const ChatUpdatedSubscription = subscriptionField('chatUpdated', {
+  type: 'Chat',
+  subscribe: async (rootValue, args, context) => {
+    return withFilter(
+      () => context.pubsub.asyncIterator(Subscription.ChatUpdated),
+      (payload: Chat, _, context) => {
+        return payload.members.map(({ id }) => id).includes(context.userId);
+      }
+    )(rootValue, args, context);
+  },
+  resolve(payload: any) {
+    return payload;
+  },
+});
+
 export const ChatDeletedSubscription = subscriptionField('chatDeleted', {
   type: 'DeletedChat',
   subscribe: async (rootValue, args, context) => {

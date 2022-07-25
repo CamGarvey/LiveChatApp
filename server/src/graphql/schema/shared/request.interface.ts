@@ -3,11 +3,11 @@ import { interfaceType } from 'nexus';
 export const Request = interfaceType({
   name: 'Request',
   resolveType: (source: any) => {
-    return source.type == 'CHAT_REQUEST' ? 'ChatRequest' : 'FriendRequest';
+    return 'chatId' in source ? 'ChatInvite' : 'FriendRequest';
   },
   definition: (t) => {
     t.nonNull.hashId('id');
-    t.nonNull.field('recipient', {
+    t.field('recipient', {
       type: 'User',
     });
     t.nonNull.hashId('recipientId');

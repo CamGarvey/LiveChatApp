@@ -11,66 +11,56 @@ datasource db {
 }
 
 model User {
-  id                    Int            @id @default(autoincrement()) @map("id")
-  email                 String         @unique
-  name                  String?
-  username              String         @unique
-  friends               User[]         @relation("Friends")
-  friendsOf             User[]         @relation("Friends")
-  chatsCreated          Chat[]         @relation("ChatCreatedBy")
-  memberOfChats         Chat[]         @relation("ChatMembers")
-  messages              Message[]      @relation("MessageCreatedBy")
-  likedMessages         Message[]      @relation("MessageLikedBy")
-  adminOfChats          Chat[]         @relation("ChatAdmins")
-  chatUpdates           ChatUpdate[]
-  sentNotifications     Notification[] @relation("SentNotifications")
-  receivedNotifications Notification[]
-  updatedAt             DateTime       @updatedAt
-  createdAt             DateTime       @default(now())
-  requests              Request[]
-  sentRequests          Request[]      @relation("RequestCreated")
+  id                     Int             @id @default(autoincrement()) @map("id")
+  email                  String          @unique
+  name                   String?
+  username               String          @unique
+  friends                User[]          @relation("Friends")
+  friendsOf              User[]          @relation("Friends")
+  chatsCreated           Chat[]          @relation("ChatCreatedBy")
+  memberOfChats          Chat[]          @relation("ChatMembers")
+  messages               Message[]       @relation("MessageCreatedBy")
+  likedMessages          Message[]       @relation("MessageLikedBy")
+  adminOfChats           Chat[]          @relation("ChatAdmins")
+  chatUpdates            ChatUpdate[]
+  updatedAt              DateTime        @updatedAt
+  createdAt              DateTime        @default(now())
+  receivedFriendRequests FriendRequest[]
+  sentFriendRequests     FriendRequest[] @relation("FriendRequestCreated")
+  sentChatInvites        ChatInvite[]    @relation("ChatInvitesCreated")
+  receivedChatInvites    ChatInvite[]
 }
 
-model Notification {
-  id          Int              @id @default(autoincrement())
-  type        NotificationType
-  recipients  User[]
-  createdBy   User             @relation("SentNotifications", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime         @updatedAt
-  createdAt   DateTime         @default(now())
-  deletedAt   DateTime?
-}
-
-enum NotificationType {
-  FRIEND
-  CHAT_UPDATE
-}
-
-model Request {
+model FriendRequest {
   id          Int           @id @default(autoincrement())
-  type        RequestType
   recipient   User          @relation(fields: [recipientId], references: [id])
   recipientId Int
-  createdBy   User          @relation("RequestCreated", fields: [createdById], references: [id])
+  createdBy   User          @relation("FriendRequestCreated", fields: [createdById], references: [id])
   createdById Int
   status      RequestStatus @default(SENT)
-  chat        Chat?         @relation(fields: [chatId], references: [id])
-  chatId      Int?
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
+}
+
+model ChatInvite {
+  id          Int           @id @default(autoincrement())
+  recipient   User          @relation(fields: [recipientId], references: [id])
+  recipientId Int
+  createdBy   User          @relation("ChatInvitesCreated", fields: [createdById], references: [id])
+  createdById Int
+  chat        Chat          @relation("ChatInvites", fields: [chatId], references: [id])
+  chatId      Int
+  status      RequestStatus @default(SENT)
   updatedAt   DateTime      @updatedAt
   createdAt   DateTime      @default(now())
   deletedAt   DateTime?
-}
 
-enum RequestType {
-  FRIEND_REQUEST
-  CHAT_REQUEST
+  @@unique([recipientId, chatId]) // Only allow one chat invite per user/chat pair
 }
 
 enum RequestStatus {
   SENT
   SEEN
-  CANCELLED
   ACCEPTED
   DECLINED
 }
@@ -89,7 +79,7 @@ model Chat {
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
   deletedAt   DateTime?
-  requests    Request[]
+  invites     ChatInvite[] @relation("ChatInvites")
 }
 
 model ChatUpdate {

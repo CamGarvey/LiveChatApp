@@ -17,7 +17,7 @@ import authRouter from './routes/auth';
 import { schema } from './graphql';
 import prisma from './lib/clients/prisma';
 import { IContext } from './graphql/context.interface';
-import { Authorizer } from './lib/clients/authorizer';
+import { Authorizer } from './lib/authorizer';
 import hashids from 'hashids';
 
 const main = async () => {

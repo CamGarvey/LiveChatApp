@@ -9,8 +9,15 @@ export const ChatInterface = interfaceType({
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.hashId('createdById');
-    t.field('createdBy', {
+    t.nonNull.field('createdBy', {
       type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.user.findUnique({
+          where: {
+            id: parent.createdById,
+          },
+        });
+      },
     });
     t.nonNull.boolean('isCreator', {
       resolve: (parent, _, { userId }) => {

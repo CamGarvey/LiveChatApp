@@ -9,7 +9,10 @@ export enum Subscription {
   MessageUpdated = 'message.updated',
   MessageDeleted = 'message.deleted',
 
-  FriendCreated = 'notification.friend.created',
-  FriendRequestCreated = 'notification.friendrequest.created',
-  FriendRequestDeleted = 'notification.friendrequest.deleted',
+  FriendRequestCancelled = 'friendrequest.cancelled',
+  FriendRequestAccepted = 'friendrequest.accepted',
+  FriendRequestSent = 'friendrequest.sent',
+  FriendRequestDeclined = 'friendrequest.declined',
+
+  FriendDeleted = 'friend.deleted',
 }

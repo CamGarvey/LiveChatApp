@@ -20,4 +20,9 @@ export interface IAuthorizer {
   canViewMessage: (messageId: number) => Promise<boolean>;
 
   canSendFriendRequest: (friendId: number) => Promise<boolean>;
+  canCancelFriendRequest: (requestId: number) => Promise<boolean>;
+  canDeclineFriendRequest: (requestId: number) => Promise<boolean>;
+  canAcceptFriendRequest: (requestId: number) => Promise<boolean>;
+
+  canDeleteFriend: (friendId: number) => Promise<boolean>;
 }

@@ -1,4 +1,4 @@
-import { mutationField, nonNull, stringArg } from 'nexus';
+import { mutationField, nonNull } from 'nexus';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 import { CreateGroupChatInput, UpdateGroupChatInput } from './chat.input';
@@ -28,17 +28,16 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
           connect: [...memberIdSet].map((id) => ({ id })),
         },
       },
-      // include: {
-      //   members: {
-      //     select: {
-      //       id: true, // selecting member ids for pubsub
-      //     },
-      //   },
-      // },
+      include: {
+        members: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     await pubsub.publish(Subscription.ChatCreated, chat);
-    await pubsub.publish(Subscription.UserChatCreated, chat);
 
     return chat;
   },
@@ -68,10 +67,16 @@ export const CreateDirectMessageChatMutation = mutationField(
             connect: [userId, friendId].map((id) => ({ id })),
           },
         },
+        include: {
+          members: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
 
       await pubsub.publish(Subscription.ChatCreated, chat);
-      await pubsub.publish(Subscription.UserChatCreated, chat);
 
       return chat;
     },

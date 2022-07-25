@@ -13,13 +13,13 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('User', 'KnownUser');
-    t.nonNull.list.nonNull.field('requests', {
-      type: 'Request',
+    t.nonNull.list.nonNull.field('friendRequests', {
+      type: 'FriendRequest',
       args: {
         status: 'RequestStatus',
       },
       resolve: async (parent, { status }, { prisma }) => {
-        return await prisma.request.findMany({
+        return await prisma.friendRequest.findMany({
           where: {
             recipientId: parent.id,
             status,
@@ -28,16 +28,6 @@ export const Me = objectType({
             recipient: true,
           },
         });
-      },
-    });
-    t.nonNull.list.nonNull.field('notifications', {
-      type: 'Notification',
-      resolve: (parent, _, { prisma }) => {
-        return prisma.user
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .receivedNotifications();
       },
     });
   },
@@ -104,24 +94,38 @@ export const Stranger = objectType({
           return 'FRIEND';
         }
 
-        const receivedFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .requests();
+        const user = await prisma.user.findUnique({
+          where: { id: parent.id },
+          include: {
+            sentFriendRequests: {
+              select: {
+                id: true,
+              },
+              where: {
+                status: {
+                  in: ['SEEN', 'SENT'],
+                },
+              },
+            },
+            receivedFriendRequests: {
+              select: {
+                id: true,
+              },
+              where: {
+                status: {
+                  in: ['SEEN', 'SENT'],
+                },
+              },
+            },
+          },
+        });
 
-        if (receivedFriendRequests.find((x: any) => x.id == userId)) {
-          return 'REQUEST_RECEIVED';
+        if (user.receivedFriendRequests.find((x: any) => x.id == userId)) {
+          return 'REQUEST_SENT';
         }
 
-        const sentFriendRequests = await prisma.user
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .sentRequests();
-
-        if (sentFriendRequests.find((x: any) => x.id == userId)) {
-          return 'REQUEST_SENT';
+        if (user.sentFriendRequests.find((x: any) => x.id == userId)) {
+          return 'REQUEST_RECEIVED';
         }
 
         return 'NOT_FRIEND';

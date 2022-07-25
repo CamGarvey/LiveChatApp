@@ -3,9 +3,20 @@ import { interfaceType } from 'nexus';
 
 export const UserInterface = interfaceType({
   name: 'User',
-  resolveType: (source, { userId }) => {
-    // return source.id == userId ? 'Me' : 'Friend';
-    return 'Stranger';
+  resolveType: async (source: any, { userId, prisma }) => {
+    if (source.id == userId) {
+      // is current user
+      return 'Me';
+    }
+    // Get current user friends
+    const friends = await prisma.user
+      .findUnique({
+        where: {
+          id: userId || userId,
+        },
+      })
+      .friends();
+    return friends.map((x) => x.id).includes(source.id) ? 'Friend' : 'Stranger';
   },
   definition: (t) => {
     t.nonNull.hashId('id');
