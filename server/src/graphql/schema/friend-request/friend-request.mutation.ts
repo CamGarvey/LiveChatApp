@@ -11,10 +11,20 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   authorize: (_, { friendId }, { auth }) => auth.canSendFriendRequest(friendId),
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     // Create a new friend request
-    const request = await prisma.friendRequest.create({
-      data: {
+    // If there is already a friend request in the database then update that one
+    const request = await prisma.friendRequest.upsert({
+      create: {
         recipientId: friendId,
         createdById: userId,
+      },
+      update: {
+        status: 'SENT',
+      },
+      where: {
+        recipientId_createdById: {
+          recipientId: friendId,
+          createdById: userId,
+        },
       },
     });
 
@@ -29,17 +39,20 @@ export const CancelFriendRequestMutation = mutationField(
   'cancelFriendRequest',
   {
     type: 'FriendRequest',
-    description: 'Cancel a sent Friend Request',
+    description: 'Cancel/Delete a sent Friend Request',
     args: {
       friendRequestId: nonNull(hashIdArg()),
     },
-    authorize: async (_, { friendRequestId }, { auth }) =>
-      await auth.canCancelFriendRequest(friendRequestId),
+    authorize: (_, { friendRequestId }, { auth }) =>
+      auth.canCancelFriendRequest(friendRequestId),
     resolve: async (_, { friendRequestId }, { prisma, pubsub }) => {
-      // Delete the request
-      const request = await prisma.friendRequest.delete({
+      // Delete the request by setting deletedAt
+      const request = await prisma.friendRequest.update({
         where: {
           id: friendRequestId,
+        },
+        data: {
+          status: 'CANCELLED',
         },
       });
 

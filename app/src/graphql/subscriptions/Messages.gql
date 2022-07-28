@@ -1,0 +1,18 @@
+subscription Messages($chatId: HashId!) {
+  messages(chatId: $chatId) {
+    __typename
+    id
+    isCreator
+    createdAt
+    createdBy {
+      id
+      ...NameParts
+    }
+    ... on InstantMessage {
+      content
+    }
+    ... on DeletedMessage {
+      deletedAt
+    }
+  }
+}

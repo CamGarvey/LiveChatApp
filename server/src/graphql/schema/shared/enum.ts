@@ -15,5 +15,5 @@ export const Sort = enumType({
 
 export const RequestStatusEnum = enumType({
   name: 'RequestStatus',
-  members: ['SENT', 'SEEN', 'DECLINED', 'ACCEPTED'],
+  members: ['SENT', 'SEEN', 'CANCELLED', 'DECLINED', 'ACCEPTED'],
 });

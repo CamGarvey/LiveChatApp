@@ -1,6 +1,6 @@
-mutation SendFriendRequest($friendId: String!) {
+mutation SendFriendRequest($friendId: HashId!) {
   sendFriendRequest(friendId: $friendId) {
     id
-    friendStatus
+    status
   }
 }

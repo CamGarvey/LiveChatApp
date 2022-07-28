@@ -11,9 +11,10 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatInvite implements Request {
+type ChatInvite implements Notification & Request {
   chat: Chat
   chatId: HashId!
+  createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
@@ -124,7 +125,8 @@ type FriendEdge {
   node: Friend
 }
 
-type FriendRequest implements Request {
+type FriendRequest implements Notification & Request {
+  createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
@@ -176,31 +178,10 @@ type InstantMessage implements Message {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
-  deletedAt: Date
   id: HashId!
   isCreator: Boolean!
   likedBy: [User!]!
   updatedAt: Date!
-}
-
-type InstantMessageConnection {
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
-  """
-  edges: [InstantMessageEdge]
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
-  """
-  pageInfo: PageInfo!
-}
-
-type InstantMessageEdge {
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
-  cursor: String!
-
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: InstantMessage
 }
 
 interface KnownUser {
@@ -249,7 +230,6 @@ interface Message {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
-  deletedAt: Date
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
@@ -279,7 +259,7 @@ type Mutation {
   """Accept a friend request"""
   acceptFriendRequest(friendRequestId: HashId!): FriendRequest
 
-  """Cancel a sent Friend Request"""
+  """Cancel/Delete a sent Friend Request"""
   cancelFriendRequest(friendRequestId: HashId!): FriendRequest
 
   """Create a Chat"""
@@ -316,16 +296,13 @@ type Mutation {
   deleteMessage(
     """Id of Message to delete"""
     messageId: HashId!
-  ): InstantMessage
+  ): DeletedMessage
 
   """Send a friend request to a user"""
   sendFriendRequest(friendId: HashId!): FriendRequest
 
   """Update a Chat"""
   updateGroupChat(data: UpdateGroupChatInput): GroupChat
-
-  """Update current user"""
-  updateMe(email: String!, username: String!): Me
 
   """Update a Message"""
   updateMessage(
@@ -335,9 +312,17 @@ type Mutation {
     """Id of Message to edit"""
     messageId: HashId!
   ): InstantMessage
+
+  """Update current user"""
+  updateUser(name: String!): Me
 }
 
-union Notification = ChatInvite | FriendRequest
+interface Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+}
 
 """
 PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -393,7 +378,7 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): InstantMessageConnection!
+  ): MessageConnection!
   notifications: [Notification!]!
   user(
     """id of user"""
@@ -423,6 +408,7 @@ type Query {
 }
 
 interface Request {
+  createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
@@ -433,6 +419,7 @@ interface Request {
 
 enum RequestStatus {
   ACCEPTED
+  CANCELLED
   DECLINED
   SEEN
   SENT
@@ -471,10 +458,13 @@ type Subscription {
   chatUpdated: Chat
   chats: Chat
 
+  """Subscribe to friend requests"""
+  friendRequests: Message
+
   """SUbscribe to created messages in chat"""
   messageCreated(chatId: HashId!): InstantMessage
 
-  """SUbscribe to deleted messages in chat"""
+  """Subscribe to deleted messages in chat"""
   messageDeleted(chatId: HashId!): DeletedMessage
 
   """Subscribe to updated messages in chat"""
@@ -482,9 +472,7 @@ type Subscription {
 
   """Subscribe to any created/updated/deleted messages"""
   messages(chatId: HashId!): Message
-
-  """Subscribe to any changes to current user"""
-  user: Me
+  notifications: Notification
 }
 
 input UpdateGroupChatInput {

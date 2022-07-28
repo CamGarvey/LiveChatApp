@@ -1,4 +1,3 @@
-import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
@@ -18,8 +17,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
       })
     ),
   },
-  authorize: async (_, { chatId }, { auth }) =>
-    await auth.canCreateMessage(chatId),
+  authorize: (_, { chatId }, { auth }) => auth.canCreateMessage(chatId),
   resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
     const message = await prisma.message.create({
       data: {
@@ -36,7 +34,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
 });
 
 export const DeleteMessageMutation = mutationField('deleteMessage', {
-  type: 'InstantMessage',
+  type: 'DeletedMessage',
   args: {
     messageId: nonNull(
       hashIdArg({
@@ -45,30 +43,9 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
     ),
   },
   description: 'Delete a Message',
-  resolve: async (_, { messageId }, { prisma, userId, pubsub }) => {
-    // Can only delete own messages
-    const message = await prisma.message.findUnique({
-      select: {
-        createdById: true,
-      },
-      where: {
-        id: messageId,
-      },
-    });
-
-    if (message == null) {
-      throw new UserInputError(`Message with id: ${messageId}, not found`);
-    }
-    console.log({ message, userId });
-
-    if (message.createdById != userId) {
-      // You can only delete your own messages
-      throw new ForbiddenError(
-        'You do not have permission to delete this Message'
-      );
-    }
-
-    const updatedMessage = prisma.message.update({
+  authorize: (_, { messageId }, { auth }) => auth.canDeletedMessage(messageId),
+  resolve: async (_, { messageId }, { prisma, pubsub }) => {
+    const message = await prisma.message.update({
       data: {
         deletedAt: new Date(),
       },
@@ -77,9 +54,9 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
       },
     });
 
-    pubsub.publish(Subscription.MessageDeleted, updatedMessage);
+    pubsub.publish(Subscription.MessageDeleted, message);
 
-    return updatedMessage;
+    return message;
   },
 });
 
@@ -98,29 +75,10 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
     ),
   },
   description: 'Update a Message',
-  resolve: async (_, { messageId, content }, { prisma, userId, pubsub }) => {
-    const message = await prisma.message.findUnique({
-      select: {
-        createdById: true,
-      },
-      where: {
-        id: messageId,
-      },
-    });
-
-    if (message == null) {
-      throw new UserInputError(`Message with id: ${messageId}, not found`);
-    }
-
-    if (message.createdById != userId) {
-      // You can only update your own messages
-      throw new ForbiddenError(
-        'You do not have permission to edit this Message'
-      );
-    }
-
+  authorize: (_, { messageId }, { auth }) => auth.canUpdateMessage(messageId),
+  resolve: async (_, { messageId, content }, { prisma, pubsub }) => {
     // Update message
-    const updatedMessage = await prisma.message.update({
+    const message = await prisma.message.update({
       data: {
         content,
       },
@@ -129,8 +87,8 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
       },
     });
 
-    pubsub.publish(Subscription.MessageUpdated, updatedMessage);
+    pubsub.publish(Subscription.MessageUpdated, message);
 
-    return updatedMessage;
+    return message;
   },
 });

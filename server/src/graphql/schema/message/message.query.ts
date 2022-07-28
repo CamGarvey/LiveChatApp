@@ -26,7 +26,7 @@ export const MessageQuery = queryField('message', {
 
 export const MessagesQuery = queryField((t) => {
   t.nonNull.connectionField('messages', {
-    type: 'InstantMessage',
+    type: 'Message',
     additionalArgs: {
       chatId: nonNull(hashIdArg()),
     },

@@ -7,7 +7,7 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
   type: 'GroupChat',
   args: { data: CreateGroupChatInput },
   description: 'Create a Chat',
-  authorize: async (_, { data: { memberIds } }, { auth }) =>
+  authorize: (_, { data: { memberIds } }, { auth }) =>
     auth.canCreateGroupChat(memberIds),
   resolve: async (
     _,
@@ -18,6 +18,7 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
     const memberIdSet: Set<number> = new Set(memberIds);
     memberIdSet.add(userId);
 
+    // Create the chat
     const chat = await prisma.chat.create({
       data: {
         name,
@@ -27,7 +28,12 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
         members: {
           connect: [...memberIdSet].map((id) => ({ id })),
         },
+        // Add creator (current user) as admin
+        admins: {
+          connect: { id: userId },
+        },
       },
+      // Including member ids for pubsub
       include: {
         members: {
           select: {
@@ -37,6 +43,7 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
       },
     });
 
+    // Publish created chat
     await pubsub.publish(Subscription.ChatCreated, chat);
 
     return chat;
@@ -55,8 +62,8 @@ export const CreateDirectMessageChatMutation = mutationField(
       ),
     },
     description: 'Create a Chat',
-    authorize: async (_, { friendId }, { auth }) =>
-      await auth.canCreateDirectMessageChat(friendId),
+    authorize: (_, { friendId }, { auth }) =>
+      auth.canCreateDirectMessageChat(friendId),
     resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
       const chat = await prisma.chat.create({
         data: {
@@ -67,6 +74,7 @@ export const CreateDirectMessageChatMutation = mutationField(
             connect: [userId, friendId].map((id) => ({ id })),
           },
         },
+        // Including member ids for pubsub
         include: {
           members: {
             select: {
@@ -76,6 +84,7 @@ export const CreateDirectMessageChatMutation = mutationField(
         },
       });
 
+      // Publish created chat
       await pubsub.publish(Subscription.ChatCreated, chat);
 
       return chat;
@@ -87,8 +96,8 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
   type: 'GroupChat',
   args: { data: UpdateGroupChatInput },
   description: 'Update a Chat',
-  authorize: async (_, { data: { chatId, addMemberIds } }, { auth }) =>
-    await auth.canUpdateGroupChat(chatId, addMemberIds),
+  authorize: (_, { data: { chatId, addMemberIds } }, { auth }) =>
+    auth.canUpdateGroupChat(chatId, addMemberIds),
   resolve: async (
     _,
     { data: { chatId, name, description, addMemberIds, removeMemberIds } },
@@ -125,6 +134,7 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
         memberIdsAdded: addMemberIds,
         memberIdsRemoved: removeMemberIds,
       },
+      // Includeing member ids for pubsub
       include: {
         chat: {
           select: {
@@ -138,6 +148,7 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
       },
     });
 
+    // Publish update
     pubsub.publish(Subscription.ChatUpdated, update);
 
     return updatedChat;
@@ -157,12 +168,24 @@ export const DeleteChatMutation = mutationField('deleteChat', {
   authorize: async (_, { chatId }, { auth }) =>
     await auth.canDeleteChat(chatId),
   resolve: async (_, { chatId }, { prisma, pubsub }) => {
-    const chat = await prisma.chat.delete({
+    const chat = await prisma.chat.update({
       where: {
         id: chatId,
       },
+      data: {
+        deletedAt: new Date().toISOString(),
+      },
+      // Including member ids for pubsub
+      include: {
+        members: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
+    // Publish deleted chat
     await pubsub.publish(Subscription.ChatDeleted, chat);
 
     return chat;

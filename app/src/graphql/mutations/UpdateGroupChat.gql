@@ -3,21 +3,8 @@ mutation UpdateGroupChat($data: UpdateGroupChatInput) {
     id
     name
     description
-    updatedAt
     members {
-      __typename
-      ... on Friend {
-        id
-        ...NameParts
-      }
-      ... on Stranger {
-        id
-        ...NameParts
-      }
-      ... on Me {
-        id
-        ...NameParts
-      }
+      id
     }
   }
 }

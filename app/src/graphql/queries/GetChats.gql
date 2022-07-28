@@ -1,34 +1,16 @@
-query Chats {
+query GetChats {
   chats {
-    ... on DirectMessageChat {
+    __typename
+    id
+    createdBy {
       id
-      friend {
-        id
-        ...NameParts
-      }
+      ...NameParts
     }
     ... on GroupChat {
-      id
       name
-      description
-      members {
-        __typename
-        ... on Friend {
-          id
-          ...NameParts
-        }
-        ... on Stranger {
-          id
-          ...NameParts
-        }
-        ... on Me {
-          id
-          ...NameParts
-        }
-      }
+      memberCount
     }
     ... on DeletedChat {
-      id
       deletedAt
     }
   }

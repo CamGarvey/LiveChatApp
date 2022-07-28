@@ -1,0 +1,10 @@
+query GetUser($userId: HashId!) {
+  user(userId: $userId) {
+    __typename
+    id
+    ...NameParts
+    ... on Stranger {
+      friendStatus
+    }
+  }
+}

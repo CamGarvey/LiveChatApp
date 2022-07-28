@@ -9,18 +9,17 @@ export const MessagesSubscription = subscriptionField('messages', {
   args: {
     chatId: nonNull(hashIdArg()),
   },
-  authorize: async (_, { chatId }, { auth }) => await auth.canViewChat(chatId),
+  authorize: (_, { chatId }, { auth }) =>
+    chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('message.*', { pattern: true }),
       (payload, variables) => {
-        return payload.id === variables.chatId;
+        return payload.chatId === variables.chatId;
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
-  },
+  resolve: (payload: any) => payload,
 });
 
 export const MessageCreatedSubscription = subscriptionField('messageCreated', {
@@ -34,18 +33,16 @@ export const MessageCreatedSubscription = subscriptionField('messageCreated', {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageCreated),
       (payload, variables) => {
-        return payload.id === variables.chatId;
+        return payload.chatId === variables.chatId;
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
-  },
+  resolve: (payload: any) => payload,
 });
 
 export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
   type: 'DeletedMessage',
-  description: 'SUbscribe to deleted messages in chat',
+  description: 'Subscribe to deleted messages in chat',
   args: {
     chatId: nonNull(hashIdArg()),
   },
@@ -54,13 +51,11 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageDeleted),
       (payload, variables) => {
-        return payload.id === variables.chatId;
+        return payload.chatId === variables.chatId;
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
-  },
+  resolve: (payload: any) => payload,
 });
 
 export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
@@ -74,11 +69,9 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.MessageUpdated),
       (payload, variables) => {
-        return payload.id === variables.chatId;
+        return payload.chatId === variables.chatId;
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
-  },
+  resolve: (payload: any) => payload,
 });

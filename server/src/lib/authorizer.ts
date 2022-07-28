@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, RequestStatus } from '@prisma/client';
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
-import { IAuthorizer } from 'src/graphql/context.interface';
+import { IAuthorizer } from './authorizer.interface';
 
 export class Authorizer implements IAuthorizer {
   public userId: number;
@@ -97,7 +97,7 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('You are not an admin in this chat');
     }
 
-    if (addMemberIds.length) {
+    if (addMemberIds?.length) {
       // Remove duplicates
       const memberIdSet: Set<number> = new Set(addMemberIds);
 
@@ -129,7 +129,6 @@ export class Authorizer implements IAuthorizer {
         }
       }
     }
-
     return true;
   }
 
@@ -249,6 +248,50 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
+  public async canUpdateMessage(messageId: number) {
+    const message = await this._prisma.message.findUnique({
+      where: {
+        id: messageId,
+      },
+    });
+
+    if (!message) {
+      throw new Error('Message does not exist');
+    }
+
+    if (message.createdById !== this.userId) {
+      throw new ForbiddenError(
+        'You do not have permission to update this message'
+      );
+    }
+
+    if (message.deletedAt) {
+      throw new ForbiddenError('Message is deleted');
+    }
+
+    return true;
+  }
+
+  public async canDeletedMessage(messageId: number) {
+    const message = await this._prisma.message.findUnique({
+      where: {
+        id: messageId,
+      },
+    });
+
+    if (!message) {
+      throw new Error('Message does not exist');
+    }
+
+    if (message.createdById !== this.userId) {
+      throw new ForbiddenError(
+        'You do not have permission to delete this message'
+      );
+    }
+
+    return true;
+  }
+
   public async canSendFriendRequest(friendId: number) {
     const friend = await this._prisma.user.findUnique({
       where: {
@@ -281,10 +324,10 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Already friends with this user');
     }
 
+    // Make sure a request is not already sent out, either way
     if (friend.receivedFriendRequests.length !== 0) {
       throw new ForbiddenError('Already sent a friend request to this user');
     }
-
     if (friend.sentFriendRequests.length !== 0) {
       throw new ForbiddenError(
         'Already received a friend requets from this user'
@@ -311,6 +354,12 @@ export class Authorizer implements IAuthorizer {
       );
     }
 
+    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
+
+    if (!pendingStates.includes(request.status)) {
+      throw new ForbiddenError('Invalid state');
+    }
+
     return true;
   }
 
@@ -331,6 +380,12 @@ export class Authorizer implements IAuthorizer {
       );
     }
 
+    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
+
+    if (!pendingStates.includes(request.status)) {
+      throw new ForbiddenError('Invalid state');
+    }
+
     return true;
   }
 
@@ -349,12 +404,16 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('You do not have permission to accept request');
     }
 
+    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
+
+    if (!pendingStates.includes(request.status)) {
+      throw new ForbiddenError('Invalid state');
+    }
+
     return true;
   }
 
   public async canDeleteFriend(friendId: number) {
-    console.log('HELLO');
-
     const user = await this._prisma.user.findUnique({
       where: {
         id: friendId,

@@ -1,0 +1,27 @@
+query GetMessages($chatId: HashId!, $first: Int) {
+  messages(chatId: $chatId, first: $first) {
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+    edges {
+      cursor
+      node {
+        __typename
+        id
+        isCreator
+        createdAt
+        createdBy {
+          id
+          ...NameParts
+        }
+        ... on DeletedMessage {
+          deletedAt
+        }
+        ... on InstantMessage {
+          content
+        }
+      }
+    }
+  }
+}

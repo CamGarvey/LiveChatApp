@@ -1,21 +1,7 @@
-mutation CreateMessage($chatId: String!, $content: String!) {
+mutation CreateMessage($chatId: HashId!, $content: String!) {
   createMessage(chatId: $chatId, content: $content) {
     id
     content
-    createdAt
-    createdBy {
-      __typename
-      ... on Stranger {
-        id
-        ...NameParts
-      }
-      ... on Me {
-        id
-      }
-      ... on Friend {
-        id
-        ...NameParts
-      }
-    }
+    isCreator
   }
 }

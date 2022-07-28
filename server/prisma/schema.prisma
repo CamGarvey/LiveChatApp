@@ -40,6 +40,9 @@ model FriendRequest {
   status      RequestStatus @default(SENT)
   updatedAt   DateTime      @updatedAt
   createdAt   DateTime      @default(now())
+  deletedAt   DateTime?
+
+  @@unique([recipientId, createdById]) // Only allow one request invite per user/user pair
 }
 
 model ChatInvite {
@@ -53,7 +56,6 @@ model ChatInvite {
   status      RequestStatus @default(SENT)
   updatedAt   DateTime      @updatedAt
   createdAt   DateTime      @default(now())
-  deletedAt   DateTime?
 
   @@unique([recipientId, chatId]) // Only allow one chat invite per user/chat pair
 }
@@ -61,6 +63,7 @@ model ChatInvite {
 enum RequestStatus {
   SENT
   SEEN
+  CANCELLED
   ACCEPTED
   DECLINED
 }

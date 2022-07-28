@@ -1,5 +1,0 @@
-fragment ReceivedFriendRequests on User {
-  receivedFriendRequests {
-    ...ReceivedFriendRequest
-  }
-}

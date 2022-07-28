@@ -2,7 +2,7 @@ import { interfaceType } from 'nexus';
 
 export const MessageInterface = interfaceType({
   name: 'Message',
-  resolveType: (t) => {
+  resolveType: (t: any) => {
     return t.deletedAt == null ? 'InstantMessage' : 'DeletedMessage';
   },
   definition: (t) => {
@@ -23,7 +23,6 @@ export const MessageInterface = interfaceType({
         return parent.createdById === userId;
       },
     });
-    t.date('deletedAt');
     t.nonNull.date('updatedAt');
     t.nonNull.date('createdAt');
     t.nonNull.hashId('chatId');

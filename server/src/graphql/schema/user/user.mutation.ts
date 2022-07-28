@@ -2,18 +2,16 @@ import { mutationField, nonNull, stringArg } from 'nexus';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 
-export const UpdateMeMutation = mutationField('updateMe', {
+export const UpdateUserMutation = mutationField('updateUser', {
   type: 'Me',
   description: 'Update current user',
   args: {
-    email: nonNull(stringArg()),
-    username: nonNull(stringArg()),
+    name: nonNull(stringArg()),
   },
-  resolve(_, { email, username }, { userId, prisma }) {
+  resolve(_, { name }, { userId, prisma }) {
     return prisma.user.update({
       data: {
-        email,
-        username,
+        name,
       },
       where: {
         id: userId,
@@ -28,8 +26,7 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
   args: {
     friendId: nonNull(hashIdArg()),
   },
-  authorize: async (_, { friendId }, { auth }) =>
-    await auth.canDeleteFriend(friendId),
+  authorize: (_, { friendId }, { auth }) => auth.canDeleteFriend(friendId),
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     // Delete user
     const user = await prisma.user.update({

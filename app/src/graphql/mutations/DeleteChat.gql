@@ -1,0 +1,6 @@
+mutation DeleteChat($chatId: HashId!) {
+  deleteChat(chatId: $chatId) {
+    id
+    deletedAt
+  }
+}

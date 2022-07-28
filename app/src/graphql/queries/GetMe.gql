@@ -2,6 +2,5 @@ query GetMe {
   me {
     id
     ...NameParts
-    ...ReceivedFriendRequests
   }
 }

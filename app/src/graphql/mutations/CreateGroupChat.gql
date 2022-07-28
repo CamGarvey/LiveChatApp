@@ -1,31 +1,10 @@
-mutation CreateGroupChat(
-  $name: String!
-  $description: String
-  $isPrivate: Boolean
-  $memberIds: [String!]
-) {
-  createGroupChat(
-    name: $name
-    description: $description
-    isPrivate: $isPrivate
-    memberIds: $memberIds
-  ) {
+mutation CreateGroupChat($data: CreateGroupChatInput) {
+  createGroupChat(data: $data) {
     id
     name
     description
     members {
-      __typename
-      ... on Stranger {
-        id
-        ...NameParts
-      }
-      ... on Me {
-        id
-      }
-      ... on Friend {
-        id
-        ...NameParts
-      }
+      id
     }
   }
 }

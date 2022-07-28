@@ -2,22 +2,13 @@ subscription Chats {
   chats {
     __typename
     id
-    createdById
     createdBy {
       id
       ...NameParts
     }
-    ... on DirectMessageChat {
-      friend {
-        id
-        ...NameParts
-      }
-    }
     ... on GroupChat {
-      members {
-        id
-        ...NameParts
-      }
+      name
+      memberCount
     }
     ... on DeletedChat {
       deletedAt

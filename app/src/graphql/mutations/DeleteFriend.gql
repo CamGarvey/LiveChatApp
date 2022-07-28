@@ -1,4 +1,4 @@
-mutation DeleteFriend($friendId: String!) {
+mutation DeleteFriend($friendId: HashId!) {
   deleteFriend(friendId: $friendId) {
     id
     friendStatus

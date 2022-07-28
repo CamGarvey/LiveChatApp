@@ -1,6 +1,6 @@
-mutation DeclineFriendRequest($friendId: String!) {
-  declineFriendRequest(friendId: $friendId) {
+mutation DeclineFriendRequest($friendRequestId: HashId!) {
+  declineFriendRequest(friendRequestId: $friendRequestId) {
     id
-    friendStatus
+    status
   }
 }

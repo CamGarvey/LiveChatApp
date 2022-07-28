@@ -1,0 +1,23 @@
+query GetNotifications {
+  notifications {
+    id
+    createdAt
+    createdBy {
+      id
+      ...NameParts
+    }
+    ... on ChatInvite {
+      status
+      chat {
+        __typename
+        ... on GroupChat {
+          name
+          memberCount
+        }
+      }
+    }
+    ... on FriendRequest {
+      status
+    }
+  }
+}
