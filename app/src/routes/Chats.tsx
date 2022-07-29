@@ -7,91 +7,43 @@ import Header from '../components/Layout/Header/Header';
 import Drawer from '../components/Layout/Drawer';
 import { useEffect } from 'react';
 import {
-  ChatUpdatedDocument,
-  ChatUpdatedSubscription,
-  GetChatQuery,
-  GetMeQuery,
-  MeChangedDocument,
-  MeChangedSubscription,
-  useGetChatLazyQuery,
+  GetNotificationsQuery,
+  NotificationsDocument,
+  NotificationsSubscription,
+  useGetChatsQuery,
   useGetMeQuery,
+  useGetNotificationsQuery,
 } from '../graphql/generated/graphql';
 import { UserContext } from '../context/UserContext';
 import PickChat from './PickChat';
+import { NotificationContext } from '../context/NotificationContext';
+import { ChatContext } from '../context/ChatContext';
 
 const Chats = () => {
   const { chatId } = useParams();
-  const [
-    getChat,
-    {
-      called,
-      data: channelData,
-      loading,
-      subscribeToMore: subscribeToMoreChannel,
-    },
-  ] = useGetChatLazyQuery();
+  const { data: chatData, loading: isLoadingChats } = useGetChatsQuery();
   const {
-    data: userData,
-    loading: isLoadingUser,
-    subscribeToMore: subscribeToMoreUser,
-  } = useGetMeQuery();
+    data: notificationData,
+    loading: isLoadingNotifications,
+    subscribeToMore,
+  } = useGetNotificationsQuery();
+  const { data: userData, loading: isLoadingUser } = useGetMeQuery();
 
   useEffect(() => {
-    const unsubscribe = subscribeToMoreUser<MeChangedSubscription>({
-      document: MeChangedDocument,
+    const unsubscribe = subscribeToMore<NotificationsSubscription>({
+      document: NotificationsDocument,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        console.log(prev);
-
-        const me = subscriptionData.data;
+        console.log({ prev, subscriptionData });
+        const notification = subscriptionData.data;
         const newCache = Object.assign({}, prev, {
-          me: {
-            ...prev.me,
-            receivedFriendRequests: [...me.meChanged.receivedFriendRequests],
-          },
-        } as GetMeQuery);
+          notifications: [...prev.notifications, notification],
+        } as GetNotificationsQuery);
         return newCache;
       },
     });
     return () => unsubscribe();
-  }, [userData?.me, subscribeToMoreUser]);
-
-  useEffect(() => {
-    if (chatId) {
-      getChat({
-        variables: {
-          chatId,
-        },
-      });
-    }
-  }, [chatId, getChat]);
-
-  useEffect(() => {
-    if (called) {
-      const unsubscribe = subscribeToMoreChannel<ChatUpdatedSubscription>({
-        document: ChatUpdatedDocument,
-        variables: {
-          chatId,
-        },
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data) return prev;
-          console.log(prev);
-
-          const data = subscriptionData.data.chatUpdated;
-
-          const newCache = Object.assign({}, prev, {
-            chat: {
-              ...data.chat,
-            },
-          } as GetChatQuery);
-          return newCache;
-        },
-      });
-      return () => {
-        unsubscribe();
-      };
-    }
-  }, [subscribeToMoreChannel, channelData, called, chatId]);
+  }, [notificationData?.notifications, subscribeToMore]);
 
   return (
     <UserContext.Provider
@@ -100,21 +52,31 @@ const Chats = () => {
         isLoading: isLoadingUser,
       }}
     >
-      <AppShell
-        navbarOffsetBreakpoint="sm"
-        asideOffsetBreakpoint="md"
-        header={<Header chat={channelData?.chat} />}
-        navbar={<ChatNav />}
-        aside={
-          chatId && (
-            <ChatInfoAside isLoading={loading} chat={channelData?.chat} />
-          )
-        }
-        fixed
+      <NotificationContext.Provider
+        value={{
+          notifications: notificationData?.notifications,
+          isLoading: isLoadingNotifications,
+        }}
       >
-        <Drawer />
-        {chatId ? <ChatPanel chatId={chatId} /> : <PickChat />}
-      </AppShell>
+        <ChatContext.Provider
+          value={{
+            chat: chatData?.chats.find((x) => x.id === chatId),
+            isLoading: isLoadingChats,
+          }}
+        >
+          <AppShell
+            navbarOffsetBreakpoint="sm"
+            asideOffsetBreakpoint="md"
+            header={<Header />}
+            navbar={<ChatNav />}
+            aside={chatId && <ChatInfoAside />}
+            fixed
+          >
+            <Drawer />
+            {chatId ? <ChatPanel chatId={chatId} /> : <PickChat />}
+          </AppShell>
+        </ChatContext.Provider>
+      </NotificationContext.Provider>
     </UserContext.Provider>
   );
 };

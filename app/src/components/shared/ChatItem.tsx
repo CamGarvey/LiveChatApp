@@ -3,21 +3,44 @@ import {
   AvatarsGroup,
   Group,
   Text,
+  Tooltip,
   UnstyledButton,
 } from '@mantine/core';
 import { NavLink } from 'react-router-dom';
+import { DirectMessageChat, GroupChat } from '../../graphql/generated/graphql';
 
 type Props = {
-  id: string;
-  name: string;
-  members: { username: string }[];
+  chat:
+    | {
+        __typename: 'GroupChat';
+        id: string;
+        name: string;
+        description?: string;
+        members: {
+          id: string;
+          username: string;
+        }[];
+      }
+    | {
+        __typename: 'DirectMessageChat';
+        id: string;
+        friend: {
+          id: string;
+          username: string;
+        };
+      };
   onClick?: () => void;
 };
 
-const ChatItem = ({ id, name, members, onClick }: Props) => {
+const ChatItem = ({ chat, onClick }: Props) => {
+  const isDM = chat.__typename === 'DirectMessageChat';
+  const nameOf = isDM ? chat.friend.username : chat.name;
+
+  const members = isDM ? [chat.friend] : chat.members;
+
   return (
     <NavLink
-      to={`${id}`}
+      to={`${chat.id}`}
       style={{
         textDecoration: 'none',
       }}
@@ -49,9 +72,9 @@ const ChatItem = ({ id, name, members, onClick }: Props) => {
           <Group>
             <Avatar
               size="sm"
-              src={`https://avatars.dicebear.com/api/initials/${name}.svg`}
+              src={`https://avatars.dicebear.com/api/initials/${nameOf}.svg`}
             />
-            <Text size="sm">{name}</Text>
+            <Text size="sm">{nameOf}</Text>
             <AvatarsGroup
               ml={'auto'}
               limit={4}

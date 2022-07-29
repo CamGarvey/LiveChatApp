@@ -1,5 +1,5 @@
-query GetMessages($chatId: HashId!, $first: Int) {
-  messages(chatId: $chatId, first: $first) {
+query GetMessages($chatId: HashId!, $last: Int) {
+  messages(chatId: $chatId, first: $last) {
     pageInfo {
       hasPreviousPage
       startCursor

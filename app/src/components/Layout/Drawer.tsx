@@ -22,7 +22,7 @@ import { useToggleDrawer, useIsDrawerOpen } from '../store';
 import ChatItem from '../shared/ChatItem';
 import { useUserSearchModal } from '../Modals/UserSearchModal';
 import ChatDisplay from '../shared/ChatDisplay';
-import { useCreateChatModal } from '../Modals/CreateChatModal';
+import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModal';
 import { useUser } from '../../context/UserContext';
 
 const Drawer = () => {
@@ -31,7 +31,7 @@ const Drawer = () => {
   const isDrawerOpen = useIsDrawerOpen();
   const toggleDrawer = useToggleDrawer();
 
-  const openCreateChatModal = useCreateChatModal();
+  const openCreateChatModal = useCreateGroupChatModal();
   const openUserSearchModal = useUserSearchModal();
 
   return (

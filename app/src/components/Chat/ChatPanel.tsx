@@ -1,9 +1,9 @@
 import { Center, Stack, Text } from '@mantine/core';
 import {
-  MessageCreatedDocument,
+  MessagesDocument,
   useCreateMessageMutation,
-  useGetChatMessagesQuery,
   useGetMeQuery,
+  useGetMessagesQuery,
 } from '../../graphql/generated/graphql';
 import { useEffect, useState } from 'react';
 import Scroller from './Scroller';
@@ -11,17 +11,6 @@ import ChatInput from './ChatInput';
 import Message from './Message';
 import { groupMessages } from '../../util';
 import { motion } from 'framer-motion';
-
-type MessageData = {
-  id: string;
-  content: string;
-  createdAt: any;
-  createdBy: {
-    id: string;
-    name?: string;
-    username: string;
-  };
-};
 
 type Props = {
   chatId: string;
@@ -44,7 +33,7 @@ export const ChatPanel = ({ chatId }: Props) => {
     error: messagesError,
     subscribeToMore,
     fetchMore,
-  } = useGetChatMessagesQuery({
+  } = useGetMessagesQuery({
     variables: {
       chatId,
       last: 20,
@@ -52,12 +41,11 @@ export const ChatPanel = ({ chatId }: Props) => {
     fetchPolicy: 'network-only',
   });
 
-  const hasPreviousPage =
-    data?.chatMessages?.pageInfo?.hasPreviousPage ?? false;
+  const hasPreviousPage = data?.messages?.pageInfo?.hasPreviousPage ?? false;
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
-      document: MessageCreatedDocument,
+      document: MessagesDocument,
       variables: {
         chatId,
       },
@@ -67,13 +55,13 @@ export const ChatPanel = ({ chatId }: Props) => {
         const newCache = Object.assign({}, prev, {
           chatMessages: {
             edges: [
-              ...prev.chatMessages.edges,
+              ...prev.messages.edges,
               {
                 __typename: 'MessageEdge',
                 node: messageCreated,
               },
             ],
-            pageInfo: prev.chatMessages.pageInfo,
+            pageInfo: prev.messages.pageInfo,
           },
         });
         return newCache;
@@ -85,23 +73,21 @@ export const ChatPanel = ({ chatId }: Props) => {
   const [createMessageMutation, { loading: loadingCreateMessage }] =
     useCreateMessageMutation();
 
-  let messages: MessageData[] =
-    data?.chatMessages?.edges?.map((x) => x.node) ?? [];
+  let messages = data?.messages?.edges?.map((x) => x.node) ?? [];
 
-  const groupedMessages: MessageData[][] = groupMessages(messages);
+  const groupedMessages = groupMessages(messages);
 
   const messageComponents = groupedMessages
     .map((group) => {
-      const isCurrentUser = group[0].createdBy.id === meData?.me.id;
       return group
-        .map((message, idx) => {
+        .map((message: any, idx: number) => {
           const isLastMessageInGroup = idx < group.length - 1;
           return (
             <motion.div
               key={message.id}
               variants={{
                 hidden: {
-                  x: isCurrentUser ? 200 : -200,
+                  x: message.isCreator ? 200 : -200,
                 },
                 show: {
                   x: 0,
@@ -109,7 +95,7 @@ export const ChatPanel = ({ chatId }: Props) => {
               }}
               style={{
                 display: 'flex',
-                justifyContent: isCurrentUser ? 'right' : 'left',
+                justifyContent: message.isCreator ? 'right' : 'left',
                 overflowX: 'hidden',
               }}
             >
@@ -121,8 +107,8 @@ export const ChatPanel = ({ chatId }: Props) => {
                     message.id === selectedMessageId ? null : message.id
                   )
                 }
-                showAvatar={!isLastMessageInGroup && !isCurrentUser}
-                variant={isCurrentUser ? 'light' : 'default'}
+                showAvatar={!isLastMessageInGroup && !message.isCreator}
+                variant={message.isCreator ? 'light' : 'default'}
               />
             </motion.div>
           );
@@ -170,7 +156,7 @@ export const ChatPanel = ({ chatId }: Props) => {
                 variables: {
                   chatId,
                   last: 20,
-                  before: data.chatMessages.pageInfo.startCursor,
+                  before: data.messages.pageInfo.startCursor,
                 },
               }).finally(() => setIsFetchingMore(false));
             }

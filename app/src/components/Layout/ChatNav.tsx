@@ -1,9 +1,9 @@
 import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
 import ChatDisplay from '../shared/ChatDisplay';
-import { useCreateChatModal } from '../Modals/CreateChatModal';
+import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModal';
 
 const ChatNav = () => {
-  const openChatModal = useCreateChatModal();
+  const openChatModal = useCreateGroupChatModal();
 
   return (
     <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>

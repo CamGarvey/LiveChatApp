@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import { useIsDrawerOpen } from '../store';
 
 const ChangingTitle = ({ title }: { title: string }) => {
-  console.log(title);
-
   return (
     <AnimatePresence custom={title}>
       <motion.h4

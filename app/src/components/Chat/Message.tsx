@@ -2,9 +2,16 @@ import { Group, Stack, Text, Paper, Avatar } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import moment from 'moment';
-import { MessageItem } from '../../models';
 
-type MessageProps = MessageItem & {
+type Msg = {
+  content: string;
+  createdBy: {
+    username: string;
+  };
+  createdAt: string;
+};
+
+type MessageProps = Msg & {
   onClick?: () => void;
   isSelected?: boolean;
   showAvatar?: boolean;

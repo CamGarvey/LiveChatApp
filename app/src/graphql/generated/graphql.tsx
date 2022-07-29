@@ -657,10 +657,17 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'Me', id: any, name?: string | null, username: string } | null };
 
+export type GetChatQueryVariables = Exact<{
+  chatId: Scalars['HashId'];
+}>;
+
+
+export type GetChatQuery = { __typename?: 'Query', chat?: { __typename: 'DeletedChat', id: any, createdAt?: any | null, updatedAt?: any | null, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename: 'DirectMessageChat', id: any, createdAt?: any | null, updatedAt?: any | null, isCreator: boolean, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename: 'GroupChat', name: string, description?: string | null, id: any, createdAt?: any | null, updatedAt?: any | null, isCreator: boolean, members: Array<{ __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string }>, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | null };
+
 export type GetChatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChatsQuery = { __typename?: 'Query', chats: Array<{ __typename: 'DeletedChat', deletedAt: any, id: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename: 'GroupChat', name: string, memberCount: number, id: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } }> };
+export type GetChatsQuery = { __typename?: 'Query', chats: Array<{ __typename: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename: 'GroupChat', name: string, description?: string | null, id: any, members: Array<{ __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string }>, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } }> };
 
 export type GetFriendsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -674,7 +681,7 @@ export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'Me', id: a
 
 export type GetMessagesQueryVariables = Exact<{
   chatId: Scalars['HashId'];
-  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 }>;
 
 
@@ -1179,6 +1186,63 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetChatDocument = gql`
+    query GetChat($chatId: HashId!) {
+  chat(chatId: $chatId) {
+    __typename
+    id
+    createdBy {
+      id
+      ...NameParts
+    }
+    createdAt
+    updatedAt
+    isCreator
+    ... on DirectMessageChat {
+      friend {
+        id
+        ...NameParts
+      }
+    }
+    ... on GroupChat {
+      members {
+        id
+        ...NameParts
+      }
+      name
+      description
+    }
+  }
+}
+    ${NamePartsFragmentDoc}`;
+
+/**
+ * __useGetChatQuery__
+ *
+ * To run a query within a React component, call `useGetChatQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatQuery({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *   },
+ * });
+ */
+export function useGetChatQuery(baseOptions: Apollo.QueryHookOptions<GetChatQuery, GetChatQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatQuery, GetChatQueryVariables>(GetChatDocument, options);
+      }
+export function useGetChatLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatQuery, GetChatQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatQuery, GetChatQueryVariables>(GetChatDocument, options);
+        }
+export type GetChatQueryHookResult = ReturnType<typeof useGetChatQuery>;
+export type GetChatLazyQueryHookResult = ReturnType<typeof useGetChatLazyQuery>;
+export type GetChatQueryResult = Apollo.QueryResult<GetChatQuery, GetChatQueryVariables>;
 export const GetChatsDocument = gql`
     query GetChats {
   chats {
@@ -1188,12 +1252,19 @@ export const GetChatsDocument = gql`
       id
       ...NameParts
     }
+    ... on DirectMessageChat {
+      friend {
+        id
+        ...NameParts
+      }
+    }
     ... on GroupChat {
       name
-      memberCount
-    }
-    ... on DeletedChat {
-      deletedAt
+      description
+      members {
+        id
+        ...NameParts
+      }
     }
   }
 }
@@ -1296,8 +1367,8 @@ export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
 export const GetMessagesDocument = gql`
-    query GetMessages($chatId: HashId!, $first: Int) {
-  messages(chatId: $chatId, first: $first) {
+    query GetMessages($chatId: HashId!, $last: Int) {
+  messages(chatId: $chatId, first: $last) {
     pageInfo {
       hasPreviousPage
       startCursor
@@ -1338,7 +1409,7 @@ export const GetMessagesDocument = gql`
  * const { data, loading, error } = useGetMessagesQuery({
  *   variables: {
  *      chatId: // value for 'chatId'
- *      first: // value for 'first'
+ *      last: // value for 'last'
  *   },
  * });
  */
@@ -1360,7 +1431,8 @@ export const GetNotificationsDocument = gql`
     createdAt
     createdBy {
       id
-      ...NameParts
+      name
+      username
     }
     ... on ChatInvite {
       status
@@ -1377,7 +1449,7 @@ export const GetNotificationsDocument = gql`
     }
   }
 }
-    ${NamePartsFragmentDoc}`;
+    `;
 
 /**
  * __useGetNotificationsQuery__
@@ -1456,7 +1528,8 @@ export const GetUsersDocument = gql`
       cursor
       node {
         id
-        ...NameParts
+        name
+        username
         ... on Stranger {
           friendStatus
         }
@@ -1464,7 +1537,7 @@ export const GetUsersDocument = gql`
     }
   }
 }
-    ${NamePartsFragmentDoc}`;
+    `;
 
 /**
  * __useGetUsersQuery__

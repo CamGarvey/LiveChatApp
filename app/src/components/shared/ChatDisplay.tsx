@@ -5,23 +5,22 @@ import { useGetChatsQuery } from '../../graphql/generated/graphql';
 import ChatItem from './ChatItem';
 
 type Props = {
-  onChatClick?: (chat: {
-    id: string;
-    name: string;
-    description?: string;
-    members: {
-      id: string;
-      username: string;
-    }[];
-  }) => void;
+  onChatClick?: (chat: any) => void;
 };
 
 const ChatDisplay = ({ onChatClick }: Props) => {
   const { loading, data } = useGetChatsQuery();
   const [filter, setFilter] = useState('');
 
-  const filteredChats =
-    data?.chats.filter((c) => c.name.toLowerCase().includes(filter)) ?? [];
+  const filteredChats = data?.chats.filter((c) => {
+    if (c.__typename === 'GroupChat') {
+      return c.name.toLowerCase().includes(filter);
+    }
+    if (c.__typename === 'DirectMessageChat') {
+      return c.createdBy.username.toLowerCase().includes(filter);
+    }
+    return false;
+  });
 
   return (
     <Stack spacing={'md'}>
@@ -38,13 +37,16 @@ const ChatDisplay = ({ onChatClick }: Props) => {
       <ScrollArea>
         <Stack spacing={4}>
           {!loading && data && filteredChats.length > 0 ? (
-            filteredChats.map((chat) => (
-              <ChatItem
-                key={chat.id}
-                {...chat}
-                onClick={() => onChatClick?.(chat)}
-              />
-            ))
+            filteredChats.map(
+              (chat) =>
+                chat.__typename !== 'DeletedChat' && (
+                  <ChatItem
+                    key={chat.id}
+                    chat={chat}
+                    onClick={() => onChatClick?.(chat)}
+                  />
+                )
+            )
           ) : (
             <Center>
               <Text color={'dimmed'}>Nothing to show</Text>

@@ -4,7 +4,7 @@ import UserSelector from '../UserSelector/UserSelector';
 import {
   GetChatsDocument,
   GetChatsQuery,
-  useCreateChatMutation,
+  useCreateGroupChatMutation,
   useGetFriendsQuery,
 } from '../../graphql/generated/graphql';
 import {
@@ -19,7 +19,7 @@ import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from '../../models/validation-schemas';
 import { showNotification } from '@mantine/notifications';
 
-export const CreateChatModal = ({
+export const CreateGroupChatModal = ({
   context,
   id,
   innerProps,
@@ -31,14 +31,14 @@ export const CreateChatModal = ({
     error: friendError,
   } = useGetFriendsQuery({ fetchPolicy: 'network-only' });
 
-  const [createChatMutation, { loading: loadingCreateChat }] =
-    useCreateChatMutation({
-      update: (cache, { data: { createChat } }) => {
+  const [createGroupChatMutation, { loading: loadingCreateChat }] =
+    useCreateGroupChatMutation({
+      update: (cache, { data: { createGroupChat } }) => {
         const { chats } = cache.readQuery<GetChatsQuery>({
           query: GetChatsDocument,
         });
 
-        const updatedChats = [...chats, createChat];
+        const updatedChats = [...chats, createGroupChat];
 
         cache.writeQuery({
           query: GetChatsDocument,
@@ -50,7 +50,7 @@ export const CreateChatModal = ({
       onCompleted: (data) =>
         showNotification({
           title: 'Created New Chat',
-          message: data.createChat.name,
+          message: data.createGroupChat.name,
         }),
     });
 
@@ -67,8 +67,10 @@ export const CreateChatModal = ({
     },
     validationSchema: chatSchema,
     onSubmit: (values) => {
-      createChatMutation({
-        variables: values,
+      createGroupChatMutation({
+        variables: {
+          data: values,
+        },
       }).then((c) => {
         context.closeModal(id);
       });
@@ -125,11 +127,11 @@ export const CreateChatModal = ({
   );
 };
 
-export const useCreateChatModal = () => {
+export const useCreateGroupChatModal = () => {
   const modals = useModals();
   return () =>
-    modals.openContextModal('createChat', {
-      title: 'Create Chat',
+    modals.openContextModal('createGroupChat', {
+      title: 'Create Group Chat',
       innerProps: {},
     });
 };

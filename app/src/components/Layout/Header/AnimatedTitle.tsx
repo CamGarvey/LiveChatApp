@@ -5,19 +5,16 @@ import { ActionIcon, Group, Text, Title } from '@mantine/core';
 import { useIsDrawerOpen } from '../../store';
 import { useMediaQuery } from '@mantine/hooks';
 import { Settings } from 'tabler-icons-react';
-import { ChatInfo } from '../../../models';
-import { useUpdateChatModal } from '../../Modals/UpdateChatModal';
+import { useChat } from '../../../context/ChatContext';
+import { useUpdateGroupChatModal } from '../../Modals/UpdateGroupChatModal';
 
-type Props = {
-  user: { id: string };
-  chat: ChatInfo;
-};
-
-const AnimatedTitle = ({ chat, user }: Props) => {
-  const openChatUpdate = useUpdateChatModal();
+const AnimatedTitle = () => {
+  const { chat } = useChat();
+  const openGroupChatUpdate = useUpdateGroupChatModal();
   const isLargerScreen = useMediaQuery('(min-width: 993px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const isDrawerOpen = useIsDrawerOpen();
+
   return (
     <AnimatePresence custom={isDrawerOpen} exitBeforeEnter>
       <motion.div
@@ -32,16 +29,18 @@ const AnimatedTitle = ({ chat, user }: Props) => {
           <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
         ) : (
           <Group spacing={2}>
-            {chat.createdBy.id === user?.id && (
+            {chat && chat.__typename === 'GroupChat' ? (
               <ActionIcon
                 size={'xs'}
                 color={'blue'}
-                onClick={() => openChatUpdate({ chat })}
+                onClick={() => openGroupChatUpdate({ chat })}
               >
                 <Settings />
               </ActionIcon>
+            ) : (
+              <></>
             )}
-            <Text>{chat?.name}</Text>
+            <Text>{chat?.__typename === 'GroupChat' ? chat?.name : ''}</Text>
           </Group>
         )}
       </motion.div>

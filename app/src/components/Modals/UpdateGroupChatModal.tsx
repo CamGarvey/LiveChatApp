@@ -2,9 +2,8 @@ import { useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
-  FriendStatus,
   useGetFriendsQuery,
-  useUpdateChatMutation,
+  useUpdateGroupChatMutation,
 } from '../../graphql/generated/graphql';
 import {
   Button,
@@ -16,20 +15,27 @@ import {
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from '../../models/validation-schemas';
-import { ChatInfo } from '../../models';
 import _ from 'lodash';
 
 type Props = {
-  chat: ChatInfo;
+  chat: {
+    id: string;
+    name: string;
+    description?: string;
+    members: {
+      id: string;
+      username: string;
+    }[];
+  };
 };
 
-export const UpdateChatModal = ({
+export const UpdateGroupChatModal = ({
   context,
   id,
   innerProps: { chat },
 }: ContextModalProps<Props>) => {
   const inputRef = useRef<HTMLInputElement>();
-  const [updateChat, { loading: loadingUpdate }] = useUpdateChatMutation();
+  const [updateChat, { loading: loadingUpdate }] = useUpdateGroupChatMutation();
   const {
     loading: loadingFriends,
     data: friendData,
@@ -48,7 +54,6 @@ export const UpdateChatModal = ({
         chat.members,
         friendData.friends.map((x) => ({
           ...x,
-          friendStatus: FriendStatus.Friend,
         })),
         'id'
       );
@@ -72,11 +77,13 @@ export const UpdateChatModal = ({
       );
       updateChat({
         variables: {
-          chatId: chat.id,
-          name: values.name,
-          description: values.description,
-          addMembersId: membersAdded,
-          removeMembersId: membersRemoved,
+          data: {
+            chatId: chat.id,
+            name: values.name,
+            description: values.description,
+            addMemberIds: membersAdded,
+            removeMemberIds: membersRemoved,
+          },
         },
       }).then(() => context.closeModal(id));
     },
@@ -141,11 +148,11 @@ export const UpdateChatModal = ({
   );
 };
 
-export const useUpdateChatModal = () => {
+export const useUpdateGroupChatModal = () => {
   const modals = useModals();
   return (props: Props) =>
-    modals.openContextModal('updateChat', {
-      title: 'Update Chat',
+    modals.openContextModal('updateGroupChat', {
+      title: 'Update Group Chat',
       innerProps: props,
     });
 };

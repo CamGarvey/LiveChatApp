@@ -1,11 +1,14 @@
-query GetChats {
-  chats {
+query GetChat($chatId: HashId!) {
+  chat(chatId: $chatId) {
     __typename
     id
     createdBy {
       id
       ...NameParts
     }
+    createdAt
+    updatedAt
+    isCreator
     ... on DirectMessageChat {
       friend {
         id
@@ -13,12 +16,12 @@ query GetChats {
       }
     }
     ... on GroupChat {
-      name
-      description
       members {
         id
         ...NameParts
       }
+      name
+      description
     }
   }
 }

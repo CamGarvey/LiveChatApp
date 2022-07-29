@@ -1,8 +1,8 @@
 import { Button, Center, Group, Text } from '@mantine/core';
-import { useCreateChatModal } from '../components/Modals/CreateChatModal';
+import { useCreateGroupChatModal } from '../components/Modals/CreateGroupChatModal';
 
 const PickChat = () => {
-  const openCreateChatModal = useCreateChatModal();
+  const openCreateChatModal = useCreateGroupChatModal();
   return (
     <Center
       style={{

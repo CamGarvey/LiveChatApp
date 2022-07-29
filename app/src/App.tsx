@@ -9,8 +9,8 @@ import Home from './routes/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ModalsProvider } from '@mantine/modals';
 import { UserSearchModal } from './components/Modals/UserSearchModal';
-import { CreateChatModal } from './components/Modals/CreateChatModal';
-import { UpdateChatModal } from './components/Modals/UpdateChatModal';
+import { CreateGroupChatModal } from './components/Modals/CreateGroupChatModal';
+import { UpdateGroupChatModal } from './components/Modals/UpdateGroupChatModal';
 import { NotificationsProvider } from '@mantine/notifications';
 import Chats from './routes/Chats';
 
@@ -40,8 +40,8 @@ export const App = () => {
           <ModalsProvider
             modals={{
               userSearch: UserSearchModal,
-              createChat: CreateChatModal,
-              updateChat: UpdateChatModal,
+              createGroupChat: CreateGroupChatModal,
+              updateGroupChat: UpdateGroupChatModal,
             }}
           >
             <BrowserRouter>

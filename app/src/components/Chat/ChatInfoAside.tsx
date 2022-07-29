@@ -9,15 +9,27 @@ import {
   Group,
 } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
-import { ChatInfo } from '../../models';
+import { useChat } from '../../context/ChatContext';
 import { ChatMenu, UserItem } from '../shared/UserItem';
 
-type Props = {
-  isLoading: boolean;
-  chat: ChatInfo;
-};
+const ChatInfoAside = () => {
+  const { chat, isLoading } = useChat();
 
-const ChatInfoAside = ({ chat, isLoading }: Props) => {
+  let displayName;
+  switch (chat?.__typename) {
+    case 'GroupChat':
+      displayName = chat.name;
+      break;
+    case 'DirectMessageChat':
+      displayName = chat.createdBy.username;
+      break;
+    case 'DeletedChat':
+      displayName = 'deleted';
+      break;
+    default:
+      displayName = '';
+  }
+
   return (
     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
       <Aside p="md" hiddenBreakpoint="md" width={{ md: 300, lg: 300 }}>
@@ -25,12 +37,23 @@ const ChatInfoAside = ({ chat, isLoading }: Props) => {
         {chat && (
           <>
             <Aside.Section>
-              <Title order={4}>{chat.name}</Title>
+              <Title order={4}>{displayName}</Title>
               <Group>
-                <Text>Members ({chat.members.length})</Text>
-                <ActionIcon ml={'auto'} variant="light">
-                  <UserPlus size={16} />
-                </ActionIcon>
+                {chat?.__typename === 'GroupChat' ? (
+                  <>
+                    <Text>Members ({chat.members.length})</Text>
+                    <ActionIcon ml={'auto'} variant="light">
+                      <UserPlus size={16} />
+                    </ActionIcon>
+                  </>
+                ) : (
+                  <>
+                    <Text>Members (2)</Text>
+                    <ActionIcon ml={'auto'} variant="light">
+                      <UserPlus size={16} />
+                    </ActionIcon>
+                  </>
+                )}
               </Group>
             </Aside.Section>
             <Aside.Section
@@ -45,15 +68,16 @@ const ChatInfoAside = ({ chat, isLoading }: Props) => {
               }}
               offsetScrollbars={true}
             >
-              {chat.members.map((member) => {
-                return (
-                  <UserItem
-                    key={member.id}
-                    user={{ ...member }}
-                    menu={<ChatMenu user={member} chat={chat} />}
-                  />
-                );
-              })}
+              {chat.__typename === 'GroupChat' &&
+                chat.members.map((member) => {
+                  return (
+                    <UserItem
+                      key={member.id}
+                      user={{ ...member }}
+                      menu={<ChatMenu user={member} chat={chat} />}
+                    />
+                  );
+                })}
             </Aside.Section>
           </>
         )}

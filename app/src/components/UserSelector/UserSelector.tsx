@@ -9,8 +9,14 @@ type Props = {
   label: string;
   placeholder?: string;
   nothingFound?: string;
-  users: User[];
-  defaultValue?: User[];
+  users: {
+    id: string;
+    username: string;
+  }[];
+  defaultValue?: {
+    id: string;
+    username: string;
+  }[];
   onChange: (ids: string[]) => void;
 };
 

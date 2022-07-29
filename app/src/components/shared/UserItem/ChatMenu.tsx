@@ -1,5 +1,5 @@
 import { Menu } from '@mantine/core';
-import { useRemoveMembersFromChatMutation } from '../../../graphql/generated/graphql';
+import { useUpdateGroupChatMutation } from '../../../graphql/generated/graphql';
 
 type Props = {
   user: {
@@ -11,10 +11,12 @@ type Props = {
 };
 
 export const ChatMenu = ({ user, chat }: Props) => {
-  const [removeMembers] = useRemoveMembersFromChatMutation({
+  const [removeMembers] = useUpdateGroupChatMutation({
     variables: {
-      chatId: chat.id,
-      membersIds: [user.id],
+      data: {
+        chatId: chat.id,
+        removeMemberIds: [user.id],
+      },
     },
   });
   return (

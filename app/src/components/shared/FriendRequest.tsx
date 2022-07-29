@@ -1,38 +1,52 @@
 import { Group, Avatar, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
+import moment from 'moment';
 import { CircleX, CircleCheck } from 'tabler-icons-react';
 import {
+  FriendRequest as FriendRequestObject,
   useAcceptFriendRequestMutation,
   useDeclineFriendRequestMutation,
 } from '../../graphql/generated/graphql';
 
 type Props = {
-  id: string;
-  name?: string;
-  username: string;
+  request: FriendRequestObject;
 };
 
-const FriendRequest = ({ id, name, username }: Props) => {
+const FriendRequest = ({ request }: Props) => {
   const [acceptRequest] = useAcceptFriendRequestMutation();
   const [declineRequest] = useDeclineFriendRequestMutation();
+  const createdBy = request.createdBy;
 
   return (
-    <Group>
+    <Group
+    // sx={(theme) => ({
+    //   ':hover': {
+    //     background:
+    //       theme.colorScheme === 'dark' ? theme.colors.dark['1'] : '#f2f2f4',
+    //   },
+    // })}
+    >
       <Avatar
         size="sm"
-        src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
+        src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}
       />
       <Stack spacing={0}>
-        <Text>{name}</Text>
-        <Text>{username}</Text>
+        <Text size={'sm'}>{createdBy.username}</Text>
+        <Text size={'sm'} color={'blue'}>
+          {moment(request.createdAt).fromNow()}
+        </Text>
       </Stack>
-
-      <Group ml={'auto'}>
+      <Group ml={'auto'} pr={'3px'}>
         <Tooltip label="Decline" openDelay={200} withArrow>
           <ActionIcon
+            sx={{
+              ':hover': {
+                background: '#d2dbff',
+              },
+            }}
             onClick={() => {
               declineRequest({
                 variables: {
-                  friendId: id,
+                  friendRequestId: request.id,
                 },
               });
             }}
@@ -42,10 +56,15 @@ const FriendRequest = ({ id, name, username }: Props) => {
         </Tooltip>
         <Tooltip label="Accept" openDelay={200} withArrow>
           <ActionIcon
+            sx={{
+              ':hover': {
+                background: '#d2dbff',
+              },
+            }}
             onClick={() => {
               acceptRequest({
                 variables: {
-                  friendId: id,
+                  friendRequestId: request.id,
                 },
               });
             }}

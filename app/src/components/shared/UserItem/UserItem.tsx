@@ -1,14 +1,32 @@
 import React from 'react';
 import { Avatar, Box, Stack, Text, UnstyledButton } from '@mantine/core';
-import { User } from '../../../models';
 
 type Props = {
-  user: User;
+  user:
+    | {
+        __typename?: 'Friend';
+        id: any;
+        name?: string;
+        username: string;
+      }
+    | {
+        __typename?: 'Me';
+        id: any;
+        name?: string;
+        username: string;
+      }
+    | {
+        __typename?: 'Stranger';
+        id: any;
+        name?: string;
+        username: string;
+      };
   menu?: React.ReactChild;
 };
 
 export const UserItem = ({ user, menu }: Props) => {
   const { name, username } = user;
+  console.log(user);
 
   return (
     <UnstyledButton

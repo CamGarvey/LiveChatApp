@@ -4,7 +4,8 @@ query GetNotifications {
     createdAt
     createdBy {
       id
-      ...NameParts
+      name
+      username
     }
     ... on ChatInvite {
       status
