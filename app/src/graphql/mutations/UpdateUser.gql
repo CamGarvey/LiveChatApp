@@ -1,6 +1,7 @@
 mutation UpdateUser($name: String!) {
   updateUser(name: $name) {
     id
-    ...NameParts
+    username
+    name
   }
 }

@@ -13,7 +13,8 @@ query GetMessages($chatId: HashId!, $last: Int) {
         createdAt
         createdBy {
           id
-          ...NameParts
+          username
+          name
         }
         ... on DeletedMessage {
           deletedAt

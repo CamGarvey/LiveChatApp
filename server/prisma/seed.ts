@@ -1,5 +1,5 @@
 import { PrismaClient, User } from '@prisma/client';
-import { users } from './data';
+import users from './data';
 
 const loadUsers = async (prisma: PrismaClient) => {
   await prisma.user.createMany({

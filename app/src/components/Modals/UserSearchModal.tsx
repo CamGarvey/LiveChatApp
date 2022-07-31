@@ -18,9 +18,10 @@ import {
 import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { UserItem } from '../shared/UserItem';
+import UserItem from '../shared/UserItem';
+import UserMenu from '../shared/Menus/UserMenu';
 
-const USER_PAGINATION_COUNT = 5;
+const USER_PAGINATION_COUNT = 7;
 
 export const UserSearchModal = () => {
   const inputRef = useRef<HTMLInputElement>();
@@ -83,14 +84,20 @@ export const UserSearchModal = () => {
           >
             <ScrollArea
               style={{
-                height: '100%',
+                height: '500px',
               }}
               offsetScrollbars
             >
               {hasInput && (
                 <>
                   {users.map((user) => {
-                    return <UserItem key={user.id} user={user} />;
+                    return (
+                      <UserItem
+                        key={user.id}
+                        user={user}
+                        menu={<UserMenu user={user} />}
+                      />
+                    );
                   })}
                   <Center>
                     {loadingUsers && <Loader variant="dots" />}

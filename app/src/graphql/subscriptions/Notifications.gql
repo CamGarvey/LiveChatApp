@@ -4,7 +4,8 @@ subscription Notifications {
     createdAt
     createdBy {
       id
-      ...NameParts
+      username
+      name
     }
     ... on ChatInvite {
       status

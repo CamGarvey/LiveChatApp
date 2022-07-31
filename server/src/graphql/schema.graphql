@@ -18,6 +18,7 @@ type ChatInvite implements Notification & Request {
   createdBy: User!
   createdById: HashId!
   id: HashId!
+  isCreator: Boolean!
   recipient: User
   recipientId: HashId!
   status: RequestStatus!
@@ -130,16 +131,10 @@ type FriendRequest implements Notification & Request {
   createdBy: User!
   createdById: HashId!
   id: HashId!
+  isCreator: Boolean!
   recipient: User
   recipientId: HashId!
   status: RequestStatus!
-}
-
-enum FriendStatus {
-  FRIEND
-  NOT_FRIEND
-  REQUEST_RECEIVED
-  REQUEST_SENT
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
@@ -412,6 +407,7 @@ interface Request {
   createdBy: User!
   createdById: HashId!
   id: HashId!
+  isCreator: Boolean!
   recipient: User
   recipientId: HashId!
   status: RequestStatus!
@@ -432,7 +428,7 @@ enum Sort {
 
 type Stranger implements User {
   createdAt: Date!
-  friendStatus: FriendStatus!
+  friendRequest: FriendRequest
   id: HashId!
   mutualFriends(
     """Returns the elements in the list that come after the specified cursor"""
@@ -450,6 +446,12 @@ type Stranger implements User {
   name: String
   updatedAt: Date!
   username: String!
+}
+
+enum StrangerStatus {
+  NOT_FRIEND
+  REQUEST_RECEIVED
+  REQUEST_SENT
 }
 
 type Subscription {

@@ -10,7 +10,6 @@ export const ChatInvitesQuery = queryField('chatInvites', {
       where: {
         recipientId: userId,
         status,
-        deletedAt: null,
       },
     });
   },

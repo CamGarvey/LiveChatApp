@@ -62,7 +62,6 @@ export const CreateGroupChatModal = ({
     initialValues: {
       name: '',
       description: '',
-      isPrivate: true,
       memberIds: [],
     },
     validationSchema: chatSchema,

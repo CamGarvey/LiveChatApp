@@ -2,9 +2,14 @@ query GetUser($userId: HashId!) {
   user(userId: $userId) {
     __typename
     id
-    ...NameParts
+    username
+    name
     ... on Stranger {
-      friendStatus
+      friendRequest {
+        id
+        status
+        isCreator
+      }
     }
   }
 }

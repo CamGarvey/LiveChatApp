@@ -12,7 +12,7 @@ export const UserInterface = interfaceType({
     const friends = await prisma.user
       .findUnique({
         where: {
-          id: userId || userId,
+          id: userId,
         },
       })
       .friends();

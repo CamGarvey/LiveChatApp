@@ -1,6 +1,7 @@
 query GetMe {
   me {
     id
-    ...NameParts
+    username
+    name
   }
 }

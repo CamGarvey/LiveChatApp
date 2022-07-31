@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { FriendRequest, Prisma } from '@prisma/client';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { objectType } from 'nexus';
 
@@ -81,26 +81,15 @@ export const Stranger = objectType({
         );
       },
     });
-    t.nonNull.field('friendStatus', {
-      type: 'FriendStatus',
+    t.field('friendRequest', {
+      type: 'FriendRequest',
       resolve: async (parent, _, { prisma, userId }) => {
-        const friends = await prisma.user
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .friends();
-
-        if (friends.find((x: any) => x.id == userId)) {
-          return 'FRIEND';
-        }
-
         const user = await prisma.user.findUnique({
-          where: { id: parent.id },
+          where: {
+            id: userId,
+          },
           include: {
             sentFriendRequests: {
-              select: {
-                id: true,
-              },
               where: {
                 status: {
                   in: ['SEEN', 'SENT'],
@@ -108,9 +97,6 @@ export const Stranger = objectType({
               },
             },
             receivedFriendRequests: {
-              select: {
-                id: true,
-              },
               where: {
                 status: {
                   in: ['SEEN', 'SENT'],
@@ -120,15 +106,20 @@ export const Stranger = objectType({
           },
         });
 
-        if (user.receivedFriendRequests.find((x: any) => x.id == userId)) {
-          return 'REQUEST_SENT';
+        const sentRequest = user.sentFriendRequests.find(
+          (x) => x.recipientId == parent.id
+        );
+        if (sentRequest) {
+          return sentRequest;
         }
 
-        if (user.sentFriendRequests.find((x: any) => x.id == userId)) {
-          return 'REQUEST_RECEIVED';
+        const receivedRequest = user.receivedFriendRequests.find(
+          (x) => x.createdById == parent.id
+        );
+        if (receivedRequest) {
+          return receivedRequest;
         }
-
-        return 'NOT_FRIEND';
+        return null;
       },
     });
   },

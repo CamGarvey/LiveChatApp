@@ -4,7 +4,8 @@ query GetChat($chatId: HashId!) {
     id
     createdBy {
       id
-      ...NameParts
+      username
+      name
     }
     createdAt
     updatedAt
@@ -12,13 +13,15 @@ query GetChat($chatId: HashId!) {
     ... on DirectMessageChat {
       friend {
         id
-        ...NameParts
+        username
+        name
       }
     }
     ... on GroupChat {
       members {
         id
-        ...NameParts
+        username
+        name
       }
       name
       description

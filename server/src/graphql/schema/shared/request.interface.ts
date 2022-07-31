@@ -9,10 +9,20 @@ export const Request = interfaceType({
     t.nonNull.hashId('id');
     t.field('recipient', {
       type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.user.findUnique({
+          where: {
+            id: parent.recipientId,
+          },
+        });
+      },
     });
     t.nonNull.hashId('recipientId');
     t.nonNull.field('status', {
       type: 'RequestStatus',
+    });
+    t.nonNull.boolean('isCreator', {
+      resolve: async (parent, _, { userId }) => parent.createdById == userId,
     });
     t.nonNull.field('createdBy', {
       type: 'User',

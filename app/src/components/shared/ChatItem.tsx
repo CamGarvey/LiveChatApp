@@ -3,11 +3,9 @@ import {
   AvatarsGroup,
   Group,
   Text,
-  Tooltip,
   UnstyledButton,
 } from '@mantine/core';
 import { NavLink } from 'react-router-dom';
-import { DirectMessageChat, GroupChat } from '../../graphql/generated/graphql';
 
 type Props = {
   chat:

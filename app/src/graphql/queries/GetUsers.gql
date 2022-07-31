@@ -11,7 +11,11 @@ query GetUsers($usernameFilter: String, $first: Int, $after: String) {
         name
         username
         ... on Stranger {
-          friendStatus
+          friendRequest {
+            id
+            isCreator
+            status
+          }
         }
       }
     }

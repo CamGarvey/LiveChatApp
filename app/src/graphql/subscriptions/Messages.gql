@@ -6,7 +6,8 @@ subscription Messages($chatId: HashId!) {
     createdAt
     createdBy {
       id
-      ...NameParts
+      username
+      name
     }
     ... on InstantMessage {
       content

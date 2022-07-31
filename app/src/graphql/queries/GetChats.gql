@@ -4,12 +4,14 @@ query GetChats {
     id
     createdBy {
       id
-      ...NameParts
+      username
+      name
     }
     ... on DirectMessageChat {
       friend {
         id
-        ...NameParts
+        username
+        name
       }
     }
     ... on GroupChat {
@@ -17,7 +19,8 @@ query GetChats {
       description
       members {
         id
-        ...NameParts
+        username
+        name
       }
     }
   }

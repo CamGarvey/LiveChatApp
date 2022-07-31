@@ -4,7 +4,8 @@ subscription Chats {
     id
     createdBy {
       id
-      ...NameParts
+      username
+      name
     }
     ... on GroupChat {
       name
