@@ -9,25 +9,24 @@ export class Authorizer implements IAuthorizer {
 
   public async canCreateDirectMessageChat(friendId: number) {
     if (friendId == this.userId) {
-      throw new UserInputError('friendId can not be null or own user');
+      throw new UserInputError('friendId can not be own user');
     }
 
-    const friend = await this._prisma.user.findUnique({
+    const friend = await this._prisma.user.findUniqueOrThrow({
       where: {
         id: friendId,
       },
-      include: {
+      select: {
         friends: {
+          select: {
+            id: true,
+          },
           where: {
             id: this.userId,
           },
         },
       },
     });
-
-    if (!friend) {
-      throw new ForbiddenError('User does not exist');
-    }
 
     if (friend.friends.length == 0) {
       throw new ForbiddenError('You are not friends with this user');
@@ -40,19 +39,22 @@ export class Authorizer implements IAuthorizer {
     // Remove duplicates
     const memberIdSet: Set<number> = new Set(memberIds);
 
+    // Remove self from memberIdSet
     if (memberIdSet.has(this.userId)) {
-      // Remove self from memberIdSet
       memberIdSet.delete(this.userId);
     }
 
-    if (memberIdSet) {
+    if (memberIdSet.size !== 0) {
       // Check that the user is friends with all of these users
-      const user = await this._prisma.user.findUnique({
+      const user = await this._prisma.user.findUniqueOrThrow({
         where: {
           id: this.userId,
         },
         select: {
           friends: {
+            select: {
+              id: true,
+            },
             where: {
               id: {
                 in: [...memberIdSet],
@@ -61,6 +63,7 @@ export class Authorizer implements IAuthorizer {
           },
         },
       });
+
       if (user.friends.length != memberIdSet.size) {
         throw new ForbiddenError(
           'You are not friends with all of the users provided'
@@ -71,7 +74,7 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canUpdateGroupChat(chatId: number, addMemberIds: number[]) {
-    const chat = await this._prisma.chat.findUnique({
+    const chat = await this._prisma.chat.findUniqueOrThrow({
       select: {
         isDM: true,
         admins: {
@@ -85,19 +88,15 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (!chat) {
-      throw new ForbiddenError('Chat does not exist');
-    }
-
     if (chat.isDM) {
-      throw new ForbiddenError('Can not update Direct Message Chat');
+      throw new ForbiddenError('Can not update a direct message chat');
     }
 
     if (!chat.admins.map((x) => x.id).includes(this.userId)) {
       throw new ForbiddenError('You are not an admin in this chat');
     }
 
-    if (addMemberIds?.length) {
+    if (addMemberIds.length) {
       // Remove duplicates
       const memberIdSet: Set<number> = new Set(addMemberIds);
 
@@ -108,12 +107,15 @@ export class Authorizer implements IAuthorizer {
 
       if (memberIdSet) {
         // Check that the user is friends with all of these users
-        const user = await this._prisma.user.findUnique({
+        const user = await this._prisma.user.findUniqueOrThrow({
           where: {
             id: this.userId,
           },
           select: {
             friends: {
+              select: {
+                id: true,
+              },
               where: {
                 id: {
                   in: [...memberIdSet],
@@ -133,7 +135,7 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canDeleteChat(chatId: number) {
-    const chat = await this._prisma.chat.findUnique({
+    const chat = await this._prisma.chat.findUniqueOrThrow({
       select: {
         createdById: true,
       },
@@ -141,10 +143,6 @@ export class Authorizer implements IAuthorizer {
         id: chatId,
       },
     });
-
-    if (!chat) {
-      throw new UserInputError('Chat does not exist');
-    }
 
     if (chat.createdById !== this.userId) {
       throw new ForbiddenError(
@@ -157,7 +155,7 @@ export class Authorizer implements IAuthorizer {
 
   public async canViewChat(chatId: number) {
     // check if user is a member of the chat
-    const chat = await this._prisma.chat.findUnique({
+    const chat = await this._prisma.chat.findUniqueOrThrow({
       where: {
         id: chatId,
       },
@@ -172,10 +170,6 @@ export class Authorizer implements IAuthorizer {
         },
       },
     });
-
-    if (!chat) {
-      throw new UserInputError('Chat does not exist');
-    }
 
     if (chat.members.length == 0) {
       throw new ForbiddenError('You are not a member of this chat');
@@ -185,7 +179,7 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canCreateMessage(chatId: number) {
-    const chat = await this._prisma.chat.findUnique({
+    const chat = await this._prisma.chat.findUniqueOrThrow({
       select: {
         members: {
           select: {
@@ -201,10 +195,6 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (!chat) {
-      throw new UserInputError('Chat does not exist');
-    }
-
     if (chat.members.length == 0) {
       throw new ForbiddenError('You are not a member of this chat');
     }
@@ -213,15 +203,17 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canViewMessage(messageId: number) {
-    const message = await this._prisma.message.findUnique({
+    const message = await this._prisma.message.findUniqueOrThrow({
       where: {
         id: messageId,
       },
       select: {
-        createdById: true,
         chat: {
           select: {
             members: {
+              select: {
+                id: true,
+              },
               where: {
                 id: this.userId,
               },
@@ -231,15 +223,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (!message) {
-      throw new UserInputError('Message does not exist');
-    }
-
-    // Either have to be in the chat where the message was created or be the creator
-    if (
-      message.chat.members.length == 0 ||
-      message.createdById !== this.userId
-    ) {
+    if (message.chat.members.length === 0) {
       throw new ForbiddenError(
         'You do not have permission to view this message'
       );
@@ -249,15 +233,11 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canUpdateMessage(messageId: number) {
-    const message = await this._prisma.message.findUnique({
+    const message = await this._prisma.message.findUniqueOrThrow({
       where: {
         id: messageId,
       },
     });
-
-    if (!message) {
-      throw new Error('Message does not exist');
-    }
 
     if (message.createdById !== this.userId) {
       throw new ForbiddenError(
@@ -273,15 +253,11 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canDeletedMessage(messageId: number) {
-    const message = await this._prisma.message.findUnique({
+    const message = await this._prisma.message.findUniqueOrThrow({
       where: {
         id: messageId,
       },
     });
-
-    if (!message) {
-      throw new Error('Message does not exist');
-    }
 
     if (message.createdById !== this.userId) {
       throw new ForbiddenError(
@@ -293,32 +269,43 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canSendFriendRequest(friendId: number) {
-    const friend = await this._prisma.user.findUnique({
+    const friend = await this._prisma.user.findUniqueOrThrow({
       where: {
         id: friendId,
       },
-      include: {
+      select: {
         friends: {
+          select: {
+            id: true,
+          },
           where: {
             id: this.userId,
           },
         },
         sentFriendRequests: {
+          select: {
+            id: true,
+          },
           where: {
             recipientId: this.userId,
+            status: {
+              in: ['SEEN', 'SENT'],
+            },
           },
         },
         receivedFriendRequests: {
+          select: {
+            id: true,
+          },
           where: {
             createdById: this.userId,
+            status: {
+              in: ['SEEN', 'SENT'],
+            },
           },
         },
       },
     });
-
-    if (!friend) {
-      throw new UserInputError('User does not exist');
-    }
 
     if (friend.friends.length !== 0) {
       throw new ForbiddenError('Already friends with this user');
@@ -338,15 +325,15 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canCancelFriendRequest(requestId: number) {
-    const request = await this._prisma.friendRequest.findUnique({
+    const request = await this._prisma.friendRequest.findUniqueOrThrow({
+      select: {
+        createdById: true,
+        status: true,
+      },
       where: {
         id: requestId,
       },
     });
-
-    if (!request) {
-      throw new Error('Request does not exist');
-    }
 
     if (request.createdById !== this.userId) {
       throw new ForbiddenError(
@@ -364,15 +351,41 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canDeclineFriendRequest(requestId: number) {
-    const request = await this._prisma.friendRequest.findUnique({
+    const request = await this._prisma.friendRequest.findUniqueOrThrow({
+      select: {
+        recipientId: true,
+        status: true,
+      },
       where: {
         id: requestId,
       },
     });
 
-    if (!request) {
-      throw new Error('Request does not exist');
+    if (request.recipientId !== this.userId) {
+      throw new ForbiddenError(
+        'You do not have permission to decline this friend request'
+      );
     }
+
+    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
+
+    if (!pendingStates.includes(request.status)) {
+      throw new ForbiddenError('Invalid state');
+    }
+
+    return true;
+  }
+
+  public async canAcceptFriendRequest(requestId: number) {
+    const request = await this._prisma.friendRequest.findUniqueOrThrow({
+      select: {
+        recipientId: true,
+        status: true,
+      },
+      where: {
+        id: requestId,
+      },
+    });
 
     if (request.recipientId !== this.userId) {
       throw new ForbiddenError(
@@ -389,36 +402,12 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canAcceptFriendRequest(requestId: number) {
-    const request = await this._prisma.friendRequest.findUnique({
-      where: {
-        id: requestId,
-      },
-    });
-
-    if (!request) {
-      throw new Error('Request does not exist');
-    }
-
-    if (request.recipientId !== this.userId) {
-      throw new ForbiddenError('You do not have permission to accept request');
-    }
-
-    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
-
-    if (!pendingStates.includes(request.status)) {
-      throw new ForbiddenError('Invalid state');
-    }
-
-    return true;
-  }
-
   public async canDeleteFriend(friendId: number) {
-    const user = await this._prisma.user.findUnique({
+    const user = await this._prisma.user.findUniqueOrThrow({
       where: {
         id: friendId,
       },
-      include: {
+      select: {
         friends: {
           select: {
             id: true,
@@ -429,10 +418,6 @@ export class Authorizer implements IAuthorizer {
         },
       },
     });
-
-    if (!user) {
-      throw new Error('User does not exist');
-    }
 
     if (user.friends.length == 0) {
       throw new ForbiddenError('You are not friends with this user');

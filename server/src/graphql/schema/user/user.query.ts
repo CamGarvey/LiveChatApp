@@ -1,6 +1,13 @@
 import { Prisma } from '@prisma/client';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
-import { arg, list, nonNull, queryField, stringArg } from 'nexus';
+import {
+  arg,
+  inputObjectType,
+  list,
+  nonNull,
+  queryField,
+  stringArg,
+} from 'nexus';
 import { hashIdArg } from '../shared';
 
 export const MeQuery = queryField('me', {
@@ -75,13 +82,13 @@ export const UsersQuery = queryField((t) => {
             OR: [
               {
                 username: {
-                  contains: usernameFilter,
+                  contains: usernameFilter ?? undefined,
                   mode: 'insensitive',
                 },
               },
               {
                 name: {
-                  contains: usernameFilter,
+                  contains: usernameFilter ?? undefined,
                   mode: 'insensitive',
                 },
               },

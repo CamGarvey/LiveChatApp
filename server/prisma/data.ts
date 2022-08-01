@@ -1,22 +1,14 @@
-import {
-  randEmail,
-  randFirstName,
-  randLastName,
-  randUserName,
-} from '@ngneat/falso';
+import { randUser } from '@ngneat/falso';
 
 let users: { email: string; name: string; username: string }[] = [];
 
 for (let i = 0; i < 200; i++) {
-  const firstName = randFirstName();
-  const lastName = randLastName();
+  const user = randUser();
   users.push({
-    email: randEmail({ firstName, lastName }),
-    username: randUserName({ firstName, lastName }),
-    name: `${firstName} ${lastName}`,
+    email: user.email,
+    username: user.username,
+    name: `${user.firstName} ${user.lastName}`,
   });
 }
-
-console.log(users);
 
 export default users;
