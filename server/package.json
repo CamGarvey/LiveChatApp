@@ -28,6 +28,9 @@
         }
       }
     },
+    "roots": [
+      "<rootDir>/src"
+    ],
     "testEnvironment": "node"
   },
   "dependencies": {
