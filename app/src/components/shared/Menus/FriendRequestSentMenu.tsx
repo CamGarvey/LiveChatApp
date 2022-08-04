@@ -10,6 +10,7 @@ type Props = {
 
 const FriendRequestSentMenu = ({ request }: Props) => {
   const [cancelFriendRequest] = useCancelFriendRequestMutation();
+
   return (
     <Menu
       control={

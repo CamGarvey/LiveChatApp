@@ -1,6 +1,5 @@
 mutation AcceptFriendRequest($friendRequestId: HashId!) {
   acceptFriendRequest(friendRequestId: $friendRequestId) {
-    id
-    status
+    ...RequestInfo
   }
 }

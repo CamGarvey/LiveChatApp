@@ -34,7 +34,7 @@ const ChatDisplay = ({ onChatClick }: Props) => {
           setFilter(e.target.value.toLowerCase());
         }}
       />
-      <ScrollArea>
+      <ScrollArea p={2}>
         <Stack spacing={4}>
           {!loading && data && filteredChats.length > 0 ? (
             filteredChats.map(

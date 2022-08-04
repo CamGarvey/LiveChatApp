@@ -2,6 +2,7 @@ import { RequestStatus } from '../../../graphql/generated/graphql';
 import FriendMenu from './FriendMenu';
 import FriendRequestReceivedMenu from './FriendRequestReceivedMenu';
 import FriendRequestSentMenu from './FriendRequestSentMenu';
+import StrangerMenu from './StrangerMenu';
 
 type Props = {
   user:
@@ -43,6 +44,7 @@ const UserMenu = ({ user }: Props) => {
         <FriendRequestReceivedMenu request={user.friendRequest} />
       );
     }
+    return <StrangerMenu user={user} />;
   }
 };
 

@@ -1,4 +1,12 @@
-import { Group, Stack, Text, Paper, Avatar } from '@mantine/core';
+import {
+  Group,
+  Stack,
+  Text,
+  Paper,
+  Avatar,
+  Loader,
+  Tooltip,
+} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import moment from 'moment';
@@ -16,6 +24,7 @@ type MessageProps = Msg & {
   isSelected?: boolean;
   showAvatar?: boolean;
   variant?: 'default' | 'light';
+  sending?: boolean;
 };
 
 const MotionGroup = motion(Group);
@@ -29,6 +38,7 @@ const Message = ({
   isSelected = false,
   showAvatar = true,
   variant = 'default',
+  sending = false,
 }: MessageProps) => {
   const largeScreen = useMediaQuery('(min-width: 1200px)');
 
@@ -69,32 +79,39 @@ const Message = ({
             </MotionGroup>
           )}
         </AnimatePresence>
-        <Paper
-          shadow="sm"
-          radius="lg"
-          p="xs"
-          py={'5px'}
-          onClick={() => onClick && onClick()}
-          sx={(theme) => ({
-            backgroundColor:
-              variant === 'light' &&
-              (theme.colorScheme === 'dark'
-                ? theme.colors.blue[7]
-                : theme.colors.blue[1]),
-            color:
-              variant === 'light' && theme.colorScheme === 'dark' && '#fff',
-          })}
-          withBorder
-        >
-          <Text
-            style={{
-              whiteSpace: 'pre-wrap',
-              overflowWrap: 'break-word',
-            }}
+        <Group spacing={1}>
+          <Paper
+            shadow="sm"
+            radius="lg"
+            p="xs"
+            py={'5px'}
+            onClick={() => onClick && onClick()}
+            sx={(theme) => ({
+              backgroundColor:
+                variant === 'light' &&
+                (theme.colorScheme === 'dark'
+                  ? theme.colors.blue[7]
+                  : theme.colors.blue[1]),
+              color:
+                variant === 'light' && theme.colorScheme === 'dark' && '#fff',
+            })}
+            withBorder
           >
-            {content}
-          </Text>
-        </Paper>
+            <Text
+              style={{
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'break-word',
+              }}
+            >
+              {content}
+            </Text>
+          </Paper>
+          {sending && (
+            <Tooltip label={'Sending...'} mt={'auto'}>
+              <Loader size={8} />
+            </Tooltip>
+          )}
+        </Group>
       </MotionStack>
     </Group>
   );

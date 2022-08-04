@@ -24,7 +24,7 @@ type Props = {
   menu?: React.ReactChild;
 };
 
-const UserItem = ({ user, menu }: Props) => {
+export const UserItem = ({ user, menu }: Props) => {
   const { name, username } = user;
 
   return (
@@ -60,5 +60,3 @@ const UserItem = ({ user, menu }: Props) => {
     </UnstyledButton>
   );
 };
-
-export default UserItem;

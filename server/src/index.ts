@@ -11,7 +11,7 @@ import hashids from 'hashids';
 import { Authorizer } from './lib/authorizer';
 import prisma from './lib/clients/prisma';
 import authRouter from './routes/auth';
-import { createGraphqlServer } from './graphql-server';
+import { createGraphqlServer } from './graphqlServer';
 
 const hash = new hashids(
   process.env.HASH_SALT,

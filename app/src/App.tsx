@@ -37,28 +37,20 @@ export const App = () => {
         withNormalizeCSS
       >
         <NotificationsProvider>
-          <ModalsProvider
-            modals={{
-              userSearch: UserSearchModal,
-              createGroupChat: CreateGroupChatModal,
-              updateGroupChat: UpdateGroupChatModal,
-            }}
-          >
-            <BrowserRouter>
-              <Routes>
-                <Route index element={<Home />} />
+          <BrowserRouter>
+            <Routes>
+              <Route index element={<Home />} />
+              <Route
+                path="/chats"
+                element={<ProtectedRoute component={Chats} />}
+              >
                 <Route
-                  path="/chats"
+                  path=":chatId"
                   element={<ProtectedRoute component={Chats} />}
-                >
-                  <Route
-                    path=":chatId"
-                    element={<ProtectedRoute component={Chats} />}
-                  />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </ModalsProvider>
+                />
+              </Route>
+            </Routes>
+          </BrowserRouter>
         </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>

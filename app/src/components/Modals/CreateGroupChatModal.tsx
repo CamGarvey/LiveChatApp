@@ -18,6 +18,7 @@ import {
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from '../../models/validation-schemas';
 import { showNotification } from '@mantine/notifications';
+import { useUser } from '../../context/UserContext';
 
 export const CreateGroupChatModal = ({
   context,
@@ -30,6 +31,7 @@ export const CreateGroupChatModal = ({
     data: friendData,
     error: friendError,
   } = useGetFriendsQuery({ fetchPolicy: 'network-only' });
+  const { user } = useUser();
 
   const [createGroupChatMutation, { loading: loadingCreateChat }] =
     useCreateGroupChatMutation({
@@ -38,7 +40,16 @@ export const CreateGroupChatModal = ({
           query: GetChatsDocument,
         });
 
-        const updatedChats = [...chats, createGroupChat];
+        const updatedChats = [
+          ...chats,
+          {
+            createdBy: {
+              __typename: 'Me',
+              ...user,
+            },
+            ...createGroupChat,
+          },
+        ];
 
         cache.writeQuery({
           query: GetChatsDocument,

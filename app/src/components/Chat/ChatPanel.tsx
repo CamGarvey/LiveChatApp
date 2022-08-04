@@ -49,16 +49,16 @@ export const ChatPanel = ({ chatId }: Props) => {
       variables: {
         chatId,
       },
-      updateQuery: (prev, { subscriptionData }: any) => {
+      updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        const messageCreated = subscriptionData.data.messageCreated;
+        const message = subscriptionData.data.messages;
         const newCache = Object.assign({}, prev, {
-          chatMessages: {
+          messages: {
             edges: [
               ...prev.messages.edges,
               {
                 __typename: 'MessageEdge',
-                node: messageCreated,
+                node: message,
               },
             ],
             pageInfo: prev.messages.pageInfo,
@@ -101,6 +101,7 @@ export const ChatPanel = ({ chatId }: Props) => {
             >
               <Message
                 {...message}
+                sending={true}
                 isSelected={message.id === selectedMessageId}
                 onClick={() =>
                   setSelectedMessageId(

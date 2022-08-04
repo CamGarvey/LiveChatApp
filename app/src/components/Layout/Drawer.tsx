@@ -98,7 +98,7 @@ const Drawer = () => {
                     <SquarePlus />
                   </ActionIcon>
                 </Group>
-                <ScrollArea>
+                <ScrollArea sx={{ height: '400px' }}>
                   <ChatDisplay onChatClick={toggleDrawer} />
                 </ScrollArea>
               </Stack>

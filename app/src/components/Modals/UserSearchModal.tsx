@@ -18,8 +18,8 @@ import {
 import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import UserItem from '../shared/UserItem';
 import UserMenu from '../shared/Menus/UserMenu';
+import { UserItem } from '../shared/UserItem';
 
 const USER_PAGINATION_COUNT = 7;
 

@@ -67,7 +67,7 @@ const ChatItem = ({ chat, onClick }: Props) => {
             },
           })}
         >
-          <Group>
+          <Group spacing={'sm'}>
             <Avatar
               size="sm"
               src={`https://avatars.dicebear.com/api/initials/${nameOf}.svg`}

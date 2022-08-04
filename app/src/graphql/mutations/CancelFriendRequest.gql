@@ -1,6 +1,12 @@
 mutation CancelFriendRequest($friendRequestId: HashId!) {
   cancelFriendRequest(friendRequestId: $friendRequestId) {
-    id
-    status
+    recipient {
+      id
+      ... on Stranger {
+        friendRequest {
+          ...RequestInfo
+        }
+      }
+    }
   }
 }

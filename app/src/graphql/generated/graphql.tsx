@@ -558,19 +558,21 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
+export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null };
+
 export type AcceptFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'FriendRequest', id: any, status: RequestStatus } | null };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type CancelFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
 }>;
 
 
-export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'FriendRequest', id: any, status: RequestStatus } | null };
+export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'FriendRequest', recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null };
 
 export type CreateDirectMessageChatMutationVariables = Exact<{
   friendId: Scalars['HashId'];
@@ -599,7 +601,7 @@ export type DeclineFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'FriendRequest', id: any, status: RequestStatus } | null };
+export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type DeleteChatMutationVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -627,7 +629,7 @@ export type SendFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, status: RequestStatus } | null };
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null };
 
 export type UpdateGroupChatMutationVariables = Exact<{
   data?: InputMaybe<UpdateGroupChatInput>;
@@ -719,15 +721,26 @@ export type NotificationsSubscriptionVariables = Exact<{ [key: string]: never; }
 
 export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'FriendRequest', status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
 
-
-export const AcceptFriendRequestDocument = gql`
-    mutation AcceptFriendRequest($friendRequestId: HashId!) {
-  acceptFriendRequest(friendRequestId: $friendRequestId) {
+export const RequestInfoFragmentDoc = gql`
+    fragment RequestInfo on FriendRequest {
+  id
+  isCreator
+  status
+  createdBy {
     id
-    status
+  }
+  recipient {
+    id
   }
 }
     `;
+export const AcceptFriendRequestDocument = gql`
+    mutation AcceptFriendRequest($friendRequestId: HashId!) {
+  acceptFriendRequest(friendRequestId: $friendRequestId) {
+    ...RequestInfo
+  }
+}
+    ${RequestInfoFragmentDoc}`;
 export type AcceptFriendRequestMutationFn = Apollo.MutationFunction<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
 
 /**
@@ -757,11 +770,17 @@ export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<Acce
 export const CancelFriendRequestDocument = gql`
     mutation CancelFriendRequest($friendRequestId: HashId!) {
   cancelFriendRequest(friendRequestId: $friendRequestId) {
-    id
-    status
+    recipient {
+      id
+      ... on Stranger {
+        friendRequest {
+          ...RequestInfo
+        }
+      }
+    }
   }
 }
-    `;
+    ${RequestInfoFragmentDoc}`;
 export type CancelFriendRequestMutationFn = Apollo.MutationFunction<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
 
 /**
@@ -901,11 +920,10 @@ export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMess
 export const DeclineFriendRequestDocument = gql`
     mutation DeclineFriendRequest($friendRequestId: HashId!) {
   declineFriendRequest(friendRequestId: $friendRequestId) {
-    id
-    status
+    ...RequestInfo
   }
 }
-    `;
+    ${RequestInfoFragmentDoc}`;
 export type DeclineFriendRequestMutationFn = Apollo.MutationFunction<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
 
 /**
@@ -1036,11 +1054,17 @@ export type DeleteMessageMutationOptions = Apollo.BaseMutationOptions<DeleteMess
 export const SendFriendRequestDocument = gql`
     mutation SendFriendRequest($friendId: HashId!) {
   sendFriendRequest(friendId: $friendId) {
-    id
-    status
+    recipient {
+      id
+      ... on Stranger {
+        friendRequest {
+          ...RequestInfo
+        }
+      }
+    }
   }
 }
-    `;
+    ${RequestInfoFragmentDoc}`;
 export type SendFriendRequestMutationFn = Apollo.MutationFunction<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
 
 /**

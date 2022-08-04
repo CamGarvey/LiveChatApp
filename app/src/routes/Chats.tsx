@@ -18,6 +18,10 @@ import { UserContext } from '../context/UserContext';
 import PickChat from './PickChat';
 import { NotificationContext } from '../context/NotificationContext';
 import { ChatContext } from '../context/ChatContext';
+import { ModalsProvider } from '@mantine/modals';
+import { UserSearchModal } from '../components/Modals/UserSearchModal';
+import { CreateGroupChatModal } from '../components/Modals/CreateGroupChatModal';
+import { UpdateGroupChatModal } from '../components/Modals/UpdateGroupChatModal';
 
 const Chats = () => {
   const { chatId } = useParams();
@@ -34,7 +38,6 @@ const Chats = () => {
       document: NotificationsDocument,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        console.log({ prev, subscriptionData });
         const notification = subscriptionData.data;
         const newCache = Object.assign({}, prev, {
           notifications: [...prev.notifications, notification],
@@ -52,31 +55,41 @@ const Chats = () => {
         isLoading: isLoadingUser,
       }}
     >
-      <NotificationContext.Provider
+      <ChatContext.Provider
         value={{
-          notifications: notificationData?.notifications,
-          isLoading: isLoadingNotifications,
+          chat: chatData?.chats.find((x) => x.id === chatId),
+          isLoading: isLoadingChats,
         }}
       >
-        <ChatContext.Provider
+        <NotificationContext.Provider
           value={{
-            chat: chatData?.chats.find((x) => x.id === chatId),
-            isLoading: isLoadingChats,
+            notifications: notificationData?.notifications?.filter((x) =>
+              ['SENT', 'SEEN'].includes(x.status)
+            ),
+            isLoading: isLoadingNotifications,
           }}
         >
-          <AppShell
-            navbarOffsetBreakpoint="sm"
-            asideOffsetBreakpoint="md"
-            header={<Header />}
-            navbar={<ChatNav />}
-            aside={chatId && <ChatInfoAside />}
-            fixed
+          <ModalsProvider
+            modals={{
+              userSearch: UserSearchModal,
+              createGroupChat: CreateGroupChatModal,
+              updateGroupChat: UpdateGroupChatModal,
+            }}
           >
-            <Drawer />
-            {chatId ? <ChatPanel chatId={chatId} /> : <PickChat />}
-          </AppShell>
-        </ChatContext.Provider>
-      </NotificationContext.Provider>
+            <AppShell
+              navbarOffsetBreakpoint="sm"
+              asideOffsetBreakpoint="md"
+              header={<Header />}
+              navbar={<ChatNav />}
+              aside={chatId && <ChatInfoAside />}
+              fixed
+            >
+              <Drawer />
+              {chatId ? <ChatPanel chatId={chatId} /> : <PickChat />}
+            </AppShell>
+          </ModalsProvider>
+        </NotificationContext.Provider>
+      </ChatContext.Provider>
     </UserContext.Provider>
   );
 };

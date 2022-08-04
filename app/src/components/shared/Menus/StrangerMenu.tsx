@@ -26,3 +26,5 @@ const StrangerMenu = ({ user }: Props) => {
     </ActionIcon>
   );
 };
+
+export default StrangerMenu;

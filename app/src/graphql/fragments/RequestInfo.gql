@@ -1,0 +1,11 @@
+fragment RequestInfo on FriendRequest {
+  id
+  isCreator
+  status
+  createdBy {
+    id
+  }
+  recipient {
+    id
+  }
+}
