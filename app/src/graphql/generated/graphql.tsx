@@ -560,6 +560,8 @@ export type UserOrderBy = {
 
 export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null };
 
+export type StrangerInfoFragment = { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+
 export type AcceptFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
 }>;
@@ -572,7 +574,7 @@ export type CancelFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'FriendRequest', recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null };
+export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type CreateDirectMessageChatMutationVariables = Exact<{
   friendId: Scalars['HashId'];
@@ -629,7 +631,7 @@ export type SendFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null };
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type UpdateGroupChatMutationVariables = Exact<{
   data?: InputMaybe<UpdateGroupChatInput>;
@@ -693,7 +695,7 @@ export type GetUserQueryVariables = Exact<{
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, status: RequestStatus, isCreator: boolean } | null } | null };
+export type GetUserQuery = { __typename?: 'Query', user?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -702,7 +704,7 @@ export type GetUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus } | null } | null } | null> | null } };
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null> | null } };
 
 export type ChatsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -734,6 +736,16 @@ export const RequestInfoFragmentDoc = gql`
   }
 }
     `;
+export const StrangerInfoFragmentDoc = gql`
+    fragment StrangerInfo on Stranger {
+  id
+  name
+  username
+  friendRequest {
+    ...RequestInfo
+  }
+}
+    ${RequestInfoFragmentDoc}`;
 export const AcceptFriendRequestDocument = gql`
     mutation AcceptFriendRequest($friendRequestId: HashId!) {
   acceptFriendRequest(friendRequestId: $friendRequestId) {
@@ -770,14 +782,7 @@ export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<Acce
 export const CancelFriendRequestDocument = gql`
     mutation CancelFriendRequest($friendRequestId: HashId!) {
   cancelFriendRequest(friendRequestId: $friendRequestId) {
-    recipient {
-      id
-      ... on Stranger {
-        friendRequest {
-          ...RequestInfo
-        }
-      }
-    }
+    ...RequestInfo
   }
 }
     ${RequestInfoFragmentDoc}`;
@@ -1054,14 +1059,7 @@ export type DeleteMessageMutationOptions = Apollo.BaseMutationOptions<DeleteMess
 export const SendFriendRequestDocument = gql`
     mutation SendFriendRequest($friendId: HashId!) {
   sendFriendRequest(friendId: $friendId) {
-    recipient {
-      id
-      ... on Stranger {
-        friendRequest {
-          ...RequestInfo
-        }
-      }
-    }
+    ...RequestInfo
   }
 }
     ${RequestInfoFragmentDoc}`;
@@ -1507,15 +1505,11 @@ export const GetUserDocument = gql`
     username
     name
     ... on Stranger {
-      friendRequest {
-        id
-        status
-        isCreator
-      }
+      ...StrangerInfo
     }
   }
 }
-    `;
+    ${StrangerInfoFragmentDoc}`;
 
 /**
  * __useGetUserQuery__
@@ -1558,17 +1552,13 @@ export const GetUsersDocument = gql`
         name
         username
         ... on Stranger {
-          friendRequest {
-            id
-            isCreator
-            status
-          }
+          ...StrangerInfo
         }
       }
     }
   }
 }
-    `;
+    ${StrangerInfoFragmentDoc}`;
 
 /**
  * __useGetUsersQuery__

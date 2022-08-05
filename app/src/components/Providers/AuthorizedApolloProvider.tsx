@@ -11,6 +11,7 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { relayStylePagination } from '@apollo/client/utilities';
+import result from '../../graphql/generated/possible-types';
 
 type Props = {
   children: any;
@@ -76,6 +77,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
           },
         },
       },
+      possibleTypes: result.possibleTypes,
     }),
     connectToDevTools: true,
   });

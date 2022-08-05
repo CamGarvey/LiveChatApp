@@ -5,11 +5,7 @@ query GetUser($userId: HashId!) {
     username
     name
     ... on Stranger {
-      friendRequest {
-        id
-        status
-        isCreator
-      }
+      ...StrangerInfo
     }
   }
 }

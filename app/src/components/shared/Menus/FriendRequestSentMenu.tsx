@@ -1,15 +1,36 @@
 import { ActionIcon, Menu } from '@mantine/core';
 import { MailForward } from 'tabler-icons-react';
-import { useCancelFriendRequestMutation } from '../../../graphql/generated/graphql';
+import { useUser } from '../../../context/UserContext';
+import {
+  FriendRequest,
+  RequestInfoFragmentDoc,
+  RequestStatus,
+  useCancelFriendRequestMutation,
+} from '../../../graphql/generated/graphql';
 
 type Props = {
-  request: {
-    id: string;
-  };
+  requestId: string;
+  recipientId: string;
 };
 
-const FriendRequestSentMenu = ({ request }: Props) => {
-  const [cancelFriendRequest] = useCancelFriendRequestMutation();
+const FriendRequestSentMenu = ({ requestId, recipientId }: Props) => {
+  const { user } = useUser();
+  const [cancelFriendRequest] = useCancelFriendRequestMutation({
+    optimisticResponse: {
+      cancelFriendRequest: {
+        id: requestId,
+        isCreator: true,
+        status: RequestStatus.Cancelled,
+        createdBy: {
+          __typename: 'Me',
+          id: user.id,
+        },
+        recipient: {
+          id: recipientId,
+        },
+      },
+    },
+  });
 
   return (
     <Menu
@@ -23,7 +44,7 @@ const FriendRequestSentMenu = ({ request }: Props) => {
         onClick={() => {
           cancelFriendRequest({
             variables: {
-              friendRequestId: request.id,
+              friendRequestId: requestId,
             },
           });
         }}

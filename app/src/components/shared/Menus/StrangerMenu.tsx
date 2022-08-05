@@ -1,15 +1,46 @@
 import { ActionIcon, Menu } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
-import { useSendFriendRequestMutation } from '../../../graphql/generated/graphql';
+import { useUser } from '../../../context/UserContext';
+import {
+  RequestStatus,
+  StrangerInfoFragmentDoc,
+  useSendFriendRequestMutation,
+} from '../../../graphql/generated/graphql';
 
 type Props = {
-  user: {
+  stranger: {
     id: string;
   };
 };
 
-const StrangerMenu = ({ user }: Props) => {
-  const [sendFriendRequest] = useSendFriendRequestMutation();
+const StrangerMenu = ({ stranger }: Props) => {
+  const { user } = useUser();
+  const [sendFriendRequest] = useSendFriendRequestMutation({
+    optimisticResponse: {
+      sendFriendRequest: {
+        id: 'temp-id',
+        createdBy: {
+          ...user,
+        },
+        isCreator: true,
+        status: RequestStatus.Sent,
+        recipient: {
+          __typename: 'Stranger',
+          id: stranger.id,
+        },
+      },
+    },
+    update: (cache, { data: { sendFriendRequest } }) => {
+      cache.writeFragment({
+        id: `Stranger:${stranger.id}`,
+        fragment: StrangerInfoFragmentDoc,
+        fragmentName: 'StrangerInfo',
+        data: {
+          friendRequest: sendFriendRequest,
+        },
+      });
+    },
+  });
 
   return (
     <ActionIcon
@@ -17,7 +48,7 @@ const StrangerMenu = ({ user }: Props) => {
       onClick={() => {
         sendFriendRequest({
           variables: {
-            friendId: user.id,
+            friendId: stranger.id,
           },
         });
       }}

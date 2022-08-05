@@ -37,14 +37,15 @@ const UserMenu = ({ user }: Props) => {
   }
 
   if (user.__typename === 'Stranger') {
-    if (user.friendRequest) {
-      return user.friendRequest.isCreator ? (
-        <FriendRequestSentMenu request={user.friendRequest} />
+    const request = user.friendRequest;
+    if (request && ['SENT', 'SEEN'].includes(request.status)) {
+      return request.isCreator ? (
+        <FriendRequestSentMenu requestId={request.id} recipientId={user.id} />
       ) : (
         <FriendRequestReceivedMenu request={user.friendRequest} />
       );
     }
-    return <StrangerMenu user={user} />;
+    return <StrangerMenu stranger={user} />;
   }
 };
 

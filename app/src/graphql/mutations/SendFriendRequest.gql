@@ -1,12 +1,5 @@
 mutation SendFriendRequest($friendId: HashId!) {
   sendFriendRequest(friendId: $friendId) {
-    recipient {
-      id
-      ... on Stranger {
-        friendRequest {
-          ...RequestInfo
-        }
-      }
-    }
+    ...RequestInfo
   }
 }
