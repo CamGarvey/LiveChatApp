@@ -317,6 +317,7 @@ interface Notification {
   createdBy: User!
   createdById: HashId!
   id: HashId!
+  isCreator: Boolean!
 }
 
 """
@@ -461,19 +462,20 @@ type Subscription {
   chats: Chat
 
   """Subscribe to friend requests"""
-  friendRequests: Message
+  friendRequests: FriendRequest
+  friends: User
 
   """SUbscribe to created messages in chat"""
-  messageCreated(chatId: HashId!): InstantMessage
+  messageCreated(chatId: HashId): InstantMessage
 
   """Subscribe to deleted messages in chat"""
-  messageDeleted(chatId: HashId!): DeletedMessage
+  messageDeleted(chatId: HashId): DeletedMessage
 
   """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId!): Message
+  messageUpdated(chatId: HashId): Message
 
   """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId!): Message
+  messages(chatId: HashId): Message
   notifications: Notification
 }
 

@@ -348,6 +348,7 @@ export type Notification = {
   createdBy: User;
   createdById: Scalars['HashId'];
   id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
 };
 
 /** PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo */
@@ -480,7 +481,8 @@ export type Subscription = {
   chatUpdated?: Maybe<Chat>;
   chats?: Maybe<Chat>;
   /** Subscribe to friend requests */
-  friendRequests?: Maybe<Message>;
+  friendRequests?: Maybe<FriendRequest>;
+  friends?: Maybe<User>;
   /** SUbscribe to created messages in chat */
   messageCreated?: Maybe<InstantMessage>;
   /** Subscribe to deleted messages in chat */
@@ -494,22 +496,22 @@ export type Subscription = {
 
 
 export type SubscriptionMessageCreatedArgs = {
-  chatId: Scalars['HashId'];
+  chatId?: InputMaybe<Scalars['HashId']>;
 };
 
 
 export type SubscriptionMessageDeletedArgs = {
-  chatId: Scalars['HashId'];
+  chatId?: InputMaybe<Scalars['HashId']>;
 };
 
 
 export type SubscriptionMessageUpdatedArgs = {
-  chatId: Scalars['HashId'];
+  chatId?: InputMaybe<Scalars['HashId']>;
 };
 
 
 export type SubscriptionMessagesArgs = {
-  chatId: Scalars['HashId'];
+  chatId?: InputMaybe<Scalars['HashId']>;
 };
 
 export type UpdateGroupChatInput = {
@@ -558,23 +560,23 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
-export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null };
+export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null };
 
-export type StrangerInfoFragment = { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+export type StrangerInfoFragment = { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type AcceptFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type CancelFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
 }>;
 
 
-export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type CreateDirectMessageChatMutationVariables = Exact<{
   friendId: Scalars['HashId'];
@@ -603,7 +605,7 @@ export type DeclineFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type DeleteChatMutationVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -631,7 +633,7 @@ export type SendFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type UpdateGroupChatMutationVariables = Exact<{
   data?: InputMaybe<UpdateGroupChatInput>;
@@ -688,14 +690,14 @@ export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 
 export type GetNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNotificationsQuery = { __typename?: 'Query', notifications: Array<{ __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } }> };
+export type GetNotificationsQuery = { __typename?: 'Query', notifications: Array<{ __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, isCreator: boolean, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', id: any, createdAt: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null }> };
 
 export type GetUserQueryVariables = Exact<{
   userId: Scalars['HashId'];
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null };
+export type GetUserQuery = { __typename?: 'Query', user?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -704,7 +706,7 @@ export type GetUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null> | null } };
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null> | null } };
 
 export type ChatsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -721,13 +723,15 @@ export type MessagesSubscription = { __typename?: 'Subscription', messages?: { _
 export type NotificationsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'FriendRequest', status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
+export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, isCreator: boolean, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'FriendRequest', id: any, createdAt: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export const RequestInfoFragmentDoc = gql`
     fragment RequestInfo on FriendRequest {
   id
   isCreator
   status
+  createdById
+  recipientId
   createdBy {
     id
   }
@@ -1387,7 +1391,7 @@ export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
 export const GetMessagesDocument = gql`
     query GetMessages($chatId: HashId!, $last: Int) {
-  messages(chatId: $chatId, first: $last) {
+  messages(chatId: $chatId, last: $last) {
     pageInfo {
       hasPreviousPage
       startCursor
@@ -1449,6 +1453,7 @@ export const GetNotificationsDocument = gql`
   notifications {
     id
     createdAt
+    isCreator
     createdBy {
       id
       name
@@ -1465,11 +1470,11 @@ export const GetNotificationsDocument = gql`
       }
     }
     ... on FriendRequest {
-      status
+      ...RequestInfo
     }
   }
 }
-    `;
+    ${RequestInfoFragmentDoc}`;
 
 /**
  * __useGetNotificationsQuery__
@@ -1680,6 +1685,7 @@ export const NotificationsDocument = gql`
   notifications {
     id
     createdAt
+    isCreator
     createdBy {
       id
       username
@@ -1696,11 +1702,11 @@ export const NotificationsDocument = gql`
       }
     }
     ... on FriendRequest {
-      status
+      ...RequestInfo
     }
   }
 }
-    `;
+    ${RequestInfoFragmentDoc}`;
 
 /**
  * __useNotificationsSubscription__

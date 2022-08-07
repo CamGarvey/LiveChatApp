@@ -365,7 +365,8 @@ export interface NexusGenFieldTypes {
     chatDeleted: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     chatUpdated: NexusGenRootTypes['Chat'] | null; // Chat
     chats: NexusGenRootTypes['Chat'] | null; // Chat
-    friendRequests: NexusGenRootTypes['Message'] | null; // Message
+    friendRequests: NexusGenRootTypes['FriendRequest'] | null; // FriendRequest
+    friends: NexusGenRootTypes['User'] | null; // User
     messageCreated: NexusGenRootTypes['InstantMessage'] | null; // InstantMessage
     messageDeleted: NexusGenRootTypes['DeletedMessage'] | null; // DeletedMessage
     messageUpdated: NexusGenRootTypes['Message'] | null; // Message
@@ -407,6 +408,7 @@ export interface NexusGenFieldTypes {
     createdBy: NexusGenRootTypes['User']; // User!
     createdById: NexusGenScalars['HashId']; // HashId!
     id: NexusGenScalars['HashId']; // HashId!
+    isCreator: boolean; // Boolean!
   }
   Request: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
@@ -588,7 +590,8 @@ export interface NexusGenFieldTypeNames {
     chatDeleted: 'DeletedChat'
     chatUpdated: 'Chat'
     chats: 'Chat'
-    friendRequests: 'Message'
+    friendRequests: 'FriendRequest'
+    friends: 'User'
     messageCreated: 'InstantMessage'
     messageDeleted: 'DeletedMessage'
     messageUpdated: 'Message'
@@ -630,6 +633,7 @@ export interface NexusGenFieldTypeNames {
     createdBy: 'User'
     createdById: 'HashId'
     id: 'HashId'
+    isCreator: 'Boolean'
   }
   Request: { // field return type name
     createdAt: 'Date'
@@ -771,16 +775,16 @@ export interface NexusGenArgTypes {
   }
   Subscription: {
     messageCreated: { // args
-      chatId: NexusGenScalars['HashId']; // HashId!
+      chatId?: NexusGenScalars['HashId'] | null; // HashId
     }
     messageDeleted: { // args
-      chatId: NexusGenScalars['HashId']; // HashId!
+      chatId?: NexusGenScalars['HashId'] | null; // HashId
     }
     messageUpdated: { // args
-      chatId: NexusGenScalars['HashId']; // HashId!
+      chatId?: NexusGenScalars['HashId'] | null; // HashId
     }
     messages: { // args
-      chatId: NexusGenScalars['HashId']; // HashId!
+      chatId?: NexusGenScalars['HashId'] | null; // HashId
     }
   }
   KnownUser: {

@@ -9,10 +9,19 @@ export const NotificationQuery = queryField('notifications', {
       },
       include: {
         receivedChatInvites: true,
-        receivedFriendRequests: true,
+        receivedFriendRequests: {
+          where: {
+            status: {
+              in: ['SENT', 'SEEN'],
+            },
+          },
+        },
       },
     });
 
-    return [...result.receivedChatInvites, ...result.receivedFriendRequests];
+    return [
+      ...(result?.receivedChatInvites ?? []),
+      ...(result?.receivedFriendRequests ?? []),
+    ];
   },
 });

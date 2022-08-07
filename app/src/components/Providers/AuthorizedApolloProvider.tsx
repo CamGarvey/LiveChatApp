@@ -76,6 +76,13 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
             chatMessages: relayStylePagination(['chatId']),
           },
         },
+        FriendRequest: {
+          // Make requests unique by user / user
+          keyFields: (object) =>
+            object.isCreator
+              ? `FriendRequest:${object.recipientId}`
+              : `FriendRequest:${object.createdById}`,
+        },
       },
       possibleTypes: result.possibleTypes,
     }),

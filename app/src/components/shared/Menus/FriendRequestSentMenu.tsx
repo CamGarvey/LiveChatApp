@@ -2,8 +2,6 @@ import { ActionIcon, Menu } from '@mantine/core';
 import { MailForward } from 'tabler-icons-react';
 import { useUser } from '../../../context/UserContext';
 import {
-  FriendRequest,
-  RequestInfoFragmentDoc,
   RequestStatus,
   useCancelFriendRequestMutation,
 } from '../../../graphql/generated/graphql';
@@ -21,6 +19,8 @@ const FriendRequestSentMenu = ({ requestId, recipientId }: Props) => {
         id: requestId,
         isCreator: true,
         status: RequestStatus.Cancelled,
+        createdById: user.id,
+        recipientId: recipientId,
         createdBy: {
           __typename: 'Me',
           id: user.id,

@@ -1,8 +1,10 @@
+import { FriendRequest } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
+import SubscriptionPayload from '../../backing-types/subscription-payload';
 
 export const FriendRequestSubscription = subscriptionField('friendRequests', {
-  type: 'Message',
+  type: 'FriendRequest',
   description: 'Subscribe to friend requests',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
@@ -10,12 +12,12 @@ export const FriendRequestSubscription = subscriptionField('friendRequests', {
         context.pubsub.asyncIterator('notification.friendrequest.*', {
           pattern: true,
         }),
-      (payload) => {
-        return payload.recipientId === context.userId;
+      (payload: SubscriptionPayload<FriendRequest>) => {
+        return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
+  resolve(payload: SubscriptionPayload<FriendRequest>) {
+    return payload.content;
   },
 });

@@ -63,9 +63,9 @@ const Chats = () => {
       >
         <NotificationContext.Provider
           value={{
-            notifications: notificationData?.notifications?.filter((x) =>
-              ['SENT', 'SEEN'].includes(x.status)
-            ),
+            notifications: notificationData?.notifications
+              ?.filter((x) => ['SENT', 'SEEN'].includes(x.status))
+              .filter((x) => !x.isCreator),
             isLoading: isLoadingNotifications,
           }}
         >

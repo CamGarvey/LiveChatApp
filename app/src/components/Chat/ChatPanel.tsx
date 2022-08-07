@@ -20,13 +20,6 @@ export const ChatPanel = ({ chatId }: Props) => {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
 
-  // Get info about current user
-  const {
-    data: meData,
-    loading: isLoadingMeData,
-    error: meError,
-  } = useGetMeQuery();
-
   const {
     loading: isLoadingMessages,
     data,
@@ -135,9 +128,9 @@ export const ChatPanel = ({ chatId }: Props) => {
       }}
       spacing={'sm'}
     >
-      {messagesError || meError ? (
+      {messagesError ? (
         <Center>Failed to load messages</Center>
-      ) : messages.length === 0 && !(isLoadingMessages || isLoadingMeData) ? (
+      ) : messages.length === 0 && !isLoadingMessages ? (
         <Center
           style={{
             height: '100%',
@@ -147,7 +140,7 @@ export const ChatPanel = ({ chatId }: Props) => {
         </Center>
       ) : (
         <Scroller
-          isLoading={isLoadingMessages || isLoadingMeData}
+          isLoading={isLoadingMessages}
           isLoadingMore={isFetchingMore}
           topMessage={topMessage}
           onScroll={({ percentage }) => {
@@ -168,12 +161,15 @@ export const ChatPanel = ({ chatId }: Props) => {
       )}
       <ChatInput
         isLoading={loadingCreateMessage}
-        isDisabled={!!messagesError || !!meError}
+        isDisabled={!!messagesError}
         onSubmit={({ content }) =>
           createMessageMutation({
             variables: {
               chatId,
               content: content,
+            },
+            update: (cache, { data }) => {
+              // cache.wr
             },
           }).then((x) => !!!x.errors)
         }

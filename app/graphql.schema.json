@@ -2747,6 +2747,22 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "isCreator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -3735,8 +3751,20 @@
             "description": "Subscribe to friend requests",
             "args": [],
             "type": {
+              "kind": "OBJECT",
+              "name": "FriendRequest",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "friends",
+            "description": null,
+            "args": [],
+            "type": {
               "kind": "INTERFACE",
-              "name": "Message",
+              "name": "User",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3750,13 +3778,9 @@
                 "name": "chatId",
                 "description": null,
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "HashId",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "HashId",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -3779,13 +3803,9 @@
                 "name": "chatId",
                 "description": null,
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "HashId",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "HashId",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -3808,13 +3828,9 @@
                 "name": "chatId",
                 "description": null,
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "HashId",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "HashId",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -3837,13 +3853,9 @@
                 "name": "chatId",
                 "description": null,
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "HashId",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "HashId",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,

@@ -16,6 +16,9 @@ export const Notification = interfaceType({
         });
       },
     });
+    t.nonNull.boolean('isCreator', {
+      resolve: async (parent, _, { userId }) => parent.createdById == userId,
+    });
     t.nonNull.hashId('createdById');
     t.nonNull.date('createdAt');
   },

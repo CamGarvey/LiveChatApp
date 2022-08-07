@@ -15,4 +15,5 @@ export enum Subscription {
   FriendRequestDeclined = 'notification.friendrequest.declined',
 
   FriendDeleted = 'friend.deleted',
+  FriendCreated = 'friend.created',
 }

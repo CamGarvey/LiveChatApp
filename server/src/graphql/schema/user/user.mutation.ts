@@ -1,4 +1,5 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
+import SubscriptionPayload from '../../backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 
@@ -31,23 +32,26 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     // Delete user
     const user = await prisma.user.update({
       where: {
-        id: friendId,
+        id: userId,
       },
       data: {
         friends: {
           disconnect: {
-            id: userId,
+            id: friendId,
           },
         },
         friendsOf: {
           disconnect: {
-            id: userId,
+            id: friendId,
           },
         },
       },
     });
 
-    pubsub.publish(Subscription.FriendDeleted, user);
+    pubsub.publish<SubscriptionPayload>(Subscription.FriendDeleted, {
+      recipients: [friendId],
+      content: user,
+    });
 
     return user;
   },

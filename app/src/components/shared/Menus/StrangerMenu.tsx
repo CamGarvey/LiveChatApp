@@ -20,12 +20,13 @@ const StrangerMenu = ({ stranger }: Props) => {
       sendFriendRequest: {
         id: 'temp-id',
         createdBy: {
-          ...user,
+          id: user.id,
         },
+        createdById: user.id,
         isCreator: true,
+        recipientId: stranger.id,
         status: RequestStatus.Sent,
         recipient: {
-          __typename: 'Stranger',
           id: stranger.id,
         },
       },
