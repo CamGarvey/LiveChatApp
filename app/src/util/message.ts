@@ -1,4 +1,10 @@
-export const groupMessages = (messages: { createdBy: { id: string } }[]) =>
+type Message = {
+  createdBy: {
+    id: string;
+  };
+};
+
+export const groupMessages = <T extends Message>(messages: T[]): T[][] =>
   messages.reduce((prev, curr) => {
     if (prev.length === 0) {
       prev.push([curr]);

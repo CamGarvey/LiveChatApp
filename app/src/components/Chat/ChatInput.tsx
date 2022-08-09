@@ -12,22 +12,24 @@ import * as Yup from 'yup';
 
 type Props = {
   // onSubmit returns a isSuccessful boolean which decides whether to reset the form
-  onSubmit: ({ content }: { content: string }) => Promise<boolean>;
-  isDisabled: boolean;
-  isLoading: boolean;
+  onSubmit: ({ content }: { content: string }) => void;
+  isDisabled?: boolean;
+  isLoading?: boolean;
 };
 
-const ChatInput = ({ onSubmit, isLoading, isDisabled }: Props) => {
+const ChatInput = ({
+  onSubmit,
+  isLoading = false,
+  isDisabled = false,
+}: Props) => {
   const formik = useFormik({
     initialValues: {
       content: '',
     },
     validationSchema: createMessageSchema,
     onSubmit: async (values) => {
-      const isSuccessful = await onSubmit(values);
-      if (isSuccessful) {
-        formik.resetForm();
-      }
+      formik.resetForm();
+      onSubmit(values);
     },
   });
 

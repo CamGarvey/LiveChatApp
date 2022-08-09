@@ -36,6 +36,7 @@ export const ChatPanel = ({ chatId }: Props) => {
     },
     fetchPolicy: 'cache-first',
   });
+  const [createMessageMutation] = useCreateMessageMutation();
 
   const hasPreviousPage = data?.messages?.pageInfo?.hasPreviousPage ?? false;
 
@@ -66,9 +67,6 @@ export const ChatPanel = ({ chatId }: Props) => {
     return () => unsubscribe();
   }, [chatId, subscribeToMore]);
 
-  const [createMessageMutation, { loading: loadingCreateMessage }] =
-    useCreateMessageMutation();
-
   let messages = data?.messages?.edges?.map((x) => x.node) ?? [];
 
   const groupedMessages = groupMessages(messages);
@@ -76,11 +74,11 @@ export const ChatPanel = ({ chatId }: Props) => {
   const messageComponents = groupedMessages
     .map((group) => {
       return group
-        .map((message: any, idx: number) => {
+        .map((message, idx: number) => {
           const isLastMessageInGroup = idx < group.length - 1;
           return (
             <motion.div
-              key={message.id}
+              key={message.createdAt}
               variants={{
                 hidden: {
                   x: message.isCreator ? 200 : -200,
@@ -97,7 +95,12 @@ export const ChatPanel = ({ chatId }: Props) => {
             >
               <Message
                 {...message}
-                // sending={true}
+                content={
+                  message.__typename === 'InstantMessage'
+                    ? message.content
+                    : 'Deleted Message'
+                }
+                sending={(message.id as string).startsWith('temp-id')} // temp-id == no message created mutation
                 isSelected={message.id === selectedMessageId}
                 onClick={() =>
                   setSelectedMessageId(
@@ -163,28 +166,30 @@ export const ChatPanel = ({ chatId }: Props) => {
         </Scroller>
       )}
       <ChatInput
-        isLoading={loadingCreateMessage}
         isDisabled={!!messagesError}
-        onSubmit={({ content }) =>
+        onSubmit={({ content }) => {
+          const createdAt = new Date().getTime();
+
           createMessageMutation({
             variables: {
               chatId,
               content: content,
             },
             optimisticResponse: ({ content }) => {
+              const id = `temp-id.${createdAt}`;
+
               return {
                 createMessage: {
                   __typename: 'InstantMessage',
-                  id: 'temp-id',
-                  isCreator: true,
-                  createdAt: new Date().getTime(),
+                  id,
+                  createdAt,
                   content,
+                  isCreator: true,
                 },
               };
             },
-            update: (cache, { data }) => {
-              console.log({ data });
 
+            update: (cache, { data }) => {
               const result = cache.readQuery<GetMessagesQuery>({
                 query: GetMessagesDocument,
                 variables: {
@@ -210,6 +215,7 @@ export const ChatPanel = ({ chatId }: Props) => {
                             ...user,
                           },
                           ...data.createMessage,
+                          createdAt,
                         },
                       },
                     ],
@@ -217,8 +223,8 @@ export const ChatPanel = ({ chatId }: Props) => {
                 },
               });
             },
-          }).then((x) => !!!x.errors)
-        }
+          });
+        }}
       />
     </Stack>
   );
