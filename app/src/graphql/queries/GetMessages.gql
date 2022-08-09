@@ -1,11 +1,10 @@
-query GetMessages($chatId: HashId!, $last: Int) {
-  messages(chatId: $chatId, last: $last) {
+query GetMessages($chatId: HashId!, $last: Int, $before: String) {
+  messages(chatId: $chatId, last: $last, before: $before) {
     pageInfo {
       hasPreviousPage
       startCursor
     }
     edges {
-      cursor
       node {
         __typename
         id

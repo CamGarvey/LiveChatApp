@@ -598,7 +598,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'InstantMessage', id: any, content: string, isCreator: boolean } | null };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'InstantMessage', id: any, content: string, isCreator: boolean, createdAt: any } | null };
 
 export type DeclineFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
@@ -682,10 +682,11 @@ export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'Me', id: a
 export type GetMessagesQueryVariables = Exact<{
   chatId: Scalars['HashId'];
   last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'MessageEdge', cursor: string, node?: { __typename: 'DeletedMessage', deletedAt?: any | null, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null } };
+export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename: 'DeletedMessage', deletedAt?: any | null, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null } };
 
 export type GetNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -896,6 +897,7 @@ export const CreateMessageDocument = gql`
     id
     content
     isCreator
+    createdAt
   }
 }
     `;
@@ -1390,14 +1392,13 @@ export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
 export const GetMessagesDocument = gql`
-    query GetMessages($chatId: HashId!, $last: Int) {
-  messages(chatId: $chatId, last: $last) {
+    query GetMessages($chatId: HashId!, $last: Int, $before: String) {
+  messages(chatId: $chatId, last: $last, before: $before) {
     pageInfo {
       hasPreviousPage
       startCursor
     }
     edges {
-      cursor
       node {
         __typename
         id
@@ -1434,6 +1435,7 @@ export const GetMessagesDocument = gql`
  *   variables: {
  *      chatId: // value for 'chatId'
  *      last: // value for 'last'
+ *      before: // value for 'before'
  *   },
  * });
  */

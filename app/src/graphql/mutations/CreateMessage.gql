@@ -3,5 +3,6 @@ mutation CreateMessage($chatId: HashId!, $content: String!) {
     id
     content
     isCreator
+    createdAt
   }
 }

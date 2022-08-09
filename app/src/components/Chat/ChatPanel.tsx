@@ -1,8 +1,9 @@
 import { Center, Stack, Text } from '@mantine/core';
 import {
+  GetMessagesDocument,
+  GetMessagesQuery,
   MessagesDocument,
   useCreateMessageMutation,
-  useGetMeQuery,
   useGetMessagesQuery,
 } from '../../graphql/generated/graphql';
 import { useEffect, useState } from 'react';
@@ -11,12 +12,14 @@ import ChatInput from './ChatInput';
 import Message from './Message';
 import { groupMessages } from '../../util';
 import { motion } from 'framer-motion';
+import { useUser } from '../../context/UserContext';
 
 type Props = {
   chatId: string;
 };
 
 export const ChatPanel = ({ chatId }: Props) => {
+  const { user } = useUser();
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
 
@@ -31,7 +34,7 @@ export const ChatPanel = ({ chatId }: Props) => {
       chatId,
       last: 20,
     },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-first',
   });
 
   const hasPreviousPage = data?.messages?.pageInfo?.hasPreviousPage ?? false;
@@ -94,7 +97,7 @@ export const ChatPanel = ({ chatId }: Props) => {
             >
               <Message
                 {...message}
-                sending={true}
+                // sending={true}
                 isSelected={message.id === selectedMessageId}
                 onClick={() =>
                   setSelectedMessageId(
@@ -168,8 +171,51 @@ export const ChatPanel = ({ chatId }: Props) => {
               chatId,
               content: content,
             },
+            optimisticResponse: ({ content }) => {
+              return {
+                createMessage: {
+                  __typename: 'InstantMessage',
+                  id: 'temp-id',
+                  isCreator: true,
+                  createdAt: new Date().getTime(),
+                  content,
+                },
+              };
+            },
             update: (cache, { data }) => {
-              // cache.wr
+              console.log({ data });
+
+              const result = cache.readQuery<GetMessagesQuery>({
+                query: GetMessagesDocument,
+                variables: {
+                  chatId,
+                },
+              });
+
+              cache.writeQuery<GetMessagesQuery>({
+                query: GetMessagesDocument,
+                variables: {
+                  chatId,
+                },
+                data: {
+                  messages: {
+                    pageInfo: result.messages.pageInfo,
+                    edges: [
+                      ...result.messages.edges,
+                      {
+                        node: {
+                          __typename: 'InstantMessage',
+                          createdBy: {
+                            __typename: 'Me',
+                            ...user,
+                          },
+                          ...data.createMessage,
+                        },
+                      },
+                    ],
+                  },
+                },
+              });
             },
           }).then((x) => !!!x.errors)
         }

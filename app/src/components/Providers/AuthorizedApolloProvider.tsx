@@ -73,7 +73,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         Query: {
           fields: {
             users: relayStylePagination(['usernameFilter']),
-            chatMessages: relayStylePagination(['chatId']),
+            messages: relayStylePagination(['chatId']),
           },
         },
         FriendRequest: {
