@@ -21,10 +21,10 @@ type Msg = {
 
 type MessageProps = Msg & {
   onClick?: () => void;
-  isSelected?: boolean;
-  showAvatar?: boolean;
+  hideAvatar?: boolean;
   variant?: 'default' | 'light';
   sending?: boolean;
+  direction?: 'ltr' | 'rtl';
 };
 
 const MotionGroup = motion(Group);
@@ -35,51 +35,35 @@ const Message = ({
   createdBy,
   createdAt,
   onClick,
-  isSelected = false,
-  showAvatar = true,
+  hideAvatar = false,
   variant = 'default',
   sending = false,
+  direction = 'ltr',
 }: MessageProps) => {
   const largeScreen = useMediaQuery('(min-width: 1200px)');
-
-  const time = moment(createdAt);
-  let humanReadableTime = '';
-
-  if (time.diff(moment()) < 10) {
-    // humanReadableTime = time.fromNow();
-  }
-
   return (
-    <Group pb={3}>
+    <Group
+      pb={3}
+      sx={{
+        direction,
+      }}
+    >
       <Avatar
         size="md"
         src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}
         style={{ marginTop: 'auto' }}
-        sx={{
-          visibility: showAvatar ? 'visible' : 'hidden',
-        }}
+        hidden={hideAvatar}
       />
-      <MotionStack
+      <MotionGroup
         transition={{ delay: 1 }}
         style={{ maxWidth: largeScreen ? '400px' : '200px', gap: '3px' }}
       >
-        <AnimatePresence>
-          {isSelected && (
-            <MotionGroup
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 30 }}
-              style={{ color: 'black', zIndex: -1 }}
-              grow
-            >
-              <Text size={'sm'}>{createdBy.username}</Text>
-              <Text size={'sm'} align={'right'}>
-                {humanReadableTime}
-              </Text>
-            </MotionGroup>
-          )}
-        </AnimatePresence>
         <Group spacing={1}>
+          {sending && (
+            <Tooltip label={'Sending...'} mt={'auto'}>
+              <Loader size={8} />
+            </Tooltip>
+          )}
           <Paper
             shadow="sm"
             radius="lg"
@@ -106,13 +90,20 @@ const Message = ({
               {content}
             </Text>
           </Paper>
-          {sending && (
-            <Tooltip label={'Sending...'} mt={'auto'}>
-              <Loader size={8} />
-            </Tooltip>
-          )}
         </Group>
-      </MotionStack>
+        <AnimatePresence>
+          <MotionStack
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            style={{ color: 'black', zIndex: -1 }}
+          >
+            <Text color={'dimmed'} size={'sm'}>
+              {createdBy.username}
+            </Text>
+          </MotionStack>
+        </AnimatePresence>
+      </MotionGroup>
     </Group>
   );
 };

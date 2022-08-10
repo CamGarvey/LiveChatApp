@@ -6,13 +6,14 @@ import {
   useCreateMessageMutation,
   useGetMessagesQuery,
 } from '../../graphql/generated/graphql';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Scroller from './Scroller';
 import ChatInput from './ChatInput';
 import Message from './Message';
-import { groupMessages } from '../../util';
+import { getMessageTime, groupMessages } from '../../util';
 import { motion } from 'framer-motion';
 import { useUser } from '../../context/UserContext';
+import moment from 'moment';
 
 type Props = {
   chatId: string;
@@ -71,46 +72,70 @@ export const ChatPanel = ({ chatId }: Props) => {
 
   const groupedMessages = groupMessages(messages);
 
+  const shouldShowMessageTime = useCallback(
+    (previousMessage: moment.Moment, currentMessage: moment.Moment) =>
+      Math.abs(currentMessage.diff(previousMessage, 'minutes')) > 10,
+    []
+  );
+
   const messageComponents = groupedMessages
     .map((group) => {
+      let previousMessageTime: moment.Moment | undefined;
       return group
-        .map((message, idx: number) => {
-          const isLastMessageInGroup = idx < group.length - 1;
+        .map((message, messageIndex: number) => {
+          const isLastMessageInGroup = messageIndex === group.length - 1;
+          const currentMessageTime = moment(message.createdAt);
+          const shouldShowTime =
+            previousMessageTime === undefined || isLastMessageInGroup
+              ? true
+              : shouldShowMessageTime(previousMessageTime, currentMessageTime);
+
+          // Set previous time
+          previousMessageTime = currentMessageTime;
           return (
-            <motion.div
-              key={message.createdAt}
-              variants={{
-                hidden: {
-                  x: message.isCreator ? 200 : -200,
-                },
-                show: {
-                  x: 0,
-                },
-              }}
-              style={{
-                display: 'flex',
-                justifyContent: message.isCreator ? 'right' : 'left',
-                overflowX: 'hidden',
-              }}
-            >
-              <Message
-                {...message}
-                content={
-                  message.__typename === 'InstantMessage'
-                    ? message.content
-                    : 'Deleted Message'
-                }
-                sending={(message.id as string).startsWith('temp-id')} // temp-id == no message created mutation
-                isSelected={message.id === selectedMessageId}
-                onClick={() =>
-                  setSelectedMessageId(
-                    message.id === selectedMessageId ? null : message.id
-                  )
-                }
-                showAvatar={!isLastMessageInGroup && !message.isCreator}
-                variant={message.isCreator ? 'light' : 'default'}
-              />
-            </motion.div>
+            <>
+              {shouldShowTime && (
+                <Center>
+                  <Text color={'dimmed'}>
+                    {getMessageTime(currentMessageTime)}
+                  </Text>
+                </Center>
+              )}
+              <motion.div
+                key={message.createdAt}
+                variants={{
+                  hidden: {
+                    x: message.isCreator ? 200 : -200,
+                  },
+                  show: {
+                    x: 0,
+                  },
+                }}
+                style={{
+                  display: 'flex',
+                  justifyContent: message.isCreator ? 'right' : 'left',
+                  overflowX: 'hidden',
+                }}
+              >
+                <Message
+                  {...message}
+                  content={
+                    message.__typename === 'InstantMessage'
+                      ? message.content
+                      : 'Deleted Message'
+                  }
+                  sending={(message.id as string).startsWith('temp-id')} // temp-id == no message created mutation
+                  onClick={() =>
+                    setSelectedMessageId(
+                      message.id === selectedMessageId ? null : message.id
+                    )
+                  }
+                  hideAvatar={!isLastMessageInGroup || message.isCreator}
+                  variant={message.isCreator ? 'light' : 'default'}
+                  direction={message.isCreator ? 'rtl' : 'ltr'}
+                />
+              </motion.div>
+            </>
           );
         })
         .flat();
