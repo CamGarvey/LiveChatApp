@@ -83,6 +83,12 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
               ? `FriendRequest:${object.recipientId}`
               : `FriendRequest:${object.createdById}`,
         },
+        InstantMessage: {
+          keyFields: (object) => `Message:${object.id}`,
+        },
+        DeletedMessage: {
+          keyFields: (object) => `Message:${object.id}`,
+        },
       },
       possibleTypes: result.possibleTypes,
     }),

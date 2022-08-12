@@ -12,7 +12,6 @@ import { Bell } from 'tabler-icons-react';
 import { useUserNotifications } from '../../../context/NotificationContext';
 import { FriendRequest as FriendRequestObject } from '../../../graphql/generated/graphql';
 import FriendRequest from '../../shared/FriendRequest';
-// import FriendRequest from '../../shared/FriendRequest';
 
 type Props = {
   size?: number;
@@ -21,7 +20,7 @@ type Props = {
 const NotificationMenu = ({ size = 16 }: Props) => {
   const { isLoading, notifications } = useUserNotifications();
 
-  const friendRequests = notifications.filter(
+  const friendRequests = notifications?.filter(
     (x) => x.__typename === 'FriendRequest'
   ) as FriendRequestObject[];
 

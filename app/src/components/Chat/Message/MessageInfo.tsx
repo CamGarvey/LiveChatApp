@@ -1,5 +1,4 @@
 import { Stack, Text } from '@mantine/core';
-import { AnimatePresence, motion } from 'framer-motion';
 import moment from 'moment';
 import { useMemo } from 'react';
 

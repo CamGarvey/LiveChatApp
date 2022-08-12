@@ -34,7 +34,7 @@ export const ChatPanel = ({ chatId }: Props) => {
       chatId,
       last: 20,
     },
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-and-network',
   });
   const [createMessageMutation] = useCreateMessageMutation();
 

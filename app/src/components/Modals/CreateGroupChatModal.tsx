@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
   GetChatsDocument,
@@ -23,9 +23,9 @@ import { useUser } from '../../context/UserContext';
 export const CreateGroupChatModal = ({
   context,
   id,
-  innerProps,
 }: ContextModalProps<{}>) => {
   const inputRef = useRef<HTMLInputElement>();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const {
     loading: loadingFriends,
     data: friendData,
@@ -77,6 +77,7 @@ export const CreateGroupChatModal = ({
     },
     validationSchema: chatSchema,
     onSubmit: (values) => {
+      setIsButtonDisabled(true);
       createGroupChatMutation({
         variables: {
           data: values,
@@ -129,7 +130,11 @@ export const CreateGroupChatModal = ({
             />
           )}
         </InputWrapper>
-        <Button type="submit" loading={loadingCreateChat}>
+        <Button
+          type="submit"
+          loading={loadingCreateChat}
+          disabled={isButtonDisabled}
+        >
           Create
         </Button>
       </Stack>
