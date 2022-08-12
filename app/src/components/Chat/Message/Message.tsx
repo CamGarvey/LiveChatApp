@@ -7,12 +7,20 @@ import MessageActions from './MessageActions';
 import MessageBubble from './MessageBubble';
 import MessageInfo from './MessageInfo';
 
+type Message = {
+  id: string;
+  createdBy: {
+    username: string;
+  };
+  createdAt: string;
+};
+
 type MessageProps =
   | {
       id: string;
-      variant: 'sender';
-      status?: 'sending' | 'sent' | 'seen';
-      content: string;
+      variant: 'outgoing';
+      state: 'sending' | 'sent' | 'deleted';
+      content?: string;
       createdBy: {
         username: string;
       };
@@ -20,10 +28,10 @@ type MessageProps =
     }
   | {
       id: string;
-      variant: 'receiver';
-      status?: 'received' | 'seen';
+      variant: 'incoming';
+      state: 're' | 'deleted';
       hideAvatar?: boolean;
-      content: string;
+      content?: string;
       createdBy: {
         username: string;
       };
