@@ -1,0 +1,10 @@
+fragment MessageData on Message {
+  id
+  createdBy {
+    id
+    username
+    name
+  }
+  isCreator
+  createdAt
+}

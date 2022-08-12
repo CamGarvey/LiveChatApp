@@ -1,8 +1,5 @@
 mutation CreateMessage($chatId: HashId!, $content: String!) {
   createMessage(chatId: $chatId, content: $content) {
-    id
-    content
-    isCreator
-    createdAt
+    ...MessageData
   }
 }

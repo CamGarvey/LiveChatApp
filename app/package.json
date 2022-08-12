@@ -9,7 +9,7 @@
     "@emotion/styled": "^11.8.1",
     "@mantine/core": "^4.2.11",
     "@mantine/hooks": "^4.2.11",
-    "@mantine/modals": "^4.2.10",
+    "@mantine/modals": "^5.1.1",
     "@mantine/notifications": "^4.2.12",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^10.4.9",

@@ -6,15 +6,7 @@ query GetMessages($chatId: HashId!, $last: Int, $before: String) {
     }
     edges {
       node {
-        __typename
-        id
-        isCreator
-        createdAt
-        createdBy {
-          id
-          username
-          name
-        }
+        ...MessageData
         ... on DeletedMessage {
           deletedAt
         }

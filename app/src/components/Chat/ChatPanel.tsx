@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import Scroller from './Scroller';
 import ChatInput from './ChatInput';
-import Message from './Message';
+import Message from './Message/Message';
 import { getMessageTime, groupMessages } from '../../util';
 import { motion } from 'framer-motion';
 import { useUser } from '../../context/UserContext';
@@ -22,7 +22,6 @@ type Props = {
 export const ChatPanel = ({ chatId }: Props) => {
   const { user } = useUser();
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const [selectedMessageId, setSelectedMessageId] = useState(null);
 
   const {
     loading: isLoadingMessages,
@@ -73,27 +72,39 @@ export const ChatPanel = ({ chatId }: Props) => {
   const groupedMessages = groupMessages(messages);
 
   const shouldShowMessageTime = useCallback(
-    (previousMessage: moment.Moment, currentMessage: moment.Moment) =>
-      Math.abs(currentMessage.diff(previousMessage, 'minutes')) > 10,
+    (
+      currentMessageTime: moment.Moment,
+      messageIndex: number,
+      previousMessageTime: moment.Moment | undefined,
+      groupLength: number
+    ) => {
+      if (previousMessageTime === undefined) return true;
+      if (groupLength >= 5 && messageIndex === 4) return true;
+      return (
+        Math.abs(currentMessageTime.diff(previousMessageTime, 'minutes')) > 2
+      );
+    },
     []
   );
 
+  let previousMessageTime: moment.Moment | undefined;
   const messageComponents = groupedMessages
     .map((group) => {
-      let previousMessageTime: moment.Moment | undefined;
       return group
         .map((message, messageIndex: number) => {
           const isLastMessageInGroup = messageIndex === group.length - 1;
           const currentMessageTime = moment(message.createdAt);
-          const shouldShowTime =
-            previousMessageTime === undefined || isLastMessageInGroup
-              ? true
-              : shouldShowMessageTime(previousMessageTime, currentMessageTime);
+          const shouldShowTime = shouldShowMessageTime(
+            currentMessageTime,
+            messageIndex,
+            previousMessageTime,
+            group.length
+          );
 
           // Set previous time
           previousMessageTime = currentMessageTime;
           return (
-            <>
+            <Stack key={message.createdAt}>
               {shouldShowTime && (
                 <Center>
                   <Text color={'dimmed'}>
@@ -102,7 +113,6 @@ export const ChatPanel = ({ chatId }: Props) => {
                 </Center>
               )}
               <motion.div
-                key={message.createdAt}
                 variants={{
                   hidden: {
                     x: message.isCreator ? 200 : -200,
@@ -117,25 +127,35 @@ export const ChatPanel = ({ chatId }: Props) => {
                   overflowX: 'hidden',
                 }}
               >
-                <Message
-                  {...message}
-                  content={
-                    message.__typename === 'InstantMessage'
-                      ? message.content
-                      : 'Deleted Message'
-                  }
-                  sending={(message.id as string).startsWith('temp-id')} // temp-id == no message created mutation
-                  onClick={() =>
-                    setSelectedMessageId(
-                      message.id === selectedMessageId ? null : message.id
-                    )
-                  }
-                  hideAvatar={!isLastMessageInGroup || message.isCreator}
-                  variant={message.isCreator ? 'light' : 'default'}
-                  direction={message.isCreator ? 'rtl' : 'ltr'}
-                />
+                {message.isCreator ? (
+                  <Message
+                    variant={'sender'}
+                    {...message}
+                    content={
+                      message.__typename === 'InstantMessage'
+                        ? message.content
+                        : 'Deleted Message'
+                    }
+                    status={
+                      (message.id as string).startsWith('temp-id')
+                        ? 'sending'
+                        : 'sent'
+                    }
+                  />
+                ) : (
+                  <Message
+                    variant={'receiver'}
+                    {...message}
+                    content={
+                      message.__typename === 'InstantMessage'
+                        ? message.content
+                        : 'Deleted Message'
+                    }
+                    hideAvatar={!isLastMessageInGroup}
+                  />
+                )}
               </motion.div>
-            </>
+            </Stack>
           );
         })
         .flat();
@@ -198,7 +218,7 @@ export const ChatPanel = ({ chatId }: Props) => {
           createMessageMutation({
             variables: {
               chatId,
-              content: content,
+              content,
             },
             optimisticResponse: ({ content }) => {
               const id = `temp-id.${createdAt}`;
@@ -210,6 +230,7 @@ export const ChatPanel = ({ chatId }: Props) => {
                   createdAt,
                   content,
                   isCreator: true,
+                  createdBy: user,
                 },
               };
             },
@@ -239,6 +260,7 @@ export const ChatPanel = ({ chatId }: Props) => {
                             __typename: 'Me',
                             ...user,
                           },
+                          content,
                           ...data.createMessage,
                           createdAt,
                         },

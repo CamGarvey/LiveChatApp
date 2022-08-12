@@ -560,6 +560,12 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
+type MessageData_DeletedMessage_Fragment = { __typename?: 'DeletedMessage', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type MessageData_InstantMessage_Fragment = { __typename?: 'InstantMessage', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+export type MessageDataFragment = MessageData_DeletedMessage_Fragment | MessageData_InstantMessage_Fragment;
+
 export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null };
 
 export type StrangerInfoFragment = { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
@@ -598,7 +604,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'InstantMessage', id: any, content: string, isCreator: boolean, createdAt: any } | null };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'InstantMessage', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
 
 export type DeclineFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
@@ -626,7 +632,7 @@ export type DeleteMessageMutationVariables = Exact<{
 }>;
 
 
-export type DeleteMessageMutation = { __typename?: 'Mutation', deleteMessage?: { __typename?: 'DeletedMessage', id: any, deletedAt?: any | null } | null };
+export type DeleteMessageMutation = { __typename?: 'Mutation', deleteMessage?: { __typename?: 'DeletedMessage', deletedAt?: any | null, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
 
 export type SendFriendRequestMutationVariables = Exact<{
   friendId: Scalars['HashId'];
@@ -648,7 +654,7 @@ export type UpdateMessageMutationVariables = Exact<{
 }>;
 
 
-export type UpdateMessageMutation = { __typename?: 'Mutation', updateMessage?: { __typename?: 'InstantMessage', id: any, content: string } | null };
+export type UpdateMessageMutation = { __typename?: 'Mutation', updateMessage?: { __typename?: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
 
 export type UpdateUserMutationVariables = Exact<{
   name: Scalars['String'];
@@ -686,7 +692,7 @@ export type GetMessagesQueryVariables = Exact<{
 }>;
 
 
-export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename: 'DeletedMessage', deletedAt?: any | null, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null } };
+export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename?: 'DeletedMessage', deletedAt?: any | null, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null } };
 
 export type GetNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -726,6 +732,18 @@ export type NotificationsSubscriptionVariables = Exact<{ [key: string]: never; }
 
 export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, isCreator: boolean, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'FriendRequest', id: any, createdAt: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
+export const MessageDataFragmentDoc = gql`
+    fragment MessageData on Message {
+  id
+  createdBy {
+    id
+    username
+    name
+  }
+  isCreator
+  createdAt
+}
+    `;
 export const RequestInfoFragmentDoc = gql`
     fragment RequestInfo on FriendRequest {
   id
@@ -894,13 +912,10 @@ export type CreateGroupChatMutationOptions = Apollo.BaseMutationOptions<CreateGr
 export const CreateMessageDocument = gql`
     mutation CreateMessage($chatId: HashId!, $content: String!) {
   createMessage(chatId: $chatId, content: $content) {
-    id
-    content
-    isCreator
-    createdAt
+    ...MessageData
   }
 }
-    `;
+    ${MessageDataFragmentDoc}`;
 export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
 
 /**
@@ -1031,11 +1046,11 @@ export type DeleteFriendMutationOptions = Apollo.BaseMutationOptions<DeleteFrien
 export const DeleteMessageDocument = gql`
     mutation DeleteMessage($messageId: HashId!) {
   deleteMessage(messageId: $messageId) {
-    id
+    ...MessageData
     deletedAt
   }
 }
-    `;
+    ${MessageDataFragmentDoc}`;
 export type DeleteMessageMutationFn = Apollo.MutationFunction<DeleteMessageMutation, DeleteMessageMutationVariables>;
 
 /**
@@ -1136,11 +1151,11 @@ export type UpdateGroupChatMutationOptions = Apollo.BaseMutationOptions<UpdateGr
 export const UpdateMessageDocument = gql`
     mutation UpdateMessage($messageId: HashId!, $content: String!) {
   updateMessage(messageId: $messageId, content: $content) {
-    id
+    ...MessageData
     content
   }
 }
-    `;
+    ${MessageDataFragmentDoc}`;
 export type UpdateMessageMutationFn = Apollo.MutationFunction<UpdateMessageMutation, UpdateMessageMutationVariables>;
 
 /**
@@ -1400,15 +1415,7 @@ export const GetMessagesDocument = gql`
     }
     edges {
       node {
-        __typename
-        id
-        isCreator
-        createdAt
-        createdBy {
-          id
-          username
-          name
-        }
+        ...MessageData
         ... on DeletedMessage {
           deletedAt
         }
@@ -1419,7 +1426,7 @@ export const GetMessagesDocument = gql`
     }
   }
 }
-    `;
+    ${MessageDataFragmentDoc}`;
 
 /**
  * __useGetMessagesQuery__
