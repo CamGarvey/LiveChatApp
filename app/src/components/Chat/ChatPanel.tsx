@@ -2,18 +2,25 @@ import { Center, Stack, Text } from '@mantine/core';
 import {
   GetMessagesDocument,
   GetMessagesQuery,
+  MessageDataFragment,
   MessagesDocument,
+  MessagesSubscription,
   useCreateMessageMutation,
   useGetMessagesQuery,
 } from '../../graphql/generated/graphql';
 import { useCallback, useEffect, useState } from 'react';
 import Scroller from './Scroller';
 import ChatInput from './ChatInput';
-import Message from './Message/Message';
 import { getMessageTime, groupMessages } from '../../util';
 import { motion } from 'framer-motion';
 import { useUser } from '../../context/UserContext';
 import moment from 'moment';
+import IncomingEvent from './Event/IncomingEvent';
+import MessageBubble from './Event/Message/MessageBubble';
+import OutgoingEvent from './Event/OutgoingEvent';
+import DeleteEventAction from './Event/DeleteEventAction';
+import MessageActions from './Event/Message/MessageActions';
+import Message from './Event/Message/Message';
 
 type Props = {
   chatId: string;
@@ -41,7 +48,7 @@ export const ChatPanel = ({ chatId }: Props) => {
   const hasPreviousPage = data?.messages?.pageInfo?.hasPreviousPage ?? false;
 
   useEffect(() => {
-    const unsubscribe = subscribeToMore({
+    const unsubscribe = subscribeToMore<MessagesSubscription>({
       document: MessagesDocument,
       variables: {
         chatId,
@@ -49,6 +56,9 @@ export const ChatPanel = ({ chatId }: Props) => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const message = subscriptionData.data.messages;
+        if (message.__typename === 'DeletedMessage') {
+          return prev;
+        }
         const newCache = Object.assign({}, prev, {
           messages: {
             edges: [
@@ -127,33 +137,10 @@ export const ChatPanel = ({ chatId }: Props) => {
                   overflowX: 'hidden',
                 }}
               >
-                {message.isCreator ? (
-                  <Message
-                    variant={'sender'}
-                    {...message}
-                    content={
-                      message.__typename === 'InstantMessage'
-                        ? message.content
-                        : 'Deleted Message'
-                    }
-                    status={
-                      (message.id as string).startsWith('temp-id')
-                        ? 'sending'
-                        : 'sent'
-                    }
-                  />
-                ) : (
-                  <Message
-                    variant={'receiver'}
-                    {...message}
-                    content={
-                      message.__typename === 'InstantMessage'
-                        ? message.content
-                        : 'Deleted Message'
-                    }
-                    hideAvatar={!isLastMessageInGroup}
-                  />
-                )}
+                <Message
+                  data={message}
+                  isLastMessageInGroup={isLastMessageInGroup}
+                />
               </motion.div>
             </Stack>
           );

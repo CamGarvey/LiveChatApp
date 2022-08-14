@@ -10,7 +10,7 @@ export const Request = interfaceType({
     t.field('recipient', {
       type: 'User',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.user.findUnique({
+        return await prisma.user.findUniqueOrThrow({
           where: {
             id: parent.recipientId,
           },
@@ -27,7 +27,7 @@ export const Request = interfaceType({
     t.nonNull.field('createdBy', {
       type: 'User',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.user.findUnique({
+        return await prisma.user.findUniqueOrThrow({
           where: {
             id: parent.createdById,
           },

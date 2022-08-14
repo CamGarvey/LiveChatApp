@@ -48,11 +48,17 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
       },
     });
 
+    const friend = await prisma.user.findUnique({
+      where: {
+        id: friendId,
+      },
+    });
+
     pubsub.publish<SubscriptionPayload>(Subscription.FriendDeleted, {
       recipients: [friendId],
       content: user,
     });
 
-    return user;
+    return friend;
   },
 });

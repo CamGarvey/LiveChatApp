@@ -10,7 +10,7 @@ export const UserInterface = interfaceType({
     }
     // Get current user friends
     const friends = await prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id: userId,
         },

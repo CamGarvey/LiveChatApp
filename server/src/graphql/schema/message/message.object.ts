@@ -9,7 +9,7 @@ export const InstantMessage = objectType({
       type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.message
-          .findUnique({
+          .findUniqueOrThrow({
             where: { id: parent.id || undefined },
           })
           .likedBy();

@@ -16,7 +16,7 @@ export const MessageQuery = queryField('message', {
   authorize: async (_, { messageId }, { auth }) =>
     await auth.canViewMessage(messageId),
   resolve: async (_, { messageId }, { prisma }) => {
-    return await prisma.message.findUnique({
+    return await prisma.message.findUniqueOrThrow({
       where: {
         id: messageId,
       },

@@ -1,4 +1,5 @@
 import { Paper, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 type Props = {
   content: string;
@@ -7,6 +8,7 @@ type Props = {
 };
 
 const MessageBubble = ({ content, onClick, variant = 'default' }: Props) => {
+  const largeScreen = useMediaQuery('(min-width: 1200px)');
   return (
     <Paper
       shadow="sm"
@@ -15,6 +17,7 @@ const MessageBubble = ({ content, onClick, variant = 'default' }: Props) => {
       py={'5px'}
       onClick={() => onClick && onClick()}
       sx={(theme) => ({
+        maxWidth: largeScreen ? '380px' : '200px',
         backgroundColor:
           variant === 'light' &&
           (theme.colorScheme === 'dark'

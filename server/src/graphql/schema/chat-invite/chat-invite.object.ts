@@ -8,7 +8,7 @@ export const ChatInvite = objectType({
     t.field('chat', {
       type: 'Chat',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.chat.findUnique({
+        return await prisma.chat.findUniqueOrThrow({
           where: {
             id: parent.chatId || undefined,
           },

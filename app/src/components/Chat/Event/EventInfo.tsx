@@ -9,15 +9,21 @@ type Props = {
   };
   createdAt: string;
   isCreator: boolean;
+  align?: 'self-start' | 'self-end';
 };
 
-const MessageInfo = ({ createdBy, createdAt, isCreator }: Props) => {
+const EventInfo = ({
+  createdBy,
+  createdAt,
+  isCreator,
+  align = 'self-start',
+}: Props) => {
   const createdAtFormatted = useMemo(
     () => moment(createdAt).format('HH:mm do MMM YYYY'),
     [createdAt]
   );
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} align={align}>
       <Text color={'dimmed'} size={'sm'}>
         {createdBy.username}
         {isCreator && ' (YOU)'}
@@ -29,4 +35,4 @@ const MessageInfo = ({ createdBy, createdAt, isCreator }: Props) => {
   );
 };
 
-export default MessageInfo;
+export default EventInfo;

@@ -12,7 +12,7 @@ export const ChatQuery = queryField('chat', {
     ),
   },
   resolve: async (_, { chatId }, { prisma, userId }) => {
-    const chat = await prisma.chat.findUnique({
+    const chat = await prisma.chat.findUniqueOrThrow({
       where: {
         id: chatId,
       },
@@ -24,10 +24,6 @@ export const ChatQuery = queryField('chat', {
         },
       },
     });
-
-    if (!chat) {
-      throw new UserInputError('Not found');
-    }
 
     if (!chat.members.length) {
       throw new ForbiddenError('You do not have permission to this chat');
@@ -41,7 +37,7 @@ export const ChatsQuery = queryField('chats', {
   type: nonNull(list(nonNull('Chat'))),
   resolve: async (_, __, { prisma, userId }) => {
     return await prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id: userId,
         },

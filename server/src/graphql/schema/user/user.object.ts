@@ -1,4 +1,4 @@
-import { FriendRequest, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
 import { objectType } from 'nexus';
 
@@ -22,7 +22,7 @@ export const Me = objectType({
         return await prisma.friendRequest.findMany({
           where: {
             recipientId: parent.id,
-            status,
+            status: status || undefined,
           },
           include: {
             recipient: true,
@@ -84,7 +84,7 @@ export const Stranger = objectType({
     t.field('friendRequest', {
       type: 'FriendRequest',
       resolve: async (parent, _, { prisma, userId }) => {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findUniqueOrThrow({
           where: {
             id: userId,
           },

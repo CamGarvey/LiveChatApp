@@ -11,7 +11,7 @@ export const MessageInterface = interfaceType({
     t.nonNull.field('createdBy', {
       type: 'User',
       resolve: async (parent, __, { prisma }) => {
-        return await prisma.user.findUnique({
+        return await prisma.user.findUniqueOrThrow({
           where: {
             id: parent.createdById || undefined,
           },
@@ -29,7 +29,7 @@ export const MessageInterface = interfaceType({
     t.nonNull.field('chat', {
       type: 'Chat',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.chat.findUnique({
+        return await prisma.chat.findUniqueOrThrow({
           where: {
             id: parent.id || undefined,
           },

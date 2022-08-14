@@ -11,7 +11,7 @@ export const DirectMessageChat = objectType({
       type: 'Friend',
       resolve: async (parent, __, { userId, prisma }) => {
         const members: User[] = await prisma.chat
-          .findUnique({
+          .findUniqueOrThrow({
             where: { id: parent.id || undefined },
           })
           .members();
@@ -60,7 +60,7 @@ export const GroupChat = objectType({
     t.nonNull.int('memberCount', {
       resolve: async (parent, _, { prisma }) => {
         const members = await prisma.chat
-          .findUnique({
+          .findUniqueOrThrow({
             where: { id: parent.id || undefined },
           })
           .members();
@@ -71,7 +71,7 @@ export const GroupChat = objectType({
       type: 'User',
       resolve: (parent, _, { prisma }) => {
         return prisma.chat
-          .findUnique({
+          .findUniqueOrThrow({
             where: { id: parent.id || undefined },
           })
           .members();

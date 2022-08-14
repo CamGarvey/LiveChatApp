@@ -1,19 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { connectionFromArraySlice, cursorToOffset } from 'graphql-relay';
-import {
-  arg,
-  inputObjectType,
-  list,
-  nonNull,
-  queryField,
-  stringArg,
-} from 'nexus';
+import { arg, list, nonNull, queryField, stringArg } from 'nexus';
 import { hashIdArg } from '../shared';
 
 export const MeQuery = queryField('me', {
   type: 'Me',
   resolve: async (_, __, { prisma, userId }) => {
-    return await prisma.user.findUnique({
+    return await prisma.user.findUniqueOrThrow({
       where: {
         id: userId,
       },
@@ -25,7 +18,7 @@ export const FriendsQuery = queryField('friends', {
   type: nonNull(list(nonNull('Friend'))),
   resolve: async (_, __, { prisma, userId }) => {
     return await prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id: userId,
         },
@@ -102,7 +95,7 @@ export const UsersQuery = queryField((t) => {
           where,
         }),
         prisma.user.findMany({
-          take: first,
+          take: first!,
           skip: offset,
           where,
           orderBy: orderBy,

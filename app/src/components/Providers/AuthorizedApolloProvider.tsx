@@ -89,6 +89,12 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         DeletedMessage: {
           keyFields: (object) => `Message:${object.id}`,
         },
+        Friend: {
+          keyFields: (object) => `User:${object.id}`,
+        },
+        Stranger: {
+          keyFields: (object) => `User:${object.id}`,
+        },
       },
       possibleTypes: result.possibleTypes,
     }),
