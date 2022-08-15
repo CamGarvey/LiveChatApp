@@ -8,7 +8,6 @@ import {
   Text,
 } from '@mantine/core';
 import { motion } from 'framer-motion';
-import _ from 'lodash';
 import { useRef } from 'react';
 import { ArrowDownCircle } from 'tabler-icons-react';
 import { useScroller } from './useScroller';
