@@ -2,25 +2,19 @@ import { Center, Stack, Text } from '@mantine/core';
 import {
   GetMessagesDocument,
   GetMessagesQuery,
-  MessageDataFragment,
   MessagesDocument,
   MessagesSubscription,
   useCreateMessageMutation,
   useGetMessagesQuery,
-} from '../../graphql/generated/graphql';
+} from 'graphql/generated/graphql';
 import { useCallback, useEffect, useState } from 'react';
-import Scroller from './Scroller';
+import Scroller from './Scroller/Scroller';
 import ChatInput from './ChatInput';
-import { getMessageTime, groupMessages } from '../../util';
 import { motion } from 'framer-motion';
-import { useUser } from '../../context/UserContext';
 import moment from 'moment';
-import IncomingEvent from './Event/IncomingEvent';
-import MessageBubble from './Event/Message/MessageBubble';
-import OutgoingEvent from './Event/OutgoingEvent';
-import DeleteEventAction from './Event/DeleteEventAction';
-import MessageActions from './Event/Message/MessageActions';
 import Message from './Event/Message/Message';
+import { useUser } from 'context/UserContext';
+import { getMessageTime, groupMessages } from 'utils';
 
 type Props = {
   chatId: string;
@@ -99,8 +93,8 @@ export const ChatPanel = ({ chatId }: Props) => {
 
   let previousMessageTime: moment.Moment | undefined;
   const messageComponents = groupedMessages
-    .map((group) => {
-      return group
+    .map((group) =>
+      group
         .map((message, messageIndex: number) => {
           const isLastMessageInGroup = messageIndex === group.length - 1;
           const currentMessageTime = moment(message.createdAt);
@@ -145,8 +139,8 @@ export const ChatPanel = ({ chatId }: Props) => {
             </Stack>
           );
         })
-        .flat();
-    })
+        .flat()
+    )
     .flat();
 
   let topMessage = null;

@@ -1,7 +1,4 @@
-import { Button, Container } from '@mantine/core';
 import { motion, AnimatePresence } from 'framer-motion';
-import React, { useState } from 'react';
-import { useIsDrawerOpen } from '../store';
 
 const ChangingTitle = ({ title }: { title: string }) => {
   return (

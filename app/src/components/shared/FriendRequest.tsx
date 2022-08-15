@@ -17,14 +17,7 @@ const FriendRequest = ({ request }: Props) => {
   const createdBy = request.createdBy;
 
   return (
-    <Group
-    // sx={(theme) => ({
-    //   ':hover': {
-    //     background:
-    //       theme.colorScheme === 'dark' ? theme.colors.dark['1'] : '#f2f2f4',
-    //   },
-    // })}
-    >
+    <Group>
       <Avatar
         size="sm"
         src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}

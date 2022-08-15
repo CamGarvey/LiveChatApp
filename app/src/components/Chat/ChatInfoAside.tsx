@@ -8,9 +8,9 @@ import {
   ActionIcon,
   Group,
 } from '@mantine/core';
+import { ChatMenu, UserItem } from 'components/shared/UserItem';
+import { useChat } from 'context/ChatContext';
 import { UserPlus } from 'tabler-icons-react';
-import { useChat } from '../../context/ChatContext';
-import { ChatMenu, UserItem } from '../shared/UserItem';
 
 const ChatInfoAside = () => {
   const { chat, isLoading } = useChat();

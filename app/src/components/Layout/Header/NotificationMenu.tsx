@@ -18,7 +18,7 @@ type Props = {
 };
 
 const NotificationMenu = ({ size = 16 }: Props) => {
-  const { isLoading, notifications } = useUserNotifications();
+  const { notifications } = useUserNotifications();
 
   const friendRequests = notifications?.filter(
     (x) => x.__typename === 'FriendRequest'
