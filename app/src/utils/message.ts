@@ -39,7 +39,7 @@ export const groupMessages = <T extends Message>(
     return prev;
   }, [] as T[][]);
 
-export const getMessageTime = (time: moment.Moment) => {
+export const formatMessageTime = (time: moment.Moment) => {
   const now = moment();
   if (Math.abs(now.diff(time, 'minutes')) < 10) {
     return time.fromNow();

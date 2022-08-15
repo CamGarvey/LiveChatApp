@@ -14,7 +14,9 @@ import { motion } from 'framer-motion';
 import moment from 'moment';
 import Message from './Event/Message/Message';
 import { useUser } from 'context/UserContext';
-import { getMessageTime, groupMessages } from 'utils';
+import { formatMessageTime, groupMessages } from 'utils';
+import EventTime from './Event/EventTime';
+import EventContainer from './Event/EventContainer';
 
 type Props = {
   chatId: string;
@@ -108,35 +110,14 @@ export const ChatPanel = ({ chatId }: Props) => {
           // Set previous time
           previousMessageTime = currentMessageTime;
           return (
-            <Stack key={message.createdAt}>
-              {shouldShowTime && (
-                <Center>
-                  <Text color={'dimmed'}>
-                    {getMessageTime(currentMessageTime)}
-                  </Text>
-                </Center>
-              )}
-              <motion.div
-                variants={{
-                  hidden: {
-                    x: message.isCreator ? 200 : -200,
-                  },
-                  show: {
-                    x: 0,
-                  },
-                }}
-                style={{
-                  display: 'flex',
-                  justifyContent: message.isCreator ? 'right' : 'left',
-                  overflowX: 'hidden',
-                }}
-              >
-                <Message
-                  data={message}
-                  isLastMessageInGroup={isLastMessageInGroup}
-                />
-              </motion.div>
-            </Stack>
+            <EventContainer
+              key={message.createdAt}
+              displayEventTime={shouldShowTime}
+              eventData={message}
+              event={
+                <Message data={message} displayAvatar={isLastMessageInGroup} />
+              }
+            />
           );
         })
         .flat()

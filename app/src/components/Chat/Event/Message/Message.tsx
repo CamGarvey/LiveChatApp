@@ -26,10 +26,10 @@ type InstantMessage = MessageData & {
 
 type Props = {
   data: DeletedMessage | InstantMessage;
-  isLastMessageInGroup: boolean;
+  displayAvatar: boolean;
 };
 
-const Message = ({ data, isLastMessageInGroup }: Props) => {
+const Message = ({ data, displayAvatar }: Props) => {
   const [deleteMessage] = useDeleteMessageMutation();
   const messageContent =
     data.__typename === 'DeletedMessage' ? (
@@ -66,7 +66,7 @@ const Message = ({ data, isLastMessageInGroup }: Props) => {
   return (
     <IncomingEvent
       {...data}
-      displayAvatar={isLastMessageInGroup}
+      displayAvatar={displayAvatar}
       children={messageContent}
     />
   );

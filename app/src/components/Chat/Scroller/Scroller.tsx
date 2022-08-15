@@ -9,11 +9,9 @@ import {
 } from '@mantine/core';
 import { motion } from 'framer-motion';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { ArrowDownCircle } from 'tabler-icons-react';
-
-// Min height the scroll element has to before the popper will show
-const MIN_POPUP_HEIGHT = 1500;
+import { useScroller } from './useScroller';
 
 type Props = {
   children: JSX.Element[];
@@ -45,87 +43,13 @@ const Scroller = ({
   topMessage = null,
 }: Props) => {
   const viewport = useRef<HTMLDivElement>();
-  const [isScrollToBottomOpened, setIsScrollToBottomOpened] = useState(false);
-  const [isAutoScrollingDown, setIsAutoScrollingDown] = useState(false);
-  const [scrollDir, setScrollDir] = useState<'up' | 'down'>('up');
-
-  const scrollToBottom = (behavior: 'smooth' | 'auto') => {
-    setIsAutoScrollingDown(true);
-    viewport?.current.scrollTo({
-      top: viewport?.current.scrollHeight,
-      behavior,
-    });
-  };
-
-  useEffect(() => {
-    const threshold = 0;
-
-    const current = viewport?.current;
-
-    if (!current) return;
-
-    let lastScrollY = Math.abs(current.scrollTop);
-    let ticking = false;
-
-    const updateScrollDir = () => {
-      const scrollY = Math.abs(current.scrollTop);
-
-      if (Math.abs(scrollY - lastScrollY) < threshold) {
-        ticking = false;
-        return;
-      }
-      setScrollDir(scrollY < lastScrollY ? 'down' : 'up');
-      lastScrollY = scrollY > 0 ? scrollY : 0;
-      ticking = false;
-    };
-
-    const checkScrollPosition = _.throttle(() => {
-      const scrollY = Math.abs(current.scrollTop);
-      const height = current.scrollHeight - current.clientHeight;
-      const percentage = Math.floor((scrollY / height) * 100);
-
-      onScroll?.({
-        scrollY,
-        height,
-        percentage,
-      });
-
-      if (
-        percentage > 50 &&
-        !isAutoScrollingDown &&
-        height > MIN_POPUP_HEIGHT
-      ) {
-        setIsScrollToBottomOpened(true);
-      }
-      if (scrollY <= 0.5) {
-        setIsScrollToBottomOpened(false);
-        setIsAutoScrollingDown(false);
-        onHitBottom?.();
-      }
-      if (scrollY - height >= -0.5) {
-        onHitTop?.();
-      }
-    }, 300);
-
-    const onScrollY = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateScrollDir);
-        window.requestAnimationFrame(checkScrollPosition);
-        ticking = true;
-      }
-    };
-
-    current.addEventListener('scroll', onScrollY);
-
-    return () => current.removeEventListener('scroll', onScrollY);
-  }, [
-    scrollDir,
+  const { scrollToBottom, isScrollToBottomOpened } = useScroller({
     viewport,
-    onScroll,
     onHitBottom,
     onHitTop,
-    isAutoScrollingDown,
-  ]);
+    onScroll,
+    minPopupHeight: 1500,
+  });
 
   return (
     <>
@@ -222,7 +146,6 @@ const Scroller = ({
           size={'xl'}
           onClick={() => {
             scrollToBottom('smooth');
-            setIsScrollToBottomOpened(false);
           }}
           styles={{
             hover: {
