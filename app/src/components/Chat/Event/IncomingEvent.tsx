@@ -28,7 +28,6 @@ const IncomingEvent = ({
   return (
     <MotionGroup
       pb={3}
-      key={createdAt}
       variants={{
         hidden: {
           x: -200, // off screen to the left

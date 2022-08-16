@@ -55,8 +55,39 @@ const Scroller = ({
 
   return (
     <>
-      {children.length > 0 && (
-        <MotionContainer
+      <MotionContainer
+        ref={viewport}
+        sx={(theme) => ({
+          display: 'flex',
+          position: 'relative',
+          flexDirection: 'column-reverse',
+          overflowY: 'scroll',
+          overflowX: 'clip',
+          padding: '0',
+          paddingRight: '5px',
+          height: '100%',
+          width: '100%',
+          maxWidth: 'none',
+          color: '#00000000',
+          transition: 'color 0.3s',
+          '&:hover': {
+            color: '#666666FF',
+          },
+          '&::-webkit-scrollbar': {
+            width: '14px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: theme.radius.md,
+            backgroundClip: 'content-box',
+            border: '4px solid transparent',
+            boxShadow: 'inset 0 0 0 10px',
+          },
+          '&::-webkit-scrollbar-track': {
+            borderRadius: theme.radius.md,
+          },
+        })}
+      >
+        <motion.div
           variants={{
             hidden: { opacity: 1 },
             show: {
@@ -70,64 +101,30 @@ const Scroller = ({
           initial="hidden"
           animate="show"
           exit="hidden"
-          ref={viewport}
-          sx={(theme) => ({
+          style={{
             display: 'flex',
-            position: 'relative',
-            flexDirection: 'column-reverse',
-            overflowY: 'scroll',
-            overflowX: 'clip',
-            padding: '0',
-            paddingRight: '5px',
-            height: '100%',
-            width: '100%',
-            maxWidth: 'none',
-
-            color: '#00000000',
-
-            transition: 'color 0.3s',
-            '&:hover': {
-              color: '#666666FF',
-            },
-            '&::-webkit-scrollbar': {
-              width: '14px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              borderRadius: theme.radius.md,
-              backgroundClip: 'content-box',
-              border: '4px solid transparent',
-              boxShadow: 'inset 0 0 0 10px',
-            },
-            '&::-webkit-scrollbar-track': {
-              borderRadius: theme.radius.md,
-            },
-          })}
+            flexDirection: 'column',
+            gap: 4,
+          }}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-            }}
-          >
-            <LoadingOverlay
-              visible={isLoading}
-              loaderProps={{ size: 'lg', variant: 'bars' }}
-            />
-            {isLoadingMore && (
-              <Center>
-                <Loader variant="bars" />
-              </Center>
-            )}
-            {topMessage && (
-              <Center>
-                <Text color={'dimmed'}>{topMessage}</Text>
-              </Center>
-            )}
-            {children}
-          </div>
-        </MotionContainer>
-      )}
+          <LoadingOverlay
+            visible={isLoading}
+            loaderProps={{ size: 'lg', variant: 'bars' }}
+          />
+          {isLoadingMore && (
+            <Center>
+              <Loader variant="bars" />
+            </Center>
+          )}
+          {topMessage && (
+            <Center>
+              <Text color={'dimmed'}>{topMessage}</Text>
+            </Center>
+          )}
+          {children}
+        </motion.div>
+      </MotionContainer>
+
       <Popover
         opened={isScrollToBottomOpened}
         width={'100%'}

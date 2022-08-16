@@ -50,6 +50,7 @@ export const ChatPanel = ({ chatId }: Props) => {
         </Center>
       ) : (
         <Scroller
+          key={chatId}
           isLoading={loading}
           isLoadingMore={isFetchingMore}
           topMessage={topMessage}
