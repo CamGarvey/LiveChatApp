@@ -3,6 +3,7 @@ import { UserPlus } from 'tabler-icons-react';
 import { useUser } from '../../../context/UserContext';
 import {
   RequestStatus,
+  StrangerInfoFragment,
   StrangerInfoFragmentDoc,
   useSendFriendRequestMutation,
 } from '../../../graphql/generated/graphql';
@@ -19,9 +20,7 @@ const StrangerMenu = ({ stranger }: Props) => {
     optimisticResponse: {
       sendFriendRequest: {
         id: 'temp-id',
-        createdBy: {
-          id: user.id,
-        },
+        createdBy: user,
         createdById: user.id,
         isCreator: true,
         recipientId: stranger.id,
@@ -32,14 +31,16 @@ const StrangerMenu = ({ stranger }: Props) => {
       },
     },
     update: (cache, { data: { sendFriendRequest } }) => {
-      cache.writeFragment({
-        id: `Stranger:${stranger.id}`,
-        fragment: StrangerInfoFragmentDoc,
-        fragmentName: 'StrangerInfo',
-        data: {
-          friendRequest: sendFriendRequest,
+      console.log({ sendFriendRequest });
+
+      cache.updateFragment<StrangerInfoFragment>(
+        {
+          id: `User:${stranger.id}`,
+          fragment: StrangerInfoFragmentDoc,
+          fragmentName: 'StrangerInfo',
         },
-      });
+        (data) => ({ ...data, friendRequest: sendFriendRequest })
+      );
     },
   });
 

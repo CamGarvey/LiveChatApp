@@ -28,6 +28,7 @@ const OutgoingEvent = ({
   return (
     <MotionGroup
       pb={3}
+      key={createdAt}
       variants={{
         hidden: {
           x: 200, // off screen to the right
@@ -36,15 +37,21 @@ const OutgoingEvent = ({
           x: 0, // show on screen
         },
       }}
+      transition={{ type: 'tween' }}
       style={{
         maxWidth: largeScreen ? '600px' : '400px',
         gap: '3px',
-        overflowX: 'hidden',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Group spacing={5}>
+      <Group
+        spacing={5}
+        px={10}
+        sx={{
+          overflow: 'hidden',
+        }}
+      >
         <MotionGroup
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: isHovered ? 1 : 0, y: 0 }}

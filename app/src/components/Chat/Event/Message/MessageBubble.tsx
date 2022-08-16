@@ -17,7 +17,6 @@ const MessageBubble = ({ content, onClick, variant = 'default' }: Props) => {
       py={'5px'}
       onClick={() => onClick && onClick()}
       sx={(theme) => ({
-        overflow: 'hidden',
         maxWidth: largeScreen ? '380px' : '200px',
         backgroundColor:
           variant === 'light' &&

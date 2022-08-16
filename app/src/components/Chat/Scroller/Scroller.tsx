@@ -7,12 +7,9 @@ import {
   Popover,
   Text,
 } from '@mantine/core';
-import { useId } from '@mantine/hooks';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowDownCircle } from 'tabler-icons-react';
-import Message from '../Event/Message/Message';
-import OutgoingEvent from '../Event/OutgoingEvent';
 import { useScroller } from './useScroller';
 
 type Props = {
@@ -53,6 +50,8 @@ const Scroller = ({
     minPopupHeight: 1500,
   });
 
+  console.log({ isLoading });
+
   return (
     <>
       <MotionContainer
@@ -87,6 +86,10 @@ const Scroller = ({
           },
         })}
       >
+        <LoadingOverlay
+          visible={isLoading}
+          loaderProps={{ size: 'lg', variant: 'bars' }}
+        />
         <motion.div
           variants={{
             hidden: { opacity: 1 },
@@ -107,21 +110,21 @@ const Scroller = ({
             gap: 4,
           }}
         >
-          <LoadingOverlay
-            visible={isLoading}
-            loaderProps={{ size: 'lg', variant: 'bars' }}
-          />
-          {isLoadingMore && (
-            <Center>
-              <Loader variant="bars" />
-            </Center>
+          {!isLoading && (
+            <>
+              {isLoadingMore && (
+                <Center>
+                  <Loader variant="bars" />
+                </Center>
+              )}
+              {topMessage && (
+                <Center>
+                  <Text color={'dimmed'}>{topMessage}</Text>
+                </Center>
+              )}
+              {children.length && children}
+            </>
           )}
-          {topMessage && (
-            <Center>
-              <Text color={'dimmed'}>{topMessage}</Text>
-            </Center>
-          )}
-          {children}
         </motion.div>
       </MotionContainer>
 
