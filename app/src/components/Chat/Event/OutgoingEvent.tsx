@@ -28,11 +28,20 @@ const OutgoingEvent = ({
   return (
     <MotionGroup
       pb={3}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      transition={{ delay: 1 }}
-      style={{ maxWidth: largeScreen ? '600px' : '400px', gap: '3px' }}
+      key={createdAt}
+      variants={{
+        hidden: {
+          x: 200, // off screen to the right
+        },
+        show: {
+          x: 0, // show on screen
+        },
+      }}
+      style={{
+        maxWidth: largeScreen ? '600px' : '400px',
+        gap: '3px',
+        overflowX: 'hidden',
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

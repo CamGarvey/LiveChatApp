@@ -7,9 +7,12 @@ import {
   Popover,
   Text,
 } from '@mantine/core';
+import { useId } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowDownCircle } from 'tabler-icons-react';
+import Message from '../Event/Message/Message';
+import OutgoingEvent from '../Event/OutgoingEvent';
 import { useScroller } from './useScroller';
 
 type Props = {
@@ -55,18 +58,18 @@ const Scroller = ({
       {children.length > 0 && (
         <MotionContainer
           variants={{
-            hidden: { opacity: 0 },
+            hidden: { opacity: 1 },
             show: {
               opacity: 1,
-              transition: {
-                delayChildren: 2,
-                staggerChildren: 0.1,
-                staggerDirection: -1,
-              },
             },
+          }}
+          transition={{
+            staggerChildren: 0.1,
+            staggerDirection: -1,
           }}
           initial="hidden"
           animate="show"
+          exit="hidden"
           ref={viewport}
           sx={(theme) => ({
             display: 'flex',

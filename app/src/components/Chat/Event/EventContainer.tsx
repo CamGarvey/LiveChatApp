@@ -18,16 +18,7 @@ const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
   return (
     <Stack>
       {displayEventTime && <EventTime time={moment(eventData.createdAt)} />}
-      <motion.div
-        key={eventData.createdAt}
-        variants={{
-          hidden: {
-            x: eventData.isCreator ? 200 : -200,
-          },
-          show: {
-            x: 0,
-          },
-        }}
+      <div
         style={{
           display: 'flex',
           justifyContent: eventData.isCreator ? 'right' : 'left',
@@ -35,7 +26,7 @@ const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
         }}
       >
         {event}
-      </motion.div>
+      </div>
     </Stack>
   );
 };

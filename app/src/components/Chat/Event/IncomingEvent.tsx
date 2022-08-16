@@ -28,7 +28,15 @@ const IncomingEvent = ({
   return (
     <MotionGroup
       pb={3}
-      transition={{ delay: 1 }}
+      key={createdAt}
+      variants={{
+        hidden: {
+          x: -200, // off screen to the left
+        },
+        show: {
+          x: 0, // show on screen
+        },
+      }}
       style={{
         maxWidth: largeScreen ? '600px' : '400px',
         gap: '3px',
