@@ -19,6 +19,7 @@ const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
     <Stack>
       {displayEventTime && <EventTime time={moment(eventData.createdAt)} />}
       <motion.div
+        key={eventData.createdAt}
         variants={{
           hidden: {
             x: eventData.isCreator ? 200 : -200,

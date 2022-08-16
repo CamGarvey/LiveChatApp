@@ -7,7 +7,7 @@ import {
   Popover,
   Text,
 } from '@mantine/core';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowDownCircle } from 'tabler-icons-react';
 import { useScroller } from './useScroller';
@@ -55,11 +55,12 @@ const Scroller = ({
       {children.length > 0 && (
         <MotionContainer
           variants={{
-            hidden: { opacity: 1 },
+            hidden: { opacity: 0 },
             show: {
               opacity: 1,
               transition: {
-                staggerChildren: 0.01,
+                delayChildren: 2,
+                staggerChildren: 0.1,
                 staggerDirection: -1,
               },
             },

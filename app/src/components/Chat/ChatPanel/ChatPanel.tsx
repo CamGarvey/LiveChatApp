@@ -1,20 +1,10 @@
 import { Center, Stack, Text } from '@mantine/core';
-import {
-  GetMessagesDocument,
-  GetMessagesQuery,
-  MessagesDocument,
-  MessagesSubscription,
-  useCreateMessageMutation,
-  useGetMessagesQuery,
-} from 'graphql/generated/graphql';
-import { useEffect, useState } from 'react';
-import Scroller from '../Scroller/Scroller';
 import ChatInput from '../ChatInput';
-import Message from '../Event/Message/Message';
-import { useUser } from 'context/UserContext';
 import EventContainer from '../Event/EventContainer';
-import { useMessages } from './useMessages';
+import Message from '../Event/Message/Message';
+import Scroller from '../Scroller/Scroller';
 import { useCreateMessage } from './useCreateMessage';
+import { useMessages } from './useMessages';
 
 type Props = {
   chatId: string;

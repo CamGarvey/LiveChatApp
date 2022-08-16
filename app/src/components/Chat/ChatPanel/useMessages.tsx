@@ -121,5 +121,6 @@ export const useMessages = ({ chatId }: Props) => {
     error,
     hasPreviousPage,
     fetchMore,
+    isFetchingMore,
   };
 };

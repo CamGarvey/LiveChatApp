@@ -13,7 +13,7 @@ type Props = {
 
 const MessageActions = ({ data, onDelete }: Props) => {
   if (data.__typename === 'DeletedMessage' || !data.isCreator) {
-    return <></>;
+    return;
   }
   return (
     <>

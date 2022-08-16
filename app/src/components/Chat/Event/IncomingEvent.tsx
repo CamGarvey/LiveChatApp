@@ -26,32 +26,35 @@ const IncomingEvent = ({
   const [isHovered, setHovered] = useState(false);
   const largeScreen = useMediaQuery('(min-width: 1200px)');
   return (
-    <Group pb={3}>
+    <MotionGroup
+      pb={3}
+      transition={{ delay: 1 }}
+      style={{
+        maxWidth: largeScreen ? '600px' : '400px',
+        gap: '3px',
+        overflowX: 'hidden',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <EventAvatar username={createdBy.username} isVisible={displayAvatar} />
-      <MotionGroup
-        transition={{ delay: 1 }}
-        style={{ maxWidth: largeScreen ? '600px' : '400px', gap: '3px' }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <Group spacing={5}>
-          {children}
-          <MotionGroup
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isHovered ? 1 : 0, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            spacing={2}
-          >
-            <EventInfo
-              show={isHovered}
-              createdBy={createdBy}
-              createdAt={createdAt}
-              isCreator={false}
-            />
-          </MotionGroup>
-        </Group>
-      </MotionGroup>
-    </Group>
+      <Group spacing={5}>
+        {children}
+        <MotionGroup
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: isHovered ? 1 : 0, y: 0 }}
+          exit={{ opacity: 0, y: 30 }}
+          spacing={2}
+        >
+          <EventInfo
+            show={isHovered}
+            createdBy={createdBy}
+            createdAt={createdAt}
+            isCreator={false}
+          />
+        </MotionGroup>
+      </Group>
+    </MotionGroup>
   );
 };
 

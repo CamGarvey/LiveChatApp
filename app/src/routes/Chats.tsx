@@ -1,27 +1,27 @@
 import { AppShell } from '@mantine/core';
-import { useParams } from 'react-router-dom';
-import ChatPanel from '../components/Chat/ChatPanel';
-import ChatInfoAside from '../components/Chat/ChatInfoAside';
-import ChatNav from '../components/Layout/ChatNav';
-import Header from '../components/Layout/Header/Header';
-import Drawer from '../components/Layout/Drawer';
-import { useEffect } from 'react';
-import {
-  GetNotificationsQuery,
-  NotificationsDocument,
-  NotificationsSubscription,
-  useGetChatsQuery,
-  useGetMeQuery,
-  useGetNotificationsQuery,
-} from '../graphql/generated/graphql';
-import { UserContext } from '../context/UserContext';
-import PickChat from './PickChat';
-import { NotificationContext } from '../context/NotificationContext';
-import { ChatContext } from '../context/ChatContext';
 import { ModalsProvider } from '@mantine/modals';
-import { UserSearchModal } from '../components/Modals/UserSearchModal';
-import { CreateGroupChatModal } from '../components/Modals/CreateGroupChatModal';
-import { UpdateGroupChatModal } from '../components/Modals/UpdateGroupChatModal';
+import ChatInfoAside from 'components/Chat/ChatInfoAside';
+import ChatPanel from 'components/Chat/ChatPanel/ChatPanel';
+import ChatNav from 'components/Layout/ChatNav';
+import Drawer from 'components/Layout/Drawer';
+import Header from 'components/Layout/Header/Header';
+import { CreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
+import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
+import { UserSearchModal } from 'components/Modals/UserSearchModal';
+import { ChatContext } from 'context/ChatContext';
+import { NotificationContext } from 'context/NotificationContext';
+import { UserContext } from 'context/UserContext';
+import {
+  useGetChatsQuery,
+  useGetNotificationsQuery,
+  useGetMeQuery,
+  NotificationsSubscription,
+  NotificationsDocument,
+  GetNotificationsQuery,
+} from 'graphql/generated/graphql';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import PickChat from './PickChat';
 
 const Chats = () => {
   const { chatId } = useParams();

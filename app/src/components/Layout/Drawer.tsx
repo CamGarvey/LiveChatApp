@@ -2,11 +2,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import {
   ActionIcon,
   Avatar,
-  Button,
-  Center,
   Drawer as MantineDrawer,
   Group,
-  Loader,
   MediaQuery,
   ScrollArea,
   Skeleton,
@@ -14,12 +11,8 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { useEffect } from 'react';
 import { Logout, Search, SquarePlus } from 'tabler-icons-react';
-import { useGetMeLazyQuery } from '../../graphql/generated/graphql';
-import { ModalType } from '../../models';
 import { useToggleDrawer, useIsDrawerOpen } from '../store';
-import ChatItem from '../shared/ChatItem';
 import { useUserSearchModal } from '../Modals/UserSearchModal';
 import ChatDisplay from '../shared/ChatDisplay';
 import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModal';
@@ -98,7 +91,7 @@ const Drawer = () => {
                     <SquarePlus />
                   </ActionIcon>
                 </Group>
-                <ScrollArea sx={{ height: '400px' }}>
+                <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
                   <ChatDisplay onChatClick={toggleDrawer} />
                 </ScrollArea>
               </Stack>
