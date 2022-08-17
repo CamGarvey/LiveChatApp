@@ -1,14 +1,16 @@
+import { Chat } from '@prisma/client';
 import { mutationField, nonNull } from 'nexus';
+import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 import { CreateGroupChatInput, UpdateGroupChatInput } from './chat.input';
 
 export const CreateGroupChatMutation = mutationField('createGroupChat', {
   type: 'GroupChat',
-  args: { data: CreateGroupChatInput },
+  args: { data: nonNull(CreateGroupChatInput) },
   description: 'Create a Chat',
   authorize: (_, { data: { memberIds } }, { auth }) =>
-    auth.canCreateGroupChat(memberIds),
+    auth.canCreateGroupChat(memberIds ?? []),
   resolve: async (
     _,
     { data: { name, description, memberIds } },
@@ -43,8 +45,11 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
       },
     });
 
-    // Publish created chat
-    await pubsub.publish(Subscription.ChatCreated, chat);
+    // Publish the created chat to every member apart from the user who created it (userId)
+    await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatCreated, {
+      recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+      content: chat,
+    });
 
     return chat;
   },
@@ -84,8 +89,14 @@ export const CreateDirectMessageChatMutation = mutationField(
         },
       });
 
-      // Publish created chat
-      await pubsub.publish(Subscription.ChatCreated, chat);
+      // Publish the created chat to every member apart from the user who created it (userId)
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatCreated,
+        {
+          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          content: chat,
+        }
+      );
 
       return chat;
     },
@@ -94,10 +105,10 @@ export const CreateDirectMessageChatMutation = mutationField(
 
 export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
   type: 'GroupChat',
-  args: { data: UpdateGroupChatInput },
+  args: { data: nonNull(UpdateGroupChatInput) },
   description: 'Update a Chat',
   authorize: (_, { data: { chatId, addMemberIds } }, { auth }) =>
-    auth.canUpdateGroupChat(chatId, addMemberIds),
+    auth.canUpdateGroupChat(chatId, addMemberIds ?? []),
   resolve: async (
     _,
     { data: { chatId, name, description, addMemberIds, removeMemberIds } },
@@ -131,8 +142,8 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
         },
         name,
         description,
-        memberIdsAdded: addMemberIds,
-        memberIdsRemoved: removeMemberIds,
+        memberIdsAdded: addMemberIds ?? undefined,
+        memberIdsRemoved: removeMemberIds ?? undefined,
       },
       // Includeing member ids for pubsub
       include: {
@@ -148,8 +159,13 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
       },
     });
 
-    // Publish update
-    pubsub.publish(Subscription.ChatUpdated, update);
+    // Publish the created chat to every member apart from the user who created it (userId)
+    await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatUpdated, {
+      recipients: update.chat.members
+        .map((x) => x.id)
+        .filter((x) => x !== userId),
+      content: updatedChat,
+    });
 
     return updatedChat;
   },
@@ -167,7 +183,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
   description: 'Delete a Chat',
   authorize: async (_, { chatId }, { auth }) =>
     await auth.canDeleteChat(chatId),
-  resolve: async (_, { chatId }, { prisma, pubsub }) => {
+  resolve: async (_, { chatId }, { prisma, pubsub, userId }) => {
     const chat = await prisma.chat.update({
       where: {
         id: chatId,
@@ -185,8 +201,11 @@ export const DeleteChatMutation = mutationField('deleteChat', {
       },
     });
 
-    // Publish deleted chat
-    await pubsub.publish(Subscription.ChatDeleted, chat);
+    // Publish the created chat to every member apart from the user who created it (userId)
+    await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatDeleted, {
+      recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+      content: chat,
+    });
 
     return chat;
   },

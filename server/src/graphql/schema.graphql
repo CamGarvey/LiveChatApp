@@ -264,7 +264,7 @@ type Mutation {
   ): DirectMessageChat
 
   """Create a Chat"""
-  createGroupChat(data: CreateGroupChatInput): GroupChat
+  createGroupChat(data: CreateGroupChatInput!): GroupChat
 
   """Create a Message in a Chat"""
   createMessage(
@@ -297,7 +297,7 @@ type Mutation {
   sendFriendRequest(friendId: HashId!): FriendRequest
 
   """Update a Chat"""
-  updateGroupChat(data: UpdateGroupChatInput): GroupChat
+  updateGroupChat(data: UpdateGroupChatInput!): GroupChat
 
   """Update a Message"""
   updateMessage(

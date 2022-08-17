@@ -1,4 +1,4 @@
-import { ForbiddenError, UserInputError } from 'apollo-server-core';
+import { ForbiddenError } from 'apollo-server-core';
 import { list, nonNull, queryField } from 'nexus';
 import { hashIdArg } from '../shared';
 

@@ -20,9 +20,10 @@ type Props = {
 const NotificationMenu = ({ size = 16 }: Props) => {
   const { notifications } = useUserNotifications();
 
-  const friendRequests = notifications?.filter(
-    (x) => x.__typename === 'FriendRequest'
-  ) as FriendRequestObject[];
+  const friendRequests =
+    (notifications?.filter(
+      (x) => x.__typename === 'FriendRequest'
+    ) as FriendRequestObject[]) ?? [];
 
   return (
     <Menu

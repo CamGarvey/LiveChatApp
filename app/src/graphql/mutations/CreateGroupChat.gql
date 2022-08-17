@@ -1,4 +1,4 @@
-mutation CreateGroupChat($data: CreateGroupChatInput) {
+mutation CreateGroupChat($data: CreateGroupChatInput!) {
   createGroupChat(data: $data) {
     id
     name

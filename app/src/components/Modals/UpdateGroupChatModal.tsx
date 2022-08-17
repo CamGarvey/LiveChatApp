@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
+  useDeleteChatMutation,
   useGetFriendsQuery,
   useUpdateGroupChatMutation,
 } from '../../graphql/generated/graphql';
@@ -16,12 +17,14 @@ import {
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from '../../models/validation-schemas';
 import _ from 'lodash';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   chat: {
     id: string;
     name: string;
     description?: string;
+    isCreator: boolean;
     members: {
       id: string;
       username: string;
@@ -35,7 +38,9 @@ export const UpdateGroupChatModal = ({
   innerProps: { chat },
 }: ContextModalProps<Props>) => {
   const inputRef = useRef<HTMLInputElement>();
+  const navigate = useNavigate();
   const [updateChat, { loading: loadingUpdate }] = useUpdateGroupChatMutation();
+  const [deleteChat, { loading: loadingDelete }] = useDeleteChatMutation();
   const {
     loading: loadingFriends,
     data: friendData,
@@ -97,54 +102,80 @@ export const UpdateGroupChatModal = ({
   );
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <Stack>
-        <InputWrapper
-          required
-          error={formik.touched.name && formik.errors.name}
-          label="Name"
-        >
-          <Input
-            id="name"
-            type="text"
-            ref={inputRef}
-            onChange={formik.handleChange}
-            value={formik.values.name}
-          />
-        </InputWrapper>
-        <InputWrapper error={formik.errors.description} label="Description">
-          <Input
-            id="description"
-            type="text"
-            onChange={formik.handleChange}
-            value={formik.values.description}
-          />
-        </InputWrapper>
-        <InputWrapper>
-          {loadingFriends ? (
-            <Center>
-              <Loader variant="bars" />
-            </Center>
-          ) : friendError ? (
-            <Center>Failed to load your friends 😥</Center>
-          ) : (
-            <UserSelector
-              label={'Friends'}
-              users={totalUsers}
-              defaultValue={chat.members}
-              onChange={handleChangeValue}
+    <Stack>
+      <form onSubmit={formik.handleSubmit}>
+        <Stack>
+          <InputWrapper
+            required
+            error={formik.touched.name && formik.errors.name}
+            label="Name"
+          >
+            <Input
+              id="name"
+              type="text"
+              ref={inputRef}
+              onChange={formik.handleChange}
+              value={formik.values.name}
             />
-          )}
-        </InputWrapper>
+          </InputWrapper>
+          <InputWrapper error={formik.errors.description} label="Description">
+            <Input
+              id="description"
+              type="text"
+              onChange={formik.handleChange}
+              value={formik.values.description}
+            />
+          </InputWrapper>
+          <InputWrapper>
+            {loadingFriends ? (
+              <Center>
+                <Loader variant="bars" />
+              </Center>
+            ) : friendError ? (
+              <Center>Failed to load your friends 😥</Center>
+            ) : (
+              <UserSelector
+                label={'Friends'}
+                users={totalUsers}
+                defaultValue={chat.members}
+                onChange={handleChangeValue}
+              />
+            )}
+          </InputWrapper>
+          <Button
+            type="submit"
+            loading={loadingUpdate}
+            disabled={loadingFriends || !formik.dirty}
+          >
+            Update
+          </Button>
+        </Stack>
+      </form>
+      {chat.isCreator && (
         <Button
-          type="submit"
-          loading={loadingUpdate}
-          disabled={loadingFriends || !formik.dirty}
+          loading={loadingDelete}
+          color={'red'}
+          disabled={loadingFriends}
+          onClick={() => {
+            deleteChat({
+              variables: {
+                chatId: chat.id,
+              },
+              update: (cache) => {
+                const normalizedId = cache.identify(chat);
+                cache.evict({ id: normalizedId });
+                cache.gc();
+              },
+            }).then(() => {
+              context.closeModal(id);
+              navigate('/chats', { replace: true });
+            });
+          }}
         >
-          Update
+          Delete
         </Button>
-      </Stack>
-    </form>
+      )}
+    </Stack>
   );
 };
 

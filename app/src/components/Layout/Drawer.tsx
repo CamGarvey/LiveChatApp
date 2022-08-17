@@ -15,7 +15,7 @@ import { Logout, Search, SquarePlus } from 'tabler-icons-react';
 import { useToggleDrawer, useIsDrawerOpen } from '../store';
 import { useUserSearchModal } from '../Modals/UserSearchModal';
 import ChatDisplay from '../shared/ChatDisplay';
-import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModal';
+import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { useUser } from '../../context/UserContext';
 
 const Drawer = () => {

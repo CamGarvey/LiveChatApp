@@ -1,5 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
+import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
 
 type Chat = {
@@ -13,13 +14,13 @@ export const ChatsSubscription = subscriptionField('chats', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.*', { pattern: true }),
-      (payload: Chat, _, context) => {
-        return payload.members.map(({ id }) => id).includes(context.userId);
+      (payload: SubscriptionPayload<Chat>) => {
+        return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
+  resolve(payload: SubscriptionPayload<Chat>) {
+    return payload.content;
   },
 });
 
@@ -28,13 +29,13 @@ export const ChatCreatedSubscription = subscriptionField('chatCreated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatCreated),
-      (payload: Chat, _, context) => {
-        return payload.members.map(({ id }) => id).includes(context.userId);
+      (payload: SubscriptionPayload<Chat>) => {
+        return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
+  resolve(payload: SubscriptionPayload<Chat>) {
+    return payload.content;
   },
 });
 
@@ -43,13 +44,13 @@ export const ChatUpdatedSubscription = subscriptionField('chatUpdated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatUpdated),
-      (payload: Chat, _, context) => {
-        return payload.members.map(({ id }) => id).includes(context.userId);
+      (payload: SubscriptionPayload<Chat>) => {
+        return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
+  resolve(payload: SubscriptionPayload<Chat>) {
+    return payload.content;
   },
 });
 
@@ -58,12 +59,12 @@ export const ChatDeletedSubscription = subscriptionField('chatDeleted', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatDeleted),
-      (payload: Chat, _, context) => {
-        return payload.members.map(({ id }) => id).includes(context.userId);
+      (payload: SubscriptionPayload<Chat>) => {
+        return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: any) {
-    return payload;
+  resolve(payload: SubscriptionPayload<Chat>) {
+    return payload.content;
   },
 });

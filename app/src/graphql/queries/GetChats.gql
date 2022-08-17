@@ -7,6 +7,7 @@ query GetChats {
       username
       name
     }
+    isCreator
     ... on DirectMessageChat {
       friend {
         id

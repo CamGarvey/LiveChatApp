@@ -37,7 +37,6 @@ const OutgoingEvent = ({
           x: 0, // show on screen
         },
       }}
-      transition={{ type: 'tween' }}
       style={{
         maxWidth: largeScreen ? '600px' : '400px',
         gap: '3px',

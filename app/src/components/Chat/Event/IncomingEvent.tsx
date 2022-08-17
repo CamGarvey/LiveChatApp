@@ -45,7 +45,13 @@ const IncomingEvent = ({
       onMouseLeave={() => setHovered(false)}
     >
       <EventAvatar username={createdBy.username} isVisible={displayAvatar} />
-      <Group spacing={5}>
+      <Group
+        spacing={5}
+        px={10}
+        sx={{
+          overflow: 'hidden',
+        }}
+      >
         {children}
         <MotionGroup
           initial={{ opacity: 0, y: 30 }}

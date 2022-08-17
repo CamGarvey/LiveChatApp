@@ -7,12 +7,21 @@ subscription Chats {
       username
       name
     }
+    ... on DirectMessageChat {
+      friend {
+        id
+        username
+        name
+      }
+    }
     ... on GroupChat {
       name
-      memberCount
-    }
-    ... on DeletedChat {
-      deletedAt
+      description
+      members {
+        id
+        username
+        name
+      }
     }
   }
 }

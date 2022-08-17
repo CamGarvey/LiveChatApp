@@ -1,12 +1,7 @@
 import { useFormik } from 'formik';
 import { useEffect, useRef, useState } from 'react';
-import UserSelector from '../UserSelector/UserSelector';
-import {
-  GetChatsDocument,
-  GetChatsQuery,
-  useCreateGroupChatMutation,
-  useGetFriendsQuery,
-} from '../../graphql/generated/graphql';
+import UserSelector from '../../UserSelector/UserSelector';
+import { useGetFriendsQuery } from 'graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -16,9 +11,8 @@ import {
   Stack,
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
-import { chatSchema } from '../../models/validation-schemas';
-import { showNotification } from '@mantine/notifications';
-import { useUser } from '../../context/UserContext';
+import { chatSchema } from 'models/validation-schemas';
+import { useCreateChat } from 'hooks/useCreateChat';
 
 export const CreateGroupChatModal = ({
   context,
@@ -31,39 +25,9 @@ export const CreateGroupChatModal = ({
     data: friendData,
     error: friendError,
   } = useGetFriendsQuery({ fetchPolicy: 'network-only' });
-  const { user } = useUser();
 
   const [createGroupChatMutation, { loading: loadingCreateChat }] =
-    useCreateGroupChatMutation({
-      update: (cache, { data: { createGroupChat } }) => {
-        const { chats } = cache.readQuery<GetChatsQuery>({
-          query: GetChatsDocument,
-        });
-
-        const updatedChats = [
-          ...chats,
-          {
-            createdBy: {
-              __typename: 'Me',
-              ...user,
-            },
-            ...createGroupChat,
-          },
-        ];
-
-        cache.writeQuery({
-          query: GetChatsDocument,
-          data: {
-            chats: updatedChats,
-          },
-        });
-      },
-      onCompleted: (data) =>
-        showNotification({
-          title: 'Created New Chat',
-          message: data.createGroupChat.name,
-        }),
-    });
+    useCreateChat();
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -82,7 +46,7 @@ export const CreateGroupChatModal = ({
         variables: {
           data: values,
         },
-      }).then((c) => {
+      }).then(() => {
         context.closeModal(id);
       });
     },

@@ -701,7 +701,7 @@ export interface NexusGenArgTypes {
       friendId: NexusGenScalars['HashId']; // HashId!
     }
     createGroupChat: { // args
-      data?: NexusGenInputs['CreateGroupChatInput'] | null; // CreateGroupChatInput
+      data: NexusGenInputs['CreateGroupChatInput']; // CreateGroupChatInput!
     }
     createMessage: { // args
       chatId: NexusGenScalars['HashId']; // HashId!
@@ -723,7 +723,7 @@ export interface NexusGenArgTypes {
       friendId: NexusGenScalars['HashId']; // HashId!
     }
     updateGroupChat: { // args
-      data?: NexusGenInputs['UpdateGroupChatInput'] | null; // UpdateGroupChatInput
+      data: NexusGenInputs['UpdateGroupChatInput']; // UpdateGroupChatInput!
     }
     updateMessage: { // args
       content: string; // String!

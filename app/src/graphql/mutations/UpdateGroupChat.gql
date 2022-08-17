@@ -1,4 +1,4 @@
-mutation UpdateGroupChat($data: UpdateGroupChatInput) {
+mutation UpdateGroupChat($data: UpdateGroupChatInput!) {
   updateGroupChat(data: $data) {
     id
     name

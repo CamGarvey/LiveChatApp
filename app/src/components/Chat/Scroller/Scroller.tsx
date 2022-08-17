@@ -50,83 +50,84 @@ const Scroller = ({
     minPopupHeight: 1500,
   });
 
-  console.log({ isLoading });
-
   return (
     <>
-      <MotionContainer
-        ref={viewport}
-        sx={(theme) => ({
-          display: 'flex',
-          position: 'relative',
-          flexDirection: 'column-reverse',
-          overflowY: 'scroll',
-          overflowX: 'clip',
-          padding: '0',
-          paddingRight: '5px',
-          height: '100%',
-          width: '100%',
-          maxWidth: 'none',
-          color: '#00000000',
-          transition: 'color 0.3s',
-          '&:hover': {
-            color: '#666666FF',
-          },
-          '&::-webkit-scrollbar': {
-            width: '14px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            borderRadius: theme.radius.md,
-            backgroundClip: 'content-box',
-            border: '4px solid transparent',
-            boxShadow: 'inset 0 0 0 10px',
-          },
-          '&::-webkit-scrollbar-track': {
-            borderRadius: theme.radius.md,
-          },
-        })}
-      >
+      {isLoading ? (
         <LoadingOverlay
           visible={isLoading}
           loaderProps={{ size: 'lg', variant: 'bars' }}
         />
-        <motion.div
-          variants={{
-            hidden: { opacity: 1 },
-            show: {
-              opacity: 1,
-            },
-          }}
-          transition={{
-            staggerChildren: 0.1,
-            staggerDirection: -1,
-          }}
-          initial="hidden"
-          animate="show"
-          exit="hidden"
-          style={{
+      ) : (
+        <MotionContainer
+          ref={viewport}
+          sx={(theme) => ({
             display: 'flex',
-            flexDirection: 'column',
-            gap: 4,
-          }}
+            position: 'relative',
+            flexDirection: 'column-reverse',
+            overflowY: 'scroll',
+            overflowX: 'clip',
+            padding: '0',
+            paddingRight: '5px',
+            height: '100%',
+            width: '100%',
+            maxWidth: 'none',
+            color: '#00000000',
+            transition: 'color 0.3s',
+            '&:hover': {
+              color: '#666666FF',
+            },
+            '&::-webkit-scrollbar': {
+              width: '14px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              borderRadius: theme.radius.md,
+              backgroundClip: 'content-box',
+              border: '4px solid transparent',
+              boxShadow: 'inset 0 0 0 10px',
+            },
+            '&::-webkit-scrollbar-track': {
+              borderRadius: theme.radius.md,
+            },
+          })}
         >
-          {!isLoading && (
-            <>
-              {isLoadingMore && (
-                <Center>
-                  <Loader variant="bars" />
-                </Center>
-              )}
-              {topMessage && (
-                <Center>
-                  <Text color={'dimmed'}>{topMessage}</Text>
-                </Center>
-              )}
-              {children.length && children}
-            </>
-          )}
-        </motion.div>
-      </MotionContainer>
+          <motion.div
+            variants={{
+              hidden: { opacity: 1 },
+              show: {
+                opacity: 1,
+              },
+            }}
+            transition={{
+              staggerChildren: 0.1,
+              staggerDirection: -1,
+            }}
+            initial="hidden"
+            animate="show"
+            exit="hidden"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+            }}
+          >
+            {
+              <>
+                {isLoadingMore && (
+                  <Center>
+                    <Loader variant="bars" />
+                  </Center>
+                )}
+                {topMessage && (
+                  <Center>
+                    <Text color={'dimmed'}>{topMessage}</Text>
+                  </Center>
+                )}
+                {children}
+              </>
+            }
+          </motion.div>
+        </MotionContainer>
+      )}
 
       <Popover
         opened={isScrollToBottomOpened}
