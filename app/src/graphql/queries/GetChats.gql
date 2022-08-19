@@ -23,6 +23,12 @@ query GetChats {
         username
         name
       }
+      isAdmin
+      admins {
+        id
+        username
+        name
+      }
     }
   }
 }

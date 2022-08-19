@@ -47,10 +47,12 @@ export interface NexusGenInputs {
     name: string; // String!
   }
   UpdateGroupChatInput: { // input type
+    addAdminIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
     addMemberIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
     chatId: NexusGenScalars['HashId']; // HashId!
     description?: string | null; // String
     name?: string | null; // String
+    removeAdminIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
     removeMemberIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
   }
   UserOrderBy: { // input type
@@ -132,6 +134,7 @@ export interface NexusGenObjects {
     status: NexusGenEnums['RequestStatus']; // RequestStatus!
   }
   GroupChat: { // root type
+    adminIds: NexusGenScalars['HashId'][]; // [HashId!]!
     createdAt?: NexusGenScalars['Date'] | null; // Date
     createdById: NexusGenScalars['HashId']; // HashId!
     description?: string | null; // String
@@ -275,11 +278,14 @@ export interface NexusGenFieldTypes {
     status: NexusGenEnums['RequestStatus']; // RequestStatus!
   }
   GroupChat: { // field return type
+    adminIds: NexusGenScalars['HashId'][]; // [HashId!]!
+    admins: NexusGenRootTypes['User'][]; // [User!]!
     createdAt: NexusGenScalars['Date'] | null; // Date
     createdBy: NexusGenRootTypes['User']; // User!
     createdById: NexusGenScalars['HashId']; // HashId!
     description: string | null; // String
     id: NexusGenScalars['HashId']; // HashId!
+    isAdmin: boolean; // Boolean!
     isCreator: boolean; // Boolean!
     memberCount: number; // Int!
     members: NexusGenRootTypes['User'][]; // [User!]!
@@ -500,11 +506,14 @@ export interface NexusGenFieldTypeNames {
     status: 'RequestStatus'
   }
   GroupChat: { // field return type name
+    adminIds: 'HashId'
+    admins: 'User'
     createdAt: 'Date'
     createdBy: 'User'
     createdById: 'HashId'
     description: 'String'
     id: 'HashId'
+    isAdmin: 'Boolean'
     isCreator: 'Boolean'
     memberCount: 'Int'
     members: 'User'

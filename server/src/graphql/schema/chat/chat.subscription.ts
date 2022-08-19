@@ -1,13 +1,8 @@
+import { Chat } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
 import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
-
-type Chat = {
-  members: {
-    id: string;
-  }[];
-};
 
 export const ChatsSubscription = subscriptionField('chats', {
   type: 'Chat',

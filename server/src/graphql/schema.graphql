@@ -139,11 +139,14 @@ type FriendRequest implements Notification & Request {
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements Chat {
+  adminIds: [HashId!]!
+  admins: [User!]!
   createdAt: Date
   createdBy: User!
   createdById: HashId!
   description: String
   id: HashId!
+  isAdmin: Boolean!
   isCreator: Boolean!
   memberCount: Int!
   members: [User!]!
@@ -480,7 +483,10 @@ type Subscription {
 }
 
 input UpdateGroupChatInput {
-  """Ids of users to be add into the chat"""
+  """Ids of admins to be add into the chat"""
+  addAdminIds: [HashId!]
+
+  """Ids of members to be added into the chat"""
   addMemberIds: [HashId!]
 
   """Id of chat to update"""
@@ -492,7 +498,10 @@ input UpdateGroupChatInput {
   """New name for chat"""
   name: String
 
-  """Ids of users to be removed from chat"""
+  """Ids of admins to be removed from chat"""
+  removeAdminIds: [HashId!]
+
+  """Ids of members to be removed from chat"""
   removeMemberIds: [HashId!]
 }
 

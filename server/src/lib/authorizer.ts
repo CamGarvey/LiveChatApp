@@ -73,11 +73,27 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canUpdateGroupChat(chatId: number, addMemberIds: number[]) {
+  public async canUpdateGroupChat(
+    chatId: number,
+    data?: {
+      addMemberIds?: number[];
+      addAdminIds?: number[];
+    }
+  ) {
+    const { addMemberIds = [], addAdminIds = [] } = data ?? {
+      addMemberIds: [],
+      addAdminIds: [],
+    };
     const chat = await this._prisma.chat.findUniqueOrThrow({
       select: {
         isDM: true,
+        createdById: true,
         admins: {
+          select: {
+            id: true,
+          },
+        },
+        members: {
           select: {
             id: true,
           },
@@ -96,38 +112,55 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('You are not an admin in this chat');
     }
 
-    if (addMemberIds.length) {
+    if (addMemberIds.length != 0 || addAdminIds.length != 0) {
       // Remove duplicates
       const memberIdSet: Set<number> = new Set(addMemberIds);
+      const adminIdSet: Set<number> = new Set(addAdminIds);
 
+      // Remove self from sets
       if (memberIdSet.has(this.userId)) {
-        // Remove self from memberIdSet
         memberIdSet.delete(this.userId);
       }
+      if (adminIdSet.has(this.userId)) {
+        adminIdSet.delete(this.userId);
+      }
 
-      if (memberIdSet) {
-        // Check that the user is friends with all of these users
-        const user = await this._prisma.user.findUniqueOrThrow({
-          where: {
-            id: this.userId,
-          },
-          select: {
-            friends: {
-              select: {
-                id: true,
-              },
-              where: {
-                id: {
-                  in: [...memberIdSet],
+      if (memberIdSet.size != 0 || adminIdSet.size != 0) {
+        // You dont need to be friends all of the users you want to add as admin
+        // They just need to already be in the chat
+        const memberIds = new Set(chat.members.map((x) => x.id));
+
+        const notMembersAlready = new Set(
+          [...adminIdSet].filter((x) => !memberIds.has(x))
+        );
+
+        const friendCheckSet = new Set([...notMembersAlready, ...memberIdSet]);
+
+        if (friendCheckSet.size != 0) {
+          // Check that the user is friends with all of these users
+          const user = await this._prisma.user.findUniqueOrThrow({
+            where: {
+              id: this.userId,
+            },
+            select: {
+              friends: {
+                select: {
+                  id: true,
+                },
+                where: {
+                  id: {
+                    in: [...friendCheckSet],
+                  },
                 },
               },
             },
-          },
-        });
-        if (user.friends.length != memberIdSet.size) {
-          throw new ForbiddenError(
-            'You are not friends with all of the users provided'
-          );
+          });
+
+          if (user.friends.length != friendCheckSet.size) {
+            throw new ForbiddenError(
+              'You are not friends with all of the users provided'
+            );
+          }
         }
       }
     }

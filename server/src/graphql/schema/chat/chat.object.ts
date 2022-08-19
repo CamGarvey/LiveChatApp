@@ -69,12 +69,38 @@ export const GroupChat = objectType({
     });
     t.nonNull.list.nonNull.field('members', {
       type: 'User',
-      resolve: (parent, _, { prisma }) => {
-        return prisma.chat
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.chat
           .findUniqueOrThrow({
             where: { id: parent.id || undefined },
           })
           .members();
+      },
+    });
+    t.nonNull.list.nonNull.field('admins', {
+      type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.chat
+          .findUniqueOrThrow({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .admins();
+      },
+    });
+    t.nonNull.list.nonNull.hashId('adminIds');
+    t.nonNull.boolean('isAdmin', {
+      resolve: async (parent, _, { prisma, userId }) => {
+        const admins: User[] = await prisma.chat
+          .findUniqueOrThrow({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .admins();
+
+        return admins.map((x) => x.id).includes(userId);
       },
     });
     t.nonNull.connectionField('messages', {

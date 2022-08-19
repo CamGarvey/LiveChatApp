@@ -39,7 +39,13 @@ export const ChatPanel = ({ chatId }: Props) => {
       spacing={'sm'}
     >
       {error ? (
-        <Center>Failed to load messages</Center>
+        <Center
+          style={{
+            height: '100%',
+          }}
+        >
+          <Text>Failed to load messages</Text>
+        </Center>
       ) : messages.length === 0 && !loading ? (
         <Center
           style={{

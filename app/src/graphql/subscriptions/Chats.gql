@@ -22,6 +22,12 @@ subscription Chats {
         username
         name
       }
+      isAdmin
+      admins {
+        id
+        username
+        name
+      }
     }
   }
 }

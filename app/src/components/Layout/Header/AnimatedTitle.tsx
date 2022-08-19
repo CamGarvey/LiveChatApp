@@ -7,11 +7,12 @@ import { useMediaQuery } from '@mantine/hooks';
 import { Settings } from 'tabler-icons-react';
 import { useChat } from '../../../context/ChatContext';
 import { useUpdateGroupChatModal } from '../../Modals/UpdateGroupChatModal';
+import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 
 const AnimatedTitle = () => {
   const { chat } = useChat();
   const openGroupChatUpdate = useUpdateGroupChatModal();
-  const isLargerScreen = useMediaQuery('(min-width: 993px)');
+  const isLargerScreen = useMediaQuery('(min-width: 793px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const isDrawerOpen = useIsDrawerOpen();
 
@@ -30,15 +31,9 @@ const AnimatedTitle = () => {
             <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
           ) : (
             <Group spacing={2}>
-              {chat && chat.__typename === 'GroupChat' && (
+              {chat?.__typename === 'GroupChat' && chat.isAdmin && (
                 <Group spacing={2}>
-                  <ActionIcon
-                    size={'xs'}
-                    color={'blue'}
-                    onClick={() => openGroupChatUpdate({ chat })}
-                  >
-                    <Settings />
-                  </ActionIcon>
+                  <ChatUpdateAction />
                   <Stack spacing={0}>
                     <Text p={0} size={'lg'}>
                       {chat.name}

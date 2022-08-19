@@ -219,17 +219,18 @@ describe('canUpdateGroupChat', () => {
   it('should throw if chat not found', async () => {
     mockCtx.prisma.chat.findUniqueOrThrow.mockRejectedValue(new Error());
 
-    expect(authorizer.canUpdateGroupChat(1, [])).rejects.toThrowError('');
+    expect(authorizer.canUpdateGroupChat(1)).rejects.toThrowError('');
   });
 
   it('should throw if chat is a direct message chat', async () => {
     const chat = {
       isDM: true,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
 
-    expect(authorizer.canUpdateGroupChat(1, [])).rejects.toThrowError(
+    expect(authorizer.canUpdateGroupChat(1)).rejects.toThrowError(
       'Can not update a direct message chat'
     );
   });
@@ -238,10 +239,11 @@ describe('canUpdateGroupChat', () => {
     const chat = {
       isDM: false,
       admins: [{ id: 4 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
 
-    expect(authorizer.canUpdateGroupChat(1, [])).rejects.toThrowError(
+    expect(authorizer.canUpdateGroupChat(1)).rejects.toThrowError(
       'You are not an admin in this chat'
     );
   });
@@ -250,16 +252,23 @@ describe('canUpdateGroupChat', () => {
     const chat = {
       isDM: false,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
 
-    const result = await authorizer.canUpdateGroupChat(100, []);
+    const result = await authorizer.canUpdateGroupChat(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.chat.findUniqueOrThrow).toBeCalledWith({
       select: {
         isDM: true,
+        createdById: true,
         admins: {
+          select: {
+            id: true,
+          },
+        },
+        members: {
           select: {
             id: true,
           },
@@ -275,6 +284,7 @@ describe('canUpdateGroupChat', () => {
     const chat = {
       isDM: false,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     const user = {
@@ -282,7 +292,9 @@ describe('canUpdateGroupChat', () => {
     } as unknown as User;
     mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
 
-    await expect(authorizer.canUpdateGroupChat(100, [2])).rejects.toThrowError(
+    await expect(
+      authorizer.canUpdateGroupChat(100, { addMemberIds: [2] })
+    ).rejects.toThrowError(
       'You are not friends with all of the users provided'
     );
   });
@@ -291,19 +303,38 @@ describe('canUpdateGroupChat', () => {
     const chat = {
       isDM: false,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     mockCtx.prisma.user.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(
-      authorizer.canUpdateGroupChat(100, [2])
+      authorizer.canUpdateGroupChat(100, { addMemberIds: [2] })
     ).rejects.toThrowError();
   });
 
-  it('should return true if user is friends with new members', async () => {
+  it('should throw if adding admins not friends with and not in chat', async () => {
     const chat = {
       isDM: false,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    await expect(
+      authorizer.canUpdateGroupChat(100, { addAdminIds: [3] })
+    ).rejects.toThrowError();
+  });
+
+  it('should return true if adding friend as admin that is already in chat', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }],
+      members: [{ id: 2 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     const user = {
@@ -311,7 +342,62 @@ describe('canUpdateGroupChat', () => {
     } as unknown as User;
     mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
 
-    const result = await authorizer.canUpdateGroupChat(100, [2]);
+    const result = await authorizer.canUpdateGroupChat(100, {
+      addAdminIds: [2],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if adding friend as admin that is not in chat', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }],
+      members: [{ id: 1 }],
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [{ id: 2 }],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    const result = await authorizer.canUpdateGroupChat(100, {
+      addAdminIds: [2],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if adding a stranger as admin that is already in chat', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }],
+      members: [{ id: 1 }, { id: 4 }],
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+
+    const result = await authorizer.canUpdateGroupChat(100, {
+      addAdminIds: [4],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if user is friends with new members', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }],
+      members: [{ id: 1 }],
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [{ id: 2 }],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    const result = await authorizer.canUpdateGroupChat(100, {
+      addMemberIds: [2],
+    });
 
     expect(result).toBe(true);
   });
@@ -320,6 +406,7 @@ describe('canUpdateGroupChat', () => {
     const chat = {
       isDM: false,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     const user = {
@@ -327,7 +414,9 @@ describe('canUpdateGroupChat', () => {
     } as unknown as User;
     mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
 
-    const result = await authorizer.canUpdateGroupChat(100, [1, 2]);
+    const result = await authorizer.canUpdateGroupChat(100, {
+      addMemberIds: [1, 2],
+    });
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.user.findUniqueOrThrow).toBeCalledWith({
@@ -353,6 +442,7 @@ describe('canUpdateGroupChat', () => {
     const chat = {
       isDM: false,
       admins: [{ id: 1 }],
+      members: [{ id: 1 }],
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     const user = {
@@ -360,7 +450,9 @@ describe('canUpdateGroupChat', () => {
     } as unknown as User;
     mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
 
-    const result = await authorizer.canUpdateGroupChat(100, [2, 2]);
+    const result = await authorizer.canUpdateGroupChat(100, {
+      addMemberIds: [2, 2],
+    });
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.user.findUniqueOrThrow).toBeCalledWith({

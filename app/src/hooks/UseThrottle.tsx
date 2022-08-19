@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 
-const useThrottle = (
+export const useThrottle = (
   cb: Function,
   delay: number,
   options?: _.ThrottleSettings
@@ -16,5 +16,3 @@ const useThrottle = (
     [delay]
   );
 };
-
-export default useThrottle;

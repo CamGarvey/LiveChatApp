@@ -11,9 +11,8 @@ import { UserSearchModal } from 'components/Modals/UserSearchModal';
 import { ChatContext } from 'context/ChatContext';
 import { NotificationContext } from 'context/NotificationContext';
 import { UserContext } from 'context/UserContext';
-import { useGetChatsQuery, useGetMeQuery } from 'graphql/generated/graphql';
-import { useLiveChats } from 'hooks/useLiveChats';
-import { useLiveNotifications } from 'hooks/useLiveNotifications';
+import { useGetMeQuery } from 'graphql/generated/graphql';
+import { useLiveChats, useLiveNotifications } from 'hooks';
 import { useParams } from 'react-router-dom';
 import PickChat from './PickChat';
 

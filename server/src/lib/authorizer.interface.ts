@@ -5,7 +5,10 @@ export interface IAuthorizer {
   canViewChat: (chatId: number) => Promise<boolean>;
   canUpdateGroupChat: (
     chatId: number,
-    addMemberIds: number[]
+    data?: {
+      addMemberIds?: number[];
+      addAdminIds?: number[];
+    }
   ) => Promise<boolean>;
   canDeleteChat: (chatId: number) => Promise<boolean>;
 

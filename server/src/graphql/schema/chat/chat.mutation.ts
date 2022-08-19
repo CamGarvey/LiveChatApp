@@ -107,11 +107,24 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
   type: 'GroupChat',
   args: { data: nonNull(UpdateGroupChatInput) },
   description: 'Update a Chat',
-  authorize: (_, { data: { chatId, addMemberIds } }, { auth }) =>
-    auth.canUpdateGroupChat(chatId, addMemberIds ?? []),
+  authorize: (_, { data: { chatId, addMemberIds, addAdminIds } }, { auth }) =>
+    auth.canUpdateGroupChat(chatId, {
+      addMemberIds: addMemberIds ?? [],
+      addAdminIds: addAdminIds ?? [],
+    }),
   resolve: async (
     _,
-    { data: { chatId, name, description, addMemberIds, removeMemberIds } },
+    {
+      data: {
+        chatId,
+        name,
+        description,
+        addMemberIds,
+        removeMemberIds,
+        addAdminIds,
+        removeAdminIds,
+      },
+    },
     { prisma, userId, pubsub }
   ) => {
     const updatedChat = await prisma.chat.update({
@@ -119,8 +132,12 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
         name,
         description,
         members: {
-          connect: addMemberIds?.map((id) => ({ id })),
-          disconnect: removeMemberIds?.map((id) => ({ id })),
+          connect: addMemberIds?.map((id) => ({ id })) ?? undefined,
+          disconnect: removeMemberIds?.map((id) => ({ id })) ?? undefined,
+        },
+        admins: {
+          connect: addAdminIds?.map((id) => ({ id })) ?? undefined,
+          disconnect: removeAdminIds?.map((id) => ({ id })) ?? undefined,
         },
       },
       where: {
@@ -144,6 +161,8 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
         description,
         memberIdsAdded: addMemberIds ?? undefined,
         memberIdsRemoved: removeMemberIds ?? undefined,
+        adminIdsAdded: addAdminIds ?? undefined,
+        adminIdsRemoved: removeAdminIds ?? undefined,
       },
       // Includeing member ids for pubsub
       include: {

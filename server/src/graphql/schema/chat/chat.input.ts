@@ -28,10 +28,16 @@ export const UpdateGroupChatInput = inputObjectType({
       description: 'New description for chat',
     });
     t.list.nonNull.hashId('addMemberIds', {
-      description: 'Ids of users to be add into the chat',
+      description: 'Ids of members to be added into the chat',
     });
     t.list.nonNull.hashId('removeMemberIds', {
-      description: 'Ids of users to be removed from chat',
+      description: 'Ids of members to be removed from chat',
+    });
+    t.list.nonNull.hashId('addAdminIds', {
+      description: 'Ids of admins to be add into the chat',
+    });
+    t.list.nonNull.hashId('removeAdminIds', {
+      description: 'Ids of admins to be removed from chat',
     });
   },
 });

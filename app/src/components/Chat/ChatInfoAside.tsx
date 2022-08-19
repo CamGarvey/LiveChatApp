@@ -8,12 +8,15 @@ import {
   ActionIcon,
   Group,
 } from '@mantine/core';
+import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
+import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import { ChatMenu, UserItem } from 'components/shared/UserItem';
 import { useChat } from 'context/ChatContext';
-import { UserPlus } from 'tabler-icons-react';
+import { Settings, UserPlus } from 'tabler-icons-react';
 
 const ChatInfoAside = () => {
   const { chat, isLoading } = useChat();
+  const openGroupChatUpdate = useUpdateGroupChatModal();
 
   let displayName;
   switch (chat?.__typename) {
@@ -37,7 +40,12 @@ const ChatInfoAside = () => {
         {chat && (
           <>
             <Aside.Section>
-              <Title order={4}>{displayName}</Title>
+              <Group>
+                <ChatUpdateAction />
+                <Title order={4}>{displayName}</Title>
+              </Group>
+            </Aside.Section>
+            <Aside.Section>
               <Group>
                 {chat?.__typename === 'GroupChat' ? (
                   <>

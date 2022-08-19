@@ -2,10 +2,9 @@ import { useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
 import UserSelector from '../UserSelector/UserSelector';
 import {
-  useDeleteChatMutation,
   useGetFriendsQuery,
   useUpdateGroupChatMutation,
-} from '../../graphql/generated/graphql';
+} from 'graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -13,19 +12,26 @@ import {
   InputWrapper,
   Loader,
   Stack,
+  Tooltip,
 } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
-import { chatSchema } from '../../models/validation-schemas';
+import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
+import { useDeleteChat } from 'hooks';
 
 type Props = {
   chat: {
+    __typename: string;
     id: string;
     name: string;
     description?: string;
     isCreator: boolean;
     members: {
+      id: string;
+      username: string;
+    }[];
+    admins: {
       id: string;
       username: string;
     }[];
@@ -39,8 +45,9 @@ export const UpdateGroupChatModal = ({
 }: ContextModalProps<Props>) => {
   const inputRef = useRef<HTMLInputElement>();
   const navigate = useNavigate();
+  const { deleteChat, loading: loadingDelete } = useDeleteChat();
   const [updateChat, { loading: loadingUpdate }] = useUpdateGroupChatMutation();
-  const [deleteChat, { loading: loadingDelete }] = useDeleteChatMutation();
+
   const {
     loading: loadingFriends,
     data: friendData,
@@ -48,6 +55,7 @@ export const UpdateGroupChatModal = ({
   } = useGetFriendsQuery();
 
   const memberIds = useMemo(() => chat.members.map((x) => x.id), [chat]);
+  const adminIds = useMemo(() => chat.admins.map((x) => x.id), [chat]);
 
   // Since other friends can add either friends
   // We need to make sure that we get all of the users in the chat
@@ -71,6 +79,7 @@ export const UpdateGroupChatModal = ({
       description: chat.description ?? '',
       isPrivate: true,
       memberIds,
+      adminIds,
     },
     validationSchema: chatSchema,
     onSubmit: (values) => {
@@ -80,6 +89,10 @@ export const UpdateGroupChatModal = ({
       const membersAdded = values.memberIds.filter(
         (x) => !memberIds.includes(x)
       );
+      const adminsRemoved = adminIds.filter(
+        (x) => !values.adminIds.includes(x)
+      );
+      const adminsAdded = values.adminIds.filter((x) => !adminIds.includes(x));
       updateChat({
         variables: {
           data: {
@@ -94,9 +107,16 @@ export const UpdateGroupChatModal = ({
     },
   });
 
-  const handleChangeValue = useCallback(
+  const handleMembersChanged = useCallback(
     (value) => {
       formik.setFieldValue('memberIds', value);
+    },
+    [formik]
+  );
+
+  const handleAdminsChanged = useCallback(
+    (value) => {
+      formik.setFieldValue('adminIds', value);
     },
     [formik]
   );
@@ -134,12 +154,22 @@ export const UpdateGroupChatModal = ({
             ) : friendError ? (
               <Center>Failed to load your friends 😥</Center>
             ) : (
-              <UserSelector
-                label={'Friends'}
-                users={totalUsers}
-                defaultValue={chat.members}
-                onChange={handleChangeValue}
-              />
+              <>
+                <UserSelector
+                  label={'Members'}
+                  users={totalUsers}
+                  defaultValue={chat.members}
+                  onChange={handleMembersChanged}
+                />
+                {chat.isCreator && (
+                  <UserSelector
+                    label={'Admins'}
+                    users={totalUsers}
+                    defaultValue={chat.admins}
+                    onChange={handleAdminsChanged}
+                  />
+                )}
+              </>
             )}
           </InputWrapper>
           <Button
@@ -157,18 +187,9 @@ export const UpdateGroupChatModal = ({
           color={'red'}
           disabled={loadingFriends}
           onClick={() => {
-            deleteChat({
-              variables: {
-                chatId: chat.id,
-              },
-              update: (cache) => {
-                const normalizedId = cache.identify(chat);
-                cache.evict({ id: normalizedId });
-                cache.gc();
-              },
-            }).then(() => {
-              context.closeModal(id);
+            deleteChat(chat).then(() => {
               navigate('/chats', { replace: true });
+              context.closeModal(id);
             });
           }}
         >
