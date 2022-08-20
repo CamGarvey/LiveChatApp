@@ -1,12 +1,12 @@
-import { ActionIcon, Menu } from '@mantine/core';
+import { ActionIcon } from '@mantine/core';
 import { UserPlus } from 'tabler-icons-react';
-import { useUser } from '../../../context/UserContext';
+import { useUser } from 'context/UserContext';
 import {
   RequestStatus,
   StrangerInfoFragment,
   StrangerInfoFragmentDoc,
   useSendFriendRequestMutation,
-} from '../../../graphql/generated/graphql';
+} from 'graphql/generated/graphql';
 
 type Props = {
   stranger: {

@@ -1,7 +1,7 @@
 import { Center, Input, ScrollArea, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
-import { useGetChatsQuery } from '../../graphql/generated/graphql';
+import { useGetChatsQuery } from 'graphql/generated/graphql';
 import ChatItem from './ChatItem';
 
 type Props = {

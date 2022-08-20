@@ -670,6 +670,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'Me', id: any, username: string, name?: string | null } | null };
 
+export type GetAdminSelectorQueryVariables = Exact<{
+  chatId: Scalars['HashId'];
+}>;
+
+
+export type GetAdminSelectorQuery = { __typename?: 'Query', chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }>, admins: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }> } | null, friends: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null }> };
+
 export type GetChatQueryVariables = Exact<{
   chatId: Scalars['HashId'];
 }>;
@@ -1225,6 +1232,58 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetAdminSelectorDocument = gql`
+    query GetAdminSelector($chatId: HashId!) {
+  chat(chatId: $chatId) {
+    __typename
+    ... on GroupChat {
+      members {
+        id
+        username
+        name
+      }
+      admins {
+        id
+        username
+        name
+      }
+    }
+  }
+  friends {
+    id
+    username
+    name
+  }
+}
+    `;
+
+/**
+ * __useGetAdminSelectorQuery__
+ *
+ * To run a query within a React component, call `useGetAdminSelectorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAdminSelectorQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAdminSelectorQuery({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *   },
+ * });
+ */
+export function useGetAdminSelectorQuery(baseOptions: Apollo.QueryHookOptions<GetAdminSelectorQuery, GetAdminSelectorQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAdminSelectorQuery, GetAdminSelectorQueryVariables>(GetAdminSelectorDocument, options);
+      }
+export function useGetAdminSelectorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAdminSelectorQuery, GetAdminSelectorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAdminSelectorQuery, GetAdminSelectorQueryVariables>(GetAdminSelectorDocument, options);
+        }
+export type GetAdminSelectorQueryHookResult = ReturnType<typeof useGetAdminSelectorQuery>;
+export type GetAdminSelectorLazyQueryHookResult = ReturnType<typeof useGetAdminSelectorLazyQuery>;
+export type GetAdminSelectorQueryResult = Apollo.QueryResult<GetAdminSelectorQuery, GetAdminSelectorQueryVariables>;
 export const GetChatDocument = gql`
     query GetChat($chatId: HashId!) {
   chat(chatId: $chatId) {

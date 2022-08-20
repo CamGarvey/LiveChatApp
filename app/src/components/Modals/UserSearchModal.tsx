@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  GetMeQuery,
-  GetUsersQuery,
-  GetUsersQueryResult,
-  useGetUsersLazyQuery,
-} from '../../graphql/generated/graphql';
+import { GetUsersQuery, useGetUsersLazyQuery } from 'graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -18,8 +13,8 @@ import {
 import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import UserMenu from '../shared/Menus/UserMenu';
-import { UserItem } from '../shared/UserItem';
+import UserItem from 'components/shared/UserItem';
+import BasicMenu from 'components/shared/UserItem/Menus/BasicMenu';
 
 const USER_PAGINATION_COUNT = 7;
 
@@ -95,7 +90,7 @@ export const UserSearchModal = () => {
                       <UserItem
                         key={user.id}
                         user={user}
-                        menu={<UserMenu user={user} />}
+                        menu={<BasicMenu user={user} />}
                       />
                     );
                   })}

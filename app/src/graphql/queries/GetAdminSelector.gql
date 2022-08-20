@@ -1,0 +1,22 @@
+query GetAdminSelector($chatId: HashId!) {
+  chat(chatId: $chatId) {
+    __typename
+    ... on GroupChat {
+      members {
+        id
+        username
+        name
+      }
+      admins {
+        id
+        username
+        name
+      }
+    }
+  }
+  friends {
+    id
+    username
+    name
+  }
+}

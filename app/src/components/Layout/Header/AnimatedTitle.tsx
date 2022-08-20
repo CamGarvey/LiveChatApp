@@ -1,17 +1,13 @@
 import { AnimatePresence } from 'framer-motion';
-import React from 'react';
 import { motion } from 'framer-motion';
-import { ActionIcon, Box, Group, Stack, Text, Title } from '@mantine/core';
-import { useIsDrawerOpen } from '../../store';
+import { Box, Group, Stack, Text, Title } from '@mantine/core';
+import { useIsDrawerOpen } from 'store';
 import { useMediaQuery } from '@mantine/hooks';
-import { Settings } from 'tabler-icons-react';
-import { useChat } from '../../../context/ChatContext';
-import { useUpdateGroupChatModal } from '../../Modals/UpdateGroupChatModal';
+import { useChat } from 'context/ChatContext';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 
 const AnimatedTitle = () => {
   const { chat } = useChat();
-  const openGroupChatUpdate = useUpdateGroupChatModal();
   const isLargerScreen = useMediaQuery('(min-width: 793px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const isDrawerOpen = useIsDrawerOpen();

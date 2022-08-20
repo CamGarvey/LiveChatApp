@@ -1,10 +1,10 @@
 import { ActionIcon, Menu } from '@mantine/core';
 import { MailForward } from 'tabler-icons-react';
-import { useUser } from '../../../context/UserContext';
+import { useUser } from 'context/UserContext';
 import {
   RequestStatus,
   useCancelFriendRequestMutation,
-} from '../../../graphql/generated/graphql';
+} from 'graphql/generated/graphql';
 
 type Props = {
   requestId: string;

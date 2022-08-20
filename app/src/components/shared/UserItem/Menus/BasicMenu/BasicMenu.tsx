@@ -1,4 +1,4 @@
-import { RequestStatus } from '../../../graphql/generated/graphql';
+import { RequestStatus } from 'graphql/generated/graphql';
 import FriendMenu from './FriendMenu';
 import FriendRequestReceivedMenu from './FriendRequestReceivedMenu';
 import FriendRequestSentMenu from './FriendRequestSentMenu';
@@ -31,7 +31,7 @@ type Props = {
       };
 };
 
-const UserMenu = ({ user }: Props) => {
+const BasicMenu = ({ user }: Props) => {
   if (user.__typename === 'Friend') {
     return <FriendMenu user={user} />;
   }
@@ -49,4 +49,4 @@ const UserMenu = ({ user }: Props) => {
   }
 };
 
-export default UserMenu;
+export default BasicMenu;

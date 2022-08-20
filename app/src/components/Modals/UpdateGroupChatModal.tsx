@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
-import UserSelector from '../UserSelector/UserSelector';
+import UserSelector from '../shared/UserSelector/UserSelector';
 import {
   useGetFriendsQuery,
   useUpdateGroupChatMutation,
@@ -19,6 +19,7 @@ import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteChat } from 'hooks';
+import { AdminSelector } from 'components/shared/AdminSelector';
 
 type Props = {
   chat: {
@@ -101,6 +102,8 @@ export const UpdateGroupChatModal = ({
             description: values.description,
             addMemberIds: membersAdded,
             removeMemberIds: membersRemoved,
+            addAdminIds: adminsAdded,
+            removeAdminIds: adminsRemoved,
           },
         },
       }).then(() => context.closeModal(id));
@@ -162,12 +165,7 @@ export const UpdateGroupChatModal = ({
                   onChange={handleMembersChanged}
                 />
                 {chat.isCreator && (
-                  <UserSelector
-                    label={'Admins'}
-                    users={totalUsers}
-                    defaultValue={chat.admins}
-                    onChange={handleAdminsChanged}
-                  />
+                  <AdminSelector chatId={chat.id} onChange={console.log} />
                 )}
               </>
             )}

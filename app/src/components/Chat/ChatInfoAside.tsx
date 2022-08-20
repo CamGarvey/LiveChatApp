@@ -7,10 +7,11 @@ import {
   Title,
   ActionIcon,
   Group,
+  Menu,
 } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
-import { ChatMenu, UserItem } from 'components/shared/UserItem';
+import UserItem from 'components/shared/UserItem';
 import { useChat } from 'context/ChatContext';
 import { Settings, UserPlus } from 'tabler-icons-react';
 
@@ -82,7 +83,11 @@ const ChatInfoAside = () => {
                     <UserItem
                       key={member.id}
                       user={{ ...member }}
-                      menu={<ChatMenu user={member} chat={chat} />}
+                      menu={
+                        <Menu>
+                          <Menu.Item>yo</Menu.Item>
+                        </Menu>
+                      }
                     />
                   );
                 })}

@@ -3,7 +3,7 @@ import { Mailbox } from 'tabler-icons-react';
 import {
   useDeclineFriendRequestMutation,
   useAcceptFriendRequestMutation,
-} from '../../../graphql/generated/graphql';
+} from 'graphql/generated/graphql';
 
 type Props = {
   request: {

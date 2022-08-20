@@ -12,11 +12,11 @@ import {
   Title,
 } from '@mantine/core';
 import { Logout, Search, SquarePlus } from 'tabler-icons-react';
-import { useToggleDrawer, useIsDrawerOpen } from '../store';
-import { useUserSearchModal } from '../Modals/UserSearchModal';
-import ChatDisplay from '../shared/ChatDisplay';
-import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModel/CreateGroupChatModal';
-import { useUser } from '../../context/UserContext';
+import { useToggleDrawer, useIsDrawerOpen } from 'store';
+import { useUserSearchModal } from 'components/Modals/UserSearchModal';
+import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
+import { useUser } from 'context/UserContext';
+import ChatDisplay from 'components/shared/ChatDisplay';
 
 const Drawer = () => {
   const { isAuthenticated, logout } = useAuth0();

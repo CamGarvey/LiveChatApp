@@ -9,9 +9,9 @@ import {
 } from '@mantine/core';
 import React from 'react';
 import { Bell } from 'tabler-icons-react';
-import { useUserNotifications } from '../../../context/NotificationContext';
-import { FriendRequest as FriendRequestObject } from '../../../graphql/generated/graphql';
-import FriendRequest from '../../shared/FriendRequest';
+import { useUserNotifications } from '../../../../context/NotificationContext';
+import { FriendRequest as FriendRequestObject } from '../../../../graphql/generated/graphql';
+import FriendRequest from './FriendRequest';
 
 type Props = {
   size?: number;

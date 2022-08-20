@@ -1,14 +1,13 @@
-import { MultiSelect, MultiSelectProps, Stack } from '@mantine/core';
-import { forwardRef, useEffect, useMemo, useState } from 'react';
-import UserItem from './UserItem';
+import { MultiSelect, Stack } from '@mantine/core';
+import { forwardRef, useMemo } from 'react';
+import UserSelectItem from './UserSelectItem';
 import UserValue from './UserValue';
-
-type User = { id: string; name?: string; username: string };
 
 type Props = {
   label: string;
   placeholder?: string;
   nothingFound?: string;
+  disabled?: boolean;
   users: {
     id: string;
     username: string;
@@ -31,24 +30,28 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
     }: Props,
     ref
   ) => {
-    const defaultMapped = defaultValue.map((x) => x.id);
-    const [selectedUsers, setSelectedUsers] = useState(defaultMapped);
+    const defaultMapped = useMemo(
+      () => defaultValue.map((x) => x.id),
+      [defaultValue]
+    );
 
-    let usersConverted = useMemo(() => {
-      return users.map((u) => ({
-        ...u,
-        value: u.id,
-        label: u.username,
-        image: `https://avatars.dicebear.com/api/pixel-art/${u.username}.svg`,
-      }));
-    }, [users]);
+    let usersConverted = useMemo(
+      () =>
+        users.map((u) => ({
+          ...u,
+          value: u.id,
+          label: u.username,
+          image: `https://avatars.dicebear.com/api/pixel-art/${u.username}.svg`,
+        })),
+      [users]
+    );
 
     return (
       <Stack>
         <MultiSelect
           ref={ref}
           {...others}
-          itemComponent={UserItem}
+          itemComponent={UserSelectItem}
           valueComponent={UserValue}
           data={usersConverted}
           defaultValue={defaultMapped}

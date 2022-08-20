@@ -2,7 +2,7 @@ import { Avatar, Group, Text } from '@mantine/core';
 import { forwardRef } from 'react';
 import UserProps from './UserProps';
 
-const UserItem = forwardRef<HTMLDivElement, UserProps>(
+const UserSelectItem = forwardRef<HTMLDivElement, UserProps>(
   ({ image, username, name, ...others }: UserProps, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap>
@@ -18,4 +18,4 @@ const UserItem = forwardRef<HTMLDivElement, UserProps>(
   )
 );
 
-export default UserItem;
+export default UserSelectItem;

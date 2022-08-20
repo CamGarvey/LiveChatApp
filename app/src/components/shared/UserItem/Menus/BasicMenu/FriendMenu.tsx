@@ -1,6 +1,6 @@
 import { Menu, Text } from '@mantine/core';
 import { UserMinus } from 'tabler-icons-react';
-import { useDeleteFriendMutation } from '../../../graphql/generated/graphql';
+import { useDeleteFriendMutation } from 'graphql/generated/graphql';
 
 type Props = {
   user: {
