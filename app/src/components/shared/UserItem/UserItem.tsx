@@ -1,5 +1,7 @@
 import React from 'react';
 import { Avatar, Box, Stack, Text, UnstyledButton } from '@mantine/core';
+import UserAvatar from '../UserAvatar';
+import { useUser } from 'context/UserContext';
 
 type Props = {
   user:
@@ -24,6 +26,7 @@ type Props = {
   menu?: React.ReactChild;
 };
 const UserItem = ({ user, menu }: Props) => {
+  const { user: currentUser } = useUser();
   const { name, username } = user;
 
   return (
@@ -45,17 +48,17 @@ const UserItem = ({ user, menu }: Props) => {
         },
       })}
     >
-      <Avatar
-        size="sm"
-        src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
-      />
+      <UserAvatar size="sm" username={username} />
       <Stack spacing={0}>
-        <Text>{username}</Text>
+        <Text>
+          {username}
+          {currentUser.id === user.id && ' (YOU)'}
+        </Text>
         <Text size={'xs'} color={'dimmed'}>
           {name}
         </Text>
       </Stack>
-      {menu && <Box ml={'auto'}>{menu}</Box>}
+      {menu && currentUser.id !== user.id && <Box ml={'auto'}>{menu}</Box>}
     </UnstyledButton>
   );
 };

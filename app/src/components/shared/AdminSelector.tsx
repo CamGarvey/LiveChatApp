@@ -63,6 +63,7 @@ export const AdminSelector = ({ chatId, onChange }: Props) => {
       defaultValue={chat?.__typename === 'GroupChat' ? chat.admins : []}
       onChange={handleOnChange}
       disabled={chat?.__typename !== 'GroupChat'}
+      readOnly={chat?.__typename !== 'GroupChat' || !chat.isCreator}
     />
   );
 };

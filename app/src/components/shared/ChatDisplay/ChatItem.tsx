@@ -6,6 +6,8 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { NavLink } from 'react-router-dom';
+import { getUserAvatar } from 'utils/avatar';
+import ChatAvatar from '../ChatAvatar';
 
 type Props = {
   chat:
@@ -32,7 +34,7 @@ type Props = {
 
 const ChatItem = ({ chat, onClick }: Props) => {
   const isDM = chat.__typename === 'DirectMessageChat';
-  const nameOf = isDM ? chat.friend.username : chat.name;
+  const chatName = isDM ? chat.friend.username : chat.name;
 
   const members = isDM ? [chat.friend] : chat.members;
 
@@ -68,11 +70,8 @@ const ChatItem = ({ chat, onClick }: Props) => {
           })}
         >
           <Group spacing={'sm'}>
-            <Avatar
-              size="sm"
-              src={`https://avatars.dicebear.com/api/initials/${nameOf}.svg`}
-            />
-            <Text size="sm">{nameOf}</Text>
+            <ChatAvatar chatName={chatName} />
+            <Text size="sm">{chatName}</Text>
             <AvatarsGroup
               ml={'auto'}
               limit={4}
@@ -82,7 +81,7 @@ const ChatItem = ({ chat, onClick }: Props) => {
               {members.slice(0, 2).map((member) => (
                 <Avatar
                   key={member.username}
-                  src={`https://avatars.dicebear.com/api/initials/${member.username}.svg`}
+                  src={getUserAvatar(member.username)}
                 />
               ))}
             </AvatarsGroup>

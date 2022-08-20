@@ -17,6 +17,7 @@ import { useUserSearchModal } from 'components/Modals/UserSearchModal';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { useUser } from 'context/UserContext';
 import ChatDisplay from 'components/shared/ChatDisplay';
+import UserAvatar from 'components/shared/UserAvatar';
 
 const Drawer = () => {
   const { isAuthenticated, logout } = useAuth0();
@@ -58,9 +59,9 @@ const Drawer = () => {
             ) : (
               <Stack spacing={'md'}>
                 <Group>
-                  <Avatar
+                  <UserAvatar
                     size="md"
-                    src={`https://avatars.dicebear.com/api/initials/${user.username}.svg`}
+                    username={user.username}
                     style={{ marginTop: 'auto' }}
                   />
                   <Title order={5}>{user.username}</Title>

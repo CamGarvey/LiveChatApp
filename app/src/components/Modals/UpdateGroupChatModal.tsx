@@ -118,8 +118,9 @@ export const UpdateGroupChatModal = ({
   );
 
   const handleAdminsChanged = useCallback(
-    (value) => {
-      formik.setFieldValue('adminIds', value);
+    (value: { added: string[]; removed: string[]; selected: string[] }) => {
+      // formik.setFieldValue('adminIds', value);
+      console.log(value);
     },
     [formik]
   );
@@ -164,9 +165,10 @@ export const UpdateGroupChatModal = ({
                   defaultValue={chat.members}
                   onChange={handleMembersChanged}
                 />
-                {chat.isCreator && (
-                  <AdminSelector chatId={chat.id} onChange={console.log} />
-                )}
+                <AdminSelector
+                  chatId={chat.id}
+                  onChange={handleAdminsChanged}
+                />
               </>
             )}
           </InputWrapper>

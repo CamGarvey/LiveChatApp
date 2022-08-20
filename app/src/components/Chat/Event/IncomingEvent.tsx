@@ -1,8 +1,8 @@
 import { Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import UserAvatar from 'components/shared/UserAvatar';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import EventAvatar from './EventAvatar';
 import EventInfo from './EventInfo';
 
 const MotionGroup = motion(Group);
@@ -44,7 +44,13 @@ const IncomingEvent = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <EventAvatar username={createdBy.username} isVisible={displayAvatar} />
+      <UserAvatar
+        username={createdBy.username}
+        style={{ marginTop: 'auto' }}
+        sx={{
+          visibility: displayAvatar ? 'visible' : 'hidden',
+        }}
+      />
       <Group
         spacing={5}
         px={10}

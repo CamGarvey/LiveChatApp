@@ -6,6 +6,7 @@ import {
   useAcceptFriendRequestMutation,
   useDeclineFriendRequestMutation,
 } from 'graphql/generated/graphql';
+import UserAvatar from 'components/shared/UserAvatar';
 
 type Props = {
   request: FriendRequestObject;
@@ -18,10 +19,7 @@ const FriendRequest = ({ request }: Props) => {
 
   return (
     <Group>
-      <Avatar
-        size="sm"
-        src={`https://avatars.dicebear.com/api/initials/${createdBy.username}.svg`}
-      />
+      <UserAvatar size="sm" username={createdBy.username} />
       <Stack spacing={0}>
         <Text size={'sm'}>{createdBy.username}</Text>
         <Text size={'sm'} color={'blue'}>

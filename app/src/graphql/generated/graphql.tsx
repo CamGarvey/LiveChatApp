@@ -675,7 +675,7 @@ export type GetAdminSelectorQueryVariables = Exact<{
 }>;
 
 
-export type GetAdminSelectorQuery = { __typename?: 'Query', chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }>, admins: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }> } | null, friends: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null }> };
+export type GetAdminSelectorQuery = { __typename?: 'Query', chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', isCreator: boolean, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }>, admins: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }> } | null, friends: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null }> };
 
 export type GetChatQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1237,6 +1237,7 @@ export const GetAdminSelectorDocument = gql`
   chat(chatId: $chatId) {
     __typename
     ... on GroupChat {
+      isCreator
       members {
         id
         username

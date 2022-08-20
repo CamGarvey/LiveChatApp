@@ -1,5 +1,6 @@
 import { MultiSelect, Stack } from '@mantine/core';
 import { forwardRef, useMemo } from 'react';
+import { getUserAvatar } from 'utils/avatar';
 import UserSelectItem from './UserSelectItem';
 import UserValue from './UserValue';
 
@@ -8,6 +9,7 @@ type Props = {
   placeholder?: string;
   nothingFound?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   users: {
     id: string;
     username: string;
@@ -41,7 +43,7 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
           ...u,
           value: u.id,
           label: u.username,
-          image: `https://avatars.dicebear.com/api/pixel-art/${u.username}.svg`,
+          image: getUserAvatar(u.username),
         })),
       [users]
     );
