@@ -40,7 +40,7 @@ const ChatItem = ({ chat, onClick }: Props) => {
 
   return (
     <NavLink
-      to={`${chat.id}`}
+      to={`/chats/${chat.id}`}
       style={{
         textDecoration: 'none',
       }}

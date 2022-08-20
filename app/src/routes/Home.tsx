@@ -10,7 +10,7 @@ const Home = () => {
     <Center>
       <Center>Welcome to GraphChat</Center>
       <Button onClick={() => loginWithRedirect()}>Login</Button>
-      {isAuthenticated && <Navigate to="/chat" replace={true} />}
+      {isAuthenticated && <Navigate to="/chats" replace={true} />}
     </Center>
   );
 };

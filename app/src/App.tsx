@@ -4,15 +4,13 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './routes/Home';
-import ProtectedRoute from './components/ProtectedRoute';
-import { ModalsProvider } from '@mantine/modals';
-import { UserSearchModal } from './components/Modals/UserSearchModal';
-import { CreateGroupChatModal } from './components/Modals/CreateGroupChatModel/CreateGroupChatModal';
-import { UpdateGroupChatModal } from './components/Modals/UpdateGroupChatModal';
 import { NotificationsProvider } from '@mantine/notifications';
-import Chats from './routes/Chats';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from 'routes/Home';
+import ProtectedRoute from 'components/ProtectedRoute';
+import Chats from 'routes/Chats';
+import Users from 'routes/Users';
+import Chat from 'routes/Chat';
 
 export const App = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -43,12 +41,15 @@ export const App = () => {
               <Route
                 path="/chats"
                 element={<ProtectedRoute component={Chats} />}
-              >
-                <Route
-                  path=":chatId"
-                  element={<ProtectedRoute component={Chats} />}
-                />
-              </Route>
+              />
+              <Route
+                path="/chats/:chatId"
+                element={<ProtectedRoute component={Chat} />}
+              />
+              <Route
+                path="/users"
+                element={<ProtectedRoute component={Users} />}
+              />
             </Routes>
           </BrowserRouter>
         </NotificationsProvider>
