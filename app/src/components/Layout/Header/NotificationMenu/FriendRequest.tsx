@@ -5,7 +5,7 @@ import {
   FriendRequest as FriendRequestObject,
   useAcceptFriendRequestMutation,
   useDeclineFriendRequestMutation,
-} from '../../../../graphql/generated/graphql';
+} from 'graphql/generated/graphql';
 
 type Props = {
   request: FriendRequestObject;

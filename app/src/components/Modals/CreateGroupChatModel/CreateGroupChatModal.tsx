@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { useEffect, useRef, useState } from 'react';
-import UserSelector from '../../shared/UserSelector/UserSelector';
+import UserSelector from 'components/shared/UserSelector/UserSelector';
 import { useGetFriendsQuery } from 'graphql/generated/graphql';
 import {
   Button,

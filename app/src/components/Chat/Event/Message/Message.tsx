@@ -1,4 +1,4 @@
-import { useDeleteMessageMutation } from '../../../../graphql/generated/graphql';
+import { useDeleteMessageMutation } from 'graphql/generated/graphql';
 import IncomingEvent from '../IncomingEvent';
 import OutgoingEvent from '../OutgoingEvent';
 import DeletedMessage from './DeletedMessage';

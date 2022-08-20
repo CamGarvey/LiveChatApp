@@ -5,16 +5,15 @@ import {
   Header as MantineHeader,
   MediaQuery,
   Burger,
-  Button,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
-import { useIsDrawerOpen, useToggleDrawer } from '../../../store';
-import { useUserSearchModal } from '../../Modals/UserSearchModal';
+import { useIsDrawerOpen, useToggleDrawer } from 'store';
+import { useUserSearchModal } from 'components/Modals/UserSearchModal';
 import AnimatedTitle from './AnimatedTitle';
 import ColorModeSwitcher from './ThemeToggler';
 import NotificationMenu from './NotificationMenu/NotificationMenu';
 import AccountMenu from './AccountMenu';
-import { useUser } from '../../../context/UserContext';
+import { useUser } from 'context/UserContext';
 
 const ICON_SIZE = 16;
 
