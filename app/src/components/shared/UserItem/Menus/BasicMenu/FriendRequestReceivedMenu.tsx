@@ -1,5 +1,5 @@
 import { ActionIcon, Menu } from '@mantine/core';
-import { Mailbox } from 'tabler-icons-react';
+import { Mailbox, Menu2 } from 'tabler-icons-react';
 import {
   useDeclineFriendRequestMutation,
   useAcceptFriendRequestMutation,
@@ -15,13 +15,12 @@ const FriendRequestReceivedMenu = ({ request }: Props) => {
   const [declineFriendRequest] = useDeclineFriendRequestMutation();
   const [acceptFriendRequest] = useAcceptFriendRequestMutation();
   return (
-    <Menu
-      control={
+    <Menu>
+      <Menu.Target>
         <ActionIcon type="button">
           <Mailbox />
         </ActionIcon>
-      }
-    >
+      </Menu.Target>
       <Menu.Item
         onClick={() => {
           acceptFriendRequest({

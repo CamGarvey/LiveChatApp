@@ -4,10 +4,8 @@ import {
   Indicator,
   Menu,
   Stack,
-  Text,
   Title,
 } from '@mantine/core';
-import React from 'react';
 import { Bell } from 'tabler-icons-react';
 import { useUserNotifications } from 'context/NotificationContext';
 import { FriendRequest as FriendRequestObject } from 'graphql/generated/graphql';
@@ -26,32 +24,30 @@ const NotificationMenu = ({ size = 16 }: Props) => {
     ) as FriendRequestObject[]) ?? [];
 
   return (
-    <Menu
-      size={'xl'}
-      control={
+    <Menu width={200} shadow="md">
+      <Menu.Target>
         <Indicator color={'red'} disabled={friendRequests.length === 0}>
           <ActionIcon variant="default">
             <Bell size={size} />
           </ActionIcon>
         </Indicator>
-      }
-    >
-      <Stack>
+      </Menu.Target>
+      <Menu.Dropdown>
         {friendRequests.length ? (
           <>
-            <Center>
-              <Title order={6}>Friend Requests</Title>
-            </Center>
+            <Menu.Item>
+              <Center>Friend Requests</Center>
+            </Menu.Item>
             {friendRequests.map((request) => (
-              <FriendRequest key={request.id} request={request} />
+              <Menu.Item>
+                <FriendRequest key={request.id} request={request} />
+              </Menu.Item>
             ))}
           </>
         ) : (
-          <Center>
-            <Text>No notifications</Text>
-          </Center>
+          <Menu.Item>No notifications</Menu.Item>
         )}
-      </Stack>
+      </Menu.Dropdown>
     </Menu>
   );
 };

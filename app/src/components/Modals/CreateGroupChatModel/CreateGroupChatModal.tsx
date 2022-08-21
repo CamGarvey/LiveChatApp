@@ -2,14 +2,7 @@ import { useFormik } from 'formik';
 import { useEffect, useRef, useState } from 'react';
 import UserSelector from 'components/shared/UserSelector/UserSelector';
 import { useGetFriendsQuery } from 'graphql/generated/graphql';
-import {
-  Button,
-  Center,
-  Input,
-  InputWrapper,
-  Loader,
-  Stack,
-} from '@mantine/core';
+import { Button, Center, Input, Loader, Stack } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
 import { useCreateChat } from 'hooks/useCreateChat';
@@ -55,7 +48,7 @@ export const CreateGroupChatModal = ({
   return (
     <form onSubmit={formik.handleSubmit}>
       <Stack>
-        <InputWrapper
+        <Input.Wrapper
           required
           error={formik.touched.name && formik.errors.name}
           label="Name"
@@ -67,16 +60,16 @@ export const CreateGroupChatModal = ({
             onChange={formik.handleChange}
             value={formik.values.name}
           />
-        </InputWrapper>
-        <InputWrapper error={formik.errors.description} label="Description">
+        </Input.Wrapper>
+        <Input.Wrapper error={formik.errors.description} label="Description">
           <Input
             id="description"
             type="text"
             onChange={formik.handleChange}
             value={formik.values.description}
           />
-        </InputWrapper>
-        <InputWrapper>
+        </Input.Wrapper>
+        <Input.Wrapper>
           {loadingFriends ? (
             <Center>
               <Loader variant="bars" />
@@ -93,7 +86,7 @@ export const CreateGroupChatModal = ({
               }}
             />
           )}
-        </InputWrapper>
+        </Input.Wrapper>
         <Button
           type="submit"
           loading={loadingCreateChat}

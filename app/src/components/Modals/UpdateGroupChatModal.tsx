@@ -5,15 +5,7 @@ import {
   useGetFriendsQuery,
   useUpdateGroupChatMutation,
 } from 'graphql/generated/graphql';
-import {
-  Button,
-  Center,
-  Input,
-  InputWrapper,
-  Loader,
-  Stack,
-  Tooltip,
-} from '@mantine/core';
+import { Button, Center, Input, Loader, Stack, Tooltip } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
@@ -111,7 +103,7 @@ export const UpdateGroupChatModal = ({
   });
 
   const handleMembersChanged = useCallback(
-    (value) => {
+    (value: any) => {
       formik.setFieldValue('memberIds', value);
     },
     [formik]
@@ -129,7 +121,7 @@ export const UpdateGroupChatModal = ({
     <Stack>
       <form onSubmit={formik.handleSubmit}>
         <Stack>
-          <InputWrapper
+          <Input.Wrapper
             required
             error={formik.touched.name && formik.errors.name}
             label="Name"
@@ -141,16 +133,16 @@ export const UpdateGroupChatModal = ({
               onChange={formik.handleChange}
               value={formik.values.name}
             />
-          </InputWrapper>
-          <InputWrapper error={formik.errors.description} label="Description">
+          </Input.Wrapper>
+          <Input.Wrapper error={formik.errors.description} label="Description">
             <Input
               id="description"
               type="text"
               onChange={formik.handleChange}
               value={formik.values.description}
             />
-          </InputWrapper>
-          <InputWrapper>
+          </Input.Wrapper>
+          <Input.Wrapper>
             {loadingFriends ? (
               <Center>
                 <Loader variant="bars" />
@@ -171,7 +163,7 @@ export const UpdateGroupChatModal = ({
                 />
               </>
             )}
-          </InputWrapper>
+          </Input.Wrapper>
           <Button
             type="submit"
             loading={loadingUpdate}

@@ -8,15 +8,13 @@ type Props = {
   style?: CSSProperties;
 };
 
-const ChatAvatar = ({ chatName, style, size = 'sm' }: Props) => {
-  return (
-    <Avatar
-      size={size}
-      radius={'sm'}
-      style={style}
-      src={getChatAvatar(chatName)}
-    />
-  );
-};
+const ChatAvatar = ({ chatName, style, size = 'sm' }: Props) => (
+  <Avatar
+    size={size}
+    radius={'sm'}
+    style={style}
+    src={getChatAvatar(chatName)}
+  />
+);
 
 export default ChatAvatar;

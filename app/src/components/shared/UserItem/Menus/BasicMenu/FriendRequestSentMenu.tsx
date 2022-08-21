@@ -33,13 +33,12 @@ const FriendRequestSentMenu = ({ requestId, recipientId }: Props) => {
   });
 
   return (
-    <Menu
-      control={
+    <Menu>
+      <Menu.Target>
         <ActionIcon type="button">
           <MailForward />
         </ActionIcon>
-      }
-    >
+      </Menu.Target>
       <Menu.Item
         onClick={() => {
           cancelFriendRequest({

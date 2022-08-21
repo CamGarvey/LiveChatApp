@@ -1,13 +1,7 @@
-import {
-  Avatar,
-  AvatarsGroup,
-  Group,
-  Text,
-  UnstyledButton,
-} from '@mantine/core';
+import { Avatar, Group, Text, UnstyledButton } from '@mantine/core';
 import { NavLink } from 'react-router-dom';
-import { getUserAvatar } from 'utils/avatar';
 import ChatAvatar from '../ChatAvatar';
+import UserAvatar from '../UserAvatar';
 
 type Props = {
   chat:
@@ -72,19 +66,12 @@ const ChatItem = ({ chat, onClick }: Props) => {
           <Group spacing={'sm'}>
             <ChatAvatar chatName={chatName} />
             <Text size="sm">{chatName}</Text>
-            <AvatarsGroup
-              ml={'auto'}
-              limit={4}
-              total={members.length}
-              size={'sm'}
-            >
+            <Avatar.Group ml={'auto'}>
               {members.slice(0, 2).map((member) => (
-                <Avatar
-                  key={member.username}
-                  src={getUserAvatar(member.username)}
-                />
+                <UserAvatar username={member.username} />
               ))}
-            </AvatarsGroup>
+              {members.length > 2 && <Avatar>+{members.length - 2}</Avatar>}
+            </Avatar.Group>
           </Group>
         </UnstyledButton>
       )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Box, Stack, Text, UnstyledButton } from '@mantine/core';
+import { Box, Stack, Text, UnstyledButton } from '@mantine/core';
 import UserAvatar from '../UserAvatar';
 import { useUser } from 'context/UserContext';
 

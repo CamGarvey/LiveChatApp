@@ -2,7 +2,7 @@ import {
   ActionIcon,
   Button,
   Grid,
-  InputWrapper,
+  Input,
   MediaQuery,
   Textarea,
 } from '@mantine/core';
@@ -37,7 +37,7 @@ const ChatInput = ({
     <form style={{ marginTop: 'auto' }} onSubmit={formik.handleSubmit}>
       <Grid columns={6}>
         <Grid.Col span={5}>
-          <InputWrapper required>
+          <Input.Wrapper required>
             <Textarea
               id="content"
               onChange={formik.handleChange}
@@ -46,7 +46,7 @@ const ChatInput = ({
               minRows={2}
               maxRows={4}
             />
-          </InputWrapper>
+          </Input.Wrapper>
         </Grid.Col>
         <Grid.Col span={1} sx={{ alignSelf: 'center' }}>
           <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>

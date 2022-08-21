@@ -4,7 +4,6 @@ import {
   Button,
   Center,
   Input,
-  InputWrapper,
   Loader,
   ScrollArea,
   Stack,
@@ -53,7 +52,7 @@ export const UserSearchModal = () => {
 
   return (
     <>
-      <InputWrapper>
+      <Input.Wrapper>
         <Input
           icon={<Search />}
           placeholder="Find your friends!"
@@ -68,7 +67,7 @@ export const UserSearchModal = () => {
             setSearch(value);
           }}
         />
-      </InputWrapper>
+      </Input.Wrapper>
       {hasInput && (
         <>
           <Stack

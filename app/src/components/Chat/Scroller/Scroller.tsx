@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Button,
   Center,
   Container,
   Loader,
@@ -133,32 +134,36 @@ const Scroller = ({
         opened={isScrollToBottomOpened}
         width={'100%'}
         position="top"
-        styles={{
-          inner: {
-            padding: 3,
-            cursor: 'pointer',
-          },
-          body: {
-            boxShadow: 'none',
-            background: 'transparent',
-            border: 'none',
-          },
-        }}
-        target={<></>}
+        // styles={
+        //   {
+        //     // inner: {
+        //     //   padding: 3,
+        //     //   cursor: 'pointer',
+        //     // },
+        //     // body: {
+        //     //   boxShadow: 'none',
+        //     //   background: 'transparent',
+        //     //   border: 'none',
+        //     // },
+        //   }
+        // }
       >
-        <ActionIcon
-          size={'xl'}
-          onClick={() => {
-            scrollToBottom('smooth');
-          }}
-          styles={{
-            hover: {
-              backgroundColor: 'transparent !important',
-            },
-          }}
-        >
-          <ArrowDownCircle size={60} strokeWidth={1} color={'#405abf'} />
-        </ActionIcon>
+        {/* <Popover.Target></Popover.Target> */}
+        <Popover.Dropdown>
+          <ActionIcon
+            size={'xl'}
+            onClick={() => {
+              scrollToBottom('smooth');
+            }}
+            // styles={{
+            //   hover: {
+            //     backgroundColor: 'transparent !important',
+            //   },
+            // }}
+          >
+            <ArrowDownCircle size={60} strokeWidth={1} color={'#405abf'} />
+          </ActionIcon>
+        </Popover.Dropdown>
       </Popover>
     </>
   );
