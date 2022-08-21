@@ -1,4 +1,5 @@
-import { Center, Stack, Text } from '@mantine/core';
+import { ActionIcon, Center, Popover, Stack, Text } from '@mantine/core';
+import { ArrowDownCircle } from 'tabler-icons-react';
 import ChatInput from '../ChatInput';
 import EventContainer from '../Event/EventContainer';
 import Message from '../Event/Message/Message';
