@@ -3,7 +3,7 @@ schema:
   - ${REACT_APP_GRAPHQL_API_URL}/graphql:
       headers:
         Authorization: 'Bearer ${TOKEN}'
-documents: 'src/graphql/**/*.{gql,graphql}'
+documents: './src/**/!(*.d).{ts,tsx,gql,graphql}'
 generates:
   src/graphql/generated/graphql.tsx:
     plugins:

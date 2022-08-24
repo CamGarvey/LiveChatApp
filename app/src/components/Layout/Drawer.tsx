@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import { Logout, Search, SquarePlus } from 'tabler-icons-react';
 import { useToggleDrawer, useIsDrawerOpen } from 'store';
-import { useUserSearchModal } from 'components/Modals/UserSearchModal';
+import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { useUser } from 'context/UserContext';
 import ChatDisplay from 'components/shared/ChatDisplay';
@@ -61,7 +61,7 @@ const Drawer = () => {
                 <Group>
                   <UserAvatar
                     size="md"
-                    username={user.username}
+                    user={user}
                     style={{ marginTop: 'auto' }}
                   />
                   <Title order={5}>{user.username}</Title>

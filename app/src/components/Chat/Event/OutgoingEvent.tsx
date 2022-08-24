@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { Group, Loader, Tooltip } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'framer-motion';
@@ -57,13 +58,7 @@ const OutgoingEvent = ({
           exit={{ opacity: 0, y: 30 }}
           spacing={2}
         >
-          <EventInfo
-            show={isHovered}
-            createdBy={createdBy}
-            createdAt={createdAt}
-            isCreator={true}
-            align={'self-end'}
-          />
+          <EventInfo show={isHovered} event={event} align={'self-end'} />
           <Group>{actions}</Group>
         </MotionGroup>
         {children}
@@ -76,4 +71,14 @@ const OutgoingEvent = ({
     </MotionGroup>
   );
 };
+
+OutgoingEvent.fragments = {
+  event: gql`
+    fragment OutgoingEvent on Message {
+      ...EventInfo
+    }
+    ${EventInfo.fragments.event}
+  `,
+};
+
 export default OutgoingEvent;

@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { Avatar, Group, Text } from '@mantine/core';
 import { forwardRef } from 'react';
 import UserProps from './UserProps';

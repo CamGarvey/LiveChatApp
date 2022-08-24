@@ -1,28 +1,21 @@
+import { gql } from '@apollo/client';
 import { Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import UserAvatar from 'components/shared/UserAvatar';
 import { motion } from 'framer-motion';
+import { EventFragment } from 'graphql/generated/graphql';
 import { useState } from 'react';
 import EventInfo from './EventInfo';
 
 const MotionGroup = motion(Group);
 
 type Props = {
-  createdBy: {
-    id: string;
-    username: string;
-  };
-  createdAt: string;
+  event: EventFragment;
   displayAvatar: boolean;
   children: JSX.Element;
 };
 
-const IncomingEvent = ({
-  createdBy,
-  createdAt,
-  displayAvatar,
-  children,
-}: Props) => {
+const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
   const [isHovered, setHovered] = useState(false);
   const largeScreen = useMediaQuery('(min-width: 1200px)');
   return (
@@ -45,7 +38,7 @@ const IncomingEvent = ({
       onMouseLeave={() => setHovered(false)}
     >
       <UserAvatar
-        username={createdBy.username}
+        user={event.createdBy}
         style={{ marginTop: 'auto' }}
         sx={{
           visibility: displayAvatar ? 'visible' : 'hidden',
@@ -65,16 +58,24 @@ const IncomingEvent = ({
           exit={{ opacity: 0, y: 30 }}
           spacing={2}
         >
-          <EventInfo
-            show={isHovered}
-            createdBy={createdBy}
-            createdAt={createdAt}
-            isCreator={false}
-          />
+          <EventInfo event={event} show={isHovered} />
         </MotionGroup>
       </Group>
     </MotionGroup>
   );
+};
+
+IncomingEvent.fragments = {
+  event: gql`
+    fragment IncomingEvent on Message {
+      ...EventInfo
+      createdBy {
+        ...UserAvatar
+      }
+    }
+    ${EventInfo.fragments.event}
+    ${UserAvatar.fragments.user}
+  `,
 };
 
 export default IncomingEvent;

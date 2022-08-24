@@ -2,31 +2,14 @@ import React from 'react';
 import { Box, Stack, Text, UnstyledButton } from '@mantine/core';
 import UserAvatar from '../UserAvatar';
 import { useUser } from 'context/UserContext';
+import { gql } from '@apollo/client';
+import { UserItemFragment } from 'graphql/generated/graphql';
 
 type Props = {
-  user:
-    | {
-        __typename?: 'Friend';
-        id: any;
-        name?: string;
-        username: string;
-      }
-    | {
-        __typename?: 'Me';
-        id: any;
-        name?: string;
-        username: string;
-      }
-    | {
-        __typename?: 'Stranger';
-        id: any;
-        name?: string;
-        username: string;
-      };
+  user: UserItemFragment;
   menu?: React.ReactChild;
 };
 const UserItem = ({ user, menu }: Props) => {
-  const { user: currentUser } = useUser();
   const { name, username } = user;
 
   return (
@@ -52,15 +35,24 @@ const UserItem = ({ user, menu }: Props) => {
       <Stack spacing={0}>
         <Text>
           {username}
-          {currentUser.id === user.id && ' (YOU)'}
+          {user.__typename === 'Me' && ' (YOU)'}
         </Text>
         <Text size={'xs'} color={'dimmed'}>
           {name}
         </Text>
       </Stack>
-      {menu && currentUser.id !== user.id && <Box ml={'auto'}>{menu}</Box>}
+      {menu && user.__typename === 'Me' && <Box ml={'auto'}>{menu}</Box>}
     </UnstyledButton>
   );
+};
+
+UserItem.fragments = {
+  user: gql`
+    fragment UserItem on User {
+      username
+      name
+    }
+  `,
 };
 
 export default UserItem;

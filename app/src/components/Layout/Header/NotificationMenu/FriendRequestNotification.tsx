@@ -1,27 +1,27 @@
-import { Group, Avatar, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
+import { Group, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
 import moment from 'moment';
 import { CircleX, CircleCheck } from 'tabler-icons-react';
 import {
-  FriendRequest as FriendRequestObject,
+  FriendRequestNotificationFragment,
   useAcceptFriendRequestMutation,
   useDeclineFriendRequestMutation,
 } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
+import { gql } from '@apollo/client';
 
 type Props = {
-  request: FriendRequestObject;
+  request: FriendRequestNotificationFragment;
 };
 
-const FriendRequest = ({ request }: Props) => {
+const FriendRequestNotification = ({ request }: Props) => {
   const [acceptRequest] = useAcceptFriendRequestMutation();
   const [declineRequest] = useDeclineFriendRequestMutation();
-  const createdBy = request.createdBy;
 
   return (
     <Group>
-      <UserAvatar size="sm" username={createdBy.username} />
+      <UserAvatar size="sm" user={request.createdBy} />
       <Stack spacing={0}>
-        <Text size={'sm'}>{createdBy.username}</Text>
+        <Text size={'sm'}>{request.createdBy.username}</Text>
         <Text size={'sm'} color={'blue'}>
           {moment(request.createdAt).fromNow()}
         </Text>
@@ -68,4 +68,17 @@ const FriendRequest = ({ request }: Props) => {
   );
 };
 
-export default FriendRequest;
+FriendRequestNotification.fragments = {
+  request: gql`
+    fragment FriendRequestNotification on FriendRequest {
+      id
+      createdAt
+      createdBy {
+        ...UserAvatar
+      }
+    }
+    ${UserAvatar.fragments.user}
+  `,
+};
+
+export default FriendRequestNotification;

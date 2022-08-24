@@ -9,7 +9,7 @@ import {
 import { Bell } from 'tabler-icons-react';
 import { useUserNotifications } from 'context/NotificationContext';
 import { FriendRequest as FriendRequestObject } from 'graphql/generated/graphql';
-import FriendRequest from './FriendRequest';
+import FriendRequestNotification from './FriendRequestNotification';
 
 type Props = {
   size?: number;
@@ -40,12 +40,14 @@ const NotificationMenu = ({ size = 16 }: Props) => {
             </Menu.Item>
             {friendRequests.map((request) => (
               <Menu.Item>
-                <FriendRequest key={request.id} request={request} />
+                <FriendRequestNotification key={request.id} request={request} />
               </Menu.Item>
             ))}
           </>
         ) : (
-          <Menu.Item>No notifications</Menu.Item>
+          <Menu.Item>
+            <Center>No notifications</Center>
+          </Menu.Item>
         )}
       </Menu.Dropdown>
     </Menu>

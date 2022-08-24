@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { ActionIcon, Center, Popover, Stack, Text } from '@mantine/core';
 import { ArrowDownCircle } from 'tabler-icons-react';
 import ChatInput from '../ChatInput';
@@ -75,7 +76,7 @@ export const ChatPanel = ({ chatId }: Props) => {
               event={
                 <Message
                   displayAvatar={message.isLastMessageInGroup}
-                  data={message}
+                  message={message}
                 />
               }
             />
@@ -88,6 +89,17 @@ export const ChatPanel = ({ chatId }: Props) => {
       />
     </Stack>
   );
+};
+
+ChatPanel.fragments = {
+  message: gql`
+    fragment ChatPanelMessage on Message {
+      ...EventContainer
+      ...MessageEvent
+    }
+    ${EventContainer.fragments.event}
+    ${Message.fragments.message}
+  `,
 };
 
 export default ChatPanel;

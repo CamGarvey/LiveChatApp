@@ -1,6 +1,6 @@
-import { Button, MediaQuery, Navbar, ScrollArea, Tabs } from '@mantine/core';
-import ChatDisplay from '../shared/ChatDisplay/ChatDisplay';
-import { useCreateGroupChatModal } from '../Modals/CreateGroupChatModel/CreateGroupChatModal';
+import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
+import ChatDisplay from 'components/shared/ChatDisplay/ChatDisplay';
+import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 
 const ChatNav = () => {
   const openChatModal = useCreateGroupChatModal();

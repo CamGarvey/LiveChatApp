@@ -3683,6 +3683,22 @@
             "deprecationReason": null
           },
           {
+            "name": "status",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "StrangerStatus",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updatedAt",
             "description": null,
             "args": [],
@@ -3735,7 +3751,7 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "NOT_FRIEND",
+            "name": "NO_REQUEST",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

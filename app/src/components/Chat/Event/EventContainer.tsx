@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import EventTime from './EventTime';
 import moment from 'moment';
 import { Stack } from '@mantine/core';
+import { gql } from '@apollo/client';
 
 type EventData = {
   createdAt: string;
@@ -29,6 +30,16 @@ const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
       </div>
     </Stack>
   );
+};
+
+EventContainer.fragments = {
+  event: gql`
+    fragment EventContainer on Message {
+      __typename
+      createdAt
+      isCreator
+    }
+  `,
 };
 
 export default EventContainer;

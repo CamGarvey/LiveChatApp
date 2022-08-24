@@ -81,6 +81,48 @@ export const Stranger = objectType({
         );
       },
     });
+    t.nonNull.field('status', {
+      type: 'StrangerStatus',
+      resolve: async (parent, _, { prisma, userId }) => {
+        const user = await prisma.user.findUniqueOrThrow({
+          where: {
+            id: userId,
+          },
+          select: {
+            sentFriendRequests: {
+              where: {
+                status: {
+                  in: ['SEEN', 'SENT'],
+                },
+              },
+            },
+            receivedFriendRequests: {
+              where: {
+                status: {
+                  in: ['SEEN', 'SENT'],
+                },
+              },
+            },
+          },
+        });
+
+        if (
+          user.receivedFriendRequests
+            .map((x) => x.createdById)
+            .includes(parent.id)
+        ) {
+          return 'REQUEST_RECEIVED';
+        }
+
+        if (
+          user.sentFriendRequests.map((x) => x.recipientId).includes(parent.id)
+        ) {
+          return 'REQUEST_SENT';
+        }
+
+        return 'NO_REQUEST';
+      },
+    });
     t.field('friendRequest', {
       type: 'FriendRequest',
       resolve: async (parent, _, { prisma, userId }) => {

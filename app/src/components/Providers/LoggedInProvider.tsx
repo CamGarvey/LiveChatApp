@@ -9,7 +9,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from 'routes/Home';
 import ProtectedRoute from 'components/ProtectedRoute';
 import { ModalsProvider } from '@mantine/modals';
-import { UserSearchModal } from 'components/Modals/UserSearchModal';
+import { UserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
 import { CreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import { NotificationsProvider } from '@mantine/notifications';

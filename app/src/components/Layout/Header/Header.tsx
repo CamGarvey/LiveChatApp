@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
 import { useIsDrawerOpen, useToggleDrawer } from 'store';
-import { useUserSearchModal } from 'components/Modals/UserSearchModal';
+import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
 import AnimatedTitle from './AnimatedTitle';
 import ColorModeSwitcher from './ThemeToggler';
 import NotificationMenu from './NotificationMenu/NotificationMenu';
@@ -51,10 +51,7 @@ const Header = () => {
                 />
               </MediaQuery>
               <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
-                <AccountMenu
-                  username={user.username}
-                  onLogoutClick={() => logout()}
-                />
+                <AccountMenu onLogoutClick={() => logout()} />
               </MediaQuery>
             </Group>
           )}

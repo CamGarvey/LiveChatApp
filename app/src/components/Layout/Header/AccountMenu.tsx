@@ -1,12 +1,14 @@
+import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Text } from '@mantine/core';
+import { useUser } from 'context/UserContext';
 import { Logout, UserCircle } from 'tabler-icons-react';
 
 type Props = {
-  username: string;
   onLogoutClick: () => void;
 };
 
-const AccountMenu = ({ username, onLogoutClick }: Props) => {
+const AccountMenu = ({ onLogoutClick }: Props) => {
+  const { user } = useUser();
   return (
     <Menu>
       <Menu.Target>
@@ -15,7 +17,7 @@ const AccountMenu = ({ username, onLogoutClick }: Props) => {
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item icon={<UserCircle />}>{username}</Menu.Item>
+        <Menu.Item icon={<UserCircle />}>{user.username}</Menu.Item>
         <Menu.Item icon={<Logout />} onClick={onLogoutClick}>
           Logout
         </Menu.Item>

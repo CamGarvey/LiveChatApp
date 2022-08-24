@@ -1,59 +1,46 @@
-import { useDeleteMessageMutation } from 'graphql/generated/graphql';
+import { gql } from '@apollo/client';
+import {
+  MessageEventFragment,
+  useDeleteMessageMutation,
+} from 'graphql/generated/graphql';
 import IncomingEvent from '../IncomingEvent';
 import OutgoingEvent from '../OutgoingEvent';
 import DeletedMessage from './DeletedMessage';
 import MessageActions from './MessageActions';
 import MessageBubble from './MessageBubble';
 
-type MessageData = {
-  id: string;
-  isCreator: boolean;
-  createdBy: {
-    id: string;
-    username: string;
-  };
-  createdAt: string;
-};
-
-type DeletedMessage = MessageData & {
-  __typename?: 'DeletedMessage';
-};
-
-type InstantMessage = MessageData & {
-  __typename?: 'InstantMessage';
-  content: string;
-};
-
 type Props = {
-  data: DeletedMessage | InstantMessage;
+  message: MessageEventFragment;
   displayAvatar: boolean;
 };
 
-const Message = ({ data, displayAvatar }: Props) => {
+const Message = ({ message, displayAvatar }: Props) => {
   const [deleteMessage] = useDeleteMessageMutation();
   const messageContent =
-    data.__typename === 'DeletedMessage' ? (
+    message.__typename === 'DeletedMessage' ? (
       <DeletedMessage />
     ) : (
       <MessageBubble
-        content={data.content}
-        variant={data.isCreator ? 'light' : 'default'}
+        content={message.content}
+        variant={message.isCreator ? 'light' : 'default'}
       />
     );
 
-  if (data.isCreator) {
+  if (message.isCreator) {
     return (
       <OutgoingEvent
-        {...data}
-        state={(data.id as string).startsWith('temp-id') ? 'sending' : 'sent'}
+        {...message}
+        state={
+          (message.id as string).startsWith('temp-id') ? 'sending' : 'sent'
+        }
         children={messageContent}
         actions={
           <MessageActions
-            data={data}
+            message={message}
             onDelete={() => {
               deleteMessage({
                 variables: {
-                  messageId: data.id,
+                  messageId: message.id,
                 },
               });
             }}
@@ -65,11 +52,30 @@ const Message = ({ data, displayAvatar }: Props) => {
 
   return (
     <IncomingEvent
-      {...data}
+      event={message}
       displayAvatar={displayAvatar}
       children={messageContent}
     />
   );
+};
+
+Message.fragments = {
+  message: gql`
+    fragment MessageEvent on Message {
+      __typename
+      id
+      isCreator
+      ... on InstantMessage {
+        content
+      }
+      ...OutgoingEvent
+      ...IncomingEvent
+      ...MessageActions
+    }
+    ${OutgoingEvent.fragments.event}
+    ${IncomingEvent.fragments.event}
+    ${MessageActions.fragments.message}
+  `,
 };
 
 export default Message;

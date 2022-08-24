@@ -68,7 +68,7 @@ export interface NexusGenInputs {
 export interface NexusGenEnums {
   RequestStatus: "ACCEPTED" | "CANCELLED" | "DECLINED" | "SEEN" | "SENT"
   Sort: "asc" | "desc"
-  StrangerStatus: "NOT_FRIEND" | "REQUEST_RECEIVED" | "REQUEST_SENT"
+  StrangerStatus: "NO_REQUEST" | "REQUEST_RECEIVED" | "REQUEST_SENT"
 }
 
 export interface NexusGenScalars {
@@ -363,6 +363,7 @@ export interface NexusGenFieldTypes {
     id: NexusGenScalars['HashId']; // HashId!
     mutualFriends: NexusGenRootTypes['FriendConnection']; // FriendConnection!
     name: string | null; // String
+    status: NexusGenEnums['StrangerStatus']; // StrangerStatus!
     updatedAt: NexusGenScalars['Date']; // Date!
     username: string; // String!
   }
@@ -591,6 +592,7 @@ export interface NexusGenFieldTypeNames {
     id: 'HashId'
     mutualFriends: 'FriendConnection'
     name: 'String'
+    status: 'StrangerStatus'
     updatedAt: 'Date'
     username: 'String'
   }

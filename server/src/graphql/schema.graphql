@@ -448,12 +448,13 @@ type Stranger implements User {
     last: Int
   ): FriendConnection!
   name: String
+  status: StrangerStatus!
   updatedAt: Date!
   username: String!
 }
 
 enum StrangerStatus {
-  NOT_FRIEND
+  NO_REQUEST
   REQUEST_RECEIVED
   REQUEST_SENT
 }

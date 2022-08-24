@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { GetUsersQuery, useGetUsersLazyQuery } from 'graphql/generated/graphql';
+import { useGetUserSearchLazyQuery } from 'graphql/generated/graphql';
 import {
   Button,
   Center,
@@ -13,7 +13,29 @@ import { Search } from 'tabler-icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import UserItem from 'components/shared/UserItem';
-import BasicMenu from 'components/shared/UserItem/Menus/BasicMenu';
+import UserMenu from 'components/shared/UserItem/UserMenu';
+import { gql } from '@apollo/client';
+
+gql`
+  query GetUserSearch($usernameFilter: String, $first: Int, $after: String) {
+    users(usernameFilter: $usernameFilter, first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        cursor
+        node {
+          id
+          ...UserItem
+          ...UserMenu
+        }
+      }
+    }
+  }
+  ${UserItem.fragments.user}
+  ${UserMenu.fragments.user}
+`;
 
 const USER_PAGINATION_COUNT = 7;
 
@@ -25,7 +47,7 @@ export const UserSearchModal = () => {
   const [hasInput, setHasInput] = useState(false);
 
   const [getUsers, { data, loading: loadingUsers, fetchMore }] =
-    useGetUsersLazyQuery();
+    useGetUserSearchLazyQuery();
 
   // Wrap the getUsers call in a debounce to prevent over requesting api
 
@@ -44,11 +66,7 @@ export const UserSearchModal = () => {
     inputRef?.current?.focus();
   }, [inputRef?.current?.id]);
 
-  let users: GetUsersQuery['users']['edges'][0]['node'][] = [];
-
-  if (data && data.users.edges) {
-    users = data?.users.edges?.map((edge) => edge.node) ?? [];
-  }
+  const users = data?.users.edges?.map((edge) => edge.node) ?? [];
 
   return (
     <>
@@ -82,28 +100,26 @@ export const UserSearchModal = () => {
               }}
               offsetScrollbars
             >
-              {hasInput && (
-                <>
-                  {users.map((user) => {
-                    return (
-                      <UserItem
-                        key={user.id}
-                        user={user}
-                        menu={<BasicMenu user={user} />}
-                      />
-                    );
-                  })}
-                  <Center>
-                    {loadingUsers && <Loader variant="dots" />}
-                    {!loadingUsers && users.length === 0 && (
-                      <Text>🙊 No users found 🙊</Text>
-                    )}
-                  </Center>
-                </>
-              )}
+              <>
+                {users.map((user) => {
+                  return (
+                    <UserItem
+                      key={user.id}
+                      user={user}
+                      menu={<UserMenu user={user} />}
+                    />
+                  );
+                })}
+                <Center>
+                  {loadingUsers && <Loader variant="dots" />}
+                  {!loadingUsers && users.length === 0 && (
+                    <Text>🙊 No users found 🙊</Text>
+                  )}
+                </Center>
+              </>
             </ScrollArea>
           </Stack>
-          {data?.users?.pageInfo.hasNextPage && hasInput && (
+          {data?.users?.pageInfo.hasNextPage && (
             <Button
               fullWidth
               onClick={() => {

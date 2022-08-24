@@ -459,6 +459,7 @@ export type Stranger = User & {
   id: Scalars['HashId'];
   mutualFriends: FriendConnection;
   name?: Maybe<Scalars['String']>;
+  status: StrangerStatus;
   updatedAt: Scalars['Date'];
   username: Scalars['String'];
 };
@@ -472,7 +473,7 @@ export type StrangerMutualFriendsArgs = {
 };
 
 export enum StrangerStatus {
-  NotFriend = 'NOT_FRIEND',
+  NoRequest = 'NO_REQUEST',
   RequestReceived = 'REQUEST_RECEIVED',
   RequestSent = 'REQUEST_SENT'
 }
@@ -567,6 +568,113 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
+type ChatPanelMessage_DeletedMessage_Fragment = { __typename: 'DeletedMessage', createdAt: any, isCreator: boolean, id: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+type ChatPanelMessage_InstantMessage_Fragment = { __typename: 'InstantMessage', createdAt: any, isCreator: boolean, content: string, id: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+export type ChatPanelMessageFragment = ChatPanelMessage_DeletedMessage_Fragment | ChatPanelMessage_InstantMessage_Fragment;
+
+export type GetMessagesQueryVariables = Exact<{
+  chatId: Scalars['HashId'];
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename: 'DeletedMessage', createdAt: any, isCreator: boolean, id: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } } | { __typename: 'InstantMessage', createdAt: any, isCreator: boolean, content: string, id: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } } | null } | null> | null } };
+
+type EventContainer_DeletedMessage_Fragment = { __typename: 'DeletedMessage', createdAt: any, isCreator: boolean };
+
+type EventContainer_InstantMessage_Fragment = { __typename: 'InstantMessage', createdAt: any, isCreator: boolean };
+
+export type EventContainerFragment = EventContainer_DeletedMessage_Fragment | EventContainer_InstantMessage_Fragment;
+
+type EventInfo_DeletedMessage_Fragment = { __typename?: 'DeletedMessage', createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+type EventInfo_InstantMessage_Fragment = { __typename?: 'InstantMessage', createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+export type EventInfoFragment = EventInfo_DeletedMessage_Fragment | EventInfo_InstantMessage_Fragment;
+
+type IncomingEvent_DeletedMessage_Fragment = { __typename?: 'DeletedMessage', createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+type IncomingEvent_InstantMessage_Fragment = { __typename?: 'InstantMessage', createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+export type IncomingEventFragment = IncomingEvent_DeletedMessage_Fragment | IncomingEvent_InstantMessage_Fragment;
+
+type MessageEvent_DeletedMessage_Fragment = { __typename: 'DeletedMessage', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+type MessageEvent_InstantMessage_Fragment = { __typename: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+export type MessageEventFragment = MessageEvent_DeletedMessage_Fragment | MessageEvent_InstantMessage_Fragment;
+
+type MessageActions_DeletedMessage_Fragment = { __typename: 'DeletedMessage', isCreator: boolean };
+
+type MessageActions_InstantMessage_Fragment = { __typename: 'InstantMessage', isCreator: boolean };
+
+export type MessageActionsFragment = MessageActions_DeletedMessage_Fragment | MessageActions_InstantMessage_Fragment;
+
+type OutgoingEvent_DeletedMessage_Fragment = { __typename?: 'DeletedMessage', createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+type OutgoingEvent_InstantMessage_Fragment = { __typename?: 'InstantMessage', createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+export type OutgoingEventFragment = OutgoingEvent_DeletedMessage_Fragment | OutgoingEvent_InstantMessage_Fragment;
+
+export type FriendRequestNotificationFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdBy: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
+
+export type GetUserSearchQueryVariables = Exact<{
+  usernameFilter?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetUserSearchQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, status: StrangerStatus } | null } | null> | null } };
+
+type ChatAvatar_DeletedChat_Fragment = { __typename: 'DeletedChat' };
+
+type ChatAvatar_DirectMessageChat_Fragment = { __typename: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } };
+
+type ChatAvatar_GroupChat_Fragment = { __typename: 'GroupChat', name: string };
+
+export type ChatAvatarFragment = ChatAvatar_DeletedChat_Fragment | ChatAvatar_DirectMessageChat_Fragment | ChatAvatar_GroupChat_Fragment;
+
+export type GetChatsForDisplayQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetChatsForDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename: 'DeletedChat', id: any } | { __typename: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string } } | { __typename: 'GroupChat', name: string, id: any, members: Array<{ __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string }> }> };
+
+type ChatItem_DeletedChat_Fragment = { __typename: 'DeletedChat', id: any };
+
+type ChatItem_DirectMessageChat_Fragment = { __typename: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string } };
+
+type ChatItem_GroupChat_Fragment = { __typename: 'GroupChat', name: string, id: any, members: Array<{ __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string }> };
+
+export type ChatItemFragment = ChatItem_DeletedChat_Fragment | ChatItem_DirectMessageChat_Fragment | ChatItem_GroupChat_Fragment;
+
+type UserAvatar_Friend_Fragment = { __typename?: 'Friend', username: string };
+
+type UserAvatar_Me_Fragment = { __typename?: 'Me', username: string };
+
+type UserAvatar_Stranger_Fragment = { __typename?: 'Stranger', username: string };
+
+export type UserAvatarFragment = UserAvatar_Friend_Fragment | UserAvatar_Me_Fragment | UserAvatar_Stranger_Fragment;
+
+type UserItem_Friend_Fragment = { __typename?: 'Friend', username: string, name?: string | null };
+
+type UserItem_Me_Fragment = { __typename?: 'Me', username: string, name?: string | null };
+
+type UserItem_Stranger_Fragment = { __typename?: 'Stranger', username: string, name?: string | null };
+
+export type UserItemFragment = UserItem_Friend_Fragment | UserItem_Me_Fragment | UserItem_Stranger_Fragment;
+
+type UserMenu_Friend_Fragment = { __typename: 'Friend' };
+
+type UserMenu_Me_Fragment = { __typename: 'Me' };
+
+type UserMenu_Stranger_Fragment = { __typename: 'Stranger', status: StrangerStatus };
+
+export type UserMenuFragment = UserMenu_Friend_Fragment | UserMenu_Me_Fragment | UserMenu_Stranger_Fragment;
+
 type MessageData_DeletedMessage_Fragment = { __typename?: 'DeletedMessage', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
 
 type MessageData_InstantMessage_Fragment = { __typename?: 'InstantMessage', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
@@ -575,7 +683,7 @@ export type MessageDataFragment = MessageData_DeletedMessage_Fragment | MessageD
 
 export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null };
 
-export type StrangerInfoFragment = { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
+export type StrangerInfoFragment = { __typename?: 'Stranger', id: any, name?: string | null, username: string, status: StrangerStatus, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
 export type AcceptFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
@@ -699,15 +807,6 @@ export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetMeQuery = { __typename?: 'Query', me?: { __typename?: 'Me', id: any, username: string, name?: string | null } | null };
 
-export type GetMessagesQueryVariables = Exact<{
-  chatId: Scalars['HashId'];
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type GetMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'MessageConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename?: 'DeletedMessage', deletedAt?: any | null, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'InstantMessage', content: string, id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null } };
-
 export type GetNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -718,7 +817,7 @@ export type GetUserQueryVariables = Exact<{
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null };
+export type GetUserQuery = { __typename?: 'Query', user?: { __typename: 'Friend', id: any, username: string, name?: string | null } | { __typename: 'Me', id: any, username: string, name?: string | null } | { __typename: 'Stranger', id: any, username: string, name?: string | null, status: StrangerStatus, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null };
 
 export type GetUsersQueryVariables = Exact<{
   usernameFilter?: InputMaybe<Scalars['String']>;
@@ -727,7 +826,7 @@ export type GetUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null> | null } };
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', cursor: string, node?: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string, status: StrangerStatus, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null } | null } | null> | null } };
 
 export type ChatsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -746,6 +845,123 @@ export type NotificationsSubscriptionVariables = Exact<{ [key: string]: never; }
 
 export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', status: RequestStatus, id: any, createdAt: any, isCreator: boolean, chat?: { __typename: 'DeletedChat' } | { __typename: 'DirectMessageChat' } | { __typename: 'GroupChat', name: string, memberCount: number } | null, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'FriendRequest', id: any, createdAt: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } | null } | null };
 
+export const EventContainerFragmentDoc = gql`
+    fragment EventContainer on Message {
+  __typename
+  createdAt
+  isCreator
+}
+    `;
+export const EventInfoFragmentDoc = gql`
+    fragment EventInfo on Message {
+  createdAt
+  createdBy {
+    username
+  }
+  isCreator
+}
+    `;
+export const OutgoingEventFragmentDoc = gql`
+    fragment OutgoingEvent on Message {
+  ...EventInfo
+}
+    ${EventInfoFragmentDoc}`;
+export const UserAvatarFragmentDoc = gql`
+    fragment UserAvatar on User {
+  username
+}
+    `;
+export const IncomingEventFragmentDoc = gql`
+    fragment IncomingEvent on Message {
+  ...EventInfo
+  createdBy {
+    ...UserAvatar
+  }
+}
+    ${EventInfoFragmentDoc}
+${UserAvatarFragmentDoc}`;
+export const MessageActionsFragmentDoc = gql`
+    fragment MessageActions on Message {
+  __typename
+  isCreator
+}
+    `;
+export const MessageEventFragmentDoc = gql`
+    fragment MessageEvent on Message {
+  __typename
+  id
+  isCreator
+  ... on InstantMessage {
+    content
+  }
+  ...OutgoingEvent
+  ...IncomingEvent
+  ...MessageActions
+}
+    ${OutgoingEventFragmentDoc}
+${IncomingEventFragmentDoc}
+${MessageActionsFragmentDoc}`;
+export const ChatPanelMessageFragmentDoc = gql`
+    fragment ChatPanelMessage on Message {
+  ...EventContainer
+  ...MessageEvent
+}
+    ${EventContainerFragmentDoc}
+${MessageEventFragmentDoc}`;
+export const FriendRequestNotificationFragmentDoc = gql`
+    fragment FriendRequestNotification on FriendRequest {
+  id
+  createdAt
+  createdBy {
+    ...UserAvatar
+  }
+}
+    ${UserAvatarFragmentDoc}`;
+export const ChatAvatarFragmentDoc = gql`
+    fragment ChatAvatar on Chat {
+  __typename
+  ... on GroupChat {
+    name
+  }
+  ... on DirectMessageChat {
+    friend {
+      username
+    }
+  }
+}
+    `;
+export const ChatItemFragmentDoc = gql`
+    fragment ChatItem on Chat {
+  __typename
+  id
+  ...ChatAvatar
+  ... on DirectMessageChat {
+    friend {
+      username
+    }
+  }
+  ... on GroupChat {
+    name
+    members {
+      username
+    }
+  }
+}
+    ${ChatAvatarFragmentDoc}`;
+export const UserItemFragmentDoc = gql`
+    fragment UserItem on User {
+  username
+  name
+}
+    `;
+export const UserMenuFragmentDoc = gql`
+    fragment UserMenu on User {
+  __typename
+  ... on Stranger {
+    status
+  }
+}
+    `;
 export const MessageDataFragmentDoc = gql`
     fragment MessageData on Message {
   id
@@ -778,11 +994,140 @@ export const StrangerInfoFragmentDoc = gql`
   id
   name
   username
+  status
   friendRequest {
     ...RequestInfo
   }
 }
     ${RequestInfoFragmentDoc}`;
+export const GetMessagesDocument = gql`
+    query GetMessages($chatId: HashId!, $last: Int, $before: String) {
+  messages(chatId: $chatId, last: $last, before: $before) {
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+    edges {
+      node {
+        ...ChatPanelMessage
+      }
+    }
+  }
+}
+    ${ChatPanelMessageFragmentDoc}`;
+
+/**
+ * __useGetMessagesQuery__
+ *
+ * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessagesQuery({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *      last: // value for 'last'
+ *      before: // value for 'before'
+ *   },
+ * });
+ */
+export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+      }
+export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+        }
+export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
+export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
+export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
+export const GetUserSearchDocument = gql`
+    query GetUserSearch($usernameFilter: String, $first: Int, $after: String) {
+  users(usernameFilter: $usernameFilter, first: $first, after: $after) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      cursor
+      node {
+        id
+        ...UserItem
+        ...UserMenu
+      }
+    }
+  }
+}
+    ${UserItemFragmentDoc}
+${UserMenuFragmentDoc}`;
+
+/**
+ * __useGetUserSearchQuery__
+ *
+ * To run a query within a React component, call `useGetUserSearchQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserSearchQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserSearchQuery({
+ *   variables: {
+ *      usernameFilter: // value for 'usernameFilter'
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *   },
+ * });
+ */
+export function useGetUserSearchQuery(baseOptions?: Apollo.QueryHookOptions<GetUserSearchQuery, GetUserSearchQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserSearchQuery, GetUserSearchQueryVariables>(GetUserSearchDocument, options);
+      }
+export function useGetUserSearchLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserSearchQuery, GetUserSearchQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserSearchQuery, GetUserSearchQueryVariables>(GetUserSearchDocument, options);
+        }
+export type GetUserSearchQueryHookResult = ReturnType<typeof useGetUserSearchQuery>;
+export type GetUserSearchLazyQueryHookResult = ReturnType<typeof useGetUserSearchLazyQuery>;
+export type GetUserSearchQueryResult = Apollo.QueryResult<GetUserSearchQuery, GetUserSearchQueryVariables>;
+export const GetChatsForDisplayDocument = gql`
+    query GetChatsForDisplay {
+  chats {
+    ...ChatItem
+  }
+}
+    ${ChatItemFragmentDoc}`;
+
+/**
+ * __useGetChatsForDisplayQuery__
+ *
+ * To run a query within a React component, call `useGetChatsForDisplayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatsForDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatsForDisplayQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetChatsForDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>(GetChatsForDisplayDocument, options);
+      }
+export function useGetChatsForDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>(GetChatsForDisplayDocument, options);
+        }
+export type GetChatsForDisplayQueryHookResult = ReturnType<typeof useGetChatsForDisplayQuery>;
+export type GetChatsForDisplayLazyQueryHookResult = ReturnType<typeof useGetChatsForDisplayLazyQuery>;
+export type GetChatsForDisplayQueryResult = Apollo.QueryResult<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>;
 export const AcceptFriendRequestDocument = gql`
     mutation AcceptFriendRequest($friendRequestId: HashId!) {
   acceptFriendRequest(friendRequestId: $friendRequestId) {
@@ -1480,57 +1825,6 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
-export const GetMessagesDocument = gql`
-    query GetMessages($chatId: HashId!, $last: Int, $before: String) {
-  messages(chatId: $chatId, last: $last, before: $before) {
-    pageInfo {
-      hasPreviousPage
-      startCursor
-    }
-    edges {
-      node {
-        ...MessageData
-        ... on DeletedMessage {
-          deletedAt
-        }
-        ... on InstantMessage {
-          content
-        }
-      }
-    }
-  }
-}
-    ${MessageDataFragmentDoc}`;
-
-/**
- * __useGetMessagesQuery__
- *
- * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMessagesQuery({
- *   variables: {
- *      chatId: // value for 'chatId'
- *      last: // value for 'last'
- *      before: // value for 'before'
- *   },
- * });
- */
-export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
-      }
-export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
-        }
-export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
-export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
-export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
 export const GetNotificationsDocument = gql`
     query GetNotifications {
   notifications {

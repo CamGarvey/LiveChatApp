@@ -3,6 +3,16 @@ import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
 import { useGetChatsQuery } from 'graphql/generated/graphql';
 import ChatItem from './ChatItem';
+import { gql } from '@apollo/client';
+
+gql`
+  query GetChatsForDisplay {
+    chats {
+      ...ChatItem
+    }
+  }
+  ${ChatItem.fragments.chat}
+`;
 
 type Props = {
   onChatClick?: (chat: any) => void;

@@ -152,6 +152,10 @@ const Scroller = ({
             onClick={() => {
               scrollToBottom('smooth');
             }}
+            sx={{
+              borderRadius: '50%',
+              backgroundColor: 'inherit',
+            }}
           >
             <ArrowDownCircle size={60} strokeWidth={1} color={'#405abf'} />
           </ActionIcon>
