@@ -1,5 +1,0 @@
-mutation DeclineFriendRequest($friendRequestId: HashId!) {
-  declineFriendRequest(friendRequestId: $friendRequestId) {
-    ...RequestInfo
-  }
-}

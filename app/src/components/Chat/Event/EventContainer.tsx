@@ -34,7 +34,7 @@ const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
 
 EventContainer.fragments = {
   event: gql`
-    fragment EventContainer on Message {
+    fragment EventContainer on Event {
       __typename
       createdAt
       isCreator

@@ -2,34 +2,26 @@ import { gql } from '@apollo/client';
 import { Group, Loader, Tooltip } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'framer-motion';
+import { OutgoingEventFragment } from 'graphql/generated/graphql';
 import { useState } from 'react';
 import EventInfo from './EventInfo';
 
 type Props = {
   state: 'sending' | 'sent';
-  createdBy: {
-    username: string;
-  };
-  createdAt: string;
+  event: OutgoingEventFragment;
   children: JSX.Element;
   actions?: JSX.Element;
 };
 
 const MotionGroup = motion(Group);
 
-const OutgoingEvent = ({
-  state,
-  children,
-  createdAt,
-  createdBy,
-  actions,
-}: Props) => {
+const OutgoingEvent = ({ state, children, event, actions }: Props) => {
   const [isHovered, setHovered] = useState(false);
   const largeScreen = useMediaQuery('(min-width: 1200px)');
   return (
     <MotionGroup
       pb={3}
-      key={createdAt}
+      key={event.createdAt}
       variants={{
         hidden: {
           x: 200, // off screen to the right
@@ -74,7 +66,7 @@ const OutgoingEvent = ({
 
 OutgoingEvent.fragments = {
   event: gql`
-    fragment OutgoingEvent on Message {
+    fragment OutgoingEvent on Event {
       ...EventInfo
     }
     ${EventInfo.fragments.event}

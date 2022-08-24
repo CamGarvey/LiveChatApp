@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
-import { ActionIcon, Center, Popover, Stack, Text } from '@mantine/core';
-import { ArrowDownCircle } from 'tabler-icons-react';
+import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from '../ChatInput';
 import EventContainer from '../Event/EventContainer';
 import Message from '../Event/Message/Message';
@@ -93,9 +92,10 @@ export const ChatPanel = ({ chatId }: Props) => {
 
 ChatPanel.fragments = {
   message: gql`
-    fragment ChatPanelMessage on Message {
+    fragment ChatPanelMessage on Event {
       ...EventContainer
       ...MessageEvent
+      createdAt
     }
     ${EventContainer.fragments.event}
     ${Message.fragments.message}

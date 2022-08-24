@@ -1,11 +1,4 @@
-import {
-  ActionIcon,
-  Center,
-  Indicator,
-  Menu,
-  Stack,
-  Title,
-} from '@mantine/core';
+import { ActionIcon, Center, Indicator, Menu } from '@mantine/core';
 import { Bell } from 'tabler-icons-react';
 import { useUserNotifications } from 'context/NotificationContext';
 import { FriendRequest as FriendRequestObject } from 'graphql/generated/graphql';

@@ -21,9 +21,13 @@ const MessageActions = ({ message, onDelete }: Props) => {
 
 MessageActions.fragments = {
   message: gql`
-    fragment MessageActions on Message {
-      __typename
-      isCreator
+    fragment MessageActions on MessageResult {
+      ... on DeletedMessage {
+        isCreator
+      }
+      ... on Message {
+        isCreator
+      }
     }
   `,
 };

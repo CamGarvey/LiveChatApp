@@ -1,12 +1,12 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import SubscriptionPayload from '../../backing-types/subscription-payload';
-import { Subscription } from '../../backing-types';
-import { hashIdArg } from '../shared';
+import SubscriptionPayload from '../../../backing-types/subscription-payload';
+import { Subscription } from '../../../backing-types';
+import { hashIdArg } from '../../shared';
 import { Message } from '@prisma/client';
 
 export const MessagesSubscription = subscriptionField('messages', {
-  type: 'Message',
+  type: 'MessageResult',
   description: 'Subscribe to any created/updated/deleted messages',
   args: {
     chatId: hashIdArg(),
@@ -31,7 +31,7 @@ export const MessagesSubscription = subscriptionField('messages', {
 });
 
 export const MessageCreatedSubscription = subscriptionField('messageCreated', {
-  type: 'InstantMessage',
+  type: 'Message',
   description: 'SUbscribe to created messages in chat',
   args: {
     chatId: hashIdArg(),
@@ -81,7 +81,7 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
 });
 
 export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
-  type: 'Message',
+  type: 'MessageResult',
   description: 'Subscribe to updated messages in chat',
   args: {
     chatId: hashIdArg(),

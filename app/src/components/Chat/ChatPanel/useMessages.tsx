@@ -1,5 +1,5 @@
 import {
-  MessagesDocument,
+  GetMessagesDocument,
   MessagesSubscription,
   useGetMessagesQuery,
 } from 'graphql/generated/graphql';
@@ -19,8 +19,30 @@ gql`
       edges {
         node {
           ...ChatPanelMessage
+          ...UseMessage
         }
       }
+    }
+  }
+  subscription Messages($chatId: HashId) {
+    messages(chatId: $chatId) {
+      ...ChatPanelMessage
+      ...UseMessage
+    }
+  }
+  fragment UseMessageEvent on Event {
+    createdAt
+    createdBy {
+      id
+    }
+  }
+
+  fragment UseMessage on MessageResult {
+    ... on Message {
+      ...UseMessageEvent
+    }
+    ... on DeletedMessage {
+      ...UseMessageEvent
     }
   }
   ${ChatPanel.fragments.message}
@@ -48,7 +70,7 @@ export const useMessages = ({ chatId }: Props) => {
 
   useEffect(() => {
     const unsubscribe = subscribeToMore<MessagesSubscription>({
-      document: MessagesDocument,
+      document: GetMessagesDocument,
       variables: {
         chatId,
       },

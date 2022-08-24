@@ -649,7 +649,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "Message",
+            "name": "Event",
             "ofType": null
           }
         ],
@@ -811,7 +811,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "MessageConnection",
+                "name": "MessageResultConnection",
                 "ofType": null
               }
             },
@@ -841,6 +841,156 @@
         ],
         "enumValues": null,
         "possibleTypes": null
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "Event",
+        "description": null,
+        "fields": [
+          {
+            "name": "chat",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Chat",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chatId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdBy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdById",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isCreator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "DeletedMessage",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Message",
+            "ofType": null
+          }
+        ]
       },
       {
         "kind": "OBJECT",
@@ -1512,7 +1662,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "MessageConnection",
+                "name": "MessageResultConnection",
                 "ofType": null
               }
             },
@@ -1566,191 +1716,6 @@
         "fields": null,
         "inputFields": null,
         "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "InstantMessage",
-        "description": null,
-        "fields": [
-          {
-            "name": "chat",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INTERFACE",
-                "name": "Chat",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "chatId",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "content",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdAt",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Date",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdBy",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INTERFACE",
-                "name": "User",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdById",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "id",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "isCreator",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "likedBy",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "User",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "updatedAt",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Date",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Message",
-            "ofType": null
-          }
-        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -2100,7 +2065,7 @@
         "possibleTypes": null
       },
       {
-        "kind": "INTERFACE",
+        "kind": "OBJECT",
         "name": "Message",
         "description": null,
         "fields": [
@@ -2130,6 +2095,22 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "content",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               }
             },
@@ -2217,6 +2198,30 @@
             "deprecationReason": null
           },
           {
+            "name": "likedBy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updatedAt",
             "description": null,
             "args": [],
@@ -2234,7 +2239,23 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Event",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "UNION",
+        "name": "MessageResult",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
         "enumValues": null,
         "possibleTypes": [
           {
@@ -2244,14 +2265,14 @@
           },
           {
             "kind": "OBJECT",
-            "name": "InstantMessage",
+            "name": "Message",
             "ofType": null
           }
         ]
       },
       {
         "kind": "OBJECT",
-        "name": "MessageConnection",
+        "name": "MessageResultConnection",
         "description": null,
         "fields": [
           {
@@ -2263,7 +2284,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "MessageEdge",
+                "name": "MessageResultEdge",
                 "ofType": null
               }
             },
@@ -2294,7 +2315,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "MessageEdge",
+        "name": "MessageResultEdge",
         "description": null,
         "fields": [
           {
@@ -2318,8 +2339,8 @@
             "description": "https://facebook.github.io/relay/graphql/connections.htm#sec-Node",
             "args": [],
             "type": {
-              "kind": "INTERFACE",
-              "name": "Message",
+              "kind": "UNION",
+              "name": "MessageResult",
               "ofType": null
             },
             "isDeprecated": false,
@@ -2491,7 +2512,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "InstantMessage",
+              "name": "Message",
               "ofType": null
             },
             "isDeprecated": false,
@@ -2710,7 +2731,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "InstantMessage",
+              "name": "Message",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3110,8 +3131,8 @@
               }
             ],
             "type": {
-              "kind": "OBJECT",
-              "name": "InstantMessage",
+              "kind": "UNION",
+              "name": "MessageResult",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3191,7 +3212,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "MessageConnection",
+                "name": "MessageResultConnection",
                 "ofType": null
               }
             },
@@ -3877,7 +3898,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "InstantMessage",
+              "name": "Message",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3926,8 +3947,8 @@
               }
             ],
             "type": {
-              "kind": "INTERFACE",
-              "name": "Message",
+              "kind": "UNION",
+              "name": "MessageResult",
               "ofType": null
             },
             "isDeprecated": false,
@@ -3951,8 +3972,8 @@
               }
             ],
             "type": {
-              "kind": "INTERFACE",
-              "name": "Message",
+              "kind": "UNION",
+              "name": "MessageResult",
               "ofType": null
             },
             "isDeprecated": false,

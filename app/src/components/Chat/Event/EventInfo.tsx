@@ -30,7 +30,7 @@ const EventInfo = ({ event, show, align = 'self-start' }: Props) => {
 
 EventInfo.fragments = {
   event: gql`
-    fragment EventInfo on Message {
+    fragment EventInfo on Event {
       createdAt
       createdBy {
         username

@@ -1,6 +1,0 @@
-mutation UpdateMessage($messageId: HashId!, $content: String!) {
-  updateMessage(messageId: $messageId, content: $content) {
-    ...MessageData
-    content
-  }
-}

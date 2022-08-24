@@ -1,11 +1,11 @@
 import { Message } from '@prisma/client';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
-import { Subscription } from '../../backing-types';
-import { hashIdArg } from '../shared';
+import { Subscription } from '../../../backing-types';
+import { hashIdArg } from '../../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
-  type: 'InstantMessage',
+  type: 'Message',
   description: 'Create a Message in a Chat',
   args: {
     chatId: nonNull(
@@ -95,7 +95,7 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
 });
 
 export const UpdateMessageMutation = mutationField('updateMessage', {
-  type: 'InstantMessage',
+  type: 'Message',
   args: {
     messageId: nonNull(
       hashIdArg({

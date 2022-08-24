@@ -1,5 +1,0 @@
-mutation CreateMessage($chatId: HashId!, $content: String!) {
-  createMessage(chatId: $chatId, content: $content) {
-    ...MessageData
-  }
-}

@@ -1,14 +1,17 @@
 import { Center, Input, ScrollArea, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
-import { useGetChatsQuery } from 'graphql/generated/graphql';
 import ChatItem from './ChatItem';
 import { gql } from '@apollo/client';
+import { useGetChatsForDisplayQuery } from 'graphql/generated/graphql';
 
 gql`
   query GetChatsForDisplay {
     chats {
       ...ChatItem
+      createdBy {
+        username
+      }
     }
   }
   ${ChatItem.fragments.chat}
@@ -19,7 +22,7 @@ type Props = {
 };
 
 const ChatDisplay = ({ onChatClick }: Props) => {
-  const { loading, data } = useGetChatsQuery();
+  const { loading, data } = useGetChatsForDisplayQuery();
   const [filter, setFilter] = useState('');
 
   const filteredChats = data?.chats.filter((c) => {

@@ -1,5 +1,0 @@
-mutation DeleteFriend($friendId: HashId!) {
-  deleteFriend(friendId: $friendId) {
-    id
-  }
-}

@@ -1,13 +1,13 @@
 import { Group, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
 import moment from 'moment';
 import { CircleX, CircleCheck } from 'tabler-icons-react';
-import {
-  FriendRequestNotificationFragment,
-  useAcceptFriendRequestMutation,
-  useDeclineFriendRequestMutation,
-} from 'graphql/generated/graphql';
+import { FriendRequestNotificationFragment } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
 import { gql } from '@apollo/client';
+
+gql`
+  
+`
 
 type Props = {
   request: FriendRequestNotificationFragment;

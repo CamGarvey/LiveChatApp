@@ -1,6 +1,0 @@
-mutation DeleteMessage($messageId: HashId!) {
-  deleteMessage(messageId: $messageId) {
-    ...MessageData
-    deletedAt
-  }
-}

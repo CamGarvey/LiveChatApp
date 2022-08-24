@@ -1,8 +1,5 @@
 import { gql } from '@apollo/client';
-import {
-  MessageEventFragment,
-  useDeleteMessageMutation,
-} from 'graphql/generated/graphql';
+import { MessageEventFragment } from 'graphql/generated/graphql';
 import IncomingEvent from '../IncomingEvent';
 import OutgoingEvent from '../OutgoingEvent';
 import DeletedMessage from './DeletedMessage';
@@ -21,7 +18,7 @@ const Message = ({ message, displayAvatar }: Props) => {
       <DeletedMessage />
     ) : (
       <MessageBubble
-        content={message.content}
+        message={message}
         variant={message.isCreator ? 'light' : 'default'}
       />
     );
@@ -29,7 +26,7 @@ const Message = ({ message, displayAvatar }: Props) => {
   if (message.isCreator) {
     return (
       <OutgoingEvent
-        {...message}
+        event={message}
         state={
           (message.id as string).startsWith('temp-id') ? 'sending' : 'sent'
         }
@@ -61,16 +58,23 @@ const Message = ({ message, displayAvatar }: Props) => {
 
 Message.fragments = {
   message: gql`
-    fragment MessageEvent on Message {
+    fragment MessageEvent on MessageResult {
       __typename
-      id
-      isCreator
-      ... on InstantMessage {
+      ... on Message {
+        id
+        isCreator
         content
+        ...OutgoingEvent
+        ...IncomingEvent
+        ...MessageActions
       }
-      ...OutgoingEvent
-      ...IncomingEvent
-      ...MessageActions
+      ... on DeletedMessage {
+        id
+        ...OutgoingEvent
+        ...IncomingEvent
+        isCreator
+        deletedAt
+      }
     }
     ${OutgoingEvent.fragments.event}
     ${IncomingEvent.fragments.event}

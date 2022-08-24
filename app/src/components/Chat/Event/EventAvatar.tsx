@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { Avatar } from '@mantine/core';
 
 type Props = {
@@ -13,6 +14,16 @@ const EventAvatar = ({ isVisible, username }: Props) => {
       src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
     />
   );
+};
+
+EventAvatar.fragments = {
+  event: gql`
+    fragment EventAvatar on Event {
+      createdBy {
+        username
+      }
+    }
+  `,
 };
 
 export default EventAvatar;

@@ -1,8 +1,0 @@
-mutation CreateDirectMessageChat($friendId: HashId!) {
-  createDirectMessageChat(friendId: $friendId) {
-    id
-    friend {
-      id
-    }
-  }
-}

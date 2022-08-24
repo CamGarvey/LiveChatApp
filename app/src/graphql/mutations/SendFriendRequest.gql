@@ -1,5 +1,0 @@
-mutation SendFriendRequest($friendId: HashId!) {
-  sendFriendRequest(friendId: $friendId) {
-    ...RequestInfo
-  }
-}

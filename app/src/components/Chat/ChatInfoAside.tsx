@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import {
   MediaQuery,
   Aside,
@@ -13,11 +14,39 @@ import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal'
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import UserItem from 'components/shared/UserItem';
 import { useChat } from 'context/ChatContext';
+import { useGetChatForChatInfoAsideQuery } from 'graphql/generated/graphql';
 import { Settings, UserPlus } from 'tabler-icons-react';
 
+gql`
+  query GetChatForChatInfoAside($chatId: HashId!) {
+    chat(chatId: $chatId) {
+      __typename
+      ... on DirectMessageChat {
+        friend {
+          username
+        }
+      }
+      ... on GroupChat {
+        name
+        members {
+          id
+          ...UserItem
+        }
+      }
+    }
+  }
+  ${UserItem.fragments.user}
+`;
+
 const ChatInfoAside = () => {
-  const { chat, isLoading } = useChat();
-  const openGroupChatUpdate = useUpdateGroupChatModal();
+  const { chatId } = useChat();
+  const { data, loading } = useGetChatForChatInfoAsideQuery({
+    variables: {
+      chatId,
+    },
+  });
+
+  const chat = data?.chat;
 
   let displayName;
   switch (chat?.__typename) {
@@ -25,7 +54,7 @@ const ChatInfoAside = () => {
       displayName = chat.name;
       break;
     case 'DirectMessageChat':
-      displayName = chat.createdBy.username;
+      displayName = chat.friend.username;
       break;
     case 'DeletedChat':
       displayName = 'deleted';
@@ -37,7 +66,7 @@ const ChatInfoAside = () => {
   return (
     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
       <Aside p="md" hiddenBreakpoint="md" width={{ md: 300, lg: 300 }}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={loading} />
         {chat && (
           <>
             <Aside.Section>

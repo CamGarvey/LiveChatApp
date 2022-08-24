@@ -1,13 +1,15 @@
+import { gql } from '@apollo/client';
 import { Paper, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { MessageBubbleFragment } from 'graphql/generated/graphql';
 
 type Props = {
-  content: string;
+  message: MessageBubbleFragment;
   onClick?: () => void;
   variant?: 'default' | 'light';
 };
 
-const MessageBubble = ({ content, onClick, variant = 'default' }: Props) => {
+const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
   const largeScreen = useMediaQuery('(min-width: 1200px)');
   return (
     <Paper
@@ -33,10 +35,18 @@ const MessageBubble = ({ content, onClick, variant = 'default' }: Props) => {
           overflowWrap: 'break-word',
         }}
       >
-        {content}
+        {message.content}
       </Text>
     </Paper>
   );
+};
+
+MessageBubble.fragments = {
+  message: gql`
+    fragment MessageBubble on Message {
+      content
+    }
+  `,
 };
 
 export default MessageBubble;

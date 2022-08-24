@@ -1,9 +1,0 @@
-fragment StrangerInfo on Stranger {
-  id
-  name
-  username
-  status
-  friendRequest {
-    ...RequestInfo
-  }
-}

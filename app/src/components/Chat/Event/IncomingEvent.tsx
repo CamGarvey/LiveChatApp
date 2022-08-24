@@ -3,14 +3,14 @@ import { Group } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import UserAvatar from 'components/shared/UserAvatar';
 import { motion } from 'framer-motion';
-import { EventFragment } from 'graphql/generated/graphql';
+import { IncomingEventFragment } from 'graphql/generated/graphql';
 import { useState } from 'react';
 import EventInfo from './EventInfo';
 
 const MotionGroup = motion(Group);
 
 type Props = {
-  event: EventFragment;
+  event: IncomingEventFragment;
   displayAvatar: boolean;
   children: JSX.Element;
 };
@@ -67,7 +67,7 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
 
 IncomingEvent.fragments = {
   event: gql`
-    fragment IncomingEvent on Message {
+    fragment IncomingEvent on Event {
       ...EventInfo
       createdBy {
         ...UserAvatar

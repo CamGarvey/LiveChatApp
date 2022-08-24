@@ -25,7 +25,7 @@ export const useCreateMessage = ({ chatId }: Props) => {
 
         return {
           createMessage: {
-            __typename: 'InstantMessage',
+            __typename: 'Message',
             id,
             createdAt,
             content,
@@ -55,7 +55,7 @@ export const useCreateMessage = ({ chatId }: Props) => {
                 ...result.messages.edges,
                 {
                   node: {
-                    __typename: 'InstantMessage',
+                    __typename: 'Message',
                     createdBy: {
                       __typename: 'Me',
                       ...user,

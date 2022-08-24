@@ -48,7 +48,7 @@ type DeletedChat implements Chat {
   updatedAt: Date
 }
 
-type DeletedMessage implements Message {
+type DeletedMessage implements Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -80,8 +80,19 @@ type DirectMessageChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageConnection!
+  ): MessageResultConnection!
   updatedAt: Date
+}
+
+interface Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
 }
 
 type Friend implements KnownUser & User {
@@ -162,25 +173,12 @@ type GroupChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageConnection!
+  ): MessageResultConnection!
   name: String!
   updatedAt: Date
 }
 
 scalar HashId
-
-type InstantMessage implements Message {
-  chat: Chat!
-  chatId: HashId!
-  content: String!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  likedBy: [User!]!
-  updatedAt: Date!
-}
 
 interface KnownUser {
   chats: [Chat!]!
@@ -222,22 +220,26 @@ type Me implements KnownUser & User {
   username: String!
 }
 
-interface Message {
+type Message implements Event {
   chat: Chat!
   chatId: HashId!
+  content: String!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+  likedBy: [User!]!
   updatedAt: Date!
 }
 
-type MessageConnection {
+union MessageResult = DeletedMessage | Message
+
+type MessageResultConnection {
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [MessageEdge]
+  edges: [MessageResultEdge]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -245,12 +247,12 @@ type MessageConnection {
   pageInfo: PageInfo!
 }
 
-type MessageEdge {
+type MessageResultEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: Message
+  node: MessageResult
 }
 
 type Mutation {
@@ -276,7 +278,7 @@ type Mutation {
 
     """Content of Message"""
     content: String!
-  ): InstantMessage
+  ): Message
 
   """Decline a received Friend Request"""
   declineFriendRequest(friendRequestId: HashId!): FriendRequest
@@ -309,7 +311,7 @@ type Mutation {
 
     """Id of Message to edit"""
     messageId: HashId!
-  ): InstantMessage
+  ): Message
 
   """Update current user"""
   updateUser(name: String!): Me
@@ -363,7 +365,7 @@ type Query {
   message(
     """id of message"""
     messageId: HashId!
-  ): InstantMessage
+  ): MessageResult
   messages(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -377,7 +379,7 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageConnection!
+  ): MessageResultConnection!
   notifications: [Notification!]!
   user(
     """id of user"""
@@ -470,16 +472,16 @@ type Subscription {
   friends: User
 
   """SUbscribe to created messages in chat"""
-  messageCreated(chatId: HashId): InstantMessage
+  messageCreated(chatId: HashId): Message
 
   """Subscribe to deleted messages in chat"""
   messageDeleted(chatId: HashId): DeletedMessage
 
   """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId): Message
+  messageUpdated(chatId: HashId): MessageResult
 
   """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId): Message
+  messages(chatId: HashId): MessageResult
   notifications: Notification
 }
 

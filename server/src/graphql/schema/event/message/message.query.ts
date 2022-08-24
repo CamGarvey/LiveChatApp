@@ -1,10 +1,10 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { Message, Prisma } from '@prisma/client';
 import { nonNull, queryField } from 'nexus';
-import { hashIdArg } from '../shared';
+import { hashIdArg } from '../../shared';
 
 export const MessageQuery = queryField('message', {
-  type: 'InstantMessage',
+  type: 'MessageResult',
   description: 'Get a message by id',
   args: {
     messageId: nonNull(
@@ -26,7 +26,7 @@ export const MessageQuery = queryField('message', {
 
 export const MessagesQuery = queryField((t) => {
   t.nonNull.connectionField('messages', {
-    type: 'Message',
+    type: 'MessageResult',
     additionalArgs: {
       chatId: nonNull(hashIdArg()),
     },

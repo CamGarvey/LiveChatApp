@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Stack, Text, UnstyledButton } from '@mantine/core';
 import UserAvatar from '../UserAvatar';
-import { useUser } from 'context/UserContext';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
 
@@ -31,7 +30,7 @@ const UserItem = ({ user, menu }: Props) => {
         },
       })}
     >
-      <UserAvatar size="sm" username={username} />
+      <UserAvatar size="sm" user={user} />
       <Stack spacing={0}>
         <Text>
           {username}

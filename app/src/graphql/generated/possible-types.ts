@@ -11,13 +11,17 @@
       "DirectMessageChat",
       "GroupChat"
     ],
+    "Event": [
+      "DeletedMessage",
+      "Message"
+    ],
     "KnownUser": [
       "Friend",
       "Me"
     ],
-    "Message": [
+    "MessageResult": [
       "DeletedMessage",
-      "InstantMessage"
+      "Message"
     ],
     "Notification": [
       "ChatInvite",
