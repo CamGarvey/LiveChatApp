@@ -1,16 +1,40 @@
+import { gql } from '@apollo/client';
 import {
   GetNotificationsQuery,
+  LiveNotificationFragment,
   NotificationsDocument,
   NotificationsSubscription,
-  RequestStatus,
   useGetNotificationsQuery,
 } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
 
-interface Notification {
-  status: RequestStatus;
-  isCreator: boolean;
-}
+gql`
+  query GetNotifications {
+    notifications {
+      ...LiveNotification
+    }
+  }
+  subscription Notifications {
+    notifications {
+      ...LiveNotification
+    }
+  }
+  fragment LiveNotification on Notification {
+    id
+    createdAt
+    isCreator
+    createdBy {
+      id
+      name
+      username
+    }
+    ... on Request {
+      createdById
+      recipientId
+      status
+    }
+  }
+`;
 
 /**
  * doing this because a friend request can go back and forth between two users
@@ -19,16 +43,22 @@ interface Notification {
  * @param notifications
  * @returns
  */
-const filterNotifications = <T extends Notification>(notifications: T[]): T[] =>
+const filterNotifications = (
+  notifications: LiveNotificationFragment[]
+): LiveNotificationFragment[] =>
   notifications
     .filter((x) => ['SENT', 'SEEN'].includes(x.status))
     .filter((x) => !x.isCreator) ?? [];
+
+type Props = {
+  onNotification: (notification: NotificationsSubscription) => void;
+};
 
 /**
  * Live notification query - will listen to any incoming notifications
  * @returns
  */
-export const useLiveNotifications = () => {
+export const useLiveNotifications = ({ onNotification }: Props) => {
   const { data, subscribeToMore, loading } = useGetNotificationsQuery();
 
   useEffect(() => {
@@ -37,6 +67,7 @@ export const useLiveNotifications = () => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const notification = subscriptionData.data;
+        onNotification(notification);
         const newCache = Object.assign({}, prev, {
           notifications: [...prev.notifications, notification],
         } as GetNotificationsQuery);
@@ -44,7 +75,7 @@ export const useLiveNotifications = () => {
       },
     });
     return () => unsubscribe();
-  }, [subscribeToMore]);
+  }, [subscribeToMore, onNotification]);
 
   const filteredNotifications = filterNotifications(data?.notifications ?? []);
 

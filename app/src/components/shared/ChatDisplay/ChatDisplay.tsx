@@ -2,30 +2,17 @@ import { Center, Input, ScrollArea, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { Search } from 'tabler-icons-react';
 import ChatItem from './ChatItem';
-import { gql } from '@apollo/client';
-import { useGetChatsForDisplayQuery } from 'graphql/generated/graphql';
-
-gql`
-  query GetChatsForDisplay {
-    chats {
-      ...ChatItem
-      createdBy {
-        username
-      }
-    }
-  }
-  ${ChatItem.fragments.chat}
-`;
+import useLiveChats from './useLiveChats';
 
 type Props = {
   onChatClick?: (chat: any) => void;
 };
 
 const ChatDisplay = ({ onChatClick }: Props) => {
-  const { loading, data } = useGetChatsForDisplayQuery();
+  const { loading, chats } = useLiveChats();
   const [filter, setFilter] = useState('');
 
-  const filteredChats = data?.chats.filter((c) => {
+  const filteredChats = chats.filter((c) => {
     if (c.__typename === 'GroupChat') {
       return c.name.toLowerCase().includes(filter);
     }
@@ -49,7 +36,7 @@ const ChatDisplay = ({ onChatClick }: Props) => {
       />
       <ScrollArea p={2}>
         <Stack spacing={4}>
-          {!loading && data && filteredChats.length > 0 ? (
+          {!loading && chats && filteredChats.length > 0 ? (
             filteredChats.map(
               (chat) =>
                 chat.__typename !== 'DeletedChat' && (

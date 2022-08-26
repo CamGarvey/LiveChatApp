@@ -164,27 +164,4 @@ const Scroller = ({
   );
 };
 
-// <Popover
-//   opened={isScrollToBottomOpened}
-//   width={'100%'}
-//   position="top"
-//   // styles={
-//   //   {
-//   //     // inner: {
-//   //     //   padding: 3,
-//   //     //   cursor: 'pointer',
-//   //     // },
-//   //     // body: {
-//   //     //   boxShadow: 'none',
-//   //     //   background: 'transparent',
-//   //     //   border: 'none',
-//   //     // },
-//   //   }
-//   // }
-// >
-//   {/* <Popover.Target>
-//   </Popover.Target> */}
-
-// </Popover>
-
 export default Scroller;

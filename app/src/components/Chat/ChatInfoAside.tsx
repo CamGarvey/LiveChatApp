@@ -10,17 +10,19 @@ import {
   Group,
   Menu,
 } from '@mantine/core';
-import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import UserItem from 'components/shared/UserItem';
 import { useChat } from 'context/ChatContext';
-import { useGetChatForChatInfoAsideQuery } from 'graphql/generated/graphql';
-import { Settings, UserPlus } from 'tabler-icons-react';
+import {
+  useGetChatForChatInfoAsideLazyQuery,
+  useGetChatForChatInfoAsideQuery,
+} from 'graphql/generated/graphql';
+import { useEffect } from 'react';
+import { UserPlus } from 'tabler-icons-react';
 
 gql`
   query GetChatForChatInfoAside($chatId: HashId!) {
     chat(chatId: $chatId) {
-      __typename
       ... on DirectMessageChat {
         friend {
           username
@@ -40,11 +42,16 @@ gql`
 
 const ChatInfoAside = () => {
   const { chatId } = useChat();
-  const { data, loading } = useGetChatForChatInfoAsideQuery({
-    variables: {
-      chatId,
-    },
-  });
+  const [getChat, { data, loading }] = useGetChatForChatInfoAsideLazyQuery();
+
+  useEffect(() => {
+    if (chatId)
+      getChat({
+        variables: {
+          chatId,
+        },
+      });
+  }, [getChat, chatId]);
 
   const chat = data?.chat;
 

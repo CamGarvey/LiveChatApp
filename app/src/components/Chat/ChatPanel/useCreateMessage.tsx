@@ -1,9 +1,26 @@
+import { gql } from '@apollo/client';
 import { useUser } from 'context/UserContext';
 import {
   GetMessagesDocument,
   GetMessagesQuery,
   useCreateMessageMutation,
 } from 'graphql/generated/graphql';
+
+gql`
+  mutation CreateMessage($chatId: HashId!, $content: String!) {
+    createMessage(chatId: $chatId, content: $content) {
+      id
+      createdAt
+      content
+      isCreator
+      createdBy {
+        id
+        username
+        name
+      }
+    }
+  }
+`;
 
 type Props = {
   chatId: string;

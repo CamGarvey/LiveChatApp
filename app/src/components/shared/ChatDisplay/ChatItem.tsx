@@ -69,7 +69,7 @@ const ChatItem = ({ chat, onClick }: Props) => {
             {members.length !== 0 && (
               <Avatar.Group ml={'auto'}>
                 {members.slice(0, 2).map((member) => (
-                  <UserAvatar user={member} />
+                  <UserAvatar key={member.id} user={member} />
                 ))}
                 {members.length > 2 && <Avatar>+{members.length - 2}</Avatar>}
               </Avatar.Group>
@@ -84,17 +84,18 @@ const ChatItem = ({ chat, onClick }: Props) => {
 ChatItem.fragments = {
   chat: gql`
     fragment ChatItem on Chat {
-      __typename
       id
       ...ChatAvatar
       ... on DirectMessageChat {
         friend {
+          id
           username
         }
       }
       ... on GroupChat {
         name
         members {
+          id
           username
         }
       }

@@ -67,6 +67,7 @@ const OutgoingEvent = ({ state, children, event, actions }: Props) => {
 OutgoingEvent.fragments = {
   event: gql`
     fragment OutgoingEvent on Event {
+      id
       ...EventInfo
     }
     ${EventInfo.fragments.event}

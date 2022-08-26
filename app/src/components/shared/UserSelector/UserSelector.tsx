@@ -1,4 +1,6 @@
+import { gql } from '@apollo/client';
 import { MultiSelect, Stack } from '@mantine/core';
+import { UserSelectorFragment } from 'graphql/generated/graphql';
 import { forwardRef, useMemo } from 'react';
 import { getUserAvatar } from 'utils/avatar';
 import UserSelectItem from './UserSelectItem';
@@ -10,14 +12,8 @@ type Props = {
   nothingFound?: string;
   disabled?: boolean;
   readOnly?: boolean;
-  users: {
-    id: string;
-    username: string;
-  }[];
-  defaultValue?: {
-    id: string;
-    username: string;
-  }[];
+  users: UserSelectorFragment[];
+  defaultValue?: UserSelectorFragment[];
   onChange: (ids: string[]) => void;
 };
 
@@ -78,5 +74,14 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
     );
   }
 );
+
+(UserSelector as any).fragments = {
+  user: gql`
+    fragment UserSelector on User {
+      id
+      username
+    }
+  `,
+};
 
 export default UserSelector;

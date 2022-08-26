@@ -24,6 +24,7 @@ const UserAvatar = ({ user, size = 'md', style, sx }: Props) => (
 UserAvatar.fragments = {
   user: gql`
     fragment UserAvatar on User {
+      id
       username
     }
   `,

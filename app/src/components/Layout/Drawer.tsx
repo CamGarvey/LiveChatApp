@@ -1,7 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   ActionIcon,
-  Avatar,
   Drawer as MantineDrawer,
   Group,
   MediaQuery,

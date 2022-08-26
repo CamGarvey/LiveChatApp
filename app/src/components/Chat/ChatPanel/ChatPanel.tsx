@@ -1,17 +1,65 @@
 import { gql } from '@apollo/client';
 import { Center, Stack, Text } from '@mantine/core';
-import ChatInput from '../ChatInput';
-import EventContainer from '../Event/EventContainer';
-import Message from '../Event/Message/Message';
-import Scroller from '../Scroller/Scroller';
+import ChatInput from './ChatInput';
+import Scroller from 'components/shared/Scroller/Scroller';
 import { useCreateMessage } from './useCreateMessage';
 import { useMessages } from './useMessages';
+import EventContainer from './Event/EventContainer';
+import { Message } from './Event/Message';
+
+gql`
+  query GetMessages($chatId: HashId!, $last: Int, $before: String) {
+    messages(chatId: $chatId, last: $last, before: $before) {
+      pageInfo {
+        hasPreviousPage
+        startCursor
+      }
+      edges {
+        node {
+          ...ChatPanelMessage
+          ...UseMessage
+        }
+      }
+    }
+  }
+  subscription Messages($chatId: HashId) {
+    messages(chatId: $chatId) {
+      ...ChatPanelMessage
+      ...UseMessage
+    }
+  }
+  fragment UseMessageEvent on Event {
+    id
+    createdAt
+    createdBy {
+      id
+    }
+  }
+  fragment UseMessage on MessageResult {
+    ... on Message {
+      id
+      ...UseMessageEvent
+    }
+    ... on DeletedMessage {
+      id
+      ...UseMessageEvent
+    }
+  }
+  fragment ChatPanelMessage on Event {
+    id
+    ...EventContainer
+    ...MessageEvent
+    createdAt
+  }
+  ${EventContainer.fragments.event}
+  ${Message.fragments.message}
+`;
 
 type Props = {
   chatId: string;
 };
 
-export const ChatPanel = ({ chatId }: Props) => {
+const ChatPanel = ({ chatId }: Props) => {
   const {
     messages,
     hasPreviousPage,
@@ -88,18 +136,6 @@ export const ChatPanel = ({ chatId }: Props) => {
       />
     </Stack>
   );
-};
-
-ChatPanel.fragments = {
-  message: gql`
-    fragment ChatPanelMessage on Event {
-      ...EventContainer
-      ...MessageEvent
-      createdAt
-    }
-    ${EventContainer.fragments.event}
-    ${Message.fragments.message}
-  `,
 };
 
 export default ChatPanel;

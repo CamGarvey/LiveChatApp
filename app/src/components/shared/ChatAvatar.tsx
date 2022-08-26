@@ -30,12 +30,13 @@ const ChatAvatar = ({ chat, style, size = 'sm' }: Props) => {
 ChatAvatar.fragments = {
   chat: gql`
     fragment ChatAvatar on Chat {
-      __typename
+      id
       ... on GroupChat {
         name
       }
       ... on DirectMessageChat {
         friend {
+          id
           username
         }
       }

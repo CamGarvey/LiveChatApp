@@ -5,12 +5,45 @@ import { useIsDrawerOpen } from 'store';
 import { useMediaQuery } from '@mantine/hooks';
 import { useChat } from 'context/ChatContext';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
+import { gql } from '@apollo/client';
+import { useEffect } from 'react';
+import { useGetChatForAnimatedTitleLazyQuery } from 'graphql/generated/graphql';
+
+gql`
+  query GetChatForAnimatedTitle($chatId: HashId!) {
+    chat(chatId: $chatId) {
+      ... on GroupChat {
+        name
+        description
+        isAdmin
+      }
+      ... on DirectMessageChat {
+        friend {
+          username
+        }
+      }
+    }
+  }
+`;
 
 const AnimatedTitle = () => {
-  const { chat } = useChat();
+  const { chatId } = useChat();
+  const [getChat, { data }] = useGetChatForAnimatedTitleLazyQuery();
+
   const isLargerScreen = useMediaQuery('(min-width: 793px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const isDrawerOpen = useIsDrawerOpen();
+
+  useEffect(() => {
+    if (chatId)
+      getChat({
+        variables: {
+          chatId,
+        },
+      });
+  }, [getChat, chatId]);
+
+  const chat = data?.chat;
 
   return (
     <AnimatePresence custom={isDrawerOpen} exitBeforeEnter>

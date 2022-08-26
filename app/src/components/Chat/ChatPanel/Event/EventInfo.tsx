@@ -31,8 +31,10 @@ const EventInfo = ({ event, show, align = 'self-start' }: Props) => {
 EventInfo.fragments = {
   event: gql`
     fragment EventInfo on Event {
+      id
       createdAt
       createdBy {
+        id
         username
       }
       isCreator

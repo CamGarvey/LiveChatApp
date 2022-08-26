@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Text, Tooltip } from '@mantine/core';
 import { UserMenuFragment } from 'graphql/generated/graphql';
+import { useFriendRequest } from 'hooks';
 import { Mailbox, MailForward, UserCircle, UserPlus } from 'tabler-icons-react';
 
 type Props = {
@@ -8,8 +9,10 @@ type Props = {
 };
 
 const UserMenu = ({ user }: Props) => {
+  const { cancelRequest, sendRequest, acceptRequest, declineRequest } =
+    useFriendRequest();
   return (
-    <Menu>
+    <Menu width={'max-content'}>
       <Menu.Target>
         <Tooltip label={!user && 'Failed to load user'}>
           <ActionIcon>
@@ -31,14 +34,33 @@ const UserMenu = ({ user }: Props) => {
             <>
               {user.status === 'REQUEST_RECEIVED' && (
                 <>
-                  <Text>Accept</Text>
-                  <Text>Decline</Text>
+                  <Menu.Item
+                    disabled={user.friendRequest === null}
+                    onClick={() => acceptRequest(user.friendRequest!.id)}
+                  >
+                    Accept
+                  </Menu.Item>
+                  <Menu.Item
+                    disabled={user.friendRequest === null}
+                    onClick={() => declineRequest(user.friendRequest!.id)}
+                  >
+                    Decline
+                  </Menu.Item>
                 </>
               )}
               {user.status === 'REQUEST_SENT' && (
-                <Text>Cancel Friend Request</Text>
+                <Menu.Item
+                  disabled={user.friendRequest === null}
+                  onClick={() => cancelRequest(user.friendRequest!.id)}
+                >
+                  Cancel Friend Request
+                </Menu.Item>
               )}
-              {user.status === 'NO_REQUEST' && <Text>Send Friend Request</Text>}
+              {user.status === 'NO_REQUEST' && (
+                <Menu.Item onClick={() => sendRequest(user.id)}>
+                  Send Friend Request
+                </Menu.Item>
+              )}
             </>
           )}
         </Menu.Dropdown>
@@ -50,9 +72,15 @@ const UserMenu = ({ user }: Props) => {
 UserMenu.fragments = {
   user: gql`
     fragment UserMenu on User {
-      __typename
+      id
       ... on Stranger {
         status
+        friendRequest {
+          id
+          status
+          createdById
+          recipientId
+        }
       }
     }
   `,

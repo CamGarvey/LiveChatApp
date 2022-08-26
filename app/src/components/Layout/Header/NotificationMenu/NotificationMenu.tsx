@@ -1,6 +1,6 @@
 import { ActionIcon, Center, Indicator, Menu } from '@mantine/core';
 import { Bell } from 'tabler-icons-react';
-import { useUserNotifications } from 'context/NotificationContext';
+import { useLiveNotifications } from 'context/LiveNotificationsContext';
 import { FriendRequest as FriendRequestObject } from 'graphql/generated/graphql';
 import FriendRequestNotification from './FriendRequestNotification';
 
@@ -9,7 +9,7 @@ type Props = {
 };
 
 const NotificationMenu = ({ size = 16 }: Props) => {
-  const { notifications } = useUserNotifications();
+  const { notifications } = useLiveNotifications();
 
   const friendRequests =
     (notifications?.filter(

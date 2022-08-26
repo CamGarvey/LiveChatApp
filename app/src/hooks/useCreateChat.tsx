@@ -1,18 +1,32 @@
+import { gql } from '@apollo/client';
 import { showNotification } from '@mantine/notifications';
 import { useUser } from 'context/UserContext';
 import {
-  GetChatsDocument,
-  GetChatsQuery,
+  GetChatsForDisplayDocument,
+  GetChatsForDisplayQuery,
   useCreateGroupChatMutation,
 } from 'graphql/generated/graphql';
 
-export const useCreateChat = () => {
+gql`
+  mutation CreateGroupChat($data: CreateGroupChatInput!) {
+    createGroupChat(data: $data) {
+      name
+      createdBy {
+        id
+        name
+        username
+      }
+    }
+  }
+`;
+
+export const useCreateGroupChat = () => {
   const { user } = useUser();
 
   const create = useCreateGroupChatMutation({
     update: (cache, { data: { createGroupChat } }) => {
-      const { chats } = cache.readQuery<GetChatsQuery>({
-        query: GetChatsDocument,
+      const { chats } = cache.readQuery<GetChatsForDisplayQuery>({
+        query: GetChatsForDisplayDocument,
       });
 
       const updatedChats = [
@@ -27,7 +41,7 @@ export const useCreateChat = () => {
       ];
 
       cache.writeQuery({
-        query: GetChatsDocument,
+        query: GetChatsForDisplayDocument,
         data: {
           chats: updatedChats,
         },

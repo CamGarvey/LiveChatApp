@@ -6,47 +6,6 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 import { groupMessages } from 'utils';
-import { gql } from '@apollo/client';
-import ChatPanel from './ChatPanel';
-
-gql`
-  query GetMessages($chatId: HashId!, $last: Int, $before: String) {
-    messages(chatId: $chatId, last: $last, before: $before) {
-      pageInfo {
-        hasPreviousPage
-        startCursor
-      }
-      edges {
-        node {
-          ...ChatPanelMessage
-          ...UseMessage
-        }
-      }
-    }
-  }
-  subscription Messages($chatId: HashId) {
-    messages(chatId: $chatId) {
-      ...ChatPanelMessage
-      ...UseMessage
-    }
-  }
-  fragment UseMessageEvent on Event {
-    createdAt
-    createdBy {
-      id
-    }
-  }
-
-  fragment UseMessage on MessageResult {
-    ... on Message {
-      ...UseMessageEvent
-    }
-    ... on DeletedMessage {
-      ...UseMessageEvent
-    }
-  }
-  ${ChatPanel.fragments.message}
-`;
 
 type Props = {
   chatId: string;

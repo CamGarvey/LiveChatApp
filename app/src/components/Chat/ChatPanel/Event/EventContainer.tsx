@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import EventTime from './EventTime';
 import moment from 'moment';
 import { Stack } from '@mantine/core';
@@ -35,7 +34,7 @@ const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
 EventContainer.fragments = {
   event: gql`
     fragment EventContainer on Event {
-      __typename
+      id
       createdAt
       isCreator
     }

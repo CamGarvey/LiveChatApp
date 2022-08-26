@@ -68,8 +68,10 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
 IncomingEvent.fragments = {
   event: gql`
     fragment IncomingEvent on Event {
+      id
       ...EventInfo
       createdBy {
+        id
         ...UserAvatar
       }
     }

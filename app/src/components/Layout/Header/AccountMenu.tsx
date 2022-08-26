@@ -1,5 +1,4 @@
-import { gql } from '@apollo/client';
-import { ActionIcon, Menu, Text } from '@mantine/core';
+import { ActionIcon, Menu } from '@mantine/core';
 import { useUser } from 'context/UserContext';
 import { Logout, UserCircle } from 'tabler-icons-react';
 

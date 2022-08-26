@@ -6,7 +6,7 @@ import { UserItemFragment } from 'graphql/generated/graphql';
 
 type Props = {
   user: UserItemFragment;
-  menu?: React.ReactChild;
+  menu?: React.ReactNode;
 };
 const UserItem = ({ user, menu }: Props) => {
   const { name, username } = user;
@@ -40,7 +40,7 @@ const UserItem = ({ user, menu }: Props) => {
           {name}
         </Text>
       </Stack>
-      {menu && user.__typename === 'Me' && <Box ml={'auto'}>{menu}</Box>}
+      {menu && user.__typename !== 'Me' && <Box ml={'auto'}>{menu}</Box>}
     </UnstyledButton>
   );
 };
@@ -48,6 +48,7 @@ const UserItem = ({ user, menu }: Props) => {
 UserItem.fragments = {
   user: gql`
     fragment UserItem on User {
+      id
       username
       name
     }

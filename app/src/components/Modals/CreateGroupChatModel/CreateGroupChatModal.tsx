@@ -1,11 +1,22 @@
 import { useFormik } from 'formik';
 import { useEffect, useRef, useState } from 'react';
 import UserSelector from 'components/shared/UserSelector/UserSelector';
-import { useGetFriendsQuery } from 'graphql/generated/graphql';
 import { Button, Center, Input, Loader, Stack } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
-import { useCreateChat } from 'hooks/useCreateChat';
+import { useCreateGroupChat } from 'hooks/useCreateChat';
+import { gql } from '@apollo/client';
+import { useGetFriendsForCreateGroupChatQuery } from 'graphql/generated/graphql';
+
+gql`
+  query GetFriendsForCreateGroupChat {
+    friends {
+      id
+      name
+      username
+    }
+  }
+`;
 
 export const CreateGroupChatModal = ({
   context,
@@ -17,10 +28,10 @@ export const CreateGroupChatModal = ({
     loading: loadingFriends,
     data: friendData,
     error: friendError,
-  } = useGetFriendsQuery({ fetchPolicy: 'network-only' });
+  } = useGetFriendsForCreateGroupChatQuery({ fetchPolicy: 'network-only' });
 
   const [createGroupChatMutation, { loading: loadingCreateChat }] =
-    useCreateChat();
+    useCreateGroupChat();
 
   useEffect(() => {
     inputRef?.current?.focus();

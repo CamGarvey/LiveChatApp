@@ -23,9 +23,11 @@ MessageActions.fragments = {
   message: gql`
     fragment MessageActions on MessageResult {
       ... on DeletedMessage {
+        id
         isCreator
       }
       ... on Message {
+        id
         isCreator
       }
     }

@@ -2,59 +2,89 @@ import { useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
 import UserSelector from '../shared/UserSelector/UserSelector';
 import {
-  useGetFriendsQuery,
-  useUpdateGroupChatMutation,
+  useGetChatForUpdateQuery,
+  useGetFriendsForUpdateGroupChatQuery,
 } from 'graphql/generated/graphql';
-import { Button, Center, Input, Loader, Stack, Tooltip } from '@mantine/core';
+import { Button, Center, Input, Loader, Stack, Text } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteChat } from 'hooks';
 import { AdminSelector } from 'components/shared/AdminSelector';
+import { gql } from '@apollo/client';
+import { useUpdateGroupChat } from 'hooks/useUpdateGroupChat';
+
+gql`
+  query GetChatForUpdate($chatId: HashId!) {
+    chat(chatId: $chatId) {
+      id
+      isCreator
+      ... on GroupChat {
+        name
+        description
+        members {
+          ...UpdateGroupUser
+        }
+        admins {
+          ...UpdateGroupUser
+        }
+      }
+    }
+  }
+  query GetFriendsForUpdateGroupChat {
+    friends {
+      ...UpdateGroupUser
+    }
+  }
+  fragment UpdateGroupUser on User {
+    id
+    username
+  }
+`;
 
 type Props = {
-  chat: {
-    __typename: string;
-    id: string;
-    name: string;
-    description?: string;
-    isCreator: boolean;
-    members: {
-      id: string;
-      username: string;
-    }[];
-    admins: {
-      id: string;
-      username: string;
-    }[];
-  };
+  chatId: string;
 };
 
 export const UpdateGroupChatModal = ({
   context,
   id,
-  innerProps: { chat },
+  innerProps: { chatId },
 }: ContextModalProps<Props>) => {
+  const { loading: loadingChat, data } = useGetChatForUpdateQuery({
+    variables: {
+      chatId,
+    },
+  });
+  const chat = data?.chat;
   const inputRef = useRef<HTMLInputElement>();
   const navigate = useNavigate();
   const { deleteChat, loading: loadingDelete } = useDeleteChat();
-  const [updateChat, { loading: loadingUpdate }] = useUpdateGroupChatMutation();
+  const { updateChat, loading: loadingUpdate } = useUpdateGroupChat();
 
   const {
     loading: loadingFriends,
     data: friendData,
     error: friendError,
-  } = useGetFriendsQuery();
+  } = useGetFriendsForUpdateGroupChatQuery();
 
-  const memberIds = useMemo(() => chat.members.map((x) => x.id), [chat]);
-  const adminIds = useMemo(() => chat.admins.map((x) => x.id), [chat]);
+  const memberIds = useMemo(
+    () =>
+      chat.__typename === 'GroupChat' ? chat.members.map((x) => x.id) : [],
+    [chat]
+  );
+  const adminIds = useMemo(
+    () => (chat.__typename === 'GroupChat' ? chat.admins.map((x) => x.id) : []),
+    [chat]
+  );
 
   // Since other friends can add either friends
   // We need to make sure that we get all of the users in the chat
   // So that if the user takes a non friend out of the UserSelector
   // they can add them back in if it was a mistake
   const totalUsers = useMemo(() => {
+    if (chat?.__typename !== 'GroupChat') return [];
     if (friendData)
       return _.unionBy(
         chat.members,
@@ -68,8 +98,9 @@ export const UpdateGroupChatModal = ({
 
   const formik = useFormik({
     initialValues: {
-      name: chat.name,
-      description: chat.description ?? '',
+      name: chat?.__typename === 'GroupChat' ? chat.name : '',
+      description:
+        chat?.__typename === 'GroupChat' ? chat.description ?? '' : '',
       isPrivate: true,
       memberIds,
       adminIds,
@@ -87,17 +118,13 @@ export const UpdateGroupChatModal = ({
       );
       const adminsAdded = values.adminIds.filter((x) => !adminIds.includes(x));
       updateChat({
-        variables: {
-          data: {
-            chatId: chat.id,
-            name: values.name,
-            description: values.description,
-            addMemberIds: membersAdded,
-            removeMemberIds: membersRemoved,
-            addAdminIds: adminsAdded,
-            removeAdminIds: adminsRemoved,
-          },
-        },
+        chatId: chat.id,
+        name: values.name,
+        description: values.description,
+        addMemberIds: membersAdded,
+        removeMemberIds: membersRemoved,
+        addAdminIds: adminsAdded,
+        removeAdminIds: adminsRemoved,
       }).then(() => context.closeModal(id));
     },
   });
@@ -116,6 +143,27 @@ export const UpdateGroupChatModal = ({
     },
     [formik]
   );
+
+  if (loadingChat)
+    return (
+      <Center>
+        <Text>Loading</Text>
+      </Center>
+    );
+
+  if (chat?.__typename === 'DeletedChat')
+    return (
+      <Center>
+        <Text>Chat is deleted</Text>
+      </Center>
+    );
+
+  if (chat?.__typename === 'DirectMessageChat')
+    return (
+      <Center>
+        <Text>Chat must be a group chat</Text>
+      </Center>
+    );
 
   return (
     <Stack>

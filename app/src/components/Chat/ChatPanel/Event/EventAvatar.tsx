@@ -19,7 +19,9 @@ const EventAvatar = ({ isVisible, username }: Props) => {
 EventAvatar.fragments = {
   event: gql`
     fragment EventAvatar on Event {
+      id
       createdBy {
+        id
         username
       }
     }

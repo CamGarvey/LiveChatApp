@@ -5,8 +5,6 @@ import {
   Header as MantineHeader,
   MediaQuery,
   Burger,
-  Menu,
-  Button,
 } from '@mantine/core';
 import { Search } from 'tabler-icons-react';
 import { useIsDrawerOpen, useToggleDrawer } from 'store';

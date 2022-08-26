@@ -1,9 +1,24 @@
-import { useDeleteChatMutation } from 'graphql/generated/graphql';
+import { gql } from '@apollo/client';
+import {
+  UseDeleteChatFragment,
+  useDeleteChatMutation,
+} from 'graphql/generated/graphql';
+
+gql`
+  mutation DeleteChat($chatId: HashId!) {
+    deleteChat(chatId: $chatId) {
+      id
+    }
+  }
+  fragment UseDeleteChat on Chat {
+    id
+  }
+`;
 
 export const useDeleteChat = () => {
   const [deleteChatMutation, { loading }] = useDeleteChatMutation();
 
-  const deleteChat = (chat: { __typename: string; id: string }) => {
+  const deleteChat = (chat: UseDeleteChatFragment) => {
     return deleteChatMutation({
       variables: {
         chatId: chat.id,
