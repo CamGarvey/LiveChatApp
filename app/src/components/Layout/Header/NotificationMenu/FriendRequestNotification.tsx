@@ -63,7 +63,7 @@ FriendRequestNotification.fragments = {
       createdAt
       createdById
       recipientId
-      status
+      isCreator
       createdBy {
         id
         ...UserAvatar

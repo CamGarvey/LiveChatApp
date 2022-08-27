@@ -1,5 +1,8 @@
 import { gql } from '@apollo/client';
 import {
+  FriendRequestUserFragment,
+  FriendRequestUserFragmentDoc,
+  StrangerStatus,
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
   useDeclineFriendRequestMutation,
@@ -33,11 +36,14 @@ gql`
     status
     createdById
     recipientId
-    createdBy {
-      id
-    }
-    recipient {
-      id
+  }
+  fragment FriendRequestUser on User {
+    id
+    ... on Stranger {
+      status
+      friendRequest {
+        id
+      }
     }
   }
 `;
@@ -57,12 +63,42 @@ export const useFriendRequest = () => {
       variables: {
         friendRequestId,
       },
+      update: (cache, { data: newData }) => {
+        cache.updateFragment<FriendRequestUserFragment>(
+          {
+            id: `User:${newData.acceptFriendRequest.recipientId}`,
+            fragment: FriendRequestUserFragmentDoc,
+          },
+          (data) => ({
+            ...data,
+            // Update typename
+            __typename: 'Friend',
+            // Remove friend request
+            friendRequest: null,
+          })
+        );
+      },
     });
 
   const declineRequest = (friendRequestId: string) =>
     decline({
       variables: {
         friendRequestId,
+      },
+      update: (cache, { data: newData }) => {
+        cache.updateFragment<FriendRequestUserFragment>(
+          {
+            id: `User:${newData.declineFriendRequest.recipientId}`,
+            fragment: FriendRequestUserFragmentDoc,
+          },
+          (data) => ({
+            ...data,
+            // Remove friend request
+            friendRequest: null,
+            // Update status
+            status: StrangerStatus.NoRequest,
+          })
+        );
       },
     });
 
@@ -71,12 +107,42 @@ export const useFriendRequest = () => {
       variables: {
         friendRequestId,
       },
+      update: (cache, { data: newData }) => {
+        cache.updateFragment<FriendRequestUserFragment>(
+          {
+            id: `User:${newData.cancelFriendRequest.recipientId}`,
+            fragment: FriendRequestUserFragmentDoc,
+          },
+          (data) => ({
+            ...data,
+            // Remove friend request
+            friendRequest: null,
+            // Update status
+            status: StrangerStatus.NoRequest,
+          })
+        );
+      },
     });
 
   const sendRequest = (friendId: string) =>
     send({
       variables: {
         friendId,
+      },
+      update: (cache, { data: newData }) => {
+        cache.updateFragment<FriendRequestUserFragment>(
+          {
+            id: `User:${friendId}`,
+            fragment: FriendRequestUserFragmentDoc,
+          },
+          (data) => ({
+            ...data,
+            // Attach new friend request
+            friendRequest: newData.sendFriendRequest,
+            // Update status
+            status: StrangerStatus.RequestSent,
+          })
+        );
       },
     });
 

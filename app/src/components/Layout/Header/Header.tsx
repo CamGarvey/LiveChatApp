@@ -25,7 +25,13 @@ const Header = () => {
   const toggleDrawer = useToggleDrawer();
 
   return (
-    <MantineHeader height={70} p="md">
+    <MantineHeader
+      height={70}
+      p="md"
+      sx={{
+        zIndex: 101,
+      }}
+    >
       <Group spacing={3}>
         <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
           <Burger

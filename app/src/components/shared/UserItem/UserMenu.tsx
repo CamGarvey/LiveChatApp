@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { ActionIcon, Menu, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { UserMenuFragment } from 'graphql/generated/graphql';
 import { useFriendRequest } from 'hooks';
 import { Mailbox, MailForward, UserCircle, UserPlus } from 'tabler-icons-react';
@@ -9,13 +9,25 @@ type Props = {
 };
 
 const UserMenu = ({ user }: Props) => {
-  const { cancelRequest, sendRequest, acceptRequest, declineRequest } =
-    useFriendRequest();
+  const {
+    cancelRequest,
+    sendRequest,
+    acceptRequest,
+    declineRequest,
+    loadingAccept,
+    loadingCancel,
+    loadingDecline,
+    loadingSend,
+  } = useFriendRequest();
+
+  const loading =
+    loadingAccept || loadingCancel || loadingDecline || loadingSend;
+
   return (
     <Menu width={'max-content'}>
       <Menu.Target>
-        <Tooltip label={!user && 'Failed to load user'}>
-          <ActionIcon>
+        <Tooltip hidden={!!user} label={!user && 'Failed to load user'}>
+          <ActionIcon loading={loading}>
             {user.__typename === 'Stranger' && (
               <>
                 {user.status === 'REQUEST_RECEIVED' && <Mailbox />}
@@ -77,9 +89,9 @@ UserMenu.fragments = {
         status
         friendRequest {
           id
-          status
           createdById
           recipientId
+          isCreator
         }
       }
     }

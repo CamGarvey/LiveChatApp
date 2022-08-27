@@ -17,7 +17,7 @@ const NotificationMenu = ({ size = 16 }: Props) => {
     ) as FriendRequestObject[]) ?? [];
 
   return (
-    <Menu width={200} shadow="md">
+    <Menu width={'max-context'} shadow="md">
       <Menu.Target>
         <Indicator color={'red'} disabled={friendRequests.length === 0}>
           <ActionIcon variant="default">

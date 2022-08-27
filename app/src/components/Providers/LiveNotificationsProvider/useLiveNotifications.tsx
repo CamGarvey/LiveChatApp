@@ -31,6 +31,7 @@ gql`
     ... on Request {
       createdById
       recipientId
+      isCreator
       status
     }
   }
