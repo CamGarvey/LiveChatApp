@@ -1,5 +1,6 @@
 import {
   GetMessagesDocument,
+  MessagesDocument,
   MessagesSubscription,
   useGetMessagesQuery,
 } from 'graphql/generated/graphql';
@@ -29,7 +30,7 @@ export const useMessages = ({ chatId }: Props) => {
 
   useEffect(() => {
     const unsubscribe = subscribeToMore<MessagesSubscription>({
-      document: GetMessagesDocument,
+      document: MessagesDocument,
       variables: {
         chatId,
       },

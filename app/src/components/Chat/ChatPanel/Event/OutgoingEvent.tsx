@@ -31,7 +31,6 @@ const OutgoingEvent = ({ state, children, event, actions }: Props) => {
         },
       }}
       style={{
-        maxWidth: largeScreen ? '600px' : '400px',
         gap: '3px',
       }}
       onMouseEnter={() => setHovered(true)}

@@ -19,7 +19,7 @@ const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
       py={'5px'}
       onClick={() => onClick && onClick()}
       sx={(theme) => ({
-        maxWidth: largeScreen ? '380px' : '200px',
+        maxWidth: largeScreen ? '380px' : '250px',
         backgroundColor:
           variant === 'light' &&
           (theme.colorScheme === 'dark'

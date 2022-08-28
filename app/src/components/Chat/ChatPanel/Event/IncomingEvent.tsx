@@ -30,7 +30,6 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
         },
       }}
       style={{
-        maxWidth: largeScreen ? '600px' : '400px',
         gap: '3px',
         overflowX: 'hidden',
       }}
