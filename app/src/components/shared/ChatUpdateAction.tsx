@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
-import { useChat } from 'context/ChatContext';
 import { useGetChatForChatUpdateActionQuery } from 'graphql/generated/graphql';
-import { Settings } from 'tabler-icons-react';
+import { useChatId } from 'store';
+import { IconSettings } from '@tabler/icons';
 
 gql`
   query GetChatForChatUpdateAction($chatId: HashId!) {
@@ -16,7 +16,7 @@ gql`
 `;
 
 const ChatUpdateAction = () => {
-  const { chatId } = useChat();
+  const { chatId } = useChatId();
   const { loading, data } = useGetChatForChatUpdateActionQuery({
     variables: {
       chatId,
@@ -46,7 +46,7 @@ const ChatUpdateAction = () => {
           }
         }}
       >
-        <Settings />
+        <IconSettings />
       </ActionIcon>
     </Tooltip>
   );

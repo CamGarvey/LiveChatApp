@@ -1,6 +1,6 @@
 import { Group, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
 import moment from 'moment';
-import { CircleX, CircleCheck } from 'tabler-icons-react';
+import { IconCircleX, IconCircleCheck } from '@tabler/icons';
 import { FriendRequestNotificationFragment } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
 import { gql } from '@apollo/client';
@@ -34,7 +34,7 @@ const FriendRequestNotification = ({ request }: Props) => {
               declineRequest(request.id);
             }}
           >
-            <CircleX />
+            <IconCircleX />
           </ActionIcon>
         </Tooltip>
         <Tooltip label="Accept" openDelay={200} withArrow>
@@ -48,7 +48,7 @@ const FriendRequestNotification = ({ request }: Props) => {
               acceptRequest(request.id);
             }}
           >
-            <CircleCheck />
+            <IconCircleCheck />
           </ActionIcon>
         </Tooltip>
       </Group>

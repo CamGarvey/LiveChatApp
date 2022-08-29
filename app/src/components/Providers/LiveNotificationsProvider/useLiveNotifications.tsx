@@ -27,12 +27,28 @@ gql`
       id
       name
       username
+      ... on Stranger {
+        status
+      }
     }
     ... on Request {
       createdById
       recipientId
       isCreator
       status
+      createdBy {
+        ... on Stranger {
+          friendRequest {
+            id
+          }
+        }
+      }
+      recipient {
+        id
+        ... on Stranger {
+          status
+        }
+      }
     }
   }
 `;
@@ -65,12 +81,16 @@ export const useLiveNotifications = ({ onNotification }: Props) => {
   useEffect(() => {
     const unsubscribe = subscribeToMore<NotificationsSubscription>({
       document: NotificationsDocument,
+
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        const notification = subscriptionData.data;
-        onNotification(notification);
+        const notification = subscriptionData.data.notifications;
+        onNotification(subscriptionData.data);
         const newCache = Object.assign({}, prev, {
-          notifications: [...prev.notifications, notification],
+          notifications: [
+            ...prev.notifications.filter((x) => x.id !== notification.id),
+            notification,
+          ],
         } as GetNotificationsQuery);
         return newCache;
       },

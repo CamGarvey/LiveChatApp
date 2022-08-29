@@ -1,6 +1,6 @@
 import { Center, Input, ScrollArea, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
-import { Search } from 'tabler-icons-react';
+import { IconSearch } from '@tabler/icons';
 import ChatItem from './ChatItem';
 import useLiveChats from './useLiveChats';
 
@@ -29,7 +29,7 @@ const ChatDisplay = ({ onChatClick }: Props) => {
         radius={'sm'}
         placeholder="Search Groups"
         maxLength={15}
-        icon={<Search />}
+        icon={<IconSearch />}
         onChange={(e: any) => {
           setFilter(e.target.value.toLowerCase());
         }}

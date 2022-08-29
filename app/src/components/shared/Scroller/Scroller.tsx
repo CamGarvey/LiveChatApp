@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
-import { ArrowDownCircle } from 'tabler-icons-react';
+import { IconArrowDownCircle } from '@tabler/icons';
 import { useScroller } from './useScroller';
 
 type Props = {
@@ -156,7 +156,7 @@ const Scroller = ({
               backgroundColor: 'inherit',
             }}
           >
-            <ArrowDownCircle size={60} strokeWidth={1} color={'#405abf'} />
+            <IconArrowDownCircle size={60} strokeWidth={1} color={'#405abf'} />
           </ActionIcon>
         </Popover.Dropdown>
       </Popover>

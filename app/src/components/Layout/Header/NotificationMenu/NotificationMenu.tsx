@@ -1,7 +1,7 @@
 import { ActionIcon, Center, Indicator, Menu } from '@mantine/core';
-import { Bell } from 'tabler-icons-react';
+import { IconBell } from '@tabler/icons';
 import { useLiveNotifications } from 'context/LiveNotificationsContext';
-import { FriendRequest as FriendRequestObject } from 'graphql/generated/graphql';
+import { FriendRequestNotificationFragment } from 'graphql/generated/graphql';
 import FriendRequestNotification from './FriendRequestNotification';
 
 type Props = {
@@ -14,33 +14,37 @@ const NotificationMenu = ({ size = 16 }: Props) => {
   const friendRequests =
     (notifications?.filter(
       (x) => x.__typename === 'FriendRequest'
-    ) as FriendRequestObject[]) ?? [];
+    ) as FriendRequestNotificationFragment[]) ?? [];
 
   return (
-    <Menu width={'max-context'} shadow="md">
+    <Menu width={'max-content'} shadow="md">
       <Menu.Target>
-        <Indicator color={'red'} disabled={friendRequests.length === 0}>
+        <Indicator
+          color={'red'}
+          label={friendRequests.length}
+          disabled={friendRequests.length === 0}
+        >
           <ActionIcon variant="default">
-            <Bell size={size} />
+            <IconBell size={size} />
           </ActionIcon>
         </Indicator>
       </Menu.Target>
       <Menu.Dropdown>
-        {friendRequests.length ? (
+        {friendRequests.length !== 0 ? (
           <>
-            <Menu.Item>
+            <Menu.Label>
               <Center>Friend Requests</Center>
-            </Menu.Item>
+            </Menu.Label>
             {friendRequests.map((request) => (
-              <Menu.Item>
+              <Menu.Item key={request.id}>
                 <FriendRequestNotification key={request.id} request={request} />
               </Menu.Item>
             ))}
           </>
         ) : (
-          <Menu.Item>
+          <Menu.Label>
             <Center>No notifications</Center>
-          </Menu.Item>
+          </Menu.Label>
         )}
       </Menu.Dropdown>
     </Menu>

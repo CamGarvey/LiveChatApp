@@ -7,7 +7,7 @@ import {
   Textarea,
 } from '@mantine/core';
 import { useFormik } from 'formik';
-import { Send } from 'tabler-icons-react';
+import { IconSend } from '@tabler/icons';
 import * as Yup from 'yup';
 
 type Props = {
@@ -57,7 +57,7 @@ const ChatInput = ({
               variant={'filled'}
               color={'blue'}
             >
-              <Send />
+              <IconSend />
             </ActionIcon>
           </MediaQuery>
           <MediaQuery smallerThan={'sm'} styles={{ display: 'none' }}>

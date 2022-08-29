@@ -6,10 +6,12 @@ import {
   GetChatsForDisplayQuery,
   useCreateGroupChatMutation,
 } from 'graphql/generated/graphql';
+import { useNavigate } from 'react-router-dom';
 
 gql`
   mutation CreateGroupChat($data: CreateGroupChatInput!) {
     createGroupChat(data: $data) {
+      id
       name
       createdBy {
         id
@@ -22,6 +24,7 @@ gql`
 
 export const useCreateGroupChat = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const create = useCreateGroupChatMutation({
     update: (cache, { data: { createGroupChat } }) => {
@@ -47,11 +50,13 @@ export const useCreateGroupChat = () => {
         },
       });
     },
-    onCompleted: (data) =>
+    onCompleted: (data) => {
       showNotification({
         title: 'Created New Chat',
         message: data.createGroupChat.name,
-      }),
+      });
+      navigate(`/chats/${data.createGroupChat.id}`, { replace: true });
+    },
   });
 
   return create;

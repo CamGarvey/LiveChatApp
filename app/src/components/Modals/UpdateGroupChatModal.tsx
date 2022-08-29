@@ -71,11 +71,12 @@ export const UpdateGroupChatModal = ({
 
   const memberIds = useMemo(
     () =>
-      chat.__typename === 'GroupChat' ? chat.members.map((x) => x.id) : [],
+      chat?.__typename === 'GroupChat' ? chat.members.map((x) => x.id) : [],
     [chat]
   );
   const adminIds = useMemo(
-    () => (chat.__typename === 'GroupChat' ? chat.admins.map((x) => x.id) : []),
+    () =>
+      chat?.__typename === 'GroupChat' ? chat.admins.map((x) => x.id) : [],
     [chat]
   );
 

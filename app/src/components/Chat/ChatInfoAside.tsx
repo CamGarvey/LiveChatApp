@@ -12,13 +12,11 @@ import {
 } from '@mantine/core';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import UserItem from 'components/shared/UserItem';
-import { useChat } from 'context/ChatContext';
-import {
-  useGetChatForChatInfoAsideLazyQuery,
-  useGetChatForChatInfoAsideQuery,
-} from 'graphql/generated/graphql';
+import UserMenu from 'components/shared/UserItem/UserMenu';
+import { useGetChatForChatInfoAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
-import { UserPlus } from 'tabler-icons-react';
+import { useChatId } from 'store';
+import { IconUserPlus } from '@tabler/icons';
 
 gql`
   query GetChatForChatInfoAside($chatId: HashId!) {
@@ -33,15 +31,17 @@ gql`
         members {
           id
           ...UserItem
+          ...UserMenu
         }
       }
     }
   }
   ${UserItem.fragments.user}
+  ${UserMenu.fragments.user}
 `;
 
 const ChatInfoAside = () => {
-  const { chatId } = useChat();
+  const { chatId } = useChatId();
   const [getChat, { data, loading }] = useGetChatForChatInfoAsideLazyQuery();
 
   useEffect(() => {
@@ -88,14 +88,14 @@ const ChatInfoAside = () => {
                   <>
                     <Text>Members ({chat.members.length})</Text>
                     <ActionIcon ml={'auto'} variant="light">
-                      <UserPlus size={16} />
+                      <IconUserPlus size={16} />
                     </ActionIcon>
                   </>
                 ) : (
                   <>
                     <Text>Members (2)</Text>
                     <ActionIcon ml={'auto'} variant="light">
-                      <UserPlus size={16} />
+                      <IconUserPlus size={16} />
                     </ActionIcon>
                   </>
                 )}
@@ -119,11 +119,7 @@ const ChatInfoAside = () => {
                     <UserItem
                       key={member.id}
                       user={{ ...member }}
-                      menu={
-                        <Menu>
-                          <Menu.Item>yo</Menu.Item>
-                        </Menu>
-                      }
+                      menu={<UserMenu user={member} />}
                     />
                   );
                 })}

@@ -575,7 +575,7 @@ export type GetChatForChatInfoAsideQueryVariables = Exact<{
 }>;
 
 
-export type GetChatForChatInfoAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', name: string, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }> } | null };
+export type GetChatForChatInfoAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', name: string, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, status: StrangerStatus, friendRequest?: { __typename?: 'FriendRequest', id: any, createdById: any, recipientId: any, isCreator: boolean } | null }> } | null };
 
 export type GetMessagesQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -670,6 +670,11 @@ export type CreateMessageMutationVariables = Exact<{
 
 export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: any, createdAt: any, content: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
 
+export type GetMeForAccountMenuQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMeForAccountMenuQuery = { __typename?: 'Query', me?: { __typename?: 'Me', id: any, username: string } | null };
+
 export type GetChatForAnimatedTitleQueryVariables = Exact<{
   chatId: Scalars['HashId'];
 }>;
@@ -716,16 +721,16 @@ export type GetUserSearchQuery = { __typename?: 'Query', users: { __typename?: '
 export type GetNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNotificationsQuery = { __typename?: 'Query', notifications: Array<{ __typename?: 'ChatInvite', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } }> };
+export type GetNotificationsQuery = { __typename?: 'Query', notifications: Array<{ __typename?: 'ChatInvite', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } | null } | { __typename?: 'FriendRequest', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } | null }> };
 
 export type NotificationsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | null };
+export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatInvite', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } | null } | { __typename?: 'FriendRequest', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } | null } | null };
 
-type LiveNotification_ChatInvite_Fragment = { __typename?: 'ChatInvite', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } };
+type LiveNotification_ChatInvite_Fragment = { __typename?: 'ChatInvite', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } | null };
 
-type LiveNotification_FriendRequest_Fragment = { __typename?: 'FriendRequest', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } };
+type LiveNotification_FriendRequest_Fragment = { __typename?: 'FriendRequest', createdById: any, recipientId: any, isCreator: boolean, status: RequestStatus, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient?: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } | null };
 
 export type LiveNotificationFragment = LiveNotification_ChatInvite_Fragment | LiveNotification_FriendRequest_Fragment;
 
@@ -806,6 +811,36 @@ type UserMenu_Stranger_Fragment = { __typename?: 'Stranger', status: StrangerSta
 
 export type UserMenuFragment = UserMenu_Friend_Fragment | UserMenu_Me_Fragment | UserMenu_Stranger_Fragment;
 
+type UserSelector_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
+
+type UserSelector_Me_Fragment = { __typename?: 'Me', id: any, username: string };
+
+type UserSelector_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
+
+export type UserSelectorFragment = UserSelector_Friend_Fragment | UserSelector_Me_Fragment | UserSelector_Stranger_Fragment;
+
+export type CreateGroupChatMutationVariables = Exact<{
+  data: CreateGroupChatInput;
+}>;
+
+
+export type CreateGroupChatMutation = { __typename?: 'Mutation', createGroupChat?: { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | null };
+
+export type DeleteChatMutationVariables = Exact<{
+  chatId: Scalars['HashId'];
+}>;
+
+
+export type DeleteChatMutation = { __typename?: 'Mutation', deleteChat?: { __typename?: 'DeletedChat', id: any } | null };
+
+type UseDeleteChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type UseDeleteChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
+
+type UseDeleteChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any };
+
+export type UseDeleteChatFragment = UseDeleteChat_DeletedChat_Fragment | UseDeleteChat_DirectMessageChat_Fragment | UseDeleteChat_GroupChat_Fragment;
+
 export type AcceptFriendRequestMutationVariables = Exact<{
   friendRequestId: Scalars['HashId'];
 }>;
@@ -834,37 +869,14 @@ export type SendFriendRequestMutationVariables = Exact<{
 
 export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any } | null };
 
+export type DeleteFriendMutationVariables = Exact<{
+  friendId: Scalars['HashId'];
+}>;
+
+
+export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: { __typename?: 'Stranger', id: any, status: StrangerStatus } | null };
+
 export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, status: RequestStatus, createdById: any, recipientId: any };
-
-type UserSelector_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
-
-type UserSelector_Me_Fragment = { __typename?: 'Me', id: any, username: string };
-
-type UserSelector_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
-
-export type UserSelectorFragment = UserSelector_Friend_Fragment | UserSelector_Me_Fragment | UserSelector_Stranger_Fragment;
-
-export type CreateGroupChatMutationVariables = Exact<{
-  data: CreateGroupChatInput;
-}>;
-
-
-export type CreateGroupChatMutation = { __typename?: 'Mutation', createGroupChat?: { __typename?: 'GroupChat', name: string, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | null };
-
-export type DeleteChatMutationVariables = Exact<{
-  chatId: Scalars['HashId'];
-}>;
-
-
-export type DeleteChatMutation = { __typename?: 'Mutation', deleteChat?: { __typename?: 'DeletedChat', id: any } | null };
-
-type UseDeleteChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type UseDeleteChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
-
-type UseDeleteChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any };
-
-export type UseDeleteChatFragment = UseDeleteChat_DeletedChat_Fragment | UseDeleteChat_DirectMessageChat_Fragment | UseDeleteChat_GroupChat_Fragment;
 
 type FriendRequestUser_Friend_Fragment = { __typename?: 'Friend', id: any };
 
@@ -1028,12 +1040,28 @@ export const LiveNotificationFragmentDoc = gql`
     id
     name
     username
+    ... on Stranger {
+      status
+    }
   }
   ... on Request {
     createdById
     recipientId
     isCreator
     status
+    createdBy {
+      ... on Stranger {
+        friendRequest {
+          id
+        }
+      }
+    }
+    recipient {
+      id
+      ... on Stranger {
+        status
+      }
+    }
   }
 }
     `;
@@ -1101,15 +1129,6 @@ export const UserMenuFragmentDoc = gql`
   }
 }
     `;
-export const RequestInfoFragmentDoc = gql`
-    fragment RequestInfo on FriendRequest {
-  id
-  isCreator
-  status
-  createdById
-  recipientId
-}
-    `;
 export const UserSelectorFragmentDoc = gql`
     fragment UserSelector on User {
   id
@@ -1119,6 +1138,15 @@ export const UserSelectorFragmentDoc = gql`
 export const UseDeleteChatFragmentDoc = gql`
     fragment UseDeleteChat on Chat {
   id
+}
+    `;
+export const RequestInfoFragmentDoc = gql`
+    fragment RequestInfo on FriendRequest {
+  id
+  isCreator
+  status
+  createdById
+  recipientId
 }
     `;
 export const FriendRequestUserFragmentDoc = gql`
@@ -1145,11 +1173,13 @@ export const GetChatForChatInfoAsideDocument = gql`
       members {
         id
         ...UserItem
+        ...UserMenu
       }
     }
   }
 }
-    ${UserItemFragmentDoc}`;
+    ${UserItemFragmentDoc}
+${UserMenuFragmentDoc}`;
 
 /**
  * __useGetChatForChatInfoAsideQuery__
@@ -1332,6 +1362,40 @@ export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const GetMeForAccountMenuDocument = gql`
+    query GetMeForAccountMenu {
+  me {
+    ...UserAvatar
+  }
+}
+    ${UserAvatarFragmentDoc}`;
+
+/**
+ * __useGetMeForAccountMenuQuery__
+ *
+ * To run a query within a React component, call `useGetMeForAccountMenuQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeForAccountMenuQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMeForAccountMenuQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMeForAccountMenuQuery(baseOptions?: Apollo.QueryHookOptions<GetMeForAccountMenuQuery, GetMeForAccountMenuQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMeForAccountMenuQuery, GetMeForAccountMenuQueryVariables>(GetMeForAccountMenuDocument, options);
+      }
+export function useGetMeForAccountMenuLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMeForAccountMenuQuery, GetMeForAccountMenuQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMeForAccountMenuQuery, GetMeForAccountMenuQueryVariables>(GetMeForAccountMenuDocument, options);
+        }
+export type GetMeForAccountMenuQueryHookResult = ReturnType<typeof useGetMeForAccountMenuQuery>;
+export type GetMeForAccountMenuLazyQueryHookResult = ReturnType<typeof useGetMeForAccountMenuLazyQuery>;
+export type GetMeForAccountMenuQueryResult = Apollo.QueryResult<GetMeForAccountMenuQuery, GetMeForAccountMenuQueryVariables>;
 export const GetChatForAnimatedTitleDocument = gql`
     query GetChatForAnimatedTitle($chatId: HashId!) {
   chat(chatId: $chatId) {
@@ -1786,6 +1850,78 @@ export function useGetChatForChatUpdateActionLazyQuery(baseOptions?: Apollo.Lazy
 export type GetChatForChatUpdateActionQueryHookResult = ReturnType<typeof useGetChatForChatUpdateActionQuery>;
 export type GetChatForChatUpdateActionLazyQueryHookResult = ReturnType<typeof useGetChatForChatUpdateActionLazyQuery>;
 export type GetChatForChatUpdateActionQueryResult = Apollo.QueryResult<GetChatForChatUpdateActionQuery, GetChatForChatUpdateActionQueryVariables>;
+export const CreateGroupChatDocument = gql`
+    mutation CreateGroupChat($data: CreateGroupChatInput!) {
+  createGroupChat(data: $data) {
+    id
+    name
+    createdBy {
+      id
+      name
+      username
+    }
+  }
+}
+    `;
+export type CreateGroupChatMutationFn = Apollo.MutationFunction<CreateGroupChatMutation, CreateGroupChatMutationVariables>;
+
+/**
+ * __useCreateGroupChatMutation__
+ *
+ * To run a mutation, you first call `useCreateGroupChatMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGroupChatMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGroupChatMutation, { data, loading, error }] = useCreateGroupChatMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateGroupChatMutation(baseOptions?: Apollo.MutationHookOptions<CreateGroupChatMutation, CreateGroupChatMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateGroupChatMutation, CreateGroupChatMutationVariables>(CreateGroupChatDocument, options);
+      }
+export type CreateGroupChatMutationHookResult = ReturnType<typeof useCreateGroupChatMutation>;
+export type CreateGroupChatMutationResult = Apollo.MutationResult<CreateGroupChatMutation>;
+export type CreateGroupChatMutationOptions = Apollo.BaseMutationOptions<CreateGroupChatMutation, CreateGroupChatMutationVariables>;
+export const DeleteChatDocument = gql`
+    mutation DeleteChat($chatId: HashId!) {
+  deleteChat(chatId: $chatId) {
+    id
+  }
+}
+    `;
+export type DeleteChatMutationFn = Apollo.MutationFunction<DeleteChatMutation, DeleteChatMutationVariables>;
+
+/**
+ * __useDeleteChatMutation__
+ *
+ * To run a mutation, you first call `useDeleteChatMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteChatMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteChatMutation, { data, loading, error }] = useDeleteChatMutation({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *   },
+ * });
+ */
+export function useDeleteChatMutation(baseOptions?: Apollo.MutationHookOptions<DeleteChatMutation, DeleteChatMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteChatMutation, DeleteChatMutationVariables>(DeleteChatDocument, options);
+      }
+export type DeleteChatMutationHookResult = ReturnType<typeof useDeleteChatMutation>;
+export type DeleteChatMutationResult = Apollo.MutationResult<DeleteChatMutation>;
+export type DeleteChatMutationOptions = Apollo.BaseMutationOptions<DeleteChatMutation, DeleteChatMutationVariables>;
 export const AcceptFriendRequestDocument = gql`
     mutation AcceptFriendRequest($friendRequestId: HashId!) {
   acceptFriendRequest(friendRequestId: $friendRequestId) {
@@ -1918,77 +2054,40 @@ export function useSendFriendRequestMutation(baseOptions?: Apollo.MutationHookOp
 export type SendFriendRequestMutationHookResult = ReturnType<typeof useSendFriendRequestMutation>;
 export type SendFriendRequestMutationResult = Apollo.MutationResult<SendFriendRequestMutation>;
 export type SendFriendRequestMutationOptions = Apollo.BaseMutationOptions<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
-export const CreateGroupChatDocument = gql`
-    mutation CreateGroupChat($data: CreateGroupChatInput!) {
-  createGroupChat(data: $data) {
-    name
-    createdBy {
-      id
-      name
-      username
-    }
-  }
-}
-    `;
-export type CreateGroupChatMutationFn = Apollo.MutationFunction<CreateGroupChatMutation, CreateGroupChatMutationVariables>;
-
-/**
- * __useCreateGroupChatMutation__
- *
- * To run a mutation, you first call `useCreateGroupChatMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateGroupChatMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createGroupChatMutation, { data, loading, error }] = useCreateGroupChatMutation({
- *   variables: {
- *      data: // value for 'data'
- *   },
- * });
- */
-export function useCreateGroupChatMutation(baseOptions?: Apollo.MutationHookOptions<CreateGroupChatMutation, CreateGroupChatMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateGroupChatMutation, CreateGroupChatMutationVariables>(CreateGroupChatDocument, options);
-      }
-export type CreateGroupChatMutationHookResult = ReturnType<typeof useCreateGroupChatMutation>;
-export type CreateGroupChatMutationResult = Apollo.MutationResult<CreateGroupChatMutation>;
-export type CreateGroupChatMutationOptions = Apollo.BaseMutationOptions<CreateGroupChatMutation, CreateGroupChatMutationVariables>;
-export const DeleteChatDocument = gql`
-    mutation DeleteChat($chatId: HashId!) {
-  deleteChat(chatId: $chatId) {
+export const DeleteFriendDocument = gql`
+    mutation DeleteFriend($friendId: HashId!) {
+  deleteFriend(friendId: $friendId) {
     id
+    status
   }
 }
     `;
-export type DeleteChatMutationFn = Apollo.MutationFunction<DeleteChatMutation, DeleteChatMutationVariables>;
+export type DeleteFriendMutationFn = Apollo.MutationFunction<DeleteFriendMutation, DeleteFriendMutationVariables>;
 
 /**
- * __useDeleteChatMutation__
+ * __useDeleteFriendMutation__
  *
- * To run a mutation, you first call `useDeleteChatMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteChatMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteFriendMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFriendMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteChatMutation, { data, loading, error }] = useDeleteChatMutation({
+ * const [deleteFriendMutation, { data, loading, error }] = useDeleteFriendMutation({
  *   variables: {
- *      chatId: // value for 'chatId'
+ *      friendId: // value for 'friendId'
  *   },
  * });
  */
-export function useDeleteChatMutation(baseOptions?: Apollo.MutationHookOptions<DeleteChatMutation, DeleteChatMutationVariables>) {
+export function useDeleteFriendMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFriendMutation, DeleteFriendMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteChatMutation, DeleteChatMutationVariables>(DeleteChatDocument, options);
+        return Apollo.useMutation<DeleteFriendMutation, DeleteFriendMutationVariables>(DeleteFriendDocument, options);
       }
-export type DeleteChatMutationHookResult = ReturnType<typeof useDeleteChatMutation>;
-export type DeleteChatMutationResult = Apollo.MutationResult<DeleteChatMutation>;
-export type DeleteChatMutationOptions = Apollo.BaseMutationOptions<DeleteChatMutation, DeleteChatMutationVariables>;
+export type DeleteFriendMutationHookResult = ReturnType<typeof useDeleteFriendMutation>;
+export type DeleteFriendMutationResult = Apollo.MutationResult<DeleteFriendMutation>;
+export type DeleteFriendMutationOptions = Apollo.BaseMutationOptions<DeleteFriendMutation, DeleteFriendMutationVariables>;
 export const UpdateGroupChatDocument = gql`
     mutation UpdateGroupChat($data: UpdateGroupChatInput!) {
   updateGroupChat(data: $data) {

@@ -49,7 +49,9 @@ const ChatItem = ({ chat, onClick }: Props) => {
           {members.slice(0, 2).map((member) => (
             <UserAvatar key={member.id} user={member} />
           ))}
-          {members.length > 2 && <Avatar>+{members.length - 2}</Avatar>}
+          {members.length > 2 && (
+            <Avatar radius={'xl'}>+{members.length - 2}</Avatar>
+          )}
         </Avatar.Group>
       }
     />

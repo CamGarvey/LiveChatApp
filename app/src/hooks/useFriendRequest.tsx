@@ -6,6 +6,7 @@ import {
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
   useDeclineFriendRequestMutation,
+  useDeleteFriendMutation,
   useSendFriendRequestMutation,
 } from 'graphql/generated/graphql';
 
@@ -28,6 +29,12 @@ gql`
   mutation SendFriendRequest($friendId: HashId!) {
     sendFriendRequest(friendId: $friendId) {
       ...RequestInfo
+    }
+  }
+  mutation DeleteFriend($friendId: HashId!) {
+    deleteFriend(friendId: $friendId) {
+      id
+      status
     }
   }
   fragment RequestInfo on FriendRequest {
@@ -58,6 +65,9 @@ export const useFriendRequest = () => {
   const [send, { data: sendData, loading: loadingSend }] =
     useSendFriendRequestMutation();
 
+  const [remove, { data: deleteData, loading: loadingDelete }] =
+    useDeleteFriendMutation();
+
   const acceptRequest = (friendRequestId: string) =>
     accept({
       variables: {
@@ -66,7 +76,7 @@ export const useFriendRequest = () => {
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestUserFragment>(
           {
-            id: `User:${newData.acceptFriendRequest.recipientId}`,
+            id: `User:${newData.acceptFriendRequest.createdById}`,
             fragment: FriendRequestUserFragmentDoc,
           },
           (data) => ({
@@ -88,7 +98,7 @@ export const useFriendRequest = () => {
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestUserFragment>(
           {
-            id: `User:${newData.declineFriendRequest.recipientId}`,
+            id: `User:${newData.declineFriendRequest.createdById}`,
             fragment: FriendRequestUserFragmentDoc,
           },
           (data) => ({
@@ -146,6 +156,29 @@ export const useFriendRequest = () => {
       },
     });
 
+  const deleteFriend = (friendId: string) =>
+    remove({
+      variables: {
+        friendId,
+      },
+      update: (cache) => {
+        cache.updateFragment<FriendRequestUserFragment>(
+          {
+            id: `User:${friendId}`,
+            fragment: FriendRequestUserFragmentDoc,
+          },
+          (data) => ({
+            ...data,
+            __typename: 'Stranger',
+            // Attach new friend request
+            friendRequest: null,
+            // Update status
+            status: StrangerStatus.NoRequest,
+          })
+        );
+      },
+    });
+
   return {
     acceptRequest,
     loadingAccept,
@@ -159,5 +192,8 @@ export const useFriendRequest = () => {
     sendRequest,
     sendData,
     loadingSend,
+    deleteFriend,
+    deleteData,
+    loadingDelete,
   };
 };

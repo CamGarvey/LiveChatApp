@@ -6,8 +6,8 @@ import {
   MediaQuery,
   Burger,
 } from '@mantine/core';
-import { Search } from 'tabler-icons-react';
-import { useIsDrawerOpen, useToggleDrawer } from 'store';
+import { IconSearch } from '@tabler/icons';
+import { useDrawer } from 'store';
 import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
 import AnimatedTitle from './AnimatedTitle';
 import ColorModeSwitcher from './ThemeToggler';
@@ -21,8 +21,7 @@ const Header = () => {
   const { logout } = useAuth0();
   const { user } = useUser();
   const openUserSearchModal = useUserSearchModal();
-  const isDrawerOpen = useIsDrawerOpen();
-  const toggleDrawer = useToggleDrawer();
+  const drawer = useDrawer();
 
   return (
     <MantineHeader
@@ -35,9 +34,9 @@ const Header = () => {
       <Group spacing={3}>
         <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
           <Burger
-            opened={isDrawerOpen}
+            opened={drawer.isOpen}
             onClick={() => {
-              toggleDrawer();
+              drawer.toggle();
             }}
           />
         </MediaQuery>
@@ -49,7 +48,7 @@ const Header = () => {
               <NotificationMenu size={ICON_SIZE} />
               <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
                 <Input
-                  icon={<Search />}
+                  icon={<IconSearch />}
                   placeholder="Find your friends!"
                   onClick={openUserSearchModal}
                 />

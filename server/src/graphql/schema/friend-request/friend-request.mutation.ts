@@ -21,6 +21,9 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
       },
       update: {
         status: 'SENT',
+        createdAt: new Date().toISOString(),
+        recipientId: friendId,
+        createdById: userId,
       },
       where: {
         recipientId_createdById: {

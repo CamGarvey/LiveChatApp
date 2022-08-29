@@ -40,12 +40,17 @@ const useLiveChats = () => {
         if (!subscriptionData.data) return prev;
         const chat = subscriptionData.data;
         const newCache = Object.assign({}, prev, {
-          chats: [...prev.chats, chat],
+          chats: [
+            ...prev.chats.filter((x) => x.id !== chat.chats.id),
+            chat.chats,
+          ],
         } as GetChatsForDisplayQuery);
         return newCache;
       },
     });
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   }, [subscribeToMore]);
 
   return {

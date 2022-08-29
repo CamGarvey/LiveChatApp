@@ -10,19 +10,18 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { Logout, Search, SquarePlus } from 'tabler-icons-react';
-import { useToggleDrawer, useIsDrawerOpen } from 'store';
+import { IconLogout, IconSearch, IconSquarePlus } from '@tabler/icons';
 import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { useUser } from 'context/UserContext';
 import ChatDisplay from 'components/shared/ChatDisplay';
 import UserAvatar from 'components/shared/UserAvatar';
+import { useDrawer } from 'store';
 
 const Drawer = () => {
   const { isAuthenticated, logout } = useAuth0();
   const { user, isLoading } = useUser();
-  const isDrawerOpen = useIsDrawerOpen();
-  const toggleDrawer = useToggleDrawer();
+  const { isOpen, toggle } = useDrawer();
 
   const openCreateChatModal = useCreateGroupChatModal();
   const openUserSearchModal = useUserSearchModal();
@@ -30,8 +29,8 @@ const Drawer = () => {
   return (
     <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
       <MantineDrawer
-        opened={isDrawerOpen}
-        onClose={toggleDrawer}
+        opened={isOpen}
+        onClose={toggle}
         zIndex={9999}
         withinPortal={false}
         size={'xl'}
@@ -67,14 +66,14 @@ const Drawer = () => {
                   <Group ml={'auto'}>
                     <ActionIcon
                       onClick={() => {
-                        toggleDrawer();
+                        toggle();
                         openUserSearchModal();
                       }}
                     >
-                      <Search />
+                      <IconSearch />
                     </ActionIcon>
                     <ActionIcon onClick={() => logout()}>
-                      <Logout />
+                      <IconLogout />
                     </ActionIcon>
                   </Group>
                 </Group>
@@ -84,15 +83,15 @@ const Drawer = () => {
                   <ActionIcon
                     ml={'auto'}
                     onClick={() => {
-                      toggleDrawer();
+                      toggle();
                       openCreateChatModal();
                     }}
                   >
-                    <SquarePlus />
+                    <IconSquarePlus />
                   </ActionIcon>
                 </Group>
                 <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
-                  <ChatDisplay onChatClick={toggleDrawer} />
+                  <ChatDisplay onChatClick={toggle} />
                 </ScrollArea>
               </Stack>
             )}

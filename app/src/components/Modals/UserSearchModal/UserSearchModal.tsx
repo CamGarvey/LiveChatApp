@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import { Search } from 'tabler-icons-react';
+import { IconSearch } from '@tabler/icons';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import UserItem from 'components/shared/UserItem';
@@ -72,7 +72,7 @@ export const UserSearchModal = () => {
     <>
       <Input.Wrapper>
         <Input
-          icon={<Search />}
+          icon={<IconSearch />}
           placeholder="Find your friends!"
           ref={inputRef}
           mb={'10px'}

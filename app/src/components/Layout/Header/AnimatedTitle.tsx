@@ -1,9 +1,8 @@
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { Box, Group, Stack, Text, Title } from '@mantine/core';
-import { useIsDrawerOpen } from 'store';
+import { useChatId, useDrawer } from 'store';
 import { useMediaQuery } from '@mantine/hooks';
-import { useChat } from 'context/ChatContext';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import { gql } from '@apollo/client';
 import { useEffect } from 'react';
@@ -27,28 +26,31 @@ gql`
 `;
 
 const AnimatedTitle = () => {
-  const { chatId } = useChat();
+  const { chatId } = useChatId();
   const [getChat, { data }] = useGetChatForAnimatedTitleLazyQuery();
 
   const isLargerScreen = useMediaQuery('(min-width: 793px)');
   const isSmallScreen = useMediaQuery('(max-width: 500px)');
-  const isDrawerOpen = useIsDrawerOpen();
+  const drawer = useDrawer();
 
   useEffect(() => {
-    if (chatId)
+    if (chatId) {
       getChat({
         variables: {
           chatId,
         },
       });
+    }
   }, [getChat, chatId]);
 
   const chat = data?.chat;
 
+  console.log({ chat });
+
   return (
-    <AnimatePresence custom={isDrawerOpen} exitBeforeEnter>
+    <AnimatePresence custom={drawer.isOpen} exitBeforeEnter>
       <motion.div
-        key={isDrawerOpen ? 'ham' : 'chat'}
+        key={drawer.isOpen ? 'ham' : 'chat'}
         initial={{ y: -200 }}
         animate={{ y: 0 }}
         exit={{ y: -200 }}
@@ -56,11 +58,11 @@ const AnimatedTitle = () => {
         transition={{ type: 'spring', bounce: 0.2, duration: 0.2 }}
       >
         <Box sx={{ position: 'relative' }}>
-          {isDrawerOpen || isLargerScreen || chat == null ? (
+          {drawer.isOpen || isLargerScreen || chat == null ? (
             <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
           ) : (
             <Group spacing={2}>
-              {chat?.__typename === 'GroupChat' && chat.isAdmin && (
+              {chat?.__typename === 'GroupChat' && (
                 <Group spacing={2}>
                   <ChatUpdateAction />
                   <Stack spacing={0}>

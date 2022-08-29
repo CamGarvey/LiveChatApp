@@ -1,6 +1,6 @@
 import { ActionIcon, Text } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
-import { Trash } from 'tabler-icons-react';
+import { IconTrash } from '@tabler/icons';
 
 type Props = {
   onDelete: () => void;
@@ -19,7 +19,7 @@ const DeleteEventAction = ({ onDelete }: Props) => {
     });
   return (
     <ActionIcon type="button" size={18}>
-      <Trash onClick={openModal} />
+      <IconTrash onClick={openModal} />
     </ActionIcon>
   );
 };

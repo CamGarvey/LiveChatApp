@@ -2,13 +2,24 @@ import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { UserMenuFragment } from 'graphql/generated/graphql';
 import { useFriendRequest } from 'hooks';
-import { Mailbox, MailForward, UserCircle, UserPlus } from 'tabler-icons-react';
+import {
+  IconFriends,
+  IconMailbox,
+  IconFriendsOff,
+  IconMailForward,
+  IconPlus,
+  IconMinus,
+  IconUserCircle,
+  IconUserMinus,
+  IconUserPlus,
+} from '@tabler/icons';
 
 type Props = {
   user: UserMenuFragment;
+  iconSize?: number;
 };
 
-const UserMenu = ({ user }: Props) => {
+const UserMenu = ({ user, iconSize = 14 }: Props) => {
   const {
     cancelRequest,
     sendRequest,
@@ -18,10 +29,16 @@ const UserMenu = ({ user }: Props) => {
     loadingCancel,
     loadingDecline,
     loadingSend,
+    deleteFriend,
+    loadingDelete,
   } = useFriendRequest();
 
   const loading =
-    loadingAccept || loadingCancel || loadingDecline || loadingSend;
+    loadingAccept ||
+    loadingCancel ||
+    loadingDecline ||
+    loadingSend ||
+    loadingDelete;
 
   return (
     <Menu width={'max-content'}>
@@ -30,29 +47,42 @@ const UserMenu = ({ user }: Props) => {
           <ActionIcon loading={loading}>
             {user.__typename === 'Stranger' && (
               <>
-                {user.status === 'REQUEST_RECEIVED' && <Mailbox />}
-                {user.status === 'REQUEST_SENT' && <MailForward />}
-                {user.status === 'NO_REQUEST' && <UserPlus />}
+                {user.status === 'REQUEST_RECEIVED' && <IconMailbox />}
+                {user.status === 'REQUEST_SENT' && <IconMailForward />}
+                {user.status === 'NO_REQUEST' && <IconUserPlus />}
               </>
             )}
-            {user.__typename === 'Friend' && <UserCircle />}
+            {user.__typename === 'Friend' && <IconUserCircle />}
           </ActionIcon>
         </Tooltip>
       </Menu.Target>
       {user && (
         <Menu.Dropdown>
-          {user.__typename === 'Friend' && <Menu.Item>UnFriend</Menu.Item>}
+          {user.__typename === 'Friend' && (
+            <Menu.Item
+              color={'red'}
+              icon={<IconUserMinus size={iconSize} />}
+              onClick={() => deleteFriend(user.id)}
+            >
+              UnFriend
+            </Menu.Item>
+          )}
           {user.__typename === 'Stranger' && (
             <>
               {user.status === 'REQUEST_RECEIVED' && (
                 <>
+                  <Menu.Label>Friend Request</Menu.Label>
                   <Menu.Item
+                    color={'green'}
+                    icon={<IconPlus size={iconSize} />}
                     disabled={user.friendRequest === null}
                     onClick={() => acceptRequest(user.friendRequest!.id)}
                   >
                     Accept
                   </Menu.Item>
                   <Menu.Item
+                    color={'red'}
+                    icon={<IconMinus size={iconSize} />}
                     disabled={user.friendRequest === null}
                     onClick={() => declineRequest(user.friendRequest!.id)}
                   >
@@ -69,7 +99,10 @@ const UserMenu = ({ user }: Props) => {
                 </Menu.Item>
               )}
               {user.status === 'NO_REQUEST' && (
-                <Menu.Item onClick={() => sendRequest(user.id)}>
+                <Menu.Item
+                  icon={<IconMailForward size={iconSize} />}
+                  onClick={() => sendRequest(user.id)}
+                >
                   Send Friend Request
                 </Menu.Item>
               )}
