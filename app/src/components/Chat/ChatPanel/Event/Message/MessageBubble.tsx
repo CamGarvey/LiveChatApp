@@ -10,7 +10,10 @@ type Props = {
 };
 
 const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
+  const smallScreen = useMediaQuery('(max-width: 470px)');
   const largeScreen = useMediaQuery('(min-width: 1200px)');
+
+  console.log({ smallScreen, largeScreen });
   return (
     <Paper
       shadow="sm"
@@ -19,7 +22,7 @@ const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
       py={'5px'}
       onClick={() => onClick && onClick()}
       sx={(theme) => ({
-        maxWidth: largeScreen ? '380px' : '250px',
+        maxWidth: largeScreen ? '380px' : smallScreen ? '170px' : '250px',
         backgroundColor:
           variant === 'light' &&
           (theme.colorScheme === 'dark'

@@ -48,7 +48,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
     } catch (e) {
       return {
         headers: {
-          Authorization: `Bearer `,
+          Authorization: `Bearer INVALID_TOKEN`,
         },
       };
     }

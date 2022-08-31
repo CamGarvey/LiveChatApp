@@ -2,8 +2,9 @@ import { gql } from '@apollo/client';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import { useGetChatForChatUpdateActionQuery } from 'graphql/generated/graphql';
-import { useChatId } from 'store';
 import { IconSettings } from '@tabler/icons';
+import { useParams } from 'react-router-dom';
+import { FloatingPosition } from '@mantine/core/lib/Floating';
 
 gql`
   query GetChatForChatUpdateAction($chatId: HashId!) {
@@ -15,8 +16,14 @@ gql`
   }
 `;
 
-const ChatUpdateAction = () => {
-  const { chatId } = useChatId();
+type Props = {
+  tooltip?: {
+    position?: FloatingPosition;
+  };
+};
+
+const ChatUpdateAction = (props: Props) => {
+  const { chatId } = useParams();
   const { loading, data } = useGetChatForChatUpdateActionQuery({
     variables: {
       chatId,
@@ -35,10 +42,14 @@ const ChatUpdateAction = () => {
   }
 
   return (
-    <Tooltip label={disabled ? 'Unauthorized' : 'Update'}>
+    <Tooltip
+      label={disabled ? 'Unauthorized' : 'Update'}
+      position={props?.tooltip?.position ?? 'bottom'}
+    >
       <ActionIcon
         size={'xs'}
         color={'blue'}
+        loading={loading}
         disabled={disabled}
         onClick={() => {
           if (chat?.__typename === 'GroupChat') {

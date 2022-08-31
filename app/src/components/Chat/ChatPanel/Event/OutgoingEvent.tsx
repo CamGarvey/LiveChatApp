@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { Group, Loader, Tooltip } from '@mantine/core';
+import { Container, Group, Loader, Tooltip } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { motion } from 'framer-motion';
 import { OutgoingEventFragment } from 'graphql/generated/graphql';
@@ -18,6 +18,8 @@ const MotionGroup = motion(Group);
 const OutgoingEvent = ({ state, children, event, actions }: Props) => {
   const [isHovered, setHovered] = useState(false);
   const largeScreen = useMediaQuery('(min-width: 1200px)');
+  const smallScreen = useMediaQuery('(max-width: 700px)');
+
   return (
     <MotionGroup
       pb={3}

@@ -7,7 +7,7 @@ type Props = {
 
 const LiveNotificationsProvider = ({ children }: Props) => {
   const { notifications, loading } = useLiveNotifications({
-    onNotification: console.error,
+    onNotification: () => {},
   });
 
   return (

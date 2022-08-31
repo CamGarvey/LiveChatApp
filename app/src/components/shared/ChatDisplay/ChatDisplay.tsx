@@ -35,7 +35,7 @@ const ChatDisplay = ({ onChatClick }: Props) => {
         }}
       />
       <ScrollArea p={2}>
-        <Stack spacing={4}>
+        <Stack spacing={4} p={4}>
           {!loading && chats && filteredChats.length > 0 ? (
             filteredChats.map(
               (chat) =>

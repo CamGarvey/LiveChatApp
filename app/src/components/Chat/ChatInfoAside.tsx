@@ -15,8 +15,8 @@ import UserItem from 'components/shared/UserItem';
 import UserMenu from 'components/shared/UserItem/UserMenu';
 import { useGetChatForChatInfoAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
-import { useChatId } from 'store';
 import { IconUserPlus } from '@tabler/icons';
+import { useParams } from 'react-router-dom';
 
 gql`
   query GetChatForChatInfoAside($chatId: HashId!) {
@@ -41,7 +41,7 @@ gql`
 `;
 
 const ChatInfoAside = () => {
-  const { chatId } = useChatId();
+  const { chatId } = useParams();
   const [getChat, { data, loading }] = useGetChatForChatInfoAsideLazyQuery();
 
   useEffect(() => {

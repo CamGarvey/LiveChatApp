@@ -6,6 +6,7 @@ import { useCreateMessage } from './useCreateMessage';
 import { useMessages } from './useMessages';
 import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
+import { useParams } from 'react-router-dom';
 
 gql`
   query GetMessages($chatId: HashId!, $last: Int, $before: String) {
@@ -55,11 +56,8 @@ gql`
   ${Message.fragments.message}
 `;
 
-type Props = {
-  chatId: string;
-};
-
-const ChatPanel = ({ chatId }: Props) => {
+const ChatPanel = () => {
+  const { chatId } = useParams();
   const {
     messages,
     hasPreviousPage,

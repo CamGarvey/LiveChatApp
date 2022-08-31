@@ -1,12 +1,13 @@
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { Box, Group, Stack, Text, Title } from '@mantine/core';
-import { useChatId, useDrawer } from 'store';
+import { useDrawer } from 'store';
 import { useMediaQuery } from '@mantine/hooks';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import { gql } from '@apollo/client';
 import { useEffect } from 'react';
 import { useGetChatForAnimatedTitleLazyQuery } from 'graphql/generated/graphql';
+import { useParams } from 'react-router-dom';
 
 gql`
   query GetChatForAnimatedTitle($chatId: HashId!) {
@@ -26,7 +27,7 @@ gql`
 `;
 
 const AnimatedTitle = () => {
-  const { chatId } = useChatId();
+  const { chatId } = useParams();
   const [getChat, { data }] = useGetChatForAnimatedTitleLazyQuery();
 
   const isLargerScreen = useMediaQuery('(min-width: 793px)');
@@ -45,12 +46,16 @@ const AnimatedTitle = () => {
 
   const chat = data?.chat;
 
-  console.log({ chat });
+  const shouldShowTitle =
+    drawer.isOpen ||
+    isLargerScreen ||
+    !chatId ||
+    chat?.__typename !== 'GroupChat';
 
   return (
     <AnimatePresence custom={drawer.isOpen} exitBeforeEnter>
       <motion.div
-        key={drawer.isOpen ? 'ham' : 'chat'}
+        key={shouldShowTitle ? 'title' : 'chat'}
         initial={{ y: -200 }}
         animate={{ y: 0 }}
         exit={{ y: -200 }}
@@ -58,7 +63,7 @@ const AnimatedTitle = () => {
         transition={{ type: 'spring', bounce: 0.2, duration: 0.2 }}
       >
         <Box sx={{ position: 'relative' }}>
-          {drawer.isOpen || isLargerScreen || chat == null ? (
+          {shouldShowTitle ? (
             <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
           ) : (
             <Group spacing={2}>

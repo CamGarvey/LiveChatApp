@@ -148,7 +148,7 @@ export const UpdateGroupChatModal = ({
   if (loadingChat)
     return (
       <Center>
-        <Text>Loading</Text>
+        <Loader variant="bars" />
       </Center>
     );
 

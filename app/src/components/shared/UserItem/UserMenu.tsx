@@ -3,9 +3,7 @@ import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { UserMenuFragment } from 'graphql/generated/graphql';
 import { useFriendRequest } from 'hooks';
 import {
-  IconFriends,
   IconMailbox,
-  IconFriendsOff,
   IconMailForward,
   IconPlus,
   IconMinus,
