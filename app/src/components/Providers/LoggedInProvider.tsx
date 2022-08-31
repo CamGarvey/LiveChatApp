@@ -5,7 +5,7 @@ import { CreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/Cre
 import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import { UserContext } from 'context/UserContext';
 import Drawer from 'components/Layout/Drawer';
-import ChatNav from 'components/Layout/ChatNav';
+import ChatNav from 'components/Layout/Nav';
 import Header from 'components/Layout/Header/Header';
 import ChatInfoAside from 'components/Chat/ChatInfoAside';
 import UserProvider from './UserProvider';

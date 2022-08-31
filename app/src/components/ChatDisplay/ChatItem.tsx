@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
-import { Avatar, Group, NavLink, Text, UnstyledButton } from '@mantine/core';
+import { Avatar, NavLink } from '@mantine/core';
 import { ChatItemFragment } from 'graphql/generated/graphql';
 import { Link, useLocation } from 'react-router-dom';
-import ChatAvatar from '../ChatAvatar';
-import UserAvatar from '../UserAvatar';
+import ChatAvatar from '../shared/ChatAvatar';
+import UserAvatar from '../shared/UserAvatar';
 
 type Props = {
   chat: ChatItemFragment;

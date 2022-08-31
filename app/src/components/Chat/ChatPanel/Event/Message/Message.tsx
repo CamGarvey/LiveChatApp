@@ -26,7 +26,7 @@ export const Message = ({ message, displayAvatar }: Props) => {
   const [deleteMessage] = useDeleteMessageMutation();
   const messageContent =
     message.__typename === 'DeletedMessage' ? (
-      <DeletedMessage />
+      <DeletedMessage iconSide={message.isCreator ? 'left' : 'right'} />
     ) : (
       <MessageBubble
         message={message}

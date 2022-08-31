@@ -1,8 +1,8 @@
 import { Button, MediaQuery, Navbar, ScrollArea } from '@mantine/core';
-import ChatDisplay from 'components/shared/ChatDisplay/ChatDisplay';
+import ChatDisplay from 'components/ChatDisplay/ChatDisplay';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 
-const ChatNav = () => {
+const Nav = () => {
   const openChatModal = useCreateGroupChatModal();
 
   return (
@@ -32,4 +32,4 @@ const ChatNav = () => {
   );
 };
 
-export default ChatNav;
+export default Nav;

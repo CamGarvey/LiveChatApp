@@ -8,23 +8,21 @@ import {
   ScrollArea,
   Skeleton,
   Stack,
+  Tabs,
+  Text,
   Title,
 } from '@mantine/core';
-import { IconSearch, IconMessageDots } from '@tabler/icons';
+import { IconMessageDots, IconUsers, IconUser } from '@tabler/icons';
 import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { useUser } from 'context/UserContext';
-import ChatDisplay from 'components/shared/ChatDisplay';
+import ChatDisplay from 'components/ChatDisplay';
 import UserAvatar from 'components/shared/UserAvatar';
 import { useDrawer } from 'store';
 
 const Drawer = () => {
-  const { isAuthenticated } = useAuth0();
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
   const { isOpen, toggle } = useDrawer();
-
-  const openCreateChatModal = useCreateGroupChatModal();
-  const openUserSearchModal = useUserSearchModal();
 
   return (
     <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
@@ -47,26 +45,17 @@ const Drawer = () => {
         closeOnClickOutside={false}
         withCloseButton={false}
       >
-        <Stack spacing={'md'}>
-          <Group>
-            <UserAvatar size="md" user={user} style={{ marginTop: 'auto' }} />
-            <Title order={5}>{user?.username}</Title>
-            <Group ml={'auto'}>
-              <Button
-                onClick={() => {
-                  toggle();
-                  openCreateChatModal();
-                }}
-                radius={'xl'}
-              >
-                <IconMessageDots />
-              </Button>
+        {user && (
+          <Stack spacing={'md'}>
+            <Group>
+              <UserAvatar size="md" user={user} style={{ marginTop: 'auto' }} />
+              <Title order={5}>{user?.username}</Title>
             </Group>
-          </Group>
-          <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
-            <ChatDisplay onChatClick={toggle} />
-          </ScrollArea>
-        </Stack>
+            <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
+              <ChatDisplay />
+            </ScrollArea>
+          </Stack>
+        )}
       </MantineDrawer>
     </MediaQuery>
   );
