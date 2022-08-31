@@ -14,14 +14,13 @@ import ColorModeSwitcher from './ThemeToggler';
 import NotificationMenu from './NotificationMenu/NotificationMenu';
 import AccountMenu from './AccountMenu';
 import { useUser } from 'context/UserContext';
-import UserSearchBar from './UserSearchBar';
 
 const ICON_SIZE = 16;
 
 const Header = () => {
   const { logout } = useAuth0();
   const { user } = useUser();
-
+  const openUserSearchModal = useUserSearchModal();
   const drawer = useDrawer();
 
   return (
@@ -48,7 +47,11 @@ const Header = () => {
             <Group>
               <NotificationMenu size={ICON_SIZE} />
               <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
-                <UserSearchBar />
+                <Input
+                  icon={<IconSearch />}
+                  placeholder="Find your friends!"
+                  onClick={openUserSearchModal}
+                />
               </MediaQuery>
               <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
                 <AccountMenu onLogoutClick={() => logout()} />

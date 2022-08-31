@@ -13,7 +13,6 @@ const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
   const smallScreen = useMediaQuery('(max-width: 470px)');
   const largeScreen = useMediaQuery('(min-width: 1200px)');
 
-  console.log({ smallScreen, largeScreen });
   return (
     <Paper
       shadow="sm"

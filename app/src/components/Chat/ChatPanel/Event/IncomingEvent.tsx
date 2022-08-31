@@ -17,7 +17,7 @@ type Props = {
 
 const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
   const [isHovered, setHovered] = useState(false);
-  const largeScreen = useMediaQuery('(min-width: 1200px)');
+
   return (
     <MotionGroup
       pb={3}

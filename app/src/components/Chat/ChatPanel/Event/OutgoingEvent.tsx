@@ -17,8 +17,6 @@ const MotionGroup = motion(Group);
 
 const OutgoingEvent = ({ state, children, event, actions }: Props) => {
   const [isHovered, setHovered] = useState(false);
-  const largeScreen = useMediaQuery('(min-width: 1200px)');
-  const smallScreen = useMediaQuery('(max-width: 700px)');
 
   return (
     <MotionGroup

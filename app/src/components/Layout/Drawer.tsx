@@ -47,43 +47,26 @@ const Drawer = () => {
         closeOnClickOutside={false}
         withCloseButton={false}
       >
-        {isAuthenticated ? (
-          <>
-            {isLoading || user == null ? (
-              <Group>
-                <Skeleton circle />
-                <Skeleton />
-              </Group>
-            ) : (
-              <Stack spacing={'md'}>
-                <Group>
-                  <UserAvatar
-                    size="md"
-                    user={user}
-                    style={{ marginTop: 'auto' }}
-                  />
-                  <Title order={5}>{user.username}</Title>
-                  <Group ml={'auto'}>
-                    <Button
-                      onClick={() => {
-                        toggle();
-                        openCreateChatModal();
-                      }}
-                      radius={'xl'}
-                    >
-                      <IconMessageDots />
-                    </Button>
-                  </Group>
-                </Group>
-                <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
-                  <ChatDisplay onChatClick={toggle} />
-                </ScrollArea>
-              </Stack>
-            )}
-          </>
-        ) : (
-          <>Login!</>
-        )}
+        <Stack spacing={'md'}>
+          <Group>
+            <UserAvatar size="md" user={user} style={{ marginTop: 'auto' }} />
+            <Title order={5}>{user?.username}</Title>
+            <Group ml={'auto'}>
+              <Button
+                onClick={() => {
+                  toggle();
+                  openCreateChatModal();
+                }}
+                radius={'xl'}
+              >
+                <IconMessageDots />
+              </Button>
+            </Group>
+          </Group>
+          <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
+            <ChatDisplay onChatClick={toggle} />
+          </ScrollArea>
+        </Stack>
       </MantineDrawer>
     </MediaQuery>
   );
