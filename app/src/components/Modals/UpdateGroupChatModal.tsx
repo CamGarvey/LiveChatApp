@@ -1,4 +1,4 @@
-import { useFormik } from 'formik';
+import { Formik, useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
 import UserMultiSelect from '../shared/UserSelector/UserMultiSelect';
 import {
@@ -97,54 +97,6 @@ export const UpdateGroupChatModal = ({
     return chat.members;
   }, [chat, friendData]);
 
-  const formik = useFormik({
-    initialValues: {
-      name: chat?.__typename === 'GroupChat' ? chat.name : '',
-      description:
-        chat?.__typename === 'GroupChat' ? chat.description ?? '' : '',
-      isPrivate: true,
-      memberIds,
-      adminIds,
-    },
-    validationSchema: chatSchema,
-    onSubmit: (values) => {
-      const membersRemoved = memberIds.filter(
-        (x) => !values.memberIds.includes(x)
-      );
-      const membersAdded = values.memberIds.filter(
-        (x) => !memberIds.includes(x)
-      );
-      const adminsRemoved = adminIds.filter(
-        (x) => !values.adminIds.includes(x)
-      );
-      const adminsAdded = values.adminIds.filter((x) => !adminIds.includes(x));
-      updateChat({
-        chatId: chat.id,
-        name: values.name,
-        description: values.description,
-        addMemberIds: membersAdded,
-        removeMemberIds: membersRemoved,
-        addAdminIds: adminsAdded,
-        removeAdminIds: adminsRemoved,
-      }).then(() => context.closeModal(id));
-    },
-  });
-
-  const handleMembersChanged = useCallback(
-    (value: any) => {
-      formik.setFieldValue('memberIds', value);
-    },
-    [formik]
-  );
-
-  const handleAdminsChanged = useCallback(
-    (value: { added: string[]; removed: string[]; selected: string[] }) => {
-      // formik.setFieldValue('adminIds', value);
-      console.log(value);
-    },
-    [formik]
-  );
-
   if (loadingChat)
     return (
       <Center>
@@ -168,60 +120,102 @@ export const UpdateGroupChatModal = ({
 
   return (
     <Stack>
-      <form onSubmit={formik.handleSubmit}>
-        <Stack>
-          <Input.Wrapper
-            required
-            error={formik.touched.name && formik.errors.name}
-            label="Name"
-          >
-            <Input
-              id="name"
-              type="text"
-              ref={inputRef}
-              onChange={formik.handleChange}
-              value={formik.values.name}
-            />
-          </Input.Wrapper>
-          <Input.Wrapper error={formik.errors.description} label="Description">
-            <Input
-              id="description"
-              type="text"
-              onChange={formik.handleChange}
-              value={formik.values.description}
-            />
-          </Input.Wrapper>
-          <Input.Wrapper>
-            {loadingFriends ? (
-              <Center>
-                <Loader variant="bars" />
-              </Center>
-            ) : friendError ? (
-              <Center>Failed to load your friends 😥</Center>
-            ) : (
-              <>
-                <UserMultiSelect
-                  label={'Members'}
-                  users={totalUsers}
-                  defaultValue={chat.members}
-                  onChange={handleMembersChanged}
+      <Formik
+        initialValues={{
+          name: chat.name,
+          description: chat.description,
+          memberIds,
+          adminIds,
+        }}
+        validationSchema={chatSchema}
+        onSubmit={(values) => {
+          const membersRemoved = memberIds.filter(
+            (x) => !values.memberIds.includes(x)
+          );
+          const membersAdded = values.memberIds.filter(
+            (x) => !memberIds.includes(x)
+          );
+          const adminsRemoved = adminIds.filter(
+            (x) => !values.adminIds.includes(x)
+          );
+          const adminsAdded = values.adminIds.filter(
+            (x) => !adminIds.includes(x)
+          );
+          updateChat({
+            chatId: chat.id,
+            name: values.name,
+            description: values.description,
+            addMemberIds: membersAdded,
+            removeMemberIds: membersRemoved,
+            addAdminIds: adminsAdded,
+            removeAdminIds: adminsRemoved,
+          }).then(() => context.closeModal(id));
+        }}
+      >
+        {(props) => (
+          <form onSubmit={props.handleSubmit}>
+            <Stack>
+              <Input.Wrapper
+                required
+                error={props.touched.name && props.errors.name}
+                label="Name"
+              >
+                <Input
+                  id="name"
+                  type="text"
+                  ref={inputRef}
+                  onChange={props.handleChange}
+                  value={props.values.name}
                 />
-                <AdminSelector
-                  chatId={chat.id}
-                  onChange={handleAdminsChanged}
+              </Input.Wrapper>
+              <Input.Wrapper
+                error={props.errors.description}
+                label="Description"
+              >
+                <Input
+                  id="description"
+                  type="text"
+                  onChange={props.handleChange}
+                  value={props.values.description}
                 />
-              </>
-            )}
-          </Input.Wrapper>
-          <Button
-            type="submit"
-            loading={loadingUpdate}
-            disabled={loadingFriends || !formik.dirty}
-          >
-            Update
-          </Button>
-        </Stack>
-      </form>
+              </Input.Wrapper>
+              <Input.Wrapper>
+                {loadingFriends ? (
+                  <Center>
+                    <Loader variant="bars" />
+                  </Center>
+                ) : friendError ? (
+                  <Center>Failed to load your friends 😥</Center>
+                ) : (
+                  <>
+                    <UserMultiSelect
+                      label={'Members'}
+                      users={totalUsers}
+                      defaultValue={chat.members}
+                      onChange={(value: any) => {
+                        props.setFieldValue('memberIds', value);
+                      }}
+                    />
+                    <AdminSelector
+                      chatId={chat.id}
+                      onChange={(value: any) => {
+                        props.setFieldValue('adminIds', value);
+                      }}
+                    />
+                  </>
+                )}
+              </Input.Wrapper>
+              <Button
+                type="submit"
+                loading={loadingUpdate}
+                disabled={loadingFriends || !props.dirty}
+              >
+                Update
+              </Button>
+            </Stack>
+          </form>
+        )}
+      </Formik>
       {chat.isCreator && (
         <Button
           loading={loadingDelete}
