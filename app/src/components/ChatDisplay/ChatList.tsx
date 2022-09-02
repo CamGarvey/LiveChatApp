@@ -1,4 +1,4 @@
-import { Center, Loader, ScrollArea, Stack, Text } from '@mantine/core';
+import { Center, Loader, ScrollArea, Stack } from '@mantine/core';
 import { ChatItemFragment } from 'graphql/generated/graphql';
 import ChatItem from './ChatItem';
 
@@ -15,17 +15,13 @@ const ChatList = ({ chats, loading = false }: Props) => {
           <Center>
             <Loader variant="bars" />
           </Center>
-        ) : chats.length > 0 ? (
+        ) : (
           chats.map(
             (chat) =>
               chat.__typename !== 'DeletedChat' && (
                 <ChatItem key={chat.id} chat={chat} />
               )
           )
-        ) : (
-          <Center>
-            <Text color={'dimmed'}>Nothing to show</Text>
-          </Center>
         )}
       </Stack>
     </ScrollArea>

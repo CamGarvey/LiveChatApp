@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { useCallback, useMemo, useRef } from 'react';
-import UserSelector from '../shared/UserSelector/UserSelector';
+import UserMultiSelect from '../shared/UserSelector/UserMultiSelect';
 import {
   useGetChatForUpdateQuery,
   useGetFriendsForUpdateGroupChatQuery,
@@ -200,7 +200,7 @@ export const UpdateGroupChatModal = ({
               <Center>Failed to load your friends 😥</Center>
             ) : (
               <>
-                <UserSelector
+                <UserMultiSelect
                   label={'Members'}
                   users={totalUsers}
                   defaultValue={chat.members}

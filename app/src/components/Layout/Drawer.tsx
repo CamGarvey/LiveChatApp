@@ -1,20 +1,11 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import {
-  ActionIcon,
-  Button,
   Drawer as MantineDrawer,
   Group,
   MediaQuery,
   ScrollArea,
-  Skeleton,
   Stack,
-  Tabs,
-  Text,
   Title,
 } from '@mantine/core';
-import { IconMessageDots, IconUsers, IconUser } from '@tabler/icons';
-import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
-import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
 import { useUser } from 'context/UserContext';
 import ChatDisplay from 'components/ChatDisplay';
 import UserAvatar from 'components/shared/UserAvatar';

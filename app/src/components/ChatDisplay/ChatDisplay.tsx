@@ -2,21 +2,29 @@ import {
   ActionIcon,
   Button,
   Center,
-  Grid,
-  Group,
   Input,
   Tabs,
   Tooltip,
 } from '@mantine/core';
-import { useMemo, useState } from 'react';
-import { IconSearch, IconUser, IconUsers, IconCirclePlus } from '@tabler/icons';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  IconSearch,
+  IconUser,
+  IconUsers,
+  IconCirclePlus,
+  IconMessageDots,
+} from '@tabler/icons';
 import useLiveChats from './useLiveChats';
 import ChatList from './ChatList';
+import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
+import { useDrawer } from 'store';
 
 const ChatDisplay = () => {
+  const [activeTab, setActiveTab] = useState<string | null>('groups');
   const { loading, chats } = useLiveChats();
   const [filter, setFilter] = useState('');
-
+  const openCreateGroupChat = useCreateGroupChatModal();
+  const drawer = useDrawer();
   const filteredChats = useMemo(
     () =>
       chats.filter((c) => {
@@ -31,8 +39,27 @@ const ChatDisplay = () => {
     [chats, filter]
   );
 
+  const filteredGroupChats = useMemo(
+    () => filteredChats.filter((c) => c.__typename === 'GroupChat'),
+    [filteredChats]
+  );
+
+  const filteredDmChats = useMemo(
+    () => filteredChats.filter((c) => c.__typename === 'DirectMessageChat'),
+    [filteredChats]
+  );
+
+  const handleOpenCreate = useCallback(() => {
+    drawer.close();
+    if (activeTab === 'groups') {
+      openCreateGroupChat();
+    } else {
+      // openCreateDmChat();
+    }
+  }, [drawer, activeTab, openCreateGroupChat]);
+
   return (
-    <Tabs defaultValue="groups">
+    <Tabs value={activeTab} onTabChange={setActiveTab}>
       <Tabs.List grow>
         <Tabs.Tab value="groups" icon={<IconUsers size={14} />}>
           Groups
@@ -45,25 +72,54 @@ const ChatDisplay = () => {
         disabled={loading}
         mt={10}
         radius={'sm'}
-        placeholder="Search Groups"
+        placeholder={
+          activeTab === 'groups' ? 'Search Groups' : 'Search Friends'
+        }
         maxLength={15}
         icon={<IconSearch />}
         onChange={(e: any) => {
           setFilter(e.target.value.toLowerCase());
         }}
         rightSection={
-          <Tooltip label={'Create New Group'} position={'bottom'}>
-            <ActionIcon>
+          <Tooltip
+            label={
+              activeTab === 'groups'
+                ? 'Create New Group'
+                : 'Create New Direct Message'
+            }
+            position={'bottom'}
+          >
+            <ActionIcon onClick={handleOpenCreate}>
               <IconCirclePlus />
             </ActionIcon>
           </Tooltip>
         }
       />
       <Tabs.Panel value="groups" pt="xs">
-        <ChatList chats={filteredChats} loading={loading} />
+        <ChatList chats={filteredGroupChats} loading={loading} />
+        <Center>
+          <Button
+            onClick={handleOpenCreate}
+            variant={'light'}
+            leftIcon={<IconMessageDots />}
+            compact
+          >
+            New Group Chat
+          </Button>
+        </Center>
       </Tabs.Panel>
       <Tabs.Panel value="friends" pt="xs">
-        <ChatList chats={filteredChats} loading={loading} />
+        <ChatList chats={filteredDmChats} loading={loading} />
+        <Center>
+          <Button
+            onClick={handleOpenCreate}
+            variant={'light'}
+            leftIcon={<IconMessageDots />}
+            compact
+          >
+            New Direct Message
+          </Button>
+        </Center>
       </Tabs.Panel>
     </Tabs>
   );

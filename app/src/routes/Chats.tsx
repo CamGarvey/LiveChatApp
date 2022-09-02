@@ -1,5 +1,5 @@
 import { Button, Center, Group, Text } from '@mantine/core';
-import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModel';
+import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 
 const Chats = () => {
   const openCreateChatModal = useCreateGroupChatModal();

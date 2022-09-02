@@ -8,7 +8,7 @@ import {
 } from '@mantine/core';
 import { IconSearch } from '@tabler/icons';
 import { useDrawer } from 'store';
-import { useUserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
+import { useUserSearchModal } from 'components/Modals/UserSearchModal';
 import AnimatedTitle from './AnimatedTitle';
 import ColorModeSwitcher from './ThemeToggler';
 import NotificationMenu from './NotificationMenu/NotificationMenu';

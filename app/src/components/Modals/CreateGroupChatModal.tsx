@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { useEffect, useRef, useState } from 'react';
-import UserSelector from 'components/shared/UserSelector/UserSelector';
+import UserMultiSelect from 'components/shared/UserSelector/UserMultiSelect';
 import { Button, Center, Input, Loader, Stack } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
@@ -88,7 +88,7 @@ export const CreateGroupChatModal = ({
           ) : friendError ? (
             <Center>Failed to load your friends 😥</Center>
           ) : (
-            <UserSelector
+            <UserMultiSelect
               label={'Friends'}
               users={friendData.friends}
               onChange={(users) => {

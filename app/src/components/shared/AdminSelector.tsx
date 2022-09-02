@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
 import { Loader } from '@mantine/core';
-import UserSelector from 'components/shared/UserSelector';
 import { useGetChatAndFriendsForAdminSelectorQuery } from 'graphql/generated/graphql';
 import _ from 'lodash';
 import { useMemo } from 'react';
+import UserMultiSelect from './UserSelector/UserMultiSelect';
 
 gql`
   query GetChatAndFriendsForAdminSelector($chatId: HashId!) {
@@ -11,18 +11,18 @@ gql`
       isCreator
       ... on GroupChat {
         admins {
-          ...UserSelector
+          ...UserMultiSelect
         }
         members {
-          ...UserSelector
+          ...UserMultiSelect
         }
       }
     }
     friends {
-      ...UserSelector
+      ...UserMultiSelect
     }
   }
-  ${(UserSelector as any).fragments.user}
+  ${(UserMultiSelect as any).fragments.user}
 `;
 
 type Props = {
@@ -78,7 +78,7 @@ export const AdminSelector = ({ chatId, onChange }: Props) => {
   if (loading) return <Loader />;
 
   return (
-    <UserSelector
+    <UserMultiSelect
       label={'Admins'}
       users={totalUsers}
       defaultValue={chat?.__typename === 'GroupChat' ? chat.admins : []}

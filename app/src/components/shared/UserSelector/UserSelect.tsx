@@ -1,10 +1,9 @@
 import { gql } from '@apollo/client';
-import { MultiSelect, Stack } from '@mantine/core';
+import { Select, Stack } from '@mantine/core';
 import { UserSelectorFragment } from 'graphql/generated/graphql';
 import { forwardRef, useMemo } from 'react';
 import { getUserAvatar } from 'utils/avatar';
 import UserSelectItem from './UserSelectItem';
-import UserValue from './UserValue';
 
 type Props = {
   label: string;
@@ -17,7 +16,7 @@ type Props = {
   onChange: (ids: string[]) => void;
 };
 
-const UserSelector = forwardRef<HTMLInputElement, Props>(
+const UserSelect = forwardRef<HTMLInputElement, Props>(
   (
     {
       users,
@@ -28,11 +27,6 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
     }: Props,
     ref
   ) => {
-    const defaultMapped = useMemo(
-      () => defaultValue.map((x) => x.id),
-      [defaultValue]
-    );
-
     let usersConverted = useMemo(
       () =>
         users.map((u) => ({
@@ -46,27 +40,23 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
 
     return (
       <Stack>
-        <MultiSelect
+        <Select
           ref={ref}
           {...others}
           itemComponent={UserSelectItem}
-          valueComponent={UserValue}
           data={usersConverted}
-          defaultValue={defaultMapped}
-          onChange={onChange}
           searchable
           nothingFound={nothingFound}
           maxDropdownHeight={400}
-          filter={(value, selected, item) => {
+          filter={(value, item) => {
             return (
-              !selected &&
-              ((item.username
+              (item.username
                 .toLowerCase()
                 .includes(value.toLowerCase().trim()) ||
                 item.name
                   ?.toLowerCase()
                   .includes(value.toLowerCase().trim())) ??
-                false)
+              false
             );
           }}
         />
@@ -75,13 +65,13 @@ const UserSelector = forwardRef<HTMLInputElement, Props>(
   }
 );
 
-(UserSelector as any).fragments = {
+(UserSelect as any).fragments = {
   user: gql`
-    fragment UserSelector on User {
+    fragment UserSelect on User {
       id
       username
     }
   `,
 };
 
-export default UserSelector;
+export default UserSelect;

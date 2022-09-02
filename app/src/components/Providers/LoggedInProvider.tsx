@@ -1,9 +1,8 @@
 import { AppShell } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
-import { UserSearchModal } from 'components/Modals/UserSearchModal/UserSearchModal';
-import { CreateGroupChatModal } from 'components/Modals/CreateGroupChatModel/CreateGroupChatModal';
+import { UserSearchModal } from 'components/Modals/UserSearchModal';
+import { CreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
-import { UserContext } from 'context/UserContext';
 import Drawer from 'components/Layout/Drawer';
 import ChatNav from 'components/Layout/Nav';
 import Header from 'components/Layout/Header/Header';

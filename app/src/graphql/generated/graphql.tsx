@@ -670,6 +670,32 @@ export type CreateMessageMutationVariables = Exact<{
 
 export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id: any, createdAt: any, content: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
 
+type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } };
+
+type ChatItem_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, id: any, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+
+export type ChatItemFragment = ChatItem_DeletedChat_Fragment | ChatItem_DirectMessageChat_Fragment | ChatItem_GroupChat_Fragment;
+
+export type GetChatsForDisplayQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetChatsForDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, friend: { __typename?: 'Friend', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> }> };
+
+export type ChatsForDisplayChangedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ChatsForDisplayChangedSubscription = { __typename?: 'Subscription', chats?: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, friend: { __typename?: 'Friend', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
+
+type ChatsForDisplay_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatsForDisplay_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, friend: { __typename?: 'Friend', id: any, username: string } };
+
+type ChatsForDisplay_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+
+export type ChatsForDisplayFragment = ChatsForDisplay_DeletedChat_Fragment | ChatsForDisplay_DirectMessageChat_Fragment | ChatsForDisplay_GroupChat_Fragment;
+
 export type GetMeForAccountMenuQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -683,6 +709,11 @@ export type GetChatForAnimatedTitleQueryVariables = Exact<{
 export type GetChatForAnimatedTitleQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null, isAdmin: boolean } | null };
 
 export type FriendRequestNotificationFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, recipientId: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type GetFriendsForCreateDirectMessageChatQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFriendsForCreateDirectMessageChatQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'Friend', id: any, name?: string | null, username: string }> };
 
 export type GetFriendsForCreateGroupChatQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -753,32 +784,6 @@ type ChatAvatar_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat',
 type ChatAvatar_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, id: any };
 
 export type ChatAvatarFragment = ChatAvatar_DeletedChat_Fragment | ChatAvatar_DirectMessageChat_Fragment | ChatAvatar_GroupChat_Fragment;
-
-type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } };
-
-type ChatItem_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, id: any, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-export type ChatItemFragment = ChatItem_DeletedChat_Fragment | ChatItem_DirectMessageChat_Fragment | ChatItem_GroupChat_Fragment;
-
-export type GetChatsForDisplayQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetChatsForDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, friend: { __typename?: 'Friend', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> }> };
-
-export type ChatsForDisplayChangedSubscriptionVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ChatsForDisplayChangedSubscription = { __typename?: 'Subscription', chats?: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, friend: { __typename?: 'Friend', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
-
-type ChatsForDisplay_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type ChatsForDisplay_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, friend: { __typename?: 'Friend', id: any, username: string } };
-
-type ChatsForDisplay_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-export type ChatsForDisplayFragment = ChatsForDisplay_DeletedChat_Fragment | ChatsForDisplay_DirectMessageChat_Fragment | ChatsForDisplay_GroupChat_Fragment;
 
 export type GetChatForChatUpdateActionQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1012,6 +1017,49 @@ export const MessageBubbleFragmentDoc = gql`
   content
 }
     `;
+export const ChatAvatarFragmentDoc = gql`
+    fragment ChatAvatar on Chat {
+  id
+  ... on GroupChat {
+    name
+  }
+  ... on DirectMessageChat {
+    friend {
+      id
+      username
+    }
+  }
+}
+    `;
+export const ChatItemFragmentDoc = gql`
+    fragment ChatItem on Chat {
+  id
+  ...ChatAvatar
+  ... on DirectMessageChat {
+    friend {
+      id
+      username
+    }
+  }
+  ... on GroupChat {
+    name
+    members {
+      id
+      username
+    }
+  }
+}
+    ${ChatAvatarFragmentDoc}`;
+export const ChatsForDisplayFragmentDoc = gql`
+    fragment ChatsForDisplay on Chat {
+  id
+  ...ChatItem
+  createdBy {
+    id
+    username
+  }
+}
+    ${ChatItemFragmentDoc}`;
 export const FriendRequestNotificationFragmentDoc = gql`
     fragment FriendRequestNotification on FriendRequest {
   id
@@ -1065,49 +1113,6 @@ export const LiveNotificationFragmentDoc = gql`
   }
 }
     `;
-export const ChatAvatarFragmentDoc = gql`
-    fragment ChatAvatar on Chat {
-  id
-  ... on GroupChat {
-    name
-  }
-  ... on DirectMessageChat {
-    friend {
-      id
-      username
-    }
-  }
-}
-    `;
-export const ChatItemFragmentDoc = gql`
-    fragment ChatItem on Chat {
-  id
-  ...ChatAvatar
-  ... on DirectMessageChat {
-    friend {
-      id
-      username
-    }
-  }
-  ... on GroupChat {
-    name
-    members {
-      id
-      username
-    }
-  }
-}
-    ${ChatAvatarFragmentDoc}`;
-export const ChatsForDisplayFragmentDoc = gql`
-    fragment ChatsForDisplay on Chat {
-  id
-  ...ChatItem
-  createdBy {
-    id
-    username
-  }
-}
-    ${ChatItemFragmentDoc}`;
 export const UserItemFragmentDoc = gql`
     fragment UserItem on User {
   id
@@ -1362,6 +1367,69 @@ export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const GetChatsForDisplayDocument = gql`
+    query GetChatsForDisplay {
+  chats {
+    ...ChatsForDisplay
+  }
+}
+    ${ChatsForDisplayFragmentDoc}`;
+
+/**
+ * __useGetChatsForDisplayQuery__
+ *
+ * To run a query within a React component, call `useGetChatsForDisplayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatsForDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatsForDisplayQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetChatsForDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>(GetChatsForDisplayDocument, options);
+      }
+export function useGetChatsForDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>(GetChatsForDisplayDocument, options);
+        }
+export type GetChatsForDisplayQueryHookResult = ReturnType<typeof useGetChatsForDisplayQuery>;
+export type GetChatsForDisplayLazyQueryHookResult = ReturnType<typeof useGetChatsForDisplayLazyQuery>;
+export type GetChatsForDisplayQueryResult = Apollo.QueryResult<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>;
+export const ChatsForDisplayChangedDocument = gql`
+    subscription ChatsForDisplayChanged {
+  chats {
+    ...ChatsForDisplay
+  }
+}
+    ${ChatsForDisplayFragmentDoc}`;
+
+/**
+ * __useChatsForDisplayChangedSubscription__
+ *
+ * To run a query within a React component, call `useChatsForDisplayChangedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useChatsForDisplayChangedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChatsForDisplayChangedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useChatsForDisplayChangedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ChatsForDisplayChangedSubscription, ChatsForDisplayChangedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ChatsForDisplayChangedSubscription, ChatsForDisplayChangedSubscriptionVariables>(ChatsForDisplayChangedDocument, options);
+      }
+export type ChatsForDisplayChangedSubscriptionHookResult = ReturnType<typeof useChatsForDisplayChangedSubscription>;
+export type ChatsForDisplayChangedSubscriptionResult = Apollo.SubscriptionResult<ChatsForDisplayChangedSubscription>;
 export const GetMeForAccountMenuDocument = gql`
     query GetMeForAccountMenu {
   me {
@@ -1440,6 +1508,42 @@ export function useGetChatForAnimatedTitleLazyQuery(baseOptions?: Apollo.LazyQue
 export type GetChatForAnimatedTitleQueryHookResult = ReturnType<typeof useGetChatForAnimatedTitleQuery>;
 export type GetChatForAnimatedTitleLazyQueryHookResult = ReturnType<typeof useGetChatForAnimatedTitleLazyQuery>;
 export type GetChatForAnimatedTitleQueryResult = Apollo.QueryResult<GetChatForAnimatedTitleQuery, GetChatForAnimatedTitleQueryVariables>;
+export const GetFriendsForCreateDirectMessageChatDocument = gql`
+    query GetFriendsForCreateDirectMessageChat {
+  friends {
+    id
+    name
+    username
+  }
+}
+    `;
+
+/**
+ * __useGetFriendsForCreateDirectMessageChatQuery__
+ *
+ * To run a query within a React component, call `useGetFriendsForCreateDirectMessageChatQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendsForCreateDirectMessageChatQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendsForCreateDirectMessageChatQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFriendsForCreateDirectMessageChatQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>(GetFriendsForCreateDirectMessageChatDocument, options);
+      }
+export function useGetFriendsForCreateDirectMessageChatLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>(GetFriendsForCreateDirectMessageChatDocument, options);
+        }
+export type GetFriendsForCreateDirectMessageChatQueryHookResult = ReturnType<typeof useGetFriendsForCreateDirectMessageChatQuery>;
+export type GetFriendsForCreateDirectMessageChatLazyQueryHookResult = ReturnType<typeof useGetFriendsForCreateDirectMessageChatLazyQuery>;
+export type GetFriendsForCreateDirectMessageChatQueryResult = Apollo.QueryResult<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>;
 export const GetFriendsForCreateGroupChatDocument = gql`
     query GetFriendsForCreateGroupChat {
   friends {
@@ -1750,69 +1854,6 @@ export function useGetChatAndFriendsForAdminSelectorLazyQuery(baseOptions?: Apol
 export type GetChatAndFriendsForAdminSelectorQueryHookResult = ReturnType<typeof useGetChatAndFriendsForAdminSelectorQuery>;
 export type GetChatAndFriendsForAdminSelectorLazyQueryHookResult = ReturnType<typeof useGetChatAndFriendsForAdminSelectorLazyQuery>;
 export type GetChatAndFriendsForAdminSelectorQueryResult = Apollo.QueryResult<GetChatAndFriendsForAdminSelectorQuery, GetChatAndFriendsForAdminSelectorQueryVariables>;
-export const GetChatsForDisplayDocument = gql`
-    query GetChatsForDisplay {
-  chats {
-    ...ChatsForDisplay
-  }
-}
-    ${ChatsForDisplayFragmentDoc}`;
-
-/**
- * __useGetChatsForDisplayQuery__
- *
- * To run a query within a React component, call `useGetChatsForDisplayQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetChatsForDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetChatsForDisplayQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetChatsForDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>(GetChatsForDisplayDocument, options);
-      }
-export function useGetChatsForDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>(GetChatsForDisplayDocument, options);
-        }
-export type GetChatsForDisplayQueryHookResult = ReturnType<typeof useGetChatsForDisplayQuery>;
-export type GetChatsForDisplayLazyQueryHookResult = ReturnType<typeof useGetChatsForDisplayLazyQuery>;
-export type GetChatsForDisplayQueryResult = Apollo.QueryResult<GetChatsForDisplayQuery, GetChatsForDisplayQueryVariables>;
-export const ChatsForDisplayChangedDocument = gql`
-    subscription ChatsForDisplayChanged {
-  chats {
-    ...ChatsForDisplay
-  }
-}
-    ${ChatsForDisplayFragmentDoc}`;
-
-/**
- * __useChatsForDisplayChangedSubscription__
- *
- * To run a query within a React component, call `useChatsForDisplayChangedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useChatsForDisplayChangedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useChatsForDisplayChangedSubscription({
- *   variables: {
- *   },
- * });
- */
-export function useChatsForDisplayChangedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ChatsForDisplayChangedSubscription, ChatsForDisplayChangedSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<ChatsForDisplayChangedSubscription, ChatsForDisplayChangedSubscriptionVariables>(ChatsForDisplayChangedDocument, options);
-      }
-export type ChatsForDisplayChangedSubscriptionHookResult = ReturnType<typeof useChatsForDisplayChangedSubscription>;
-export type ChatsForDisplayChangedSubscriptionResult = Apollo.SubscriptionResult<ChatsForDisplayChangedSubscription>;
 export const GetChatForChatUpdateActionDocument = gql`
     query GetChatForChatUpdateAction($chatId: HashId!) {
   chat(chatId: $chatId) {
