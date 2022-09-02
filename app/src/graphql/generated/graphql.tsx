@@ -706,19 +706,19 @@ export type GetChatForAnimatedTitleQueryVariables = Exact<{
 }>;
 
 
-export type GetChatForAnimatedTitleQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null, isAdmin: boolean } | null };
+export type GetChatForAnimatedTitleQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null, isAdmin: boolean, id: any } | null };
 
 export type FriendRequestNotificationFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, recipientId: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type GetFriendsForCreateDirectMessageChatQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetFriendsForCreateDirectMessageChatQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'Friend', id: any, name?: string | null, username: string }> };
 
 export type GetFriendsForCreateGroupChatQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetFriendsForCreateGroupChatQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'Friend', id: any, name?: string | null, username: string }> };
+
+export type GetFriendsForSelectSearchModalQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFriendsForSelectSearchModalQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null }> };
 
 export type GetChatForUpdateQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -816,13 +816,36 @@ type UserMenu_Stranger_Fragment = { __typename?: 'Stranger', status: StrangerSta
 
 export type UserMenuFragment = UserMenu_Friend_Fragment | UserMenu_Me_Fragment | UserMenu_Stranger_Fragment;
 
-type UserSelector_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
+type UserList_Friend_Fragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
 
-type UserSelector_Me_Fragment = { __typename?: 'Me', id: any, username: string };
+type UserList_Me_Fragment = { __typename?: 'Me', id: any, username: string, name?: string | null };
 
-type UserSelector_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
+type UserList_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string, name?: string | null, status: StrangerStatus, friendRequest?: { __typename?: 'FriendRequest', id: any, createdById: any, recipientId: any, isCreator: boolean } | null };
 
-export type UserSelectorFragment = UserSelector_Friend_Fragment | UserSelector_Me_Fragment | UserSelector_Stranger_Fragment;
+export type UserListFragment = UserList_Friend_Fragment | UserList_Me_Fragment | UserList_Stranger_Fragment;
+
+type UserMultiSelect_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
+
+type UserMultiSelect_Me_Fragment = { __typename?: 'Me', id: any, username: string };
+
+type UserMultiSelect_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
+
+export type UserMultiSelectFragment = UserMultiSelect_Friend_Fragment | UserMultiSelect_Me_Fragment | UserMultiSelect_Stranger_Fragment;
+
+type UserSelect_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
+
+type UserSelect_Me_Fragment = { __typename?: 'Me', id: any, username: string };
+
+type UserSelect_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
+
+export type UserSelectFragment = UserSelect_Friend_Fragment | UserSelect_Me_Fragment | UserSelect_Stranger_Fragment;
+
+export type CreateDirectMessageChatMutationVariables = Exact<{
+  friendId: Scalars['HashId'];
+}>;
+
+
+export type CreateDirectMessageChatMutation = { __typename?: 'Mutation', createDirectMessageChat?: { __typename?: 'DirectMessageChat', id: any, isCreator: boolean, createdAt?: any | null, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } } | null };
 
 export type CreateGroupChatMutationVariables = Exact<{
   data: CreateGroupChatInput;
@@ -1134,8 +1157,21 @@ export const UserMenuFragmentDoc = gql`
   }
 }
     `;
-export const UserSelectorFragmentDoc = gql`
-    fragment UserSelector on User {
+export const UserListFragmentDoc = gql`
+    fragment UserList on User {
+  ...UserItem
+  ...UserMenu
+}
+    ${UserItemFragmentDoc}
+${UserMenuFragmentDoc}`;
+export const UserMultiSelectFragmentDoc = gql`
+    fragment UserMultiSelect on User {
+  id
+  username
+}
+    `;
+export const UserSelectFragmentDoc = gql`
+    fragment UserSelect on User {
   id
   username
 }
@@ -1467,6 +1503,7 @@ export type GetMeForAccountMenuQueryResult = Apollo.QueryResult<GetMeForAccountM
 export const GetChatForAnimatedTitleDocument = gql`
     query GetChatForAnimatedTitle($chatId: HashId!) {
   chat(chatId: $chatId) {
+    id
     ... on GroupChat {
       name
       description
@@ -1474,6 +1511,8 @@ export const GetChatForAnimatedTitleDocument = gql`
     }
     ... on DirectMessageChat {
       friend {
+        id
+        name
         username
       }
     }
@@ -1508,42 +1547,6 @@ export function useGetChatForAnimatedTitleLazyQuery(baseOptions?: Apollo.LazyQue
 export type GetChatForAnimatedTitleQueryHookResult = ReturnType<typeof useGetChatForAnimatedTitleQuery>;
 export type GetChatForAnimatedTitleLazyQueryHookResult = ReturnType<typeof useGetChatForAnimatedTitleLazyQuery>;
 export type GetChatForAnimatedTitleQueryResult = Apollo.QueryResult<GetChatForAnimatedTitleQuery, GetChatForAnimatedTitleQueryVariables>;
-export const GetFriendsForCreateDirectMessageChatDocument = gql`
-    query GetFriendsForCreateDirectMessageChat {
-  friends {
-    id
-    name
-    username
-  }
-}
-    `;
-
-/**
- * __useGetFriendsForCreateDirectMessageChatQuery__
- *
- * To run a query within a React component, call `useGetFriendsForCreateDirectMessageChatQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFriendsForCreateDirectMessageChatQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFriendsForCreateDirectMessageChatQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetFriendsForCreateDirectMessageChatQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>(GetFriendsForCreateDirectMessageChatDocument, options);
-      }
-export function useGetFriendsForCreateDirectMessageChatLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>(GetFriendsForCreateDirectMessageChatDocument, options);
-        }
-export type GetFriendsForCreateDirectMessageChatQueryHookResult = ReturnType<typeof useGetFriendsForCreateDirectMessageChatQuery>;
-export type GetFriendsForCreateDirectMessageChatLazyQueryHookResult = ReturnType<typeof useGetFriendsForCreateDirectMessageChatLazyQuery>;
-export type GetFriendsForCreateDirectMessageChatQueryResult = Apollo.QueryResult<GetFriendsForCreateDirectMessageChatQuery, GetFriendsForCreateDirectMessageChatQueryVariables>;
 export const GetFriendsForCreateGroupChatDocument = gql`
     query GetFriendsForCreateGroupChat {
   friends {
@@ -1580,6 +1583,40 @@ export function useGetFriendsForCreateGroupChatLazyQuery(baseOptions?: Apollo.La
 export type GetFriendsForCreateGroupChatQueryHookResult = ReturnType<typeof useGetFriendsForCreateGroupChatQuery>;
 export type GetFriendsForCreateGroupChatLazyQueryHookResult = ReturnType<typeof useGetFriendsForCreateGroupChatLazyQuery>;
 export type GetFriendsForCreateGroupChatQueryResult = Apollo.QueryResult<GetFriendsForCreateGroupChatQuery, GetFriendsForCreateGroupChatQueryVariables>;
+export const GetFriendsForSelectSearchModalDocument = gql`
+    query GetFriendsForSelectSearchModal {
+  friends {
+    ...UserList
+  }
+}
+    ${UserListFragmentDoc}`;
+
+/**
+ * __useGetFriendsForSelectSearchModalQuery__
+ *
+ * To run a query within a React component, call `useGetFriendsForSelectSearchModalQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendsForSelectSearchModalQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendsForSelectSearchModalQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFriendsForSelectSearchModalQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsForSelectSearchModalQuery, GetFriendsForSelectSearchModalQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendsForSelectSearchModalQuery, GetFriendsForSelectSearchModalQueryVariables>(GetFriendsForSelectSearchModalDocument, options);
+      }
+export function useGetFriendsForSelectSearchModalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendsForSelectSearchModalQuery, GetFriendsForSelectSearchModalQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendsForSelectSearchModalQuery, GetFriendsForSelectSearchModalQueryVariables>(GetFriendsForSelectSearchModalDocument, options);
+        }
+export type GetFriendsForSelectSearchModalQueryHookResult = ReturnType<typeof useGetFriendsForSelectSearchModalQuery>;
+export type GetFriendsForSelectSearchModalLazyQueryHookResult = ReturnType<typeof useGetFriendsForSelectSearchModalLazyQuery>;
+export type GetFriendsForSelectSearchModalQueryResult = Apollo.QueryResult<GetFriendsForSelectSearchModalQuery, GetFriendsForSelectSearchModalQueryVariables>;
 export const GetChatForUpdateDocument = gql`
     query GetChatForUpdate($chatId: HashId!) {
   chat(chatId: $chatId) {
@@ -1671,14 +1708,12 @@ export const GetUserSearchDocument = gql`
       cursor
       node {
         id
-        ...UserItem
-        ...UserMenu
+        ...UserList
       }
     }
   }
 }
-    ${UserItemFragmentDoc}
-${UserMenuFragmentDoc}`;
+    ${UserListFragmentDoc}`;
 
 /**
  * __useGetUserSearchQuery__
@@ -1814,18 +1849,18 @@ export const GetChatAndFriendsForAdminSelectorDocument = gql`
     isCreator
     ... on GroupChat {
       admins {
-        ...UserSelector
+        ...UserMultiSelect
       }
       members {
-        ...UserSelector
+        ...UserMultiSelect
       }
     }
   }
   friends {
-    ...UserSelector
+    ...UserMultiSelect
   }
 }
-    ${UserSelectorFragmentDoc}`;
+    ${UserMultiSelectFragmentDoc}`;
 
 /**
  * __useGetChatAndFriendsForAdminSelectorQuery__
@@ -1891,6 +1926,46 @@ export function useGetChatForChatUpdateActionLazyQuery(baseOptions?: Apollo.Lazy
 export type GetChatForChatUpdateActionQueryHookResult = ReturnType<typeof useGetChatForChatUpdateActionQuery>;
 export type GetChatForChatUpdateActionLazyQueryHookResult = ReturnType<typeof useGetChatForChatUpdateActionLazyQuery>;
 export type GetChatForChatUpdateActionQueryResult = Apollo.QueryResult<GetChatForChatUpdateActionQuery, GetChatForChatUpdateActionQueryVariables>;
+export const CreateDirectMessageChatDocument = gql`
+    mutation CreateDirectMessageChat($friendId: HashId!) {
+  createDirectMessageChat(friendId: $friendId) {
+    id
+    isCreator
+    createdAt
+    friend {
+      id
+      name
+      username
+    }
+  }
+}
+    `;
+export type CreateDirectMessageChatMutationFn = Apollo.MutationFunction<CreateDirectMessageChatMutation, CreateDirectMessageChatMutationVariables>;
+
+/**
+ * __useCreateDirectMessageChatMutation__
+ *
+ * To run a mutation, you first call `useCreateDirectMessageChatMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDirectMessageChatMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDirectMessageChatMutation, { data, loading, error }] = useCreateDirectMessageChatMutation({
+ *   variables: {
+ *      friendId: // value for 'friendId'
+ *   },
+ * });
+ */
+export function useCreateDirectMessageChatMutation(baseOptions?: Apollo.MutationHookOptions<CreateDirectMessageChatMutation, CreateDirectMessageChatMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDirectMessageChatMutation, CreateDirectMessageChatMutationVariables>(CreateDirectMessageChatDocument, options);
+      }
+export type CreateDirectMessageChatMutationHookResult = ReturnType<typeof useCreateDirectMessageChatMutation>;
+export type CreateDirectMessageChatMutationResult = Apollo.MutationResult<CreateDirectMessageChatMutation>;
+export type CreateDirectMessageChatMutationOptions = Apollo.BaseMutationOptions<CreateDirectMessageChatMutation, CreateDirectMessageChatMutationVariables>;
 export const CreateGroupChatDocument = gql`
     mutation CreateGroupChat($data: CreateGroupChatInput!) {
   createGroupChat(data: $data) {

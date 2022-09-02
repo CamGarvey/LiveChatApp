@@ -18,12 +18,16 @@ import useLiveChats from './useLiveChats';
 import ChatList from './ChatList';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 import { useDrawer } from 'store';
+import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
+import { useCreateDmChat } from 'hooks';
 
 const ChatDisplay = () => {
   const [activeTab, setActiveTab] = useState<string | null>('groups');
   const { loading, chats } = useLiveChats();
   const [filter, setFilter] = useState('');
   const openCreateGroupChat = useCreateGroupChatModal();
+  const openFriendSelector = useFriendSelectorModal();
+  const [createDm] = useCreateDmChat();
   const drawer = useDrawer();
   const filteredChats = useMemo(
     () =>
@@ -54,9 +58,17 @@ const ChatDisplay = () => {
     if (activeTab === 'groups') {
       openCreateGroupChat();
     } else {
-      // openCreateDmChat();
+      openFriendSelector({
+        onSelect: (user) => {
+          createDm({
+            variables: {
+              friendId: user.id,
+            },
+          });
+        },
+      });
     }
-  }, [drawer, activeTab, openCreateGroupChat]);
+  }, [drawer, activeTab, openCreateGroupChat, openFriendSelector, createDm]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>

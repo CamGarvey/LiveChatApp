@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import {
   Button,
   Center,
@@ -8,19 +9,22 @@ import {
   Text,
 } from '@mantine/core';
 import { IconSearch } from '@tabler/icons';
+import { UserListFragment } from 'graphql/generated/graphql';
 import { useRef, useState } from 'react';
 import UserItem from './UserItem';
 import UserMenu from './UserItem/UserMenu';
 
 type Props = {
-  users: any[];
+  users: UserListFragment[];
   input?: {
     placeholder?: string;
   };
   loading?: boolean;
   hasNextPage?: boolean;
+  showUserMenu?: boolean;
   onNextPageClick?: () => void;
   onInputChange?: (value: string) => void;
+  onUserClick?: (user: UserListFragment) => void;
 };
 
 const UserList = ({
@@ -28,6 +32,8 @@ const UserList = ({
   input,
   onNextPageClick,
   onInputChange,
+  onUserClick,
+  showUserMenu = true,
   loading = false,
   hasNextPage = false,
 }: Props) => {
@@ -71,7 +77,8 @@ const UserList = ({
                     <UserItem
                       key={user.id}
                       user={user}
-                      menu={<UserMenu user={user} />}
+                      onClick={() => onUserClick?.(user)}
+                      menu={showUserMenu && <UserMenu user={user} />}
                     />
                   );
                 })}
@@ -96,6 +103,17 @@ const UserList = ({
       )}
     </>
   );
+};
+
+UserList.fragments = {
+  user: gql`
+    fragment UserList on User {
+      ...UserItem
+      ...UserMenu
+    }
+    ${UserItem.fragments.user}
+    ${UserMenu.fragments.user}
+  `,
 };
 
 export default UserList;

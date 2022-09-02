@@ -1,5 +1,6 @@
 export * from './useThrottle';
-export * from './useCreateChat';
+export * from './useCreateGroupChat';
 export * from './useDeleteChat';
+export * from './useCreateDmChat';
 export * from './useUpdateGroupChat';
 export * from './useFriendRequest';

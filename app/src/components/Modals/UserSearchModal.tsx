@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useGetUserSearchLazyQuery } from 'graphql/generated/graphql';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import UserItem from 'components/shared/UserItem';
-import UserMenu from 'components/shared/UserItem/UserMenu';
 import { gql } from '@apollo/client';
 import UserList from 'components/shared/UserList';
 
@@ -18,14 +16,12 @@ gql`
         cursor
         node {
           id
-          ...UserItem
-          ...UserMenu
+          ...UserList
         }
       }
     }
   }
-  ${UserItem.fragments.user}
-  ${UserMenu.fragments.user}
+  ${UserList.fragments.user}
 `;
 
 const USER_PAGINATION_COUNT = 7;

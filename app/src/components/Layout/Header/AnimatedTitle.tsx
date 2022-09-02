@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 gql`
   query GetChatForAnimatedTitle($chatId: HashId!) {
     chat(chatId: $chatId) {
+      id
       ... on GroupChat {
         name
         description
@@ -19,6 +20,8 @@ gql`
       }
       ... on DirectMessageChat {
         friend {
+          id
+          name
           username
         }
       }
@@ -50,7 +53,8 @@ const AnimatedTitle = () => {
     drawer.isOpen ||
     isLargerScreen ||
     !chatId ||
-    chat?.__typename !== 'GroupChat';
+    !chat ||
+    chat?.__typename === 'DeletedChat';
 
   return (
     <AnimatePresence custom={drawer.isOpen} exitBeforeEnter>
@@ -67,21 +71,27 @@ const AnimatedTitle = () => {
             <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
           ) : (
             <Group spacing={2}>
-              {chat?.__typename === 'GroupChat' && (
-                <Group spacing={2}>
-                  <ChatUpdateAction />
-                  <Stack spacing={0}>
-                    <Text p={0} size={'lg'}>
-                      {chat.name}
+              <Group spacing={2}>
+                {chat.__typename === 'GroupChat' && <ChatUpdateAction />}
+                <Stack spacing={0}>
+                  <Text p={0} size={'lg'}>
+                    {chat.__typename === 'GroupChat'
+                      ? chat.name
+                      : chat.friend.username}
+                  </Text>
+
+                  {chat.__typename === 'GroupChat' && chat.description && (
+                    <Text color={'dimmed'} p={0} size={'xs'}>
+                      {chat.description}
                     </Text>
-                    {chat.description && (
-                      <Text color={'dimmed'} p={0} size={'xs'}>
-                        {chat.description}
-                      </Text>
-                    )}
-                  </Stack>
-                </Group>
-              )}
+                  )}
+                  {chat.__typename === 'DirectMessageChat' && chat.friend.name && (
+                    <Text color={'dimmed'} p={0} size={'xs'}>
+                      {chat.friend.name}
+                    </Text>
+                  )}
+                </Stack>
+              </Group>
             </Group>
           )}
         </Box>

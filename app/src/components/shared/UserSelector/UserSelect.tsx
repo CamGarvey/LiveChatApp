@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { Select, Stack } from '@mantine/core';
-import { UserSelectorFragment } from 'graphql/generated/graphql';
+import { UserSelectFragment } from 'graphql/generated/graphql';
 import { forwardRef, useMemo } from 'react';
 import { getUserAvatar } from 'utils/avatar';
 import UserSelectItem from './UserSelectItem';
@@ -11,8 +11,8 @@ type Props = {
   nothingFound?: string;
   disabled?: boolean;
   readOnly?: boolean;
-  users: UserSelectorFragment[];
-  defaultValue?: UserSelectorFragment[];
+  users: UserSelectFragment[];
+  defaultValue?: UserSelectFragment[];
   onChange: (ids: string[]) => void;
 };
 

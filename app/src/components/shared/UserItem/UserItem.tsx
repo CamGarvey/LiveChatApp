@@ -7,12 +7,14 @@ import { UserItemFragment } from 'graphql/generated/graphql';
 type Props = {
   user: UserItemFragment;
   menu?: React.ReactNode;
+  onClick?: () => void;
 };
-const UserItem = ({ user, menu }: Props) => {
+const UserItem = ({ user, menu, onClick }: Props) => {
   const { name, username } = user;
 
   return (
     <UnstyledButton
+      onClick={() => onClick?.()}
       sx={(theme) => ({
         display: 'flex',
         width: '100%',

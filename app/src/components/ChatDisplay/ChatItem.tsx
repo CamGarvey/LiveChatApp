@@ -2,16 +2,17 @@ import { gql } from '@apollo/client';
 import { Avatar, NavLink } from '@mantine/core';
 import { ChatItemFragment } from 'graphql/generated/graphql';
 import { Link, useLocation } from 'react-router-dom';
+import { useDrawer } from 'store';
 import ChatAvatar from '../shared/ChatAvatar';
 import UserAvatar from '../shared/UserAvatar';
 
 type Props = {
   chat: ChatItemFragment;
-  onClick?: () => void;
 };
 
-const ChatItem = ({ chat, onClick }: Props) => {
+const ChatItem = ({ chat }: Props) => {
   const location = useLocation();
+  const drawer = useDrawer();
   let name: string;
 
   switch (chat.__typename) {
@@ -40,7 +41,7 @@ const ChatItem = ({ chat, onClick }: Props) => {
       style={{
         textDecoration: 'none',
       }}
-      onClick={onClick}
+      onClick={() => drawer.close()}
       active={location.pathname === `/chats/${chat.id}`}
       icon={<ChatAvatar chat={chat} />}
       label={name}
