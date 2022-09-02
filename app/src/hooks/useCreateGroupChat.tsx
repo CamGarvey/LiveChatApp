@@ -51,10 +51,6 @@ export const useCreateGroupChat = () => {
       });
     },
     onCompleted: (data) => {
-      showNotification({
-        title: 'Created New Chat',
-        message: data.createGroupChat.name,
-      });
       navigate(`/chats/${data.createGroupChat.id}`, { replace: true });
     },
   });

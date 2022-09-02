@@ -25,6 +25,16 @@ export class Authorizer implements IAuthorizer {
             id: this.userId,
           },
         },
+        memberOfChats: {
+          where: {
+            isDM: true,
+            members: {
+              every: {
+                id: this.userId,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -26,6 +26,13 @@ gql`
       id
       username
     }
+    ... on DirectMessageChat {
+      friend {
+        id
+        username
+        name
+      }
+    }
   }
   ${ChatItem.fragments.chat}
 `;

@@ -70,6 +70,23 @@ export const CreateDirectMessageChatMutation = mutationField(
     authorize: (_, { friendId }, { auth }) =>
       auth.canCreateDirectMessageChat(friendId),
     resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
+      const existingChat = await prisma.chat.findFirst({
+        where: {
+          members: {
+            every: {
+              id: {
+                in: [friendId, userId],
+              },
+            },
+          },
+          isDM: true,
+        },
+      });
+
+      if (existingChat !== null) {
+        return existingChat;
+      }
+
       const chat = await prisma.chat.create({
         data: {
           name: `${userId}.${friendId}`,

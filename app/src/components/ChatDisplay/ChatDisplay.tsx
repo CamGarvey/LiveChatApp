@@ -36,7 +36,10 @@ const ChatDisplay = () => {
           return c.name.toLowerCase().includes(filter);
         }
         if (c.__typename === 'DirectMessageChat') {
-          return c.createdBy.username.toLowerCase().includes(filter);
+          return (
+            c.friend.username.toLowerCase().includes(filter) ||
+            c.friend.name?.toLowerCase().includes(filter)
+          );
         }
         return false;
       }),
@@ -85,7 +88,7 @@ const ChatDisplay = () => {
         mt={10}
         radius={'sm'}
         placeholder={
-          activeTab === 'groups' ? 'Search Groups' : 'Search Friends'
+          activeTab === 'groups' ? 'Search Groups' : 'Search Direct Messages'
         }
         maxLength={15}
         icon={<IconSearch />}

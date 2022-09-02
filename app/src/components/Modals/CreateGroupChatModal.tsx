@@ -7,6 +7,7 @@ import { chatSchema } from 'models/validation-schemas';
 import { useCreateGroupChat } from 'hooks/useCreateGroupChat';
 import { gql } from '@apollo/client';
 import { useGetFriendsForCreateGroupChatQuery } from 'graphql/generated/graphql';
+import { showNotification } from '@mantine/notifications';
 
 gql`
   query GetFriendsForCreateGroupChat {
@@ -52,6 +53,10 @@ export const CreateGroupChatModal = ({
         },
       }).then(() => {
         context.closeModal(id);
+      });
+      showNotification({
+        message: 'Created new group chat',
+        loading: loadingCreateChat,
       });
     },
   });

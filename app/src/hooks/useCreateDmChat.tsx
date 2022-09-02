@@ -33,29 +33,32 @@ export const useCreateDmChat = () => {
         query: GetChatsForDisplayDocument,
       });
 
-      const updatedChats = [
-        ...chats,
-        {
-          createdBy: {
-            __typename: 'Me',
-            ...user,
+      if (
+        !chats.find(
+          (x) =>
+            x.__typename === 'DirectMessageChat' &&
+            x.friend.id === createDirectMessageChat.friend.id
+        )
+      ) {
+        const updatedChats = [
+          ...chats,
+          {
+            createdBy: {
+              __typename: 'Me',
+              ...user,
+            },
+            ...createDirectMessageChat,
           },
-          ...createDirectMessageChat,
-        },
-      ];
-
-      cache.writeQuery({
-        query: GetChatsForDisplayDocument,
-        data: {
-          chats: updatedChats,
-        },
-      });
+        ];
+        cache.writeQuery({
+          query: GetChatsForDisplayDocument,
+          data: {
+            chats: updatedChats,
+          },
+        });
+      }
     },
     onCompleted: (data) => {
-      showNotification({
-        title: 'Created New Chat',
-        message: data.createDirectMessageChat?.friend?.username,
-      });
       navigate(`/chats/${data.createDirectMessageChat?.id}`, { replace: true });
     },
   });
