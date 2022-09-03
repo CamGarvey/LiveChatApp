@@ -38,8 +38,8 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
     >
       <UserAvatar
         user={event.createdBy}
-        style={{ marginTop: 'auto' }}
-        sx={{
+        style={{
+          marginTop: 'auto',
           visibility: displayAvatar ? 'visible' : 'hidden',
         }}
       />

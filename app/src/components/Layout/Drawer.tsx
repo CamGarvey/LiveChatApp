@@ -2,7 +2,6 @@ import {
   Drawer as MantineDrawer,
   Group,
   MediaQuery,
-  ScrollArea,
   Stack,
   Title,
 } from '@mantine/core';
@@ -42,8 +41,8 @@ const Drawer = () => {
               <UserAvatar
                 size="md"
                 user={user}
-                tooltip={{ hidden: true }}
                 style={{ marginTop: 'auto' }}
+                dropdown={{ style: { display: 'none' } }}
               />
               <Title order={5}>{user?.username}</Title>
             </Group>

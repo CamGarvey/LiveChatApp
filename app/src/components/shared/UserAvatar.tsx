@@ -1,10 +1,12 @@
 import { gql } from '@apollo/client';
 import {
   Avatar,
+  Group,
+  HoverCard,
   MantineNumberSize,
-  Sx,
-  Tooltip,
-  TooltipProps,
+  Popover,
+  Stack,
+  Text,
 } from '@mantine/core';
 import { UserAvatarFragment } from 'graphql/generated/graphql';
 import { CSSProperties } from 'react';
@@ -13,21 +15,37 @@ import { getUserAvatar } from 'utils/avatar';
 type Props = {
   user: UserAvatarFragment;
   size?: MantineNumberSize;
-  tooltip?: Omit<TooltipProps, 'children' | 'label'>;
   style?: CSSProperties;
-  sx?: Sx | (Sx | undefined)[];
+  dropdown?: {
+    style?: CSSProperties;
+  };
 };
 
-const UserAvatar = ({ user, size = 'md', tooltip, style, sx }: Props) => (
-  <Tooltip label={user.username} {...tooltip}>
-    <Avatar
-      size={size}
-      radius={'xl'}
-      src={getUserAvatar(user.username)}
-      style={style}
-      sx={sx}
-    />
-  </Tooltip>
+const UserAvatar = ({ user, size = 'md', style, dropdown }: Props) => (
+  <HoverCard width={200} position={'left'} withArrow>
+    <HoverCard.Target>
+      <Avatar
+        size={size}
+        radius={'xl'}
+        src={getUserAvatar(user.username)}
+        style={style}
+      />
+    </HoverCard.Target>
+    <Popover.Dropdown style={dropdown?.style}>
+      <Group>
+        <Avatar
+          size={'lg'}
+          radius={'xl'}
+          src={getUserAvatar(user.username)}
+          style={style}
+        />
+        <Stack>
+          <Text size={'lg'}>{user.username}</Text>
+          {user.name && <Text>{user.name}</Text>}
+        </Stack>
+      </Group>
+    </Popover.Dropdown>
+  </HoverCard>
 );
 
 UserAvatar.fragments = {
@@ -35,6 +53,7 @@ UserAvatar.fragments = {
     fragment UserAvatar on User {
       id
       username
+      name
     }
   `,
 };
