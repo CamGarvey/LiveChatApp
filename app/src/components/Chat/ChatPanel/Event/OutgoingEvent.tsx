@@ -49,15 +49,11 @@ const OutgoingEvent = ({ state, children, event, actions }: Props) => {
           exit={{ opacity: 0, y: 30 }}
           spacing={2}
         >
-          <EventInfo show={isHovered} event={event} align={'self-end'} />
+          <EventInfo event={event} align={'self-end'} />
           <Group>{actions}</Group>
         </MotionGroup>
         {children}
-        {state === 'sending' && (
-          <Tooltip label={'Sending...'} mt={'auto'}>
-            <Loader size={8} />
-          </Tooltip>
-        )}
+        {state === 'sending' && <Loader size={8} mt={'auto'} />}
       </Group>
     </MotionGroup>
   );

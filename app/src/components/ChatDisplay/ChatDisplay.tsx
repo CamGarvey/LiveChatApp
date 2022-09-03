@@ -1,19 +1,6 @@
-import {
-  ActionIcon,
-  Button,
-  Center,
-  Input,
-  Tabs,
-  Tooltip,
-} from '@mantine/core';
+import { ActionIcon, Input, Tabs, Tooltip } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  IconSearch,
-  IconUser,
-  IconUsers,
-  IconCirclePlus,
-  IconMessageDots,
-} from '@tabler/icons';
+import { IconSearch, IconUser, IconUsers, IconCirclePlus } from '@tabler/icons';
 import useLiveChats from './useLiveChats';
 import ChatList from './ChatList';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
@@ -99,8 +86,8 @@ const ChatDisplay = () => {
           <Tooltip
             label={
               activeTab === 'groups'
-                ? 'Create New Group'
-                : 'Create New Direct Message'
+                ? 'Create a new group'
+                : 'Create a new direct message'
             }
             position={'bottom'}
           >
@@ -112,29 +99,9 @@ const ChatDisplay = () => {
       />
       <Tabs.Panel value="groups" pt="xs">
         <ChatList chats={filteredGroupChats} loading={loading} />
-        <Center>
-          <Button
-            onClick={handleOpenCreate}
-            variant={'light'}
-            leftIcon={<IconMessageDots />}
-            compact
-          >
-            New Group Chat
-          </Button>
-        </Center>
       </Tabs.Panel>
       <Tabs.Panel value="friends" pt="xs">
         <ChatList chats={filteredDmChats} loading={loading} />
-        <Center>
-          <Button
-            onClick={handleOpenCreate}
-            variant={'light'}
-            leftIcon={<IconMessageDots />}
-            compact
-          >
-            New Direct Message
-          </Button>
-        </Center>
       </Tabs.Panel>
     </Tabs>
   );

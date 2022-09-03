@@ -1,10 +1,14 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
-import { useGetChatForChatUpdateActionQuery } from 'graphql/generated/graphql';
+import {
+  useGetChatForChatUpdateActionLazyQuery,
+  useGetChatForChatUpdateActionQuery,
+} from 'graphql/generated/graphql';
 import { IconSettings } from '@tabler/icons';
 import { useParams } from 'react-router-dom';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
+import { useEffect } from 'react';
 
 gql`
   query GetChatForChatUpdateAction($chatId: HashId!) {
@@ -24,11 +28,18 @@ type Props = {
 
 const ChatUpdateAction = (props: Props) => {
   const { chatId } = useParams();
-  const { loading, data } = useGetChatForChatUpdateActionQuery({
-    variables: {
-      chatId,
-    },
-  });
+  const [getChat, { loading, data }] = useGetChatForChatUpdateActionLazyQuery();
+
+  useEffect(() => {
+    if (chatId) {
+      getChat({
+        variables: {
+          chatId,
+        },
+      });
+    }
+  }, [chatId, getChat]);
+
   const openGroupChatUpdate = useUpdateGroupChatModal();
 
   const chat = data?.chat;

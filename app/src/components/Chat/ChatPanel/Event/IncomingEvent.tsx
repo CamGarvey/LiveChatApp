@@ -57,7 +57,7 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
           exit={{ opacity: 0, y: 30 }}
           spacing={2}
         >
-          <EventInfo event={event} show={isHovered} />
+          <EventInfo event={event} />
         </MotionGroup>
       </Group>
     </MotionGroup>

@@ -7,11 +7,10 @@ import { useMemo } from 'react';
 
 type Props = {
   event: EventInfoFragment;
-  show: boolean;
   align?: 'self-start' | 'self-end';
 };
 
-const EventInfo = ({ event, show, align = 'self-start' }: Props) => {
+const EventInfo = ({ event, align = 'self-start' }: Props) => {
   const isSmallScreen = useMediaQuery('(max-width: 470px)');
   const createdAtFormatted = useMemo(() => {
     let format = 'HH:mm do MMM YYYY';

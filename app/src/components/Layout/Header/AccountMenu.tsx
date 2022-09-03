@@ -27,7 +27,7 @@ const AccountMenu = ({ onLogoutClick }: Props) => {
     <Menu>
       <Menu.Target>
         <ActionIcon loading={loading} variant="default">
-          <UserAvatar user={user} hideTooltip={true} />
+          <UserAvatar user={user} tooltip={{ hidden: true }} />
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>

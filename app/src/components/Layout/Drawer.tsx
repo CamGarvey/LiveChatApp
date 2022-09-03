@@ -39,12 +39,15 @@ const Drawer = () => {
         {user && (
           <Stack spacing={'md'}>
             <Group>
-              <UserAvatar size="md" user={user} style={{ marginTop: 'auto' }} />
+              <UserAvatar
+                size="md"
+                user={user}
+                tooltip={{ hidden: true }}
+                style={{ marginTop: 'auto' }}
+              />
               <Title order={5}>{user?.username}</Title>
             </Group>
-            <ScrollArea sx={{ height: 'calc(100vh - 200px)' }}>
-              <ChatDisplay />
-            </ScrollArea>
+            <ChatDisplay />
           </Stack>
         )}
       </MantineDrawer>
