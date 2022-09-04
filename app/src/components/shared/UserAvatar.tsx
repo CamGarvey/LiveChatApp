@@ -22,7 +22,7 @@ type Props = {
 };
 
 const UserAvatar = ({ user, size = 'md', style, dropdown }: Props) => (
-  <HoverCard width={200} position={'left'} withArrow>
+  <HoverCard openDelay={1000} width={'max-content'} position={'left'} withArrow>
     <HoverCard.Target>
       <Avatar
         size={size}
@@ -31,7 +31,12 @@ const UserAvatar = ({ user, size = 'md', style, dropdown }: Props) => (
         style={style}
       />
     </HoverCard.Target>
-    <Popover.Dropdown style={dropdown?.style}>
+    <Popover.Dropdown
+      style={{
+        minWidth: '200px',
+        ...dropdown?.style,
+      }}
+    >
       <Group>
         <Avatar
           size={'lg'}
@@ -39,8 +44,10 @@ const UserAvatar = ({ user, size = 'md', style, dropdown }: Props) => (
           src={getUserAvatar(user.username)}
           style={style}
         />
-        <Stack>
-          <Text size={'lg'}>{user.username}</Text>
+        <Stack spacing={1}>
+          <Text color={'grey'} size={'lg'}>
+            {user.username}
+          </Text>
           {user.name && <Text>{user.name}</Text>}
         </Stack>
       </Group>

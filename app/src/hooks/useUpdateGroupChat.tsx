@@ -20,6 +20,11 @@ gql`
   }
 `;
 
+type RemoveMemberProps = {
+  chatId: string;
+  userId: string;
+};
+
 export const useUpdateGroupChat = () => {
   const [update, { loading }] = useUpdateGroupChatMutation();
 
@@ -31,8 +36,20 @@ export const useUpdateGroupChat = () => {
     });
   };
 
+  const removeMember = ({ userId, chatId }: RemoveMemberProps) => {
+    return update({
+      variables: {
+        data: {
+          chatId,
+          removeMemberIds: [userId],
+        },
+      },
+    });
+  };
+
   return {
     updateChat,
+    removeMember,
     loading,
   };
 };

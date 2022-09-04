@@ -176,10 +176,26 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
         },
         name,
         description,
-        memberIdsAdded: addMemberIds ?? undefined,
-        memberIdsRemoved: removeMemberIds ?? undefined,
-        adminIdsAdded: addAdminIds ?? undefined,
-        adminIdsRemoved: removeAdminIds ?? undefined,
+        memberIdsAdded: addMemberIds
+          ? {
+              set: [...addMemberIds],
+            }
+          : undefined,
+        memberIdsRemoved: removeMemberIds
+          ? {
+              set: [...removeMemberIds],
+            }
+          : undefined,
+        adminIdsAdded: addAdminIds
+          ? {
+              set: [...addAdminIds],
+            }
+          : undefined,
+        adminIdsRemoved: removeAdminIds
+          ? {
+              set: [...removeAdminIds],
+            }
+          : undefined,
       },
       // Includeing member ids for pubsub
       include: {

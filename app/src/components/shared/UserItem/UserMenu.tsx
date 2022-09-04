@@ -14,10 +14,21 @@ import {
 
 type Props = {
   user: UserMenuFragment;
+  target?: {
+    icon?: React.ReactNode;
+  };
+  items?: React.ReactNode;
+  loading?: boolean;
   iconSize?: number;
 };
 
-const UserMenu = ({ user, iconSize = 14 }: Props) => {
+const UserMenu = ({
+  user,
+  iconSize = 14,
+  target,
+  items,
+  loading = false,
+}: Props) => {
   const {
     cancelRequest,
     sendRequest,
@@ -31,26 +42,33 @@ const UserMenu = ({ user, iconSize = 14 }: Props) => {
     loadingDelete,
   } = useFriendRequest();
 
-  const loading =
+  const anyLoading =
     loadingAccept ||
     loadingCancel ||
     loadingDecline ||
     loadingSend ||
-    loadingDelete;
+    loadingDelete ||
+    loading;
 
   return (
     <Menu width={'max-content'}>
       <Menu.Target>
         <Tooltip hidden={!!user} label={!user && 'Failed to load user'}>
-          <ActionIcon loading={loading}>
-            {user.__typename === 'Stranger' && (
+          <ActionIcon loading={anyLoading}>
+            {target?.icon ? (
+              <>{target.icon}</>
+            ) : (
               <>
-                {user.status === 'REQUEST_RECEIVED' && <IconMailbox />}
-                {user.status === 'REQUEST_SENT' && <IconMailForward />}
-                {user.status === 'NO_REQUEST' && <IconUserPlus />}
+                {user.__typename === 'Stranger' && (
+                  <>
+                    {user.status === 'REQUEST_RECEIVED' && <IconMailbox />}
+                    {user.status === 'REQUEST_SENT' && <IconMailForward />}
+                    {user.status === 'NO_REQUEST' && <IconUserPlus />}
+                  </>
+                )}
+                {user.__typename === 'Friend' && <IconUserCircle />}
               </>
             )}
-            {user.__typename === 'Friend' && <IconUserCircle />}
           </ActionIcon>
         </Tooltip>
       </Menu.Target>
@@ -104,6 +122,12 @@ const UserMenu = ({ user, iconSize = 14 }: Props) => {
                   Send Friend Request
                 </Menu.Item>
               )}
+            </>
+          )}
+          {items && (
+            <>
+              <Menu.Divider />
+              {items}
             </>
           )}
         </Menu.Dropdown>
