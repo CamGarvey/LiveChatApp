@@ -31,6 +31,8 @@ gql`
       }
       ... on GroupChat {
         name
+        isAdmin
+        createdById
         members {
           id
           ...UserItem
@@ -122,7 +124,7 @@ const ChatInfoAside = () => {
                             icon: <IconDotsVertical />,
                           }}
                           items={
-                            <>
+                            chat.isAdmin && (
                               <Menu.Item
                                 onClick={() => {
                                   removeMember({
@@ -134,7 +136,7 @@ const ChatInfoAside = () => {
                               >
                                 Remove from group
                               </Menu.Item>
-                            </>
+                            )
                           }
                           user={member}
                         />

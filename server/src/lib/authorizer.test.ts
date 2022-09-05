@@ -46,6 +46,16 @@ describe('canCreateDirectMessageChat', () => {
             id: 1,
           },
         },
+        memberOfChats: {
+          where: {
+            isDM: true,
+            members: {
+              every: {
+                id: 1,
+              },
+            },
+          },
+        },
       },
     });
   });
@@ -71,6 +81,16 @@ describe('canCreateDirectMessageChat', () => {
           },
           where: {
             id: 1,
+          },
+        },
+        memberOfChats: {
+          where: {
+            isDM: true,
+            members: {
+              every: {
+                id: 1,
+              },
+            },
           },
         },
       },
@@ -101,6 +121,16 @@ describe('canCreateDirectMessageChat', () => {
           },
           where: {
             id: 1,
+          },
+        },
+        memberOfChats: {
+          where: {
+            isDM: true,
+            members: {
+              every: {
+                id: 1,
+              },
+            },
           },
         },
       },
@@ -297,6 +327,150 @@ describe('canUpdateGroupChat', () => {
     ).rejects.toThrowError(
       'You are not friends with all of the users provided'
     );
+  });
+
+  it('should throw if removing another admin from admins and not creator', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 10,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    // trying to remove user "2" who is an admin
+    await expect(
+      authorizer.canUpdateGroupChat(100, { removeAdminIds: [2] })
+    ).rejects.toThrowError(
+      'You can not remove an admin if you are not the creator of the chat'
+    );
+  });
+
+  it('should return true if removing self as admin', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 10,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    // trying to remove user "2" who is an admin
+    const result = await authorizer.canUpdateGroupChat(100, {
+      removeAdminIds: [1],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if removing another admin from admins and is creator', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 1,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    // trying to remove user "2" who is an admin
+    const result = await authorizer.canUpdateGroupChat(100, {
+      removeAdminIds: [2],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should throw if user is not creator and removes admin from members', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 10,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    await expect(
+      authorizer.canUpdateGroupChat(100, { removeMemberIds: [2] })
+    ).rejects.toThrowError(
+      'You can not remove an admin if you are not the creator of the chat'
+    );
+  });
+
+  it('should return true if user is creator and removes admin from members', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 1,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    // trying to remove user "2" who is an admin
+    const result = await authorizer.canUpdateGroupChat(100, {
+      removeMemberIds: [2],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if removing self as member and user is not creator', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 10,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    // trying to remove user "2" who is an admin
+    const result = await authorizer.canUpdateGroupChat(100, {
+      removeMemberIds: [1],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  fit('should throw if removing self as member and user is the creator', async () => {
+    const chat = {
+      isDM: false,
+      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      createdById: 1,
+    } as unknown as Chat;
+    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const user = {
+      friends: [],
+    } as unknown as User;
+    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
+
+    // trying to remove user "2" who is an admin
+    await expect(
+      authorizer.canUpdateGroupChat(100, { removeMemberIds: [1] })
+    ).rejects.toThrowError('You can not leave a group you created');
   });
 
   it('should throw if user is not found', async () => {

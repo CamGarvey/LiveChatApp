@@ -5,9 +5,14 @@ const UserValue = ({
   value,
   label,
   onRemove,
+  canRemove = true,
   classNames,
   ...others
-}: MultiSelectValueProps & { value: string; image: string }) => {
+}: MultiSelectValueProps & {
+  value: string;
+  image: string;
+  canRemove: boolean;
+}) => {
   return (
     <div {...others}>
       <Box
@@ -32,6 +37,7 @@ const UserValue = ({
         <Box sx={{ lineHeight: 1, fontSize: 12 }}>{label}</Box>
         <CloseButton
           onMouseDown={onRemove}
+          disabled={!canRemove}
           variant="transparent"
           size={22}
           iconSize={14}

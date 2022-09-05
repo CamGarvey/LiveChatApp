@@ -12,7 +12,7 @@ type Props = {
   nothingFound?: string;
   disabled?: boolean;
   readOnly?: boolean;
-  users: UserSelectFragment[];
+  users: ({ canRemove?: boolean } & UserSelectFragment)[];
   defaultValue?: UserSelectFragment[];
   onChange: (ids: string[]) => void;
 };
@@ -28,7 +28,7 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
     }: Props,
     ref
   ) => {
-    const defaultMapped = useMemo(
+    const defaultMappedIds: string[] = useMemo(
       () => defaultValue.map((x) => x.id),
       [defaultValue]
     );
@@ -37,6 +37,7 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
       () =>
         users.map((u) => ({
           ...u,
+          canRemove: u.canRemove ?? true,
           value: u.id,
           label: u.username,
           image: getUserAvatar(u.username),
@@ -52,11 +53,12 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
           itemComponent={UserSelectItem}
           valueComponent={UserValue}
           data={usersConverted}
-          defaultValue={defaultMapped}
+          defaultValue={defaultMappedIds}
           onChange={onChange}
           searchable
           nothingFound={nothingFound}
           maxDropdownHeight={400}
+          styles={{}}
           filter={(value, selected, item) => {
             return (
               !selected &&

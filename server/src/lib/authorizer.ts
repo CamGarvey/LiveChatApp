@@ -83,16 +83,97 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
+  private canRemoveMembersFromGroupChat(
+    chat: {
+      createdById: number;
+      admins: {
+        id: number;
+      }[];
+    },
+    members: number[]
+  ) {
+    const isCreator = chat.createdById === this.userId;
+
+    // Remove duplicates
+    const memberIdSet: Set<number> = new Set(members);
+
+    if (memberIdSet.has(this.userId)) {
+      if (isCreator) {
+        throw new ForbiddenError('You can not leave a group you created');
+      }
+      memberIdSet.delete(this.userId);
+    }
+
+    const adminIds = new Set(chat.admins.map((x) => x.id));
+
+    // Check if any of the users are admins already
+    const adminAlready = new Set(
+      [...memberIdSet].filter((x) => adminIds.has(x))
+    );
+
+    if (adminAlready.size !== 0) {
+      throw new ForbiddenError(
+        'You can not remove an admin if you are not the creator of the chat'
+      );
+    }
+    return true;
+  }
+
+  private canRemoveAdminsFromGroupChat(
+    chat: {
+      admins: {
+        id: number;
+      }[];
+    },
+    members: number[]
+  ): boolean {
+    // Remove duplicates
+    const adminIdSet: Set<number> = new Set(members);
+
+    if (adminIdSet.has(this.userId)) {
+      adminIdSet.delete(this.userId);
+    }
+
+    const adminIds = new Set(chat.admins.map((x) => x.id));
+
+    // Check if any of the users are admins already
+    const adminAlready = new Set(
+      [...adminIdSet].filter((x) => adminIds.has(x))
+    );
+
+    if (adminAlready.size !== 0) {
+      throw new ForbiddenError(
+        'You can not remove an admin if you are not the creator of the chat'
+      );
+    }
+    return true;
+  }
+
+  private isChatAdmin = (chat: {
+    admins: {
+      id: number;
+    }[];
+  }) => chat.admins.map((x) => x.id).includes(this.userId);
+
   public async canUpdateGroupChat(
     chatId: number,
     data?: {
       addMemberIds?: number[];
       addAdminIds?: number[];
+      removeAdminIds?: number[];
+      removeMemberIds?: number[];
     }
   ) {
-    const { addMemberIds = [], addAdminIds = [] } = data ?? {
+    const {
+      addMemberIds = [],
+      addAdminIds = [],
+      removeAdminIds: adminsToRemove = [],
+      removeMemberIds: membersToRemove = [],
+    } = data ?? {
       addMemberIds: [],
       addAdminIds: [],
+      removeAdminIds: [],
+      removeMemberIds: [],
     };
     const chat = await this._prisma.chat.findUniqueOrThrow({
       select: {
@@ -118,11 +199,28 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
-    if (!chat.admins.map((x) => x.id).includes(this.userId)) {
+    if (!this.isChatAdmin(chat)) {
       throw new ForbiddenError('You are not an admin in this chat');
     }
 
-    if (addMemberIds.length != 0 || addAdminIds.length != 0) {
+    if (adminsToRemove.length !== 0) {
+      const canRemove = this.canRemoveAdminsFromGroupChat(chat, adminsToRemove);
+      if (!canRemove) {
+        return false;
+      }
+    }
+
+    if (membersToRemove.length !== 0) {
+      const canRemove = this.canRemoveMembersFromGroupChat(
+        chat,
+        membersToRemove
+      );
+      if (!canRemove) {
+        return false;
+      }
+    }
+
+    if (addMemberIds.length !== 0 || addAdminIds.length !== 0) {
       // Remove duplicates
       const memberIdSet: Set<number> = new Set(addMemberIds);
       const adminIdSet: Set<number> = new Set(addAdminIds);

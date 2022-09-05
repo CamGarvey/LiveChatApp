@@ -8,6 +8,8 @@ export interface IAuthorizer {
     data?: {
       addMemberIds?: number[];
       addAdminIds?: number[];
+      removeAdminIds?: number[];
+      removeMemberIds?: number[];
     }
   ) => Promise<boolean>;
   canDeleteChat: (chatId: number) => Promise<boolean>;

@@ -1,5 +1,4 @@
 import {
-  GetMessagesDocument,
   MessagesDocument,
   MessagesSubscription,
   useGetMessagesQuery,

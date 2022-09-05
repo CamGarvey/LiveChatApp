@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 import { Group } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
 import UserAvatar from 'components/shared/UserAvatar';
 import { motion } from 'framer-motion';
 import { IncomingEventFragment } from 'graphql/generated/graphql';
