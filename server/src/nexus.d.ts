@@ -47,13 +47,9 @@ export interface NexusGenInputs {
     name: string; // String!
   }
   UpdateGroupChatInput: { // input type
-    addAdminIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
-    addMemberIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
     chatId: NexusGenScalars['HashId']; // HashId!
     description?: string | null; // String
     name?: string | null; // String
-    removeAdminIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
-    removeMemberIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
   }
   UserOrderBy: { // input type
     createdAt?: NexusGenEnums['Sort'] | null; // Sort
@@ -326,6 +322,8 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     acceptFriendRequest: NexusGenRootTypes['FriendRequest'] | null; // FriendRequest
+    addAdminsToGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
+    addMembersToGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
     cancelFriendRequest: NexusGenRootTypes['FriendRequest'] | null; // FriendRequest
     createDirectMessageChat: NexusGenRootTypes['DirectMessageChat'] | null; // DirectMessageChat
     createGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
@@ -334,6 +332,8 @@ export interface NexusGenFieldTypes {
     deleteChat: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     deleteFriend: NexusGenRootTypes['Stranger'] | null; // Stranger
     deleteMessage: NexusGenRootTypes['DeletedMessage'] | null; // DeletedMessage
+    removeAdminsFromGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
+    removeMembersFromGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
     sendFriendRequest: NexusGenRootTypes['FriendRequest'] | null; // FriendRequest
     updateGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
     updateMessage: NexusGenRootTypes['Message'] | null; // Message
@@ -555,6 +555,8 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     acceptFriendRequest: 'FriendRequest'
+    addAdminsToGroupChat: 'GroupChat'
+    addMembersToGroupChat: 'GroupChat'
     cancelFriendRequest: 'FriendRequest'
     createDirectMessageChat: 'DirectMessageChat'
     createGroupChat: 'GroupChat'
@@ -563,6 +565,8 @@ export interface NexusGenFieldTypeNames {
     deleteChat: 'DeletedChat'
     deleteFriend: 'Stranger'
     deleteMessage: 'DeletedMessage'
+    removeAdminsFromGroupChat: 'GroupChat'
+    removeMembersFromGroupChat: 'GroupChat'
     sendFriendRequest: 'FriendRequest'
     updateGroupChat: 'GroupChat'
     updateMessage: 'Message'
@@ -706,6 +710,14 @@ export interface NexusGenArgTypes {
     acceptFriendRequest: { // args
       friendRequestId: NexusGenScalars['HashId']; // HashId!
     }
+    addAdminsToGroupChat: { // args
+      chatId: NexusGenScalars['HashId']; // HashId!
+      members: NexusGenScalars['HashId'][]; // [HashId!]!
+    }
+    addMembersToGroupChat: { // args
+      chatId: NexusGenScalars['HashId']; // HashId!
+      members: NexusGenScalars['HashId'][]; // [HashId!]!
+    }
     cancelFriendRequest: { // args
       friendRequestId: NexusGenScalars['HashId']; // HashId!
     }
@@ -730,6 +742,14 @@ export interface NexusGenArgTypes {
     }
     deleteMessage: { // args
       messageId: NexusGenScalars['HashId']; // HashId!
+    }
+    removeAdminsFromGroupChat: { // args
+      chatId: NexusGenScalars['HashId']; // HashId!
+      members: NexusGenScalars['HashId'][]; // [HashId!]!
+    }
+    removeMembersFromGroupChat: { // args
+      chatId: NexusGenScalars['HashId']; // HashId!
+      members: NexusGenScalars['HashId'][]; // [HashId!]!
     }
     sendFriendRequest: { // args
       friendId: NexusGenScalars['HashId']; // HashId!

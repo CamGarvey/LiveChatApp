@@ -1,9 +1,11 @@
 export enum Subscription {
-  ChatUpdated = 'chat.updated',
+  ChatInfoUpdated = 'chat.info.updated',
   ChatCreated = 'chat.created',
   ChatDeleted = 'chat.deleted',
   ChatMembersDeleted = 'chat.members.deleted',
   ChatMembersAdded = 'chat.members.added',
+  ChatAdminsDeleted = 'chat.admins.deleted',
+  ChatAdminsAdded = 'chat.admins.added',
 
   MessageCreated = 'message.created',
   MessageUpdated = 'message.updated',

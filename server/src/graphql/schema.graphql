@@ -259,6 +259,22 @@ type Mutation {
   """Accept a friend request"""
   acceptFriendRequest(friendRequestId: HashId!): FriendRequest
 
+  """Add admins to a group chat"""
+  addAdminsToGroupChat(
+    chatId: HashId!
+
+    """Ids of admins to be added to the chat"""
+    members: [HashId!]!
+  ): GroupChat
+
+  """Add members to a group chat"""
+  addMembersToGroupChat(
+    chatId: HashId!
+
+    """Ids of members to be added into the chat"""
+    members: [HashId!]!
+  ): GroupChat
+
   """Cancel/Delete a sent Friend Request"""
   cancelFriendRequest(friendRequestId: HashId!): FriendRequest
 
@@ -298,10 +314,26 @@ type Mutation {
     messageId: HashId!
   ): DeletedMessage
 
+  """Remove admins from a group chat"""
+  removeAdminsFromGroupChat(
+    chatId: HashId!
+
+    """Ids of admins to be removed from the chat"""
+    members: [HashId!]!
+  ): GroupChat
+
+  """Remove members from a group chat"""
+  removeMembersFromGroupChat(
+    chatId: HashId!
+
+    """Ids of members to be removed from the chat"""
+    members: [HashId!]!
+  ): GroupChat
+
   """Send a friend request to a user"""
   sendFriendRequest(friendId: HashId!): FriendRequest
 
-  """Update a Chat"""
+  """Update basic group chat information"""
   updateGroupChat(data: UpdateGroupChatInput!): GroupChat
 
   """Update a Message"""
@@ -486,12 +518,6 @@ type Subscription {
 }
 
 input UpdateGroupChatInput {
-  """Ids of admins to be add into the chat"""
-  addAdminIds: [HashId!]
-
-  """Ids of members to be added into the chat"""
-  addMemberIds: [HashId!]
-
   """Id of chat to update"""
   chatId: HashId!
 
@@ -500,12 +526,6 @@ input UpdateGroupChatInput {
 
   """New name for chat"""
   name: String
-
-  """Ids of admins to be removed from chat"""
-  removeAdminIds: [HashId!]
-
-  """Ids of members to be removed from chat"""
-  removeMemberIds: [HashId!]
 }
 
 interface User {

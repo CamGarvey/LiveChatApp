@@ -1,5 +1,5 @@
 import { Chat } from '@prisma/client';
-import { mutationField, nonNull } from 'nexus';
+import { list, mutationField, nonNull } from 'nexus';
 import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
@@ -120,41 +120,331 @@ export const CreateDirectMessageChatMutation = mutationField(
   }
 );
 
-export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
+export const RemoveMembersFromGroupChatMutation = mutationField(
+  'removeMembersFromGroupChat',
+  {
+    type: 'GroupChat',
+    args: {
+      chatId: nonNull(hashIdArg()),
+      members: nonNull(
+        list(
+          nonNull(
+            hashIdArg({
+              description: 'Ids of members to be removed from the chat',
+            })
+          )
+        )
+      ),
+    },
+    description: 'Remove members from a group chat',
+    authorize: (_, { chatId, members }, { auth }) =>
+      auth.canRemoveMembersFromGroupChat({
+        chatId,
+        members,
+      }),
+    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
+      const chat = await prisma.chat.update({
+        data: {
+          members: {
+            disconnect: members?.map((id) => ({ id })) ?? undefined,
+          },
+        },
+        include: {
+          members: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: {
+          id: chatId,
+        },
+      });
+
+      await prisma.chatUpdate.create({
+        data: {
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          memberIdsRemoved: members
+            ? {
+                set: [...members],
+              }
+            : undefined,
+        },
+      });
+
+      // Publish the created chat to every member apart from the user who created it (userId)
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatMembersDeleted,
+        {
+          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          content: chat,
+        }
+      );
+
+      return chat;
+    },
+  }
+);
+
+export const AddMembersToGroupChatMutation = mutationField(
+  'addMembersToGroupChat',
+  {
+    type: 'GroupChat',
+    args: {
+      chatId: nonNull(hashIdArg()),
+      members: nonNull(
+        list(
+          nonNull(
+            hashIdArg({
+              description: 'Ids of members to be added into the chat',
+            })
+          )
+        )
+      ),
+    },
+    description: 'Add members to a group chat',
+    authorize: (_, { chatId, members }, { auth }) =>
+      auth.canAddMembersToGroupChat({
+        chatId,
+        members,
+      }),
+    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
+      const chat = await prisma.chat.update({
+        data: {
+          members: {
+            connect: members?.map((id) => ({ id })) ?? undefined,
+          },
+        },
+        include: {
+          members: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: {
+          id: chatId,
+        },
+      });
+
+      await prisma.chatUpdate.create({
+        data: {
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          memberIdsAdded: members
+            ? {
+                set: [...members],
+              }
+            : undefined,
+        },
+      });
+
+      // Publish the created chat to every member apart from the user who created it (userId)
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatMembersAdded,
+        {
+          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          content: chat,
+        }
+      );
+
+      return chat;
+    },
+  }
+);
+
+export const RemoveAdminsFromGroupChatMutation = mutationField(
+  'removeAdminsFromGroupChat',
+  {
+    type: 'GroupChat',
+    args: {
+      chatId: nonNull(hashIdArg()),
+      members: nonNull(
+        list(
+          nonNull(
+            hashIdArg({
+              description: 'Ids of admins to be removed from the chat',
+            })
+          )
+        )
+      ),
+    },
+    description: 'Remove admins from a group chat',
+    authorize: (_, { chatId, members }, { auth }) =>
+      auth.canRemoveAdminsFromGroupChat({
+        chatId,
+        members,
+      }),
+    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
+      const chat = await prisma.chat.update({
+        data: {
+          admins: {
+            disconnect: members?.map((id) => ({ id })) ?? undefined,
+          },
+        },
+        include: {
+          members: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: {
+          id: chatId,
+        },
+      });
+
+      await prisma.chatUpdate.create({
+        data: {
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          adminIdsRemoved: members
+            ? {
+                set: [...members],
+              }
+            : undefined,
+        },
+      });
+
+      // Publish the created chat to every member apart from the user who created it (userId)
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatAdminsDeleted,
+        {
+          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          content: chat,
+        }
+      );
+      return chat;
+    },
+  }
+);
+
+export const AddAdminsToGroupChatMutation = mutationField(
+  'addAdminsToGroupChat',
+  {
+    type: 'GroupChat',
+    args: {
+      chatId: nonNull(hashIdArg()),
+      members: nonNull(
+        list(
+          nonNull(
+            hashIdArg({
+              description: 'Ids of admins to be added to the chat',
+            })
+          )
+        )
+      ),
+    },
+    description: 'Add admins to a group chat',
+    authorize: (_, { chatId, members }, { auth }) =>
+      auth.canAddAdminsToGroupChat({
+        chatId,
+        members,
+      }),
+    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
+      const chat = await prisma.chat.update({
+        data: {
+          admins: {
+            connect: members?.map((id) => ({ id })) ?? undefined,
+          },
+        },
+        include: {
+          members: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        where: {
+          id: chatId,
+        },
+      });
+
+      await prisma.chatUpdate.create({
+        data: {
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          adminIdsAdded: members
+            ? {
+                set: [...members],
+              }
+            : undefined,
+        },
+      });
+
+      // Publish the created chat to every member apart from the user who created it (userId)
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatAdminsAdded,
+        {
+          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          content: chat,
+        }
+      );
+
+      return chat;
+    },
+  }
+);
+
+export const UpdateGroupChat = mutationField('updateGroupChat', {
   type: 'GroupChat',
-  args: { data: nonNull(UpdateGroupChatInput) },
-  description: 'Update a Chat',
-  authorize: (_, { data: { chatId, addMemberIds, addAdminIds } }, { auth }) =>
-    auth.canUpdateGroupChat(chatId, {
-      addMemberIds: addMemberIds ?? [],
-      addAdminIds: addAdminIds ?? [],
+  args: {
+    data: nonNull(UpdateGroupChatInput),
+  },
+  description: 'Update basic group chat information',
+  authorize: (_, { data: { chatId } }, { auth }) =>
+    auth.canUpdateGroupChatBasic({
+      chatId,
     }),
+
   resolve: async (
     _,
-    {
-      data: {
-        chatId,
-        name,
-        description,
-        addMemberIds,
-        removeMemberIds,
-        addAdminIds,
-        removeAdminIds,
-      },
-    },
-    { prisma, userId, pubsub }
+    { data: { chatId, name, description } },
+    { userId, prisma, pubsub }
   ) => {
-    const updatedChat = await prisma.chat.update({
+    const chat = await prisma.chat.update({
       data: {
-        name,
-        description,
+        name: name ?? undefined,
+        description: description ?? undefined,
+      },
+      include: {
         members: {
-          connect: addMemberIds?.map((id) => ({ id })) ?? undefined,
-          disconnect: removeMemberIds?.map((id) => ({ id })) ?? undefined,
-        },
-        admins: {
-          connect: addAdminIds?.map((id) => ({ id })) ?? undefined,
-          disconnect: removeAdminIds?.map((id) => ({ id })) ?? undefined,
+          select: {
+            id: true,
+          },
         },
       },
       where: {
@@ -162,7 +452,7 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
       },
     });
 
-    const update = await prisma.chatUpdate.create({
+    await prisma.chatUpdate.create({
       data: {
         chat: {
           connect: {
@@ -174,52 +464,21 @@ export const UpdateGroupChatMutation = mutationField('updateGroupChat', {
             id: userId,
           },
         },
-        name,
-        description,
-        memberIdsAdded: addMemberIds
-          ? {
-              set: [...addMemberIds],
-            }
-          : undefined,
-        memberIdsRemoved: removeMemberIds
-          ? {
-              set: [...removeMemberIds],
-            }
-          : undefined,
-        adminIdsAdded: addAdminIds
-          ? {
-              set: [...addAdminIds],
-            }
-          : undefined,
-        adminIdsRemoved: removeAdminIds
-          ? {
-              set: [...removeAdminIds],
-            }
-          : undefined,
-      },
-      // Includeing member ids for pubsub
-      include: {
-        chat: {
-          select: {
-            members: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
+        name: name ?? undefined,
+        description: description ?? undefined,
       },
     });
 
     // Publish the created chat to every member apart from the user who created it (userId)
-    await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatUpdated, {
-      recipients: update.chat.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId),
-      content: updatedChat,
-    });
+    await pubsub.publish<SubscriptionPayload<Chat>>(
+      Subscription.ChatInfoUpdated,
+      {
+        recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+        content: chat,
+      }
+    );
 
-    return updatedChat;
+    return chat;
   },
 });
 

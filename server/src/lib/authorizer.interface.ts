@@ -3,15 +3,25 @@ export interface IAuthorizer {
   canCreateDirectMessageChat: (friendId: number) => Promise<boolean>;
   canCreateGroupChat: (memberIds: number[]) => Promise<boolean>;
   canViewChat: (chatId: number) => Promise<boolean>;
-  canUpdateGroupChat: (
-    chatId: number,
-    data?: {
-      addMemberIds?: number[];
-      addAdminIds?: number[];
-      removeAdminIds?: number[];
-      removeMemberIds?: number[];
-    }
-  ) => Promise<boolean>;
+
+  canUpdateGroupChatBasic: (data: { chatId: number }) => Promise<boolean>;
+  canRemoveMembersFromGroupChat: (data: {
+    chatId: number;
+    members: number[];
+  }) => Promise<boolean>;
+  canAddMembersToGroupChat: (data: {
+    chatId: number;
+    members: number[];
+  }) => Promise<boolean>;
+  canRemoveAdminsFromGroupChat: (data: {
+    chatId: number;
+    members: number[];
+  }) => Promise<boolean>;
+  canAddAdminsToGroupChat: (data: {
+    chatId: number;
+    members: number[];
+  }) => Promise<boolean>;
+
   canDeleteChat: (chatId: number) => Promise<boolean>;
 
   canViewMessage: (messageId: number) => Promise<boolean>;
