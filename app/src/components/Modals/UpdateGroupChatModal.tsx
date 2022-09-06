@@ -88,14 +88,16 @@ export const UpdateGroupChatModal = ({
     if (chat?.__typename !== 'GroupChat') return [];
     if (friendData)
       return _.unionBy(
-        chat.members,
-        friendData.friends.map((x) => ({
-          ...x,
+        chat.members.filter((user) => adminIds.includes(user.id)),
+        chat.admins.map((user) => ({
+          ...user,
+          canRemove: chat.isCreator, // Cannot remove admins unless creator
         })),
+        friendData.friends,
         'id'
       );
     return chat.members;
-  }, [chat, friendData]);
+  }, [chat, friendData, adminIds]);
 
   if (loadingChat)
     return (
@@ -143,12 +145,14 @@ export const UpdateGroupChatModal = ({
           );
           updateChat({
             chatId: chat.id,
-            name: values.name,
-            description: values.description,
-            addMemberIds: membersAdded,
-            removeMemberIds: membersRemoved,
-            addAdminIds: adminsAdded,
-            removeAdminIds: adminsRemoved,
+            data: {
+              name: values.name,
+              description: values.description,
+              addMembers: membersAdded,
+              removeMembers: membersRemoved,
+              addAdmins: adminsAdded,
+              removeAdmins: adminsRemoved,
+            },
           }).then(() => context.closeModal(id));
         }}
       >

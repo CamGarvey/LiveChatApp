@@ -422,17 +422,18 @@ export const AddAdminsToGroupChatMutation = mutationField(
 export const UpdateGroupChat = mutationField('updateGroupChat', {
   type: 'GroupChat',
   args: {
+    chatId: nonNull(hashIdArg()),
     data: nonNull(UpdateGroupChatInput),
   },
   description: 'Update basic group chat information',
-  authorize: (_, { data: { chatId } }, { auth }) =>
+  authorize: (_, { chatId }, { auth }) =>
     auth.canUpdateGroupChatBasic({
       chatId,
     }),
 
   resolve: async (
     _,
-    { data: { chatId, name, description } },
+    { chatId, data: { name, description } },
     { userId, prisma, pubsub }
   ) => {
     const chat = await prisma.chat.update({

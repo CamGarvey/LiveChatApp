@@ -48,7 +48,7 @@ gql`
 const ChatInfoAside = () => {
   const { chatId } = useParams();
   const [getChat, { data, loading }] = useGetChatForChatInfoAsideLazyQuery();
-  const { removeMember, loading: loadingRemove } = useUpdateGroupChat();
+  const { removeMembers, loading: loadingRemove } = useUpdateGroupChat();
 
   useEffect(() => {
     if (chatId)
@@ -57,7 +57,7 @@ const ChatInfoAside = () => {
           chatId,
         },
       });
-  }, [getChat, chatId]);
+  }, [chatId, getChat]);
 
   const chat = data?.chat;
 
@@ -127,9 +127,9 @@ const ChatInfoAside = () => {
                             chat.isAdmin && (
                               <Menu.Item
                                 onClick={() => {
-                                  removeMember({
-                                    userId: member.id,
+                                  removeMembers({
                                     chatId,
+                                    userIds: [member.id],
                                   });
                                 }}
                                 icon={<IconKarate size={14} />}

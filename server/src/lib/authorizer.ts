@@ -154,35 +154,29 @@ export class Authorizer implements IAuthorizer {
     }
 
     if (memberIdSet.size != 0) {
-      // You dont need to be friends all of the users you want to add as admin
-      // They just need to already be in the chat
-      const memberIds = new Set(chat.members.map((x) => x.id));
-
-      if (memberIds.size != 0) {
-        // Check that the user is friends with all of these users
-        const user = await this._prisma.user.findUniqueOrThrow({
-          where: {
-            id: this.userId,
-          },
-          select: {
-            friends: {
-              select: {
-                id: true,
-              },
-              where: {
-                id: {
-                  in: [...memberIds],
-                },
+      // Check that the user is friends with all of these users
+      const user = await this._prisma.user.findUniqueOrThrow({
+        where: {
+          id: this.userId,
+        },
+        select: {
+          friends: {
+            select: {
+              id: true,
+            },
+            where: {
+              id: {
+                in: [...memberIdSet],
               },
             },
           },
-        });
+        },
+      });
 
-        if (user.friends.length != memberIds.size) {
-          throw new ForbiddenError(
-            'You are not friends with all of the users provided'
-          );
-        }
+      if (user.friends.length != memberIdSet.size) {
+        throw new ForbiddenError(
+          'You are not friends with all of the users provided'
+        );
       }
     }
 

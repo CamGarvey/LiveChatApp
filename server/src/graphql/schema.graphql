@@ -334,7 +334,7 @@ type Mutation {
   sendFriendRequest(friendId: HashId!): FriendRequest
 
   """Update basic group chat information"""
-  updateGroupChat(data: UpdateGroupChatInput!): GroupChat
+  updateGroupChat(chatId: HashId!, data: UpdateGroupChatInput!): GroupChat
 
   """Update a Message"""
   updateMessage(
@@ -518,9 +518,6 @@ type Subscription {
 }
 
 input UpdateGroupChatInput {
-  """Id of chat to update"""
-  chatId: HashId!
-
   """New description for chat"""
   description: String
 

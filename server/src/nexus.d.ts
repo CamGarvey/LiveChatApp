@@ -47,7 +47,6 @@ export interface NexusGenInputs {
     name: string; // String!
   }
   UpdateGroupChatInput: { // input type
-    chatId: NexusGenScalars['HashId']; // HashId!
     description?: string | null; // String
     name?: string | null; // String
   }
@@ -755,6 +754,7 @@ export interface NexusGenArgTypes {
       friendId: NexusGenScalars['HashId']; // HashId!
     }
     updateGroupChat: { // args
+      chatId: NexusGenScalars['HashId']; // HashId!
       data: NexusGenInputs['UpdateGroupChatInput']; // UpdateGroupChatInput!
     }
     updateMessage: { // args
