@@ -11,42 +11,48 @@ datasource db {
 }
 
 model User {
-  id               Int          @id @default(autoincrement()) @map("id")
-  email            String       @unique
-  name             String?
-  username         String       @unique
-  friends          User[]       @relation("Friends")
-  friendsOf        User[]       @relation("Friends")
-  chatsCreated     Chat[]       @relation("ChatCreatedBy")
-  memberOfChats    Chat[]       @relation("ChatMembers")
-  messages         Message[]    @relation("MessageCreatedBy")
-  likedMessages    Message[]    @relation("MessageLikedBy")
-  adminOfChats     Chat[]       @relation("ChatAdmins")
-  chatUpdates      ChatUpdate[]
-  updatedAt        DateTime     @updatedAt
-  createdAt        DateTime     @default(now())
-  receivedRequests Request[]
-  sentRequests     Request[]    @relation("RequestsCreated")
-  receivedAlerts   Alert[]
-  sentAlerts       Alert[]      @relation("AlertsCreated")
-  Alert            Alert[]
+  id                Int            @id @default(autoincrement()) @map("id")
+  email             String         @unique
+  name              String?
+  username          String         @unique
+  friends           User[]         @relation("Friends")
+  friendsOf         User[]         @relation("Friends")
+  likedMessages     Message[]      @relation("MessageLikedBy")
+  memberOfchats     Chat[]         @relation("ChatMembers")
+  adminOfChats      Chat[]         @relation("ChatAdmins")
+  creatorOfChats    Chat[]         @relation("ChatCreatedBy")
+  updatedAt         DateTime       @updatedAt
+  createdAt         DateTime       @default(now())
+  notifications     Notification[] @relation("NotificationsReceived")
+  notificationsSent Notification[] @relation("NotificationsSent")
+  eventsCreated     Event[]        @relation("EventsCreated")
 }
 
-/// Alert is a type of notification that does not require action
-model Alert {
-  id          Int         @id @default(autoincrement())
-  type        AlertType
-  status      AlertStatus
-  refId       Int
-  user        User        @relation("User", fields: [refId], references: [id])
-  chat        Chat        @relation(fields: [refId], references: [id])
-  recipient   User        @relation(fields: [recipientId], references: [id])
-  recipientId Int
-  createdBy   User        @relation("AlertsCreated", fields: [createdById], references: [id])
+model Notification {
+  id          Int              @id @default(autoincrement())
+  type        NotificationType
+  recipient   User[]           @relation("NotificationsReceived")
+  createdBy   User             @relation("NotificationsSent", fields: [createdById], references: [id])
   createdById Int
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime         @default(now())
+  alert       Alert?
+  request     Request?
+}
 
-  @@unique([recipientId, type])
+enum NotificationType {
+  Alert
+  Request
+}
+
+// Alert is a type of notification that does not request action
+model Alert {
+  id             Int          @id @default(autoincrement())
+  type           AlertType
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int          @unique
+  status         AlertStatus  @default(SENT)
+  chat           Chat         @relation(fields: [chatId], references: [id])
+  chatId         Int
 }
 
 enum AlertType {
@@ -60,20 +66,13 @@ enum AlertStatus {
   CANCELLED
 }
 
-/// Request is a type of notifcation that required action
+// Request is a type of notification that requires action
 model Request {
-  id          Int           @id @default(autoincrement())
-  type        RequestType
-  recipient   User          @relation(fields: [recipientId], references: [id])
-  recipientId Int
-  createdBy   User          @relation("RequestsCreated", fields: [createdById], references: [id])
-  createdById Int
-  status      RequestStatus @default(SENT)
-  updatedAt   DateTime      @updatedAt
-  createdAt   DateTime      @default(now())
-  deletedAt   DateTime?
-
-  @@unique([recipientId, createdById]) // Only allow one request invite per user/user pair
+  id             Int           @id @default(autoincrement())
+  notification   Notification  @relation(fields: [notificationId], references: [id])
+  notificationId Int           @unique
+  type           RequestType
+  status         RequestStatus @default(SENT) // Only allow one friend request invite per user/user pair
 }
 
 enum RequestType {
@@ -89,46 +88,61 @@ enum RequestStatus {
 }
 
 model Chat {
-  id          Int          @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
+  type        Boolean
   name        String?
   description String?
-  createdBy   User         @relation("ChatCreatedBy", fields: [createdById], references: [id])
+  createdBy   User      @relation("ChatCreatedBy", fields: [createdById], references: [id])
   createdById Int
-  isDM        Boolean
-  members     User[]       @relation("ChatMembers")
-  admins      User[]       @relation("ChatAdmins")
-  messages    Message[]    @relation("ChatMessages")
-  updates     ChatUpdate[]
-  updatedAt   DateTime     @updatedAt
-  createdAt   DateTime     @default(now())
+  members     User[]    @relation("ChatMembers")
+  admins      User[]    @relation("ChatAdmins")
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
   deletedAt   DateTime?
-  Alert       Alert[]
+  event       Event[]   @relation("ChatEvents")
+  alert       Alert[]
+}
+
+enum ChatType {
+  DirectMessage
+  Group
+}
+
+model Event {
+  id          Int         @id @default(autoincrement())
+  type        EventType
+  chat        Chat        @relation("ChatEvents", fields: [chatId], references: [id])
+  chatId      Int
+  createdBy   User        @relation("EventsCreated", fields: [createdById], references: [id])
+  createdById Int
+  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime    @default(now())
+  deletedAt   DateTime?
+  message     Message?
+  chatUpdate  ChatUpdate?
+}
+
+enum EventType {
+  Message
+  ChatUpdate
+}
+
+model Message {
+  id      Int    @id @default(autoincrement())
+  event   Event  @relation(fields: [eventId], references: [id])
+  eventId Int    @unique
+  content String
+  likedBy User[] @relation("MessageLikedBy")
 }
 
 model ChatUpdate {
-  id               Int      @id @default(autoincrement())
-  chat             Chat     @relation(fields: [chatId], references: [id])
-  chatId           Int
+  id               Int     @id @default(autoincrement())
+  event            Event   @relation(fields: [eventId], references: [id])
+  eventId          Int     @unique
   name             String?
   description      String?
   memberIdsAdded   Int[]
   memberIdsRemoved Int[]
   adminIdsAdded    Int[]
   adminIdsRemoved  Int[]
-  createdAt        DateTime @default(now())
-  createdBy        User     @relation(fields: [createdById], references: [id])
-  createdById      Int
-}
-
-model Message {
-  id          Int       @id @default(autoincrement())
-  content     String
-  chat        Chat      @relation("ChatMessages", fields: [chatId], references: [id])
-  chatId      Int
-  likedBy     User[]    @relation("MessageLikedBy")
-  createdBy   User      @relation("MessageCreatedBy", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime  @updatedAt
-  createdAt   DateTime  @default(now()) // date message was created in db
-  deletedAt   DateTime?
 }
