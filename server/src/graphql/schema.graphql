@@ -11,19 +11,6 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatInvite implements Notification & Request {
-  chat: Chat
-  chatId: HashId!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  recipient: User
-  recipientId: HashId!
-  status: RequestStatus!
-}
-
 input CreateGroupChatInput {
   """Short description of the group chat"""
   description: String
@@ -387,7 +374,6 @@ type Query {
     """Id of chat"""
     chatId: HashId!
   ): Chat
-  chatInvites(status: RequestStatus): [ChatInvite!]!
   chats: [Chat!]!
   friendRequests(status: RequestStatus): [FriendRequest!]!
   friends: [Friend!]!

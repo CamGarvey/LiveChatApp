@@ -6,10 +6,11 @@ export const FriendRequestsQuery = queryField('friendRequests', {
     status: 'RequestStatus',
   },
   resolve: async (_, { status }, { prisma, userId }) => {
-    return await prisma.friendRequest.findMany({
+    return await prisma.request.findMany({
       where: {
         recipientId: userId,
-        status,
+        status: status ?? undefined,
+        type: 'FriendRequest',
       },
     });
   },

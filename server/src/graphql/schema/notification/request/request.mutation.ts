@@ -1,8 +1,8 @@
-import { FriendRequest } from '@prisma/client';
+import { Request } from '@prisma/client';
 import { mutationField, nonNull } from 'nexus';
 import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
-import { Subscription } from '../../backing-types';
-import { hashIdArg } from '../shared';
+import { Subscription } from '../../../backing-types';
+import { hashIdArg } from '../../shared';
 
 export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   type: 'FriendRequest',
@@ -14,8 +14,9 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     // Create a new friend request
     // If there is already a friend request in the database then update that one
-    const request = await prisma.friendRequest.upsert({
+    const request = await prisma.request.upsert({
       create: {
+        type: 'FriendRequest',
         recipientId: friendId,
         createdById: userId,
       },
@@ -34,7 +35,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
     });
 
     // Publish this new request
-    pubsub.publish<SubscriptionPayload<FriendRequest>>(
+    pubsub.publish<SubscriptionPayload<Request>>(
       Subscription.FriendRequestSent,
       {
         recipients: [friendId],
@@ -58,7 +59,7 @@ export const CancelFriendRequestMutation = mutationField(
       auth.canCancelFriendRequest(friendRequestId),
     resolve: async (_, { friendRequestId }, { prisma, pubsub }) => {
       // Delete the request by setting deletedAt
-      const request = await prisma.friendRequest.update({
+      const request = await prisma.request.update({
         where: {
           id: friendRequestId,
         },
@@ -68,7 +69,7 @@ export const CancelFriendRequestMutation = mutationField(
       });
 
       // Publish this deleted request
-      pubsub.publish<SubscriptionPayload<FriendRequest>>(
+      pubsub.publish<SubscriptionPayload<Request>>(
         Subscription.FriendRequestCancelled,
         {
           recipients: [request.recipientId],
@@ -93,7 +94,7 @@ export const DeclineFriendRequestMutation = mutationField(
       auth.canDeclineFriendRequest(friendRequestId),
     resolve: async (_, { friendRequestId }, { prisma, pubsub }) => {
       // Decline the friend request
-      const request = await prisma.friendRequest.update({
+      const request = await prisma.request.update({
         where: {
           id: friendRequestId,
         },
@@ -103,7 +104,7 @@ export const DeclineFriendRequestMutation = mutationField(
       });
 
       // Publish this declined request
-      pubsub.publish<SubscriptionPayload<FriendRequest>>(
+      pubsub.publish<SubscriptionPayload<Request>>(
         Subscription.FriendRequestDeclined,
         {
           recipients: [request.createdById],
@@ -128,7 +129,7 @@ export const AcceptFriendRequestMutation = mutationField(
       await auth.canAcceptFriendRequest(friendRequestId),
     resolve: async (_, { friendRequestId }, { prisma, pubsub, userId }) => {
       // Accept request
-      const request: FriendRequest = await prisma.friendRequest.update({
+      const request: Request = await prisma.request.update({
         where: {
           id: friendRequestId,
         },
@@ -157,7 +158,7 @@ export const AcceptFriendRequestMutation = mutationField(
       });
 
       // Publish accepted friend request
-      pubsub.publish<SubscriptionPayload<FriendRequest>>(
+      pubsub.publish<SubscriptionPayload<Request>>(
         Subscription.FriendRequestAccepted,
         {
           recipients: [request.createdById],

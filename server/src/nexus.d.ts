@@ -77,14 +77,6 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  ChatInvite: { // root type
-    chatId: NexusGenScalars['HashId']; // HashId!
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-    recipientId: NexusGenScalars['HashId']; // HashId!
-    status: NexusGenEnums['RequestStatus']; // RequestStatus!
-  }
   DeletedChat: { // root type
     createdAt?: NexusGenScalars['Date'] | null; // Date
     createdById: NexusGenScalars['HashId']; // HashId!
@@ -190,8 +182,8 @@ export interface NexusGenInterfaces {
   Chat: NexusGenRootTypes['DeletedChat'] | NexusGenRootTypes['DirectMessageChat'] | NexusGenRootTypes['GroupChat'];
   Event: NexusGenRootTypes['DeletedMessage'] | NexusGenRootTypes['Message'];
   KnownUser: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'];
-  Notification: NexusGenRootTypes['ChatInvite'] | NexusGenRootTypes['FriendRequest'];
-  Request: NexusGenRootTypes['ChatInvite'] | NexusGenRootTypes['FriendRequest'];
+  Notification: NexusGenRootTypes['FriendRequest'];
+  Request: NexusGenRootTypes['FriendRequest'];
   User: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'] | NexusGenRootTypes['Stranger'];
 }
 
@@ -204,18 +196,6 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects & NexusGenU
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
-  ChatInvite: { // field return type
-    chat: NexusGenRootTypes['Chat'] | null; // Chat
-    chatId: NexusGenScalars['HashId']; // HashId!
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdBy: NexusGenRootTypes['User']; // User!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-    isCreator: boolean; // Boolean!
-    recipient: NexusGenRootTypes['User'] | null; // User
-    recipientId: NexusGenScalars['HashId']; // HashId!
-    status: NexusGenEnums['RequestStatus']; // RequestStatus!
-  }
   DeletedChat: { // field return type
     createdAt: NexusGenScalars['Date'] | null; // Date
     createdBy: NexusGenRootTypes['User']; // User!
@@ -346,7 +326,6 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     chat: NexusGenRootTypes['Chat'] | null; // Chat
-    chatInvites: NexusGenRootTypes['ChatInvite'][]; // [ChatInvite!]!
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
     friendRequests: NexusGenRootTypes['FriendRequest'][]; // [FriendRequest!]!
     friends: NexusGenRootTypes['Friend'][]; // [Friend!]!
@@ -437,18 +416,6 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
-  ChatInvite: { // field return type name
-    chat: 'Chat'
-    chatId: 'HashId'
-    createdAt: 'Date'
-    createdBy: 'User'
-    createdById: 'HashId'
-    id: 'HashId'
-    isCreator: 'Boolean'
-    recipient: 'User'
-    recipientId: 'HashId'
-    status: 'RequestStatus'
-  }
   DeletedChat: { // field return type name
     createdAt: 'Date'
     createdBy: 'User'
@@ -579,7 +546,6 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     chat: 'Chat'
-    chatInvites: 'ChatInvite'
     chats: 'Chat'
     friendRequests: 'FriendRequest'
     friends: 'Friend'
@@ -769,9 +735,6 @@ export interface NexusGenArgTypes {
     chat: { // args
       chatId: NexusGenScalars['HashId']; // HashId!
     }
-    chatInvites: { // args
-      status?: NexusGenEnums['RequestStatus'] | null; // RequestStatus
-    }
     friendRequests: { // args
       status?: NexusGenEnums['RequestStatus'] | null; // RequestStatus
     }
@@ -834,13 +797,12 @@ export interface NexusGenAbstractTypeMembers {
   Chat: "DeletedChat" | "DirectMessageChat" | "GroupChat"
   Event: "DeletedMessage" | "Message"
   KnownUser: "Friend" | "Me"
-  Notification: "ChatInvite" | "FriendRequest"
-  Request: "ChatInvite" | "FriendRequest"
+  Notification: "FriendRequest"
+  Request: "FriendRequest"
   User: "Friend" | "Me" | "Stranger"
 }
 
 export interface NexusGenTypeInterfaces {
-  ChatInvite: "Notification" | "Request"
   DeletedChat: "Chat"
   DeletedMessage: "Event"
   DirectMessageChat: "Chat"

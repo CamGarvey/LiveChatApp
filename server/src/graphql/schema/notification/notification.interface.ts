@@ -2,8 +2,7 @@ import { interfaceType } from 'nexus';
 
 export const Notification = interfaceType({
   name: 'Notification',
-  resolveType: (source: any) =>
-    'chatId' in source ? 'ChatInvite' : 'FriendRequest',
+  resolveType: (source: any) => 'FriendRequest',
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.field('createdBy', {

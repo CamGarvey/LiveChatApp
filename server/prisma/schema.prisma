@@ -11,31 +11,62 @@ datasource db {
 }
 
 model User {
-  id                     Int             @id @default(autoincrement()) @map("id")
-  email                  String          @unique
-  name                   String?
-  username               String          @unique
-  friends                User[]          @relation("Friends")
-  friendsOf              User[]          @relation("Friends")
-  chatsCreated           Chat[]          @relation("ChatCreatedBy")
-  memberOfChats          Chat[]          @relation("ChatMembers")
-  messages               Message[]       @relation("MessageCreatedBy")
-  likedMessages          Message[]       @relation("MessageLikedBy")
-  adminOfChats           Chat[]          @relation("ChatAdmins")
-  chatUpdates            ChatUpdate[]
-  updatedAt              DateTime        @updatedAt
-  createdAt              DateTime        @default(now())
-  receivedFriendRequests FriendRequest[]
-  sentFriendRequests     FriendRequest[] @relation("FriendRequestCreated")
-  sentChatInvites        ChatInvite[]    @relation("ChatInvitesCreated")
-  receivedChatInvites    ChatInvite[]
+  id               Int          @id @default(autoincrement()) @map("id")
+  email            String       @unique
+  name             String?
+  username         String       @unique
+  friends          User[]       @relation("Friends")
+  friendsOf        User[]       @relation("Friends")
+  chatsCreated     Chat[]       @relation("ChatCreatedBy")
+  memberOfChats    Chat[]       @relation("ChatMembers")
+  messages         Message[]    @relation("MessageCreatedBy")
+  likedMessages    Message[]    @relation("MessageLikedBy")
+  adminOfChats     Chat[]       @relation("ChatAdmins")
+  chatUpdates      ChatUpdate[]
+  updatedAt        DateTime     @updatedAt
+  createdAt        DateTime     @default(now())
+  receivedRequests Request[]
+  sentRequests     Request[]    @relation("RequestsCreated")
+  receivedAlerts   Alert[]
+  sentAlerts       Alert[]      @relation("AlertsCreated")
+  Alert            Alert[]
 }
 
-model FriendRequest {
+/// Alert is a type of notification that does not require action
+model Alert {
+  id          Int         @id @default(autoincrement())
+  type        AlertType
+  status      AlertStatus
+  refId       Int
+  user        User        @relation("User", fields: [refId], references: [id])
+  chat        Chat        @relation(fields: [refId], references: [id])
+  recipient   User        @relation(fields: [recipientId], references: [id])
+  recipientId Int
+  createdBy   User        @relation("AlertsCreated", fields: [createdById], references: [id])
+  createdById Int
+  createdAt   DateTime    @default(now())
+
+  @@unique([recipientId, type])
+}
+
+enum AlertType {
+  NewChat
+  NewFriend
+}
+
+enum AlertStatus {
+  SENT
+  SEEN
+  CANCELLED
+}
+
+/// Request is a type of notifcation that required action
+model Request {
   id          Int           @id @default(autoincrement())
+  type        RequestType
   recipient   User          @relation(fields: [recipientId], references: [id])
   recipientId Int
-  createdBy   User          @relation("FriendRequestCreated", fields: [createdById], references: [id])
+  createdBy   User          @relation("RequestsCreated", fields: [createdById], references: [id])
   createdById Int
   status      RequestStatus @default(SENT)
   updatedAt   DateTime      @updatedAt
@@ -45,19 +76,8 @@ model FriendRequest {
   @@unique([recipientId, createdById]) // Only allow one request invite per user/user pair
 }
 
-model ChatInvite {
-  id          Int           @id @default(autoincrement())
-  recipient   User          @relation(fields: [recipientId], references: [id])
-  recipientId Int
-  createdBy   User          @relation("ChatInvitesCreated", fields: [createdById], references: [id])
-  createdById Int
-  chat        Chat          @relation("ChatInvites", fields: [chatId], references: [id])
-  chatId      Int
-  status      RequestStatus @default(SENT)
-  updatedAt   DateTime      @updatedAt
-  createdAt   DateTime      @default(now())
-
-  @@unique([recipientId, chatId]) // Only allow one chat invite per user/chat pair
+enum RequestType {
+  FriendRequest
 }
 
 enum RequestStatus {
@@ -82,7 +102,7 @@ model Chat {
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
   deletedAt   DateTime?
-  invites     ChatInvite[] @relation("ChatInvites")
+  Alert       Alert[]
 }
 
 model ChatUpdate {
