@@ -18,7 +18,7 @@ model User {
   friends           User[]         @relation("Friends")
   friendsOf         User[]         @relation("Friends")
   likedMessages     Message[]      @relation("MessageLikedBy")
-  memberOfchats     Chat[]         @relation("ChatMembers")
+  memberOfChats     Chat[]         @relation("ChatMembers")
   adminOfChats      Chat[]         @relation("ChatAdmins")
   creatorOfChats    Chat[]         @relation("ChatCreatedBy")
   updatedAt         DateTime       @updatedAt
@@ -31,7 +31,8 @@ model User {
 model Notification {
   id          Int              @id @default(autoincrement())
   type        NotificationType
-  recipient   User[]           @relation("NotificationsReceived")
+  recipient   User             @relation("NotificationsReceived", fields: [recipientId], references: [id])
+  recipientId Int
   createdBy   User             @relation("NotificationsSent", fields: [createdById], references: [id])
   createdById Int
   createdAt   DateTime         @default(now())
@@ -44,15 +45,16 @@ enum NotificationType {
   Request
 }
 
-// Alert is a type of notification that does not request action
+/// Alert is a type of notification that does not request action
 model Alert {
-  id             Int          @id @default(autoincrement())
   type           AlertType
   notification   Notification @relation(fields: [notificationId], references: [id])
   notificationId Int          @unique
   status         AlertStatus  @default(SENT)
   chat           Chat         @relation(fields: [chatId], references: [id])
   chatId         Int
+
+  @@id([notificationId])
 }
 
 enum AlertType {
@@ -66,13 +68,14 @@ enum AlertStatus {
   CANCELLED
 }
 
-// Request is a type of notification that requires action
+/// Request is a type of notification that requires action
 model Request {
-  id             Int           @id @default(autoincrement())
   notification   Notification  @relation(fields: [notificationId], references: [id])
   notificationId Int           @unique
   type           RequestType
-  status         RequestStatus @default(SENT) // Only allow one friend request invite per user/user pair
+  status         RequestStatus @default(SENT)
+
+  @@id([notificationId])
 }
 
 enum RequestType {
@@ -89,7 +92,7 @@ enum RequestStatus {
 
 model Chat {
   id          Int       @id @default(autoincrement())
-  type        Boolean
+  type        ChatType
   name        String?
   description String?
   createdBy   User      @relation("ChatCreatedBy", fields: [createdById], references: [id])
@@ -104,8 +107,8 @@ model Chat {
 }
 
 enum ChatType {
-  DirectMessage
-  Group
+  DirectMessageChat
+  GroupChat
 }
 
 model Event {
@@ -128,15 +131,15 @@ enum EventType {
 }
 
 model Message {
-  id      Int    @id @default(autoincrement())
   event   Event  @relation(fields: [eventId], references: [id])
   eventId Int    @unique
   content String
   likedBy User[] @relation("MessageLikedBy")
+
+  @@id([eventId])
 }
 
 model ChatUpdate {
-  id               Int     @id @default(autoincrement())
   event            Event   @relation(fields: [eventId], references: [id])
   eventId          Int     @unique
   name             String?
@@ -145,4 +148,6 @@ model ChatUpdate {
   memberIdsRemoved Int[]
   adminIdsAdded    Int[]
   adminIdsRemoved  Int[]
+
+  @@id([eventId])
 }

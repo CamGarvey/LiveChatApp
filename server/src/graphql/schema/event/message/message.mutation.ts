@@ -1,4 +1,4 @@
-import { Message } from '@prisma/client';
+import { Event } from '@prisma/client';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
 import { Subscription } from '../../../backing-types';
@@ -19,15 +19,25 @@ export const CreateMessageMutation = mutationField('createMessage', {
       })
     ),
   },
-  authorize: (_, { chatId }, { auth }) => auth.canCreateMessage(chatId),
+  authorize: (_, { chatId }, { auth }) => auth.canCreateEvent(chatId),
   resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
-    const message = await prisma.message.create({
+    const event = await prisma.event.create({
       data: {
         chatId,
         createdById: userId,
-        content,
+        type: 'Message',
+        message: {
+          create: {
+            content,
+          },
+        },
       },
       include: {
+        message: {
+          select: {
+            content: true,
+          },
+        },
         chat: {
           select: {
             members: {
@@ -40,14 +50,14 @@ export const CreateMessageMutation = mutationField('createMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Message>>(Subscription.MessageCreated, {
-      recipients: message.chat.members
+    pubsub.publish<SubscriptionPayload<Event>>(Subscription.MessageCreated, {
+      recipients: event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
-      content: message,
+      content: event,
     });
 
-    return message;
+    return event;
   },
 });
 
@@ -61,9 +71,9 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
     ),
   },
   description: 'Delete a Message',
-  authorize: (_, { messageId }, { auth }) => auth.canDeletedMessage(messageId),
+  authorize: (_, { messageId }, { auth }) => auth.canDeletedEvent(messageId),
   resolve: async (_, { messageId }, { prisma, pubsub, userId }) => {
-    const message = await prisma.message.update({
+    const event = await prisma.event.update({
       data: {
         deletedAt: new Date(),
       },
@@ -83,14 +93,14 @@ export const DeleteMessageMutation = mutationField('deleteMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Message>>(Subscription.MessageDeleted, {
-      recipients: message.chat.members
+    pubsub.publish<SubscriptionPayload<Event>>(Subscription.MessageDeleted, {
+      recipients: event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
-      content: message,
+      content: event,
     });
 
-    return message;
+    return event;
   },
 });
 
@@ -109,7 +119,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
     ),
   },
   description: 'Update a Message',
-  authorize: (_, { messageId }, { auth }) => auth.canUpdateMessage(messageId),
+  authorize: (_, { messageId }, { auth }) => auth.canUpdateEvent(messageId),
   resolve: async (_, { messageId, content }, { prisma, pubsub, userId }) => {
     // Update message
     const message = await prisma.message.update({
@@ -117,28 +127,32 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
         content,
       },
       include: {
-        chat: {
-          select: {
-            members: {
+        event: {
+          include: {
+            chat: {
               select: {
-                id: true,
+                members: {
+                  select: {
+                    id: true,
+                  },
+                },
               },
             },
           },
         },
       },
       where: {
-        id: messageId,
+        eventId: messageId,
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Message>>(Subscription.MessageUpdated, {
-      recipients: message.chat.members
+    pubsub.publish<SubscriptionPayload<Event>>(Subscription.MessageUpdated, {
+      recipients: message.event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
-      content: message,
+      content: message.event,
     });
 
-    return message;
+    return message.event;
   },
 });

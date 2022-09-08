@@ -23,10 +23,10 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
     // Create the chat
     const chat = await prisma.chat.create({
       data: {
+        type: 'GroupChat',
         name,
         description,
         createdById: userId,
-        isDM: false,
         members: {
           connect: [...memberIdSet].map((id) => ({ id })),
         },
@@ -79,7 +79,7 @@ export const CreateDirectMessageChatMutation = mutationField(
               },
             },
           },
-          isDM: true,
+          type: 'DirectMessageChat',
         },
       });
 
@@ -91,7 +91,7 @@ export const CreateDirectMessageChatMutation = mutationField(
         data: {
           name: `${userId}.${friendId}`,
           createdById: userId,
-          isDM: true,
+          type: 'DirectMessageChat',
           members: {
             connect: [userId, friendId].map((id) => ({ id })),
           },
@@ -161,8 +161,9 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
         },
       });
 
-      await prisma.chatUpdate.create({
+      await prisma.event.create({
         data: {
+          type: 'ChatUpdate',
           chat: {
             connect: {
               id: chatId,
@@ -173,11 +174,15 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
               id: userId,
             },
           },
-          memberIdsRemoved: members
-            ? {
-                set: [...members],
-              }
-            : undefined,
+          chatUpdate: {
+            create: {
+              memberIdsRemoved: members
+                ? {
+                    set: [...members],
+                  }
+                : undefined,
+            },
+          },
         },
       });
 
@@ -236,8 +241,9 @@ export const AddMembersToGroupChatMutation = mutationField(
         },
       });
 
-      await prisma.chatUpdate.create({
+      await prisma.event.create({
         data: {
+          type: 'ChatUpdate',
           chat: {
             connect: {
               id: chatId,
@@ -248,11 +254,15 @@ export const AddMembersToGroupChatMutation = mutationField(
               id: userId,
             },
           },
-          memberIdsAdded: members
-            ? {
-                set: [...members],
-              }
-            : undefined,
+          chatUpdate: {
+            create: {
+              memberIdsAdded: members
+                ? {
+                    set: [...members],
+                  }
+                : undefined,
+            },
+          },
         },
       });
 
@@ -311,8 +321,9 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
         },
       });
 
-      await prisma.chatUpdate.create({
+      await prisma.event.create({
         data: {
+          type: 'ChatUpdate',
           chat: {
             connect: {
               id: chatId,
@@ -323,11 +334,15 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
               id: userId,
             },
           },
-          adminIdsRemoved: members
-            ? {
-                set: [...members],
-              }
-            : undefined,
+          chatUpdate: {
+            create: {
+              adminIdsRemoved: members
+                ? {
+                    set: [...members],
+                  }
+                : undefined,
+            },
+          },
         },
       });
 
@@ -385,8 +400,9 @@ export const AddAdminsToGroupChatMutation = mutationField(
         },
       });
 
-      await prisma.chatUpdate.create({
+      await prisma.event.create({
         data: {
+          type: 'ChatUpdate',
           chat: {
             connect: {
               id: chatId,
@@ -397,11 +413,15 @@ export const AddAdminsToGroupChatMutation = mutationField(
               id: userId,
             },
           },
-          adminIdsAdded: members
-            ? {
-                set: [...members],
-              }
-            : undefined,
+          chatUpdate: {
+            create: {
+              adminIdsAdded: members
+                ? {
+                    set: [...members],
+                  }
+                : undefined,
+            },
+          },
         },
       });
 
@@ -453,8 +473,9 @@ export const UpdateGroupChat = mutationField('updateGroupChat', {
       },
     });
 
-    await prisma.chatUpdate.create({
+    await prisma.event.create({
       data: {
+        type: 'ChatUpdate',
         chat: {
           connect: {
             id: chatId,
@@ -465,8 +486,12 @@ export const UpdateGroupChat = mutationField('updateGroupChat', {
             id: userId,
           },
         },
-        name: name ?? undefined,
-        description: description ?? undefined,
+        chatUpdate: {
+          create: {
+            name: name ?? undefined,
+            description: description ?? undefined,
+          },
+        },
       },
     });
 

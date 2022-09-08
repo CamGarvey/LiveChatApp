@@ -7,9 +7,9 @@ export enum Subscription {
   ChatAdminsDeleted = 'chat.admins.deleted',
   ChatAdminsAdded = 'chat.admins.added',
 
-  MessageCreated = 'message.created',
-  MessageUpdated = 'message.updated',
-  MessageDeleted = 'message.deleted',
+  MessageCreated = 'event.message.created',
+  MessageUpdated = 'event.message.updated',
+  MessageDeleted = 'event.message.deleted',
 
   FriendRequestCancelled = 'notification.request.friend.cancelled',
   FriendRequestAccepted = 'notification.request.friend.accepted',

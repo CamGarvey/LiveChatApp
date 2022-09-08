@@ -11,7 +11,7 @@ type Props = {
   chatId: string;
 };
 
-export const useMessages = ({ chatId }: Props) => {
+export const useEvents = ({ chatId }: Props) => {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const {
     loading,

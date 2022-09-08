@@ -52,10 +52,7 @@ type DirectMessageChat implements Chat {
   createdAt: Date
   createdBy: User!
   createdById: HashId!
-  friend: Friend!
-  id: HashId!
-  isCreator: Boolean!
-  messages(
+  events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -67,7 +64,10 @@ type DirectMessageChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): EventConnection!
+  friend: Friend!
+  id: HashId!
+  isCreator: Boolean!
   updatedAt: Date
 }
 
@@ -80,6 +80,26 @@ interface Event {
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
+}
+
+type EventConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [EventEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type EventEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: Event
 }
 
 type Friend implements KnownUser & User {
@@ -130,7 +150,7 @@ type FriendRequest implements Notification & Request {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User
+  recipient: User!
   recipientId: HashId!
   status: RequestStatus!
 }
@@ -143,12 +163,7 @@ type GroupChat implements Chat {
   createdBy: User!
   createdById: HashId!
   description: String
-  id: HashId!
-  isAdmin: Boolean!
-  isCreator: Boolean!
-  memberCount: Int!
-  members: [User!]!
-  messages(
+  events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -160,7 +175,12 @@ type GroupChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): EventConnection!
+  id: HashId!
+  isAdmin: Boolean!
+  isCreator: Boolean!
+  memberCount: Int!
+  members: [User!]!
   name: String!
   updatedAt: Date
 }
@@ -221,26 +241,6 @@ type Message implements Event {
 }
 
 union MessageResult = DeletedMessage | Message
-
-type MessageResultConnection {
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
-  """
-  edges: [MessageResultEdge]
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
-  """
-  pageInfo: PageInfo!
-}
-
-type MessageResultEdge {
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
-  cursor: String!
-
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: MessageResult
-}
 
 type Mutation {
   """Accept a friend request"""
@@ -342,6 +342,8 @@ interface Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+  recipient: User!
+  recipientId: HashId!
 }
 
 """
@@ -375,16 +377,7 @@ type Query {
     chatId: HashId!
   ): Chat
   chats: [Chat!]!
-  friendRequests(status: RequestStatus): [FriendRequest!]!
-  friends: [Friend!]!
-  me: Me
-
-  """Get a message by id"""
-  message(
-    """id of message"""
-    messageId: HashId!
-  ): MessageResult
-  messages(
+  events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -397,7 +390,16 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): EventConnection!
+  friendRequests(status: RequestStatus): [FriendRequest!]!
+  friends: [Friend!]!
+  me: Me
+
+  """Get a message by id"""
+  message(
+    """id of message"""
+    messageId: HashId!
+  ): MessageResult
   notifications: [Notification!]!
   user(
     """id of user"""
@@ -432,7 +434,7 @@ interface Request {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User
+  recipient: User!
   recipientId: HashId!
   status: RequestStatus!
 }
@@ -501,6 +503,9 @@ type Subscription {
   """Subscribe to any created/updated/deleted messages"""
   messages(chatId: HashId): MessageResult
   notifications: Notification
+
+  """Subscribe to friend requests"""
+  requests: FriendRequest
 }
 
 input UpdateGroupChatInput {

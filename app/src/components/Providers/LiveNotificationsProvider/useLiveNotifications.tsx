@@ -35,7 +35,6 @@ gql`
       createdById
       recipientId
       isCreator
-      status
       createdBy {
         ... on Stranger {
           friendRequest {

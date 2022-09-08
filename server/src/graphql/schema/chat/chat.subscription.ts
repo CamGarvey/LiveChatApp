@@ -38,7 +38,7 @@ export const ChatUpdatedSubscription = subscriptionField('chatUpdated', {
   type: 'Chat',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator(Subscription.ChatUpdated),
+      () => context.pubsub.asyncIterator(Subscription.ChatInfoUpdated),
       (payload: SubscriptionPayload<Chat>) => {
         return payload.recipients.includes(context.userId);
       }

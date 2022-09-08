@@ -1,10 +1,9 @@
+import { Event } from '@prisma/client';
 import { interfaceType } from 'nexus';
 
 export const EventInterface = interfaceType({
   name: 'Event',
-  resolveType: (t: any) => {
-    return t.deletedAt == null ? 'Message' : 'DeletedMessage';
-  },
+  resolveType: (t: Event) => t.type,
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.hashId('createdById');

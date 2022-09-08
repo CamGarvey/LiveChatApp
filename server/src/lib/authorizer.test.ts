@@ -779,7 +779,7 @@ describe('canCreateMessage', () => {
   it('should throw if chat not found', async () => {
     mockCtx.prisma.chat.findUniqueOrThrow.mockRejectedValue(new Error());
 
-    await expect(authorizer.canCreateMessage(100)).rejects.toThrowError();
+    await expect(authorizer.canCreateEvent(100)).rejects.toThrowError();
   });
 
   it('should throw if user is not a member of the chat', async () => {
@@ -788,7 +788,7 @@ describe('canCreateMessage', () => {
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
 
-    await expect(authorizer.canCreateMessage(100)).rejects.toThrowError(
+    await expect(authorizer.canCreateEvent(100)).rejects.toThrowError(
       'You are not a member of this chat'
     );
   });
@@ -799,7 +799,7 @@ describe('canCreateMessage', () => {
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
 
-    const result = await authorizer.canCreateMessage(100);
+    const result = await authorizer.canCreateEvent(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.chat.findUniqueOrThrow).toBeCalledWith({
@@ -824,7 +824,7 @@ describe('canViewMessage', () => {
   it('should throw if message not found', async () => {
     mockCtx.prisma.message.findUniqueOrThrow.mockRejectedValue(new Error());
 
-    await expect(authorizer.canViewMessage(100)).rejects.toThrowError();
+    await expect(authorizer.canViewEvent(100)).rejects.toThrowError();
   });
 
   it('should throw if not member of the chat message was created in', async () => {
@@ -836,7 +836,7 @@ describe('canViewMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    await expect(authorizer.canViewMessage(100)).rejects.toThrowError(
+    await expect(authorizer.canViewEvent(100)).rejects.toThrowError(
       'You do not have permission to view this message'
     );
   });
@@ -850,7 +850,7 @@ describe('canViewMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    const result = await authorizer.canViewMessage(100);
+    const result = await authorizer.canViewEvent(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.message.findUniqueOrThrow).toBeCalledWith({
@@ -879,7 +879,7 @@ describe('canUpdateMessage', () => {
   it('should throw if message not found', async () => {
     mockCtx.prisma.message.findUniqueOrThrow.mockRejectedValue(new Error());
 
-    await expect(authorizer.canUpdateMessage(100)).rejects.toThrowError();
+    await expect(authorizer.canUpdateEvent(100)).rejects.toThrowError();
   });
 
   it('should throw if the user is not the creator of the message', async () => {
@@ -888,7 +888,7 @@ describe('canUpdateMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    await expect(authorizer.canUpdateMessage(100)).rejects.toThrowError(
+    await expect(authorizer.canUpdateEvent(100)).rejects.toThrowError(
       'You do not have permission to update this message'
     );
   });
@@ -900,7 +900,7 @@ describe('canUpdateMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    await expect(authorizer.canUpdateMessage(100)).rejects.toThrowError(
+    await expect(authorizer.canUpdateEvent(100)).rejects.toThrowError(
       'Message is deleted'
     );
   });
@@ -912,7 +912,7 @@ describe('canUpdateMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    const result = await authorizer.canUpdateMessage(100);
+    const result = await authorizer.canUpdateEvent(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.message.findUniqueOrThrow).toBeCalledWith({
@@ -927,7 +927,7 @@ describe('canDeletedMessage', () => {
   it('should throw if message not found', async () => {
     mockCtx.prisma.message.findUniqueOrThrow.mockRejectedValue(new Error());
 
-    await expect(authorizer.canDeletedMessage(100)).rejects.toThrowError();
+    await expect(authorizer.canDeletedEvent(100)).rejects.toThrowError();
   });
 
   it('should throw if the user is not the creator of the message', async () => {
@@ -936,7 +936,7 @@ describe('canDeletedMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    await expect(authorizer.canDeletedMessage(100)).rejects.toThrowError(
+    await expect(authorizer.canDeletedEvent(100)).rejects.toThrowError(
       'You do not have permission to delete this message'
     );
   });
@@ -948,7 +948,7 @@ describe('canDeletedMessage', () => {
     } as unknown as Message;
     mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
 
-    const result = await authorizer.canDeletedMessage(100);
+    const result = await authorizer.canDeletedEvent(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.message.findUniqueOrThrow).toBeCalledWith({
@@ -1062,7 +1062,7 @@ describe('canCancelFriendRequest', () => {
       new Error()
     );
 
-    await expect(authorizer.canCancelFriendRequest(100)).rejects.toThrowError();
+    await expect(authorizer.canCancelRequest(100)).rejects.toThrowError();
   });
 
   it('should throw if user is not the creator of the friend request', async () => {
@@ -1072,7 +1072,7 @@ describe('canCancelFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    await expect(authorizer.canCancelFriendRequest(100)).rejects.toThrowError(
+    await expect(authorizer.canCancelRequest(100)).rejects.toThrowError(
       'You do not have permission to cancel this friend request'
     );
   });
@@ -1084,7 +1084,7 @@ describe('canCancelFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    await expect(authorizer.canCancelFriendRequest(100)).rejects.toThrowError(
+    await expect(authorizer.canCancelRequest(100)).rejects.toThrowError(
       'Invalid state'
     );
   });
@@ -1096,7 +1096,7 @@ describe('canCancelFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    const result = await authorizer.canCancelFriendRequest(100);
+    const result = await authorizer.canCancelRequest(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.friendRequest.findUniqueOrThrow).toBeCalledWith({
@@ -1117,9 +1117,7 @@ describe('canDeclineFriendRequest', () => {
       new Error()
     );
 
-    await expect(
-      authorizer.canDeclineFriendRequest(100)
-    ).rejects.toThrowError();
+    await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError();
   });
 
   it('should throw if the user is not the recipent of the friend request', async () => {
@@ -1129,7 +1127,7 @@ describe('canDeclineFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    await expect(authorizer.canDeclineFriendRequest(100)).rejects.toThrowError(
+    await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError(
       'You do not have permission to decline this friend request'
     );
   });
@@ -1141,7 +1139,7 @@ describe('canDeclineFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    await expect(authorizer.canDeclineFriendRequest(100)).rejects.toThrowError(
+    await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError(
       'Invalid state'
     );
   });
@@ -1153,7 +1151,7 @@ describe('canDeclineFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    const result = await authorizer.canDeclineFriendRequest(100);
+    const result = await authorizer.canDeclineRequest(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.friendRequest.findUniqueOrThrow).toBeCalledWith({

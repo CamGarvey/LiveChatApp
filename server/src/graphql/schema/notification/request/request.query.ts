@@ -6,12 +6,27 @@ export const FriendRequestsQuery = queryField('friendRequests', {
     status: 'RequestStatus',
   },
   resolve: async (_, { status }, { prisma, userId }) => {
-    return await prisma.request.findMany({
+    const user = await prisma.user.findUniqueOrThrow({
       where: {
-        recipientId: userId,
-        status: status ?? undefined,
-        type: 'FriendRequest',
+        id: userId ?? undefined,
+      },
+      include: {
+        notifications: {
+          where: {
+            request: {
+              AND: [
+                {
+                  type: 'FriendRequest',
+                },
+                {
+                  status: status ?? undefined,
+                },
+              ],
+            },
+          },
+        },
       },
     });
+    return user.notifications;
   },
 });

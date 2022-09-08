@@ -10,7 +10,8 @@ const prisma =
   global.prisma ||
   new PrismaClient({
     log: [
-      // 'query', 'info', 'warn', 'error'
+      'query',
+      // 'info', 'warn', 'error'
     ],
   });
 

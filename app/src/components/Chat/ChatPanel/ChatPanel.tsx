@@ -3,14 +3,14 @@ import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from './ChatInput';
 import Scroller from 'components/shared/Scroller/Scroller';
 import { useCreateMessage } from './useCreateMessage';
-import { useMessages } from './useMessages';
+import { useEvents } from './useMessages';
 import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
 import { useParams } from 'react-router-dom';
 
 gql`
-  query GetMessages($chatId: HashId!, $last: Int, $before: String) {
-    messages(chatId: $chatId, last: $last, before: $before) {
+  query GetEvents($chatId: HashId!, $last: Int, $before: String) {
+    events(chatId: $chatId, last: $last, before: $before) {
       pageInfo {
         hasPreviousPage
         startCursor
@@ -18,7 +18,7 @@ gql`
       edges {
         node {
           ...ChatPanelMessage
-          ...UseMessage
+          ...UseEvent
         }
       }
     }
@@ -26,24 +26,24 @@ gql`
   subscription Messages($chatId: HashId) {
     messages(chatId: $chatId) {
       ...ChatPanelMessage
-      ...UseMessage
+      ...UseEvent
     }
   }
-  fragment UseMessageEvent on Event {
+  fragment UseEventEvent on Event {
     id
     createdAt
     createdBy {
       id
     }
   }
-  fragment UseMessage on MessageResult {
+  fragment UseEvent on Event {
     ... on Message {
       id
-      ...UseMessageEvent
+      ...UseEventEvent
     }
     ... on DeletedMessage {
       id
-      ...UseMessageEvent
+      ...UseEventEvent
     }
   }
   fragment ChatPanelMessage on Event {
@@ -65,7 +65,7 @@ const ChatPanel = () => {
     error,
     isFetchingMore,
     fetchMore,
-  } = useMessages({ chatId });
+  } = useEvents({ chatId });
   const { createMessage } = useCreateMessage({ chatId });
 
   let topMessage = null;

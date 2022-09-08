@@ -19,13 +19,16 @@ export const Me = objectType({
         status: 'RequestStatus',
       },
       resolve: async (parent, { status }, { prisma }) => {
-        return await prisma.friendRequest.findMany({
+        return await prisma.notification.findMany({
           where: {
+            type: 'Request',
+            request: {
+              is: {
+                type: 'FriendRequest',
+                status: status || undefined,
+              },
+            },
             recipientId: parent.id,
-            status: status || undefined,
-          },
-          include: {
-            recipient: true,
           },
         });
       },
@@ -89,33 +92,37 @@ export const Stranger = objectType({
             id: userId,
           },
           select: {
-            sentFriendRequests: {
+            notifications: {
               where: {
-                status: {
-                  in: ['SEEN', 'SENT'],
+                type: 'Request',
+                request: {
+                  type: 'FriendRequest',
+                  status: {
+                    in: ['SEEN', 'SENT'],
+                  },
                 },
               },
             },
-            receivedFriendRequests: {
+            notificationsSent: {
               where: {
-                status: {
-                  in: ['SEEN', 'SENT'],
+                type: 'Request',
+                request: {
+                  type: 'FriendRequest',
+                  status: {
+                    in: ['SEEN', 'SENT'],
+                  },
                 },
               },
             },
           },
         });
 
-        if (
-          user.receivedFriendRequests
-            .map((x) => x.createdById)
-            .includes(parent.id)
-        ) {
+        if (user.notifications.map((x) => x.createdById).includes(parent.id)) {
           return 'REQUEST_RECEIVED';
         }
 
         if (
-          user.sentFriendRequests.map((x) => x.recipientId).includes(parent.id)
+          user.notificationsSent.map((x) => x.recipientId).includes(parent.id)
         ) {
           return 'REQUEST_SENT';
         }
@@ -131,31 +138,39 @@ export const Stranger = objectType({
             id: userId,
           },
           include: {
-            sentFriendRequests: {
+            notifications: {
               where: {
-                status: {
-                  in: ['SEEN', 'SENT'],
+                type: 'Request',
+                request: {
+                  type: 'FriendRequest',
+                  status: {
+                    in: ['SEEN', 'SENT'],
+                  },
                 },
               },
             },
-            receivedFriendRequests: {
+            notificationsSent: {
               where: {
-                status: {
-                  in: ['SEEN', 'SENT'],
+                type: 'Request',
+                request: {
+                  type: 'FriendRequest',
+                  status: {
+                    in: ['SEEN', 'SENT'],
+                  },
                 },
               },
             },
           },
         });
 
-        const sentRequest = user.sentFriendRequests.find(
+        const sentRequest = user.notificationsSent.find(
           (x) => x.recipientId == parent.id
         );
         if (sentRequest) {
           return sentRequest;
         }
 
-        const receivedRequest = user.receivedFriendRequests.find(
+        const receivedRequest = user.notifications.find(
           (x) => x.createdById == parent.id
         );
         if (receivedRequest) {
