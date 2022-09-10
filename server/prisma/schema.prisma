@@ -26,6 +26,7 @@ model User {
   notifications     Notification[] @relation("NotificationsReceived")
   notificationsSent Notification[] @relation("NotificationsSent")
   eventsCreated     Event[]        @relation("EventsCreated")
+  chatUpdates       ChatUpdate[]
 }
 
 model Notification {
@@ -140,14 +141,23 @@ model Message {
 }
 
 model ChatUpdate {
-  event            Event   @relation(fields: [eventId], references: [id])
-  eventId          Int     @unique
-  name             String?
-  description      String?
-  memberIdsAdded   Int[]
-  memberIdsRemoved Int[]
-  adminIdsAdded    Int[]
-  adminIdsRemoved  Int[]
+  event             Event          @relation(fields: [eventId], references: [id])
+  eventId           Int            @unique
+  type              ChatUpdateType
+  nameBefore        String?
+  nameAfter         String?
+  descriptionBefore String?
+  descriptionAfter  String?
+  users             User[]
 
   @@id([eventId])
+}
+
+enum ChatUpdateType {
+  MembersAdded
+  MembersRemoved
+  AdminsAdded
+  AdminsRemoved
+  NameUpdated
+  DescriptionUpdated
 }

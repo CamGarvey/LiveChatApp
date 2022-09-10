@@ -1,18 +1,18 @@
 import moment from 'moment';
 
-type Message = {
+type Event = {
   createdBy: {
     id: string;
   };
 };
 
-const MAX_MESSAGES_IN_GROUP = 10;
+const MAX_EVENTS_IN_GROUP = 10;
 
-export const groupMessages = <T extends Message>(
-  messages: T[],
-  maxInGroup: number = MAX_MESSAGES_IN_GROUP
+export const groupEvents = <T extends Event>(
+  events: T[],
+  maxInGroup: number = MAX_EVENTS_IN_GROUP
 ): T[][] =>
-  messages.reduce((prev, curr) => {
+  events.reduce((prev, curr) => {
     const startNewGroup = () => prev.push([curr]);
     if (prev.length === 0) {
       startNewGroup();
@@ -20,8 +20,8 @@ export const groupMessages = <T extends Message>(
     }
 
     const latestGroup = prev[prev.length - 1];
-    // Since each group can only contain a single users message,
-    // we'll grab the creator of the message group
+    // Since each group can only contain a single users event,
+    // we'll grab the creator of the event group
     const groupCreator = latestGroup[0].createdBy;
 
     if (groupCreator.id !== curr.createdBy.id) {
@@ -39,7 +39,7 @@ export const groupMessages = <T extends Message>(
     return prev;
   }, [] as T[][]);
 
-export const formatMessageTime = (time: moment.Moment) => {
+export const formatEventTime = (time: moment.Moment) => {
   const now = moment();
   if (Math.abs(now.diff(time, 'minutes')) < 10) {
     return time.fromNow();

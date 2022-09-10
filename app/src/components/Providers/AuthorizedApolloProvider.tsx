@@ -73,7 +73,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         Query: {
           fields: {
             users: relayStylePagination(['usernameFilter']),
-            messages: relayStylePagination(['chatId']),
+            events: relayStylePagination(['chatId']),
           },
         },
         FriendRequest: {
@@ -83,11 +83,14 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
               ? `FriendRequest:${object.recipientId}`
               : `FriendRequest:${object.createdById}`,
         },
-        InstantMessage: {
-          keyFields: (object) => `Message:${object.id}`,
+        Message: {
+          keyFields: (object) => `Event:${object.id}`,
         },
-        DeletedMessage: {
-          keyFields: (object) => `Message:${object.id}`,
+        DeletedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        ChatUpdate: {
+          keyFields: (object) => `Event:${object.id}`,
         },
         Friend: {
           keyFields: (object) => `User:${object.id}`,

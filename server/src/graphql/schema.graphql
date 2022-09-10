@@ -2,6 +2,17 @@
 ### Do not make changes to this file directly
 
 
+interface Alert implements Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipient: User!
+  recipientId: HashId!
+  status: RequestStatus!
+}
+
 interface Chat {
   createdAt: Date
   createdBy: User!
@@ -10,6 +21,84 @@ interface Chat {
   isCreator: Boolean!
   updatedAt: Date
 }
+
+type ChatAdminsAddedUpdate implements Event {
+  adminsAdded: [User!]!
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+type ChatAdminsRemovedUpdate implements Event {
+  adminsRemoved: [User!]!
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+type ChatDescriptionUpdate implements Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  descriptionAfter: String!
+  descriptionBefore: String!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+type ChatMembersAddedUpdate implements Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  membersAdded: [User!]!
+  updatedAt: Date!
+}
+
+type ChatMembersRemovedUpdate implements Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  membersRemoved: [User!]!
+  updatedAt: Date!
+}
+
+type ChatNameUpdate implements Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  nameAfter: String!
+  nameBefore: String!
+  updatedAt: Date!
+}
+
+union ChatSubscriptionResult = DirectMessageChat | GroupChat
+
+union ChatUpdate = ChatAdminsAddedUpdate | ChatAdminsRemovedUpdate | ChatDescriptionUpdate | ChatMembersAddedUpdate | ChatMembersRemovedUpdate | ChatNameUpdate
 
 input CreateGroupChatInput {
   """Short description of the group chat"""
@@ -35,13 +124,13 @@ type DeletedChat implements Chat {
   updatedAt: Date
 }
 
-type DeletedMessage implements Event {
+type DeletedEvent implements Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
-  deletedAt: Date
+  deletedAt: Date!
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
@@ -240,8 +329,6 @@ type Message implements Event {
   updatedAt: Date!
 }
 
-union MessageResult = DeletedMessage | Message
-
 type Mutation {
   """Accept a friend request"""
   acceptFriendRequest(friendRequestId: HashId!): FriendRequest
@@ -252,7 +339,7 @@ type Mutation {
 
     """Ids of admins to be added to the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): ChatAdminsAddedUpdate
 
   """Add members to a group chat"""
   addMembersToGroupChat(
@@ -260,7 +347,7 @@ type Mutation {
 
     """Ids of members to be added into the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): ChatMembersAddedUpdate
 
   """Cancel/Delete a sent Friend Request"""
   cancelFriendRequest(friendRequestId: HashId!): FriendRequest
@@ -299,7 +386,7 @@ type Mutation {
   deleteMessage(
     """Id of Message to delete"""
     messageId: HashId!
-  ): DeletedMessage
+  ): DeletedEvent
 
   """Remove admins from a group chat"""
   removeAdminsFromGroupChat(
@@ -307,7 +394,7 @@ type Mutation {
 
     """Ids of admins to be removed from the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): ChatAdminsRemovedUpdate
 
   """Remove members from a group chat"""
   removeMembersFromGroupChat(
@@ -315,13 +402,12 @@ type Mutation {
 
     """Ids of members to be removed from the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): ChatMembersRemovedUpdate
 
   """Send a friend request to a user"""
   sendFriendRequest(friendId: HashId!): FriendRequest
-
-  """Update basic group chat information"""
-  updateGroupChat(chatId: HashId!, data: UpdateGroupChatInput!): GroupChat
+  updateGroupChatDescription(chatId: HashId!, description: String!): ChatNameUpdate
+  updateGroupChatName(chatId: HashId!, name: String!): ChatNameUpdate
 
   """Update a Message"""
   updateMessage(
@@ -334,6 +420,17 @@ type Mutation {
 
   """Update current user"""
   updateUser(name: String!): Me
+}
+
+type NewFriendAlert implements Alert & Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipient: User!
+  recipientId: HashId!
+  status: RequestStatus!
 }
 
 interface Notification {
@@ -399,7 +496,7 @@ type Query {
   message(
     """id of message"""
     messageId: HashId!
-  ): MessageResult
+  ): Event
   notifications: [Notification!]!
   user(
     """id of user"""
@@ -428,7 +525,7 @@ type Query {
   ): UserConnection!
 }
 
-interface Request {
+interface Request implements Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -484,8 +581,20 @@ enum StrangerStatus {
 type Subscription {
   chatCreated: Chat
   chatDeleted: DeletedChat
-  chatUpdated: Chat
+  chatUpdated: ChatUpdate
   chats: Chat
+
+  """Subscribe to created events in chat"""
+  eventCreated(chatId: HashId): Event
+
+  """Subscribe to deleted events in chat"""
+  eventDeleted(chatId: HashId): Event
+
+  """Subscribe to updated events in chat"""
+  eventUpdated(chatId: HashId): Event
+
+  """Subscribe to any created/updated/deleted events"""
+  events(chatId: HashId): Event
 
   """Subscribe to friend requests"""
   friendRequests: FriendRequest
@@ -495,25 +604,17 @@ type Subscription {
   messageCreated(chatId: HashId): Message
 
   """Subscribe to deleted messages in chat"""
-  messageDeleted(chatId: HashId): DeletedMessage
+  messageDeleted(chatId: HashId): DeletedEvent
 
   """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId): MessageResult
+  messageUpdated(chatId: HashId): Event
 
   """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId): MessageResult
+  messages(chatId: HashId): Event
   notifications: Notification
 
   """Subscribe to friend requests"""
-  requests: FriendRequest
-}
-
-input UpdateGroupChatInput {
-  """New description for chat"""
-  description: String
-
-  """New name for chat"""
-  name: String
+  requests: Request
 }
 
 interface User {

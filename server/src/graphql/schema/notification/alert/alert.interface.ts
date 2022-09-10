@@ -1,9 +1,9 @@
 import { interfaceType } from 'nexus';
 
-export const Request = interfaceType({
-  name: 'Request',
+export const Alert = interfaceType({
+  name: 'Alert',
   resolveType: async (parent, { prisma }) => {
-    const request = await prisma.request.findFirstOrThrow({
+    const alert = await prisma.alert.findFirstOrThrow({
       where: {
         notificationId: parent.id ?? undefined,
       },
@@ -11,7 +11,7 @@ export const Request = interfaceType({
         type: true,
       },
     });
-    return request.type;
+    return alert.type;
   },
   definition: (t) => {
     t.implements('Notification');

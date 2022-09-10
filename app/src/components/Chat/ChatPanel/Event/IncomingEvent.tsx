@@ -19,6 +19,7 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
 
   return (
     <MotionGroup
+      className={'incoming'}
       pb={3}
       variants={{
         hidden: {
@@ -31,6 +32,8 @@ const IncomingEvent = ({ event, displayAvatar, children }: Props) => {
       style={{
         gap: '3px',
         overflowX: 'hidden',
+        display: 'flex',
+        justifyContent: 'left',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

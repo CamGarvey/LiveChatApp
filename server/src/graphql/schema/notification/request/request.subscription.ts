@@ -4,12 +4,12 @@ import { subscriptionField } from 'nexus';
 import SubscriptionPayload from '../../../backing-types/subscription-payload';
 
 export const RequestSubscription = subscriptionField('requests', {
-  type: 'FriendRequest',
+  type: 'Request',
   description: 'Subscribe to friend requests',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('notification.request.*', {
+        context.pubsub.asyncIterator('*.request.notification.*', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {
@@ -28,7 +28,7 @@ export const FriendRequestSubscription = subscriptionField('friendRequests', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('notification.request.friend.*', {
+        context.pubsub.asyncIterator('friend.request.notification.*', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {

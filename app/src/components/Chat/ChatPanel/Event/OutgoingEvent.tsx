@@ -20,6 +20,7 @@ const OutgoingEvent = ({ state, children, event, actions }: Props) => {
 
   return (
     <MotionGroup
+      className={'outgoing'}
       pb={3}
       key={event.createdAt}
       variants={{
@@ -32,6 +33,8 @@ const OutgoingEvent = ({ state, children, event, actions }: Props) => {
       }}
       style={{
         gap: '3px',
+        display: 'flex',
+        justifyContent: 'right',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

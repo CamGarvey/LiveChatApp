@@ -14,15 +14,3 @@ export const CreateGroupChatInput = inputObjectType({
     });
   },
 });
-
-export const UpdateGroupChatInput = inputObjectType({
-  name: 'UpdateGroupChatInput',
-  definition: (t) => {
-    t.string('name', {
-      description: 'New name for chat',
-    });
-    t.string('description', {
-      description: 'New description for chat',
-    });
-  },
-});

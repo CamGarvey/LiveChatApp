@@ -3,10 +3,11 @@ import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from './ChatInput';
 import Scroller from 'components/shared/Scroller/Scroller';
 import { useCreateMessage } from './useCreateMessage';
-import { useEvents } from './useMessages';
+import { useEvents } from './useEvents';
 import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
 import { useParams } from 'react-router-dom';
+import { ChatUpdate } from './Event/ChatUpdate';
 
 gql`
   query GetEvents($chatId: HashId!, $last: Int, $before: String) {
@@ -17,60 +18,42 @@ gql`
       }
       edges {
         node {
-          ...ChatPanelMessage
-          ...UseEvent
+          ...ChatPanelEvent
         }
       }
     }
   }
-  subscription Messages($chatId: HashId) {
-    messages(chatId: $chatId) {
-      ...ChatPanelMessage
-      ...UseEvent
+  subscription Events($chatId: HashId) {
+    events(chatId: $chatId) {
+      ...ChatPanelEvent
     }
   }
-  fragment UseEventEvent on Event {
+  fragment ChatPanelEvent on Event {
     id
     createdAt
     createdBy {
       id
     }
-  }
-  fragment UseEvent on Event {
-    ... on Message {
-      id
-      ...UseEventEvent
-    }
-    ... on DeletedMessage {
-      id
-      ...UseEventEvent
-    }
-  }
-  fragment ChatPanelMessage on Event {
-    id
     ...EventContainer
     ...MessageEvent
-    createdAt
+    ... on ChatUpdate {
+      ...ChatUpdateEvent
+    }
   }
   ${EventContainer.fragments.event}
   ${Message.fragments.message}
+  ${ChatUpdate.fragments.chatUpdate}
 `;
 
 const ChatPanel = () => {
   const { chatId } = useParams();
-  const {
-    messages,
-    hasPreviousPage,
-    loading,
-    error,
-    isFetchingMore,
-    fetchMore,
-  } = useEvents({ chatId });
+  const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } =
+    useEvents({ chatId });
   const { createMessage } = useCreateMessage({ chatId });
 
   let topMessage = null;
   if (!loading) {
-    if (messages.length === 0) {
+    if (events.length === 0) {
       topMessage = 'no messages';
     } else if (!hasPreviousPage) {
       topMessage = 'start of conversation';
@@ -93,7 +76,7 @@ const ChatPanel = () => {
         >
           <Text>Failed to load messages</Text>
         </Center>
-      ) : messages.length === 0 && !loading ? (
+      ) : events.length === 0 && !loading ? (
         <Center
           style={{
             height: '100%',
@@ -113,16 +96,20 @@ const ChatPanel = () => {
             }
           }}
         >
-          {messages.map((message) => (
+          {events.map((event) => (
             <EventContainer
-              key={message.createdAt}
-              displayEventTime={message.displayEventTime}
-              eventData={message}
+              key={event.createdAt}
+              displayEventTime={event.displayEventTime}
+              eventData={event}
               event={
-                <Message
-                  displayAvatar={message.isLastMessageInGroup}
-                  message={message}
-                />
+                event.__typename === 'ChatUpdate' ? (
+                  <ChatUpdate update={event} />
+                ) : (
+                  <Message
+                    displayAvatar={event.isLastEventInGroup}
+                    message={event}
+                  />
+                )
               }
             />
           ))}

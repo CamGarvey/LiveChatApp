@@ -31,10 +31,14 @@ gql`
         status
       }
     }
+    ... on Alert {
+      status
+    }
     ... on Request {
       createdById
       recipientId
       isCreator
+      status
       createdBy {
         ... on Stranger {
           friendRequest {

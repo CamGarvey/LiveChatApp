@@ -7,7 +7,7 @@ export const NotificationSubscription = subscriptionField('notifications', {
   type: 'Notification',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator('notification.*', { pattern: true }),
+      () => context.pubsub.asyncIterator('*.notification.*', { pattern: true }),
       (payload: SubscriptionPayload, _, context) => {
         return payload.recipients.includes(context.userId);
       }

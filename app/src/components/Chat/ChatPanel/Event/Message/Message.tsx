@@ -18,14 +18,14 @@ gql`
 `;
 
 type Props = {
-  message: MessageEventFragment;
+  message: { __typename?: 'Message' | 'DeletedEvent' } & MessageEventFragment;
   displayAvatar: boolean;
 };
 
 export const Message = ({ message, displayAvatar }: Props) => {
   const [deleteMessage] = useDeleteMessageMutation();
   const messageContent =
-    message.__typename === 'DeletedMessage' ? (
+    message.__typename === 'DeletedEvent' ? (
       <DeletedMessage iconSide={message.isCreator ? 'left' : 'right'} />
     ) : (
       <MessageBubble
@@ -69,21 +69,15 @@ export const Message = ({ message, displayAvatar }: Props) => {
 
 Message.fragments = {
   message: gql`
-    fragment MessageEvent on MessageResult {
+    fragment MessageEvent on Event {
+      id
+      isCreator
+      ...OutgoingEvent
+      ...IncomingEvent
+
       ... on Message {
-        id
-        isCreator
         content
-        ...OutgoingEvent
-        ...IncomingEvent
         ...MessageActions
-      }
-      ... on DeletedMessage {
-        id
-        ...OutgoingEvent
-        ...IncomingEvent
-        isCreator
-        deletedAt
       }
     }
     ${OutgoingEvent.fragments.event}

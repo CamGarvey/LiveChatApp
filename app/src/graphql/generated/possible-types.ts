@@ -6,29 +6,28 @@
       }
       const result: PossibleTypesResultData = {
   "possibleTypes": {
+    "Alert": [
+      "NewFriendAlert"
+    ],
     "Chat": [
       "DeletedChat",
       "DirectMessageChat",
       "GroupChat"
     ],
     "Event": [
-      "DeletedMessage",
+      "ChatUpdate",
+      "DeletedEvent",
       "Message"
     ],
     "KnownUser": [
       "Friend",
       "Me"
     ],
-    "MessageResult": [
-      "DeletedMessage",
-      "Message"
-    ],
     "Notification": [
-      "ChatInvite",
-      "FriendRequest"
+      "FriendRequest",
+      "NewFriendAlert"
     ],
     "Request": [
-      "ChatInvite",
       "FriendRequest"
     ],
     "User": [

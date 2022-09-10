@@ -145,7 +145,9 @@ UserMenu.fragments = {
         friendRequest {
           id
           createdById
-          recipientId
+          recipient {
+          id
+          }
           isCreator
         }
       }

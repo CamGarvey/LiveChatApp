@@ -4,7 +4,7 @@ import { nonNull, queryField } from 'nexus';
 import { hashIdArg } from '../../shared';
 
 export const MessageQuery = queryField('message', {
-  type: 'MessageResult',
+  type: 'Event',
   description: 'Get a message by id',
   args: {
     messageId: nonNull(

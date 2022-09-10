@@ -62,7 +62,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
 });
 
 export const DeleteMessageMutation = mutationField('deleteMessage', {
-  type: 'DeletedMessage',
+  type: 'DeletedEvent',
   args: {
     messageId: nonNull(
       hashIdArg({

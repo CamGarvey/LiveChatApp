@@ -26,11 +26,3 @@ export const Message = objectType({
     });
   },
 });
-
-export const DeletedMessage = objectType({
-  name: 'DeletedMessage',
-  definition: (t) => {
-    t.implements('Event');
-    t.date('deletedAt');
-  },
-});

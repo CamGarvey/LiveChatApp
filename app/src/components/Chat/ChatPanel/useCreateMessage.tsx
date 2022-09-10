@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 import { useUser } from 'context/UserContext';
 import {
-  GetMessagesDocument,
-  GetMessagesQuery,
+  GetEventsDocument,
+  GetEventsQuery,
   useCreateMessageMutation,
 } from 'graphql/generated/graphql';
 
@@ -53,23 +53,23 @@ export const useCreateMessage = ({ chatId }: Props) => {
       },
 
       update: (cache, { data }) => {
-        const result = cache.readQuery<GetMessagesQuery>({
-          query: GetMessagesDocument,
+        const result = cache.readQuery<GetEventsQuery>({
+          query: GetEventsDocument,
           variables: {
             chatId,
           },
         });
 
-        cache.writeQuery<GetMessagesQuery>({
-          query: GetMessagesDocument,
+        cache.writeQuery<GetEventsQuery>({
+          query: GetEventsDocument,
           variables: {
             chatId,
           },
           data: {
-            messages: {
-              pageInfo: result.messages.pageInfo,
+            events: {
+              pageInfo: result.events.pageInfo,
               edges: [
-                ...result.messages.edges,
+                ...result.events.edges,
                 {
                   node: {
                     __typename: 'Message',

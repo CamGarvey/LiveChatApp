@@ -3,7 +3,7 @@ import { interfaceType } from 'nexus';
 
 export const EventInterface = interfaceType({
   name: 'Event',
-  resolveType: (t: Event) => t.type,
+  resolveType: (t: Event) => (t.deletedAt ? 'DeletedEvent' : t.type),
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.hashId('createdById');
