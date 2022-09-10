@@ -1,11 +1,11 @@
-import { Chat } from '@prisma/client';
+import { Chat, Event } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
 import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
 
 export const ChatsSubscription = subscriptionField('chats', {
-  type: 'Chat',
+  type: 'ChatSubscriptionResult',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.*', { pattern: true }),
@@ -14,7 +14,7 @@ export const ChatsSubscription = subscriptionField('chats', {
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Chat>) {
+  resolve(payload: SubscriptionPayload<Chat | Event>) {
     return payload.content;
   },
 });
@@ -39,12 +39,12 @@ export const ChatUpdatedSubscription = subscriptionField('chatUpdated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.update.*', { pattern: true }),
-      (payload: SubscriptionPayload<Chat>) => {
+      (payload: SubscriptionPayload<Event>) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Chat>) {
+  resolve(payload: SubscriptionPayload<Event>) {
     return payload.content;
   },
 });

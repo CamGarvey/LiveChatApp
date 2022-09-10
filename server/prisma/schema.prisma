@@ -59,8 +59,8 @@ model Alert {
 }
 
 enum AlertType {
-  NewChat
   NewFriend
+  GroupChatCreated
 }
 
 enum AlertStatus {

@@ -1,5 +1,5 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Event, Message, Prisma, User } from '@prisma/client';
+import { Event, Prisma, User } from '@prisma/client';
 import { objectType } from 'nexus';
 
 export const DirectMessageChat = objectType({

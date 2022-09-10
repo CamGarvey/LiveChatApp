@@ -1,7 +1,7 @@
 import { objectType } from 'nexus';
 
-export const ChatNameUpdate = objectType({
-  name: 'ChatNameUpdate',
+export const ChatNameUpdated = objectType({
+  name: 'NameUpdated',
   definition: (t) => {
     t.implements('Event');
     t.nonNull.string('nameBefore', {
@@ -27,8 +27,8 @@ export const ChatNameUpdate = objectType({
   },
 });
 
-export const ChatDescriptionUpdate = objectType({
-  name: 'ChatDescriptionUpdate',
+export const ChatDescriptionUpdated = objectType({
+  name: 'DescriptionUpdated',
   definition: (t) => {
     t.implements('Event');
     t.nonNull.string('descriptionBefore', {
@@ -54,8 +54,8 @@ export const ChatDescriptionUpdate = objectType({
   },
 });
 
-export const ChatAdminsAddedUpdate = objectType({
-  name: 'ChatAdminsAddedUpdate',
+export const ChatAdminsAddedUpdated = objectType({
+  name: 'AdminsAdded',
   definition: (t) => {
     t.implements('Event');
     t.nonNull.list.nonNull.field('adminsAdded', {
@@ -73,8 +73,8 @@ export const ChatAdminsAddedUpdate = objectType({
   },
 });
 
-export const ChatAdminsRemovedUpdate = objectType({
-  name: 'ChatAdminsRemovedUpdate',
+export const ChatAdminsRemovedUpdated = objectType({
+  name: 'AdminsRemoved',
   definition: (t) => {
     t.implements('Event');
     t.nonNull.list.nonNull.field('adminsRemoved', {
@@ -92,8 +92,8 @@ export const ChatAdminsRemovedUpdate = objectType({
   },
 });
 
-export const ChatMembersAddedUpdate = objectType({
-  name: 'ChatMembersAddedUpdate',
+export const ChatMembersAddedUpdated = objectType({
+  name: 'MembersAdded',
   definition: (t) => {
     t.implements('Event');
     t.nonNull.list.nonNull.field('membersAdded', {
@@ -112,7 +112,7 @@ export const ChatMembersAddedUpdate = objectType({
 });
 
 export const ChatMembersRemovedUpdate = objectType({
-  name: 'ChatMembersRemovedUpdate',
+  name: 'MembersRemoved',
   definition: (t) => {
     t.implements('Event');
     t.nonNull.list.nonNull.field('membersRemoved', {

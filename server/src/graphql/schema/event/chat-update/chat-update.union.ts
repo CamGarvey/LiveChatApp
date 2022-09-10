@@ -12,12 +12,12 @@ export const ChatUpdateResult = unionType({
   },
   definition: (t) => {
     t.members(
-      'ChatNameUpdate',
-      'ChatDescriptionUpdate',
-      'ChatAdminsAddedUpdate',
-      'ChatAdminsRemovedUpdate',
-      'ChatMembersAddedUpdate',
-      'ChatMembersRemovedUpdate'
+      'NameUpdated',
+      'DescriptionUpdated',
+      'AdminsAdded',
+      'AdminsRemoved',
+      'MembersAdded',
+      'MembersRemoved'
     );
   },
 });
