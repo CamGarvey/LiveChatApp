@@ -46,6 +46,19 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
       },
     });
 
+    // Create alerts notifications
+
+    const alert = await prisma.notification.createMany({
+      data: {
+        createdById: userId,
+        recipientId: {
+          
+        }
+      }
+    })
+
+
+
     // Publish the created chat to every member apart from the user who created it (userId)
     await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatCreated, {
       recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),

@@ -14,10 +14,14 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
     // Create a new friend request
     // If there is already a friend request in the database then update that one
-    const notification = await prisma.notification.upsert({
-      create: {
+    const notification = await prisma.notification.create({
+      data: {
         type: 'Request',
-        recipientId: friendId,
+        recipients: {
+          connect: {
+            id: friendId,
+          },
+        },
         createdById: userId,
         request: {
           create: {
@@ -25,17 +29,6 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
           },
         },
       },
-      update: {
-        request: {
-          update: {
-            status: 'SENT',
-          },
-        },
-        createdAt: new Date().toISOString(),
-        recipientId: friendId,
-        createdById: userId,
-      },
-      where: {},
     });
 
     // Publish this new request
@@ -63,14 +56,14 @@ export const CancelFriendRequestMutation = mutationField(
       auth.canCancelRequest(friendRequestId),
     resolve: async (_, { friendRequestId }, { prisma, pubsub }) => {
       // Delete the request by setting deletedAt
-      const request = await prisma.request.update({
+      const request = await prisma.request.delete({
         where: {
           notificationId: friendRequestId,
         },
         include: {
           notification: {
             include: {
-              recipient: {
+              recipients: {
                 select: {
                   id: true,
                 },
@@ -78,16 +71,13 @@ export const CancelFriendRequestMutation = mutationField(
             },
           },
         },
-        data: {
-          status: 'CANCELLED',
-        },
       });
 
       // Publish this deleted request
       pubsub.publish<SubscriptionPayload<Notification>>(
         Subscription.FriendRequestCancelled,
         {
-          recipients: [request.notification.recipient.id],
+          recipients: request.notification.recipients.map((x) => x.id),
           content: request.notification,
         }
       );
@@ -100,37 +90,48 @@ export const CancelFriendRequestMutation = mutationField(
 export const DeclineFriendRequestMutation = mutationField(
   'declineFriendRequest',
   {
-    type: 'FriendRequest',
+    type: 'RequestResponse',
     description: 'Decline a received Friend Request',
     args: {
       friendRequestId: nonNull(hashIdArg()),
     },
     authorize: (_, { friendRequestId }, { auth }) =>
       auth.canDeclineRequest(friendRequestId),
-    resolve: async (_, { friendRequestId }, { prisma, pubsub }) => {
-      // Decline the friend request
-      const request = await prisma.request.update({
-        where: {
-          notificationId: friendRequestId,
-        },
+    resolve: async (_, { friendRequestId }, { prisma, pubsub, userId }) => {
+      // Create a request response
+      const response = await prisma.requestResponse.create({
         include: {
-          notification: true,
+          request: {
+            include: {
+              notification: true,
+            },
+          },
         },
         data: {
+          request: {
+            connect: {
+              notificationId: friendRequestId,
+            },
+          },
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
           status: 'DECLINED',
         },
       });
 
-      // Publish this declined request
+      // Publish response to the creator
       pubsub.publish<SubscriptionPayload<Notification>>(
         Subscription.FriendRequestDeclined,
         {
-          recipients: [request.notification.createdById],
-          content: request.notification,
+          recipients: [response.request.notification.createdById],
+          content: response.request.notification,
         }
       );
 
-      return request.notification;
+      return response;
     },
   }
 );
@@ -138,7 +139,7 @@ export const DeclineFriendRequestMutation = mutationField(
 export const AcceptFriendRequestMutation = mutationField(
   'acceptFriendRequest',
   {
-    type: 'FriendRequest',
+    type: 'RequestResponse',
     description: 'Accept a friend request',
     args: {
       friendRequestId: nonNull(hashIdArg()),
@@ -147,17 +148,30 @@ export const AcceptFriendRequestMutation = mutationField(
       await auth.canAcceptFriendRequest(friendRequestId),
     resolve: async (_, { friendRequestId }, { prisma, pubsub, userId }) => {
       // Accept request
-      const request = await prisma.request.update({
-        where: {
-          notificationId: friendRequestId,
-        },
-        include: {
-          notification: true,
-        },
+      const response = await prisma.requestResponse.create({
         data: {
+          request: {
+            connect: {
+              notificationId: friendRequestId,
+            },
+          },
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
           status: 'ACCEPTED',
         },
+        include: {
+          request: {
+            select: {
+              notification: true,
+            },
+          },
+        },
       });
+
+      const friendId = response.request.notification.createdById;
 
       // Add as friend
       const user = await prisma.user.update({
@@ -167,12 +181,12 @@ export const AcceptFriendRequestMutation = mutationField(
         data: {
           friends: {
             connect: {
-              id: request.notification.createdById,
+              id: friendId,
             },
           },
           friendsOf: {
             connect: {
-              id: request.notification.createdById,
+              id: friendId,
             },
           },
         },
@@ -182,17 +196,17 @@ export const AcceptFriendRequestMutation = mutationField(
       pubsub.publish<SubscriptionPayload<Notification>>(
         Subscription.FriendRequestAccepted,
         {
-          recipients: [request.notification.createdById],
-          content: request.notification,
+          recipients: [friendId],
+          content: response.request.notification,
         }
       );
       // Publish new friend
       pubsub.publish(Subscription.FriendCreated, {
-        userId: request.notification.createdById,
+        userId: friendId,
         friend: user,
       });
 
-      return request.notification;
+      return response;
     },
   }
 );

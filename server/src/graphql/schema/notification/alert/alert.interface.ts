@@ -15,8 +15,17 @@ export const Alert = interfaceType({
   },
   definition: (t) => {
     t.implements('Notification');
-    t.nonNull.field('status', {
-      type: 'RequestStatus',
+    t.nonNull.list.nonNull.field('recipients', {
+      type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.notification
+          .findUniqueOrThrow({
+            where: {
+              id: parent.id,
+            },
+          })
+          .recipients();
+      },
     });
   },
 });

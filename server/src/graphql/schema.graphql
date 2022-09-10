@@ -32,9 +32,7 @@ interface Alert implements Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User!
-  recipientId: HashId!
-  status: RequestStatus!
+  recipients: [User!]!
 }
 
 interface Chat {
@@ -202,9 +200,8 @@ type FriendRequest implements Notification & Request {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User!
-  recipientId: HashId!
-  status: RequestStatus!
+  recipients: [User!]!
+  responses: RequestStatus!
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
@@ -244,9 +241,7 @@ type GroupChatCreated implements Alert & Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User!
-  recipientId: HashId!
-  status: RequestStatus!
+  recipients: [User!]!
 }
 
 scalar HashId
@@ -271,7 +266,6 @@ interface KnownUser {
 type Me implements KnownUser & User {
   chats: [Chat!]!
   createdAt: Date!
-  friendRequests(status: RequestStatus): [FriendRequest!]!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -330,7 +324,7 @@ type Message implements Event {
 
 type Mutation {
   """Accept a friend request"""
-  acceptFriendRequest(friendRequestId: HashId!): FriendRequest
+  acceptFriendRequest(friendRequestId: HashId!): RequestResponse
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -370,7 +364,7 @@ type Mutation {
   ): Message
 
   """Decline a received Friend Request"""
-  declineFriendRequest(friendRequestId: HashId!): FriendRequest
+  declineFriendRequest(friendRequestId: HashId!): RequestResponse
 
   """Delete a Chat"""
   deleteChat(
@@ -440,9 +434,7 @@ type NewFriendAlert implements Alert & Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User!
-  recipientId: HashId!
-  status: RequestStatus!
+  recipients: [User!]!
 }
 
 interface Notification {
@@ -451,8 +443,6 @@ interface Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User!
-  recipientId: HashId!
 }
 
 """
@@ -543,17 +533,22 @@ interface Request implements Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User!
-  recipientId: HashId!
+  recipients: [User!]!
+  responses: RequestStatus!
+}
+
+type RequestResponse {
+  request: Request!
+  requestId: HashId!
   status: RequestStatus!
+  user: User!
+  userId: HashId!
 }
 
 enum RequestStatus {
   ACCEPTED
-  CANCELLED
   DECLINED
   SEEN
-  SENT
 }
 
 enum Sort {

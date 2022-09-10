@@ -15,8 +15,29 @@ export const Request = interfaceType({
   },
   definition: (t) => {
     t.implements('Notification');
-    t.nonNull.field('status', {
+    t.nonNull.list.nonNull.field('recipients', {
+      type: 'User',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.notification
+          .findUniqueOrThrow({
+            where: {
+              id: parent.id,
+            },
+          })
+          .recipients();
+      },
+    });
+    t.nonNull.field('responses', {
       type: 'RequestStatus',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.request
+          .findUniqueOrThrow({
+            where: {
+              notificationId: parent.id,
+            },
+          })
+          .responses();
+      },
     });
   },
 });

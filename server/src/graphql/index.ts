@@ -2,6 +2,8 @@ import { connectionPlugin, fieldAuthorizePlugin, makeSchema } from 'nexus';
 import path from 'path';
 import * as allTypes from './schema';
 
+console.log({ allTypes });
+
 export const schema = makeSchema({
   types: allTypes,
   plugins: [connectionPlugin(), fieldAuthorizePlugin()],

@@ -13,26 +13,6 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('User', 'KnownUser');
-    t.nonNull.list.nonNull.field('friendRequests', {
-      type: 'FriendRequest',
-      args: {
-        status: 'RequestStatus',
-      },
-      resolve: async (parent, { status }, { prisma }) => {
-        return await prisma.notification.findMany({
-          where: {
-            type: 'Request',
-            request: {
-              is: {
-                type: 'FriendRequest',
-                status: status || undefined,
-              },
-            },
-            recipientId: parent.id,
-          },
-        });
-      },
-    });
   },
 });
 

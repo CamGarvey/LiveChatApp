@@ -11,29 +11,29 @@ datasource db {
 }
 
 model User {
-  id                Int            @id @default(autoincrement()) @map("id")
-  email             String         @unique
+  id                Int               @id @default(autoincrement()) @map("id")
+  email             String            @unique
   name              String?
-  username          String         @unique
-  friends           User[]         @relation("Friends")
-  friendsOf         User[]         @relation("Friends")
-  likedMessages     Message[]      @relation("MessageLikedBy")
-  memberOfChats     Chat[]         @relation("ChatMembers")
-  adminOfChats      Chat[]         @relation("ChatAdmins")
-  creatorOfChats    Chat[]         @relation("ChatCreatedBy")
-  updatedAt         DateTime       @updatedAt
-  createdAt         DateTime       @default(now())
-  notifications     Notification[] @relation("NotificationsReceived")
-  notificationsSent Notification[] @relation("NotificationsSent")
-  eventsCreated     Event[]        @relation("EventsCreated")
+  username          String            @unique
+  friends           User[]            @relation("Friends")
+  friendsOf         User[]            @relation("Friends")
+  likedMessages     Message[]         @relation("MessageLikedBy")
+  memberOfChats     Chat[]            @relation("ChatMembers")
+  adminOfChats      Chat[]            @relation("ChatAdmins")
+  creatorOfChats    Chat[]            @relation("ChatCreatedBy")
+  updatedAt         DateTime          @updatedAt
+  createdAt         DateTime          @default(now())
+  notifications     Notification[]    @relation("NotificationsReceived")
+  notificationsSent Notification[]    @relation("NotificationsSent")
+  eventsCreated     Event[]           @relation("EventsCreated")
   chatUpdates       ChatUpdate[]
+  requestResponses  RequestResponse[] @relation("RequestResponses")
 }
 
 model Notification {
   id          Int              @id @default(autoincrement())
   type        NotificationType
-  recipient   User             @relation("NotificationsReceived", fields: [recipientId], references: [id])
-  recipientId Int
+  recipients  User[]           @relation("NotificationsReceived")
   createdBy   User             @relation("NotificationsSent", fields: [createdById], references: [id])
   createdById Int
   createdAt   DateTime         @default(now())
@@ -51,7 +51,6 @@ model Alert {
   type           AlertType
   notification   Notification @relation(fields: [notificationId], references: [id])
   notificationId Int          @unique
-  status         AlertStatus  @default(SENT)
   chat           Chat         @relation(fields: [chatId], references: [id])
   chatId         Int
 
@@ -63,18 +62,12 @@ enum AlertType {
   GroupChatCreated
 }
 
-enum AlertStatus {
-  SENT
-  SEEN
-  CANCELLED
-}
-
 /// Request is a type of notification that requires action
 model Request {
-  notification   Notification  @relation(fields: [notificationId], references: [id])
-  notificationId Int           @unique
+  notification   Notification      @relation(fields: [notificationId], references: [id])
+  notificationId Int               @unique
   type           RequestType
-  status         RequestStatus @default(SENT)
+  responses      RequestResponse[]
 
   @@id([notificationId])
 }
@@ -83,10 +76,19 @@ enum RequestType {
   FriendRequest
 }
 
+model RequestResponse {
+  request   Request       @relation(fields: [requestId], references: [notificationId])
+  requestId Int           @unique
+  user      User          @relation("RequestResponses", fields: [userId], references: [id])
+  userId    Int
+  status    RequestStatus
+
+  @@id([requestId])
+  @@unique([userId, requestId])
+}
+
 enum RequestStatus {
-  SENT
   SEEN
-  CANCELLED
   ACCEPTED
   DECLINED
 }

@@ -19,17 +19,6 @@ export const NotificationInterface = interfaceType({
     t.nonNull.boolean('isCreator', {
       resolve: async (parent, _, { userId }) => parent.createdById == userId,
     });
-    t.nonNull.hashId('recipientId');
-    t.nonNull.field('recipient', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.user.findUniqueOrThrow({
-          where: {
-            id: parent.recipientId,
-          },
-        });
-      },
-    });
     t.nonNull.hashId('createdById');
     t.nonNull.date('createdAt');
   },
