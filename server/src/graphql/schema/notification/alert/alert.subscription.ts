@@ -9,7 +9,7 @@ export const AlertSubscription = subscriptionField('alerts', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.alert.notification.*', {
+        context.pubsub.asyncIterator('*.alert.notification', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {

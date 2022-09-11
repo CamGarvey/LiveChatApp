@@ -9,7 +9,7 @@ export const RequestSubscription = subscriptionField('requests', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.request.notification.*', {
+        context.pubsub.asyncIterator('*.request.notification', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {
@@ -28,7 +28,7 @@ export const RequestSentSubscription = subscriptionField('requestSent', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.request.notification.sent', {
+        context.pubsub.asyncIterator('sent.*.request.notification', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {
@@ -49,7 +49,7 @@ export const RequestCancelledSubscription = subscriptionField(
     subscribe: async (rootValue, args, context) => {
       return withFilter(
         () =>
-          context.pubsub.asyncIterator('*.request.notification.cancelled', {
+          context.pubsub.asyncIterator('cancelled.*.request.notification', {
             pattern: true,
           }),
         (payload: SubscriptionPayload<Notification>) => {
@@ -71,7 +71,7 @@ export const RequestAcceptedSubscription = subscriptionField(
     subscribe: async (rootValue, args, context) => {
       return withFilter(
         () =>
-          context.pubsub.asyncIterator('*.request.notification.accepted', {
+          context.pubsub.asyncIterator('accepted.*.request.notification', {
             pattern: true,
           }),
         (payload: SubscriptionPayload<Notification>) => {
@@ -93,7 +93,7 @@ export const RequestDeclinedSubscription = subscriptionField(
     subscribe: async (rootValue, args, context) => {
       return withFilter(
         () =>
-          context.pubsub.asyncIterator('*.request.notification.declined', {
+          context.pubsub.asyncIterator('declined.*.request.notification', {
             pattern: true,
           }),
         (payload: SubscriptionPayload<Notification>) => {
@@ -113,7 +113,7 @@ export const FriendRequestSubscription = subscriptionField('friendRequests', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('friend.request.notification.*', {
+        context.pubsub.asyncIterator('*.friend.request.notification', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {

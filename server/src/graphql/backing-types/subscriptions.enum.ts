@@ -1,26 +1,23 @@
 export enum Subscription {
   // Chat updates
-
-  ChatNameUpdated = 'chat.update.name.updated',
-  ChatDescriptionUpdated = 'chat.update.description.updated',
-  ChatMembersAdded = 'chat.update.members.added',
-  ChatMembersRemoved = 'chat.update.members.removed',
-  ChatAdminsAdded = 'chat.update.admins.added',
-  ChatAdminsRemoved = 'chat.update.admins.removed',
+  ChatNameUpdated = 'updated.name.chat.update',
+  ChatDescriptionUpdated = 'updated.description.chat.update',
+  ChatMembersAdded = 'added.members.chat.update',
+  ChatMembersRemoved = 'removed.members.chat.update',
+  ChatAdminsAdded = 'added.admins.chat.update',
+  ChatAdminsRemoved = 'removed.admins.chat.update',
 
   // Chat events
-
-  MessageCreated = 'message.event.created',
-  MessageUpdated = 'message.event.updated',
-  MessageDeleted = 'message.event.deleted',
+  MessageCreated = 'created.message.event',
+  MessageUpdated = 'updated.message.event',
+  MessageDeleted = 'deleted.message.event',
 
   // Notifications
-
-  FriendRequestCancelled = 'friend.request.notification.cancelled',
-  FriendRequestAccepted = 'friend.request.notification.accepted',
-  FriendRequestSent = 'friend.request.notification.sent',
-  FriendRequestDeclined = 'friend.request.notification.declined',
-  FriendDeleted = 'friend.alert.notification.deleted',
-  ChatCreated = 'chat.alert.notification.created',
-  ChatDeleted = 'chat.alert.notification.deleted',
+  FriendRequestSent = 'sent.friend.request.notification',
+  FriendRequestCancelled = 'cancelled.friend.request.notification',
+  FriendRequestAccepted = 'accepted.friend.request.notification',
+  FriendRequestDeclined = 'declined.friend.request.notification',
+  FriendDeleted = 'deleted.friend.alert.notification',
+  ChatCreated = 'created.chat.alert.notification',
+  ChatDeleted = 'deleted.chat.alert.notification',
 }

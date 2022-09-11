@@ -15,7 +15,7 @@ export const MessagesSubscription = subscriptionField('messages', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator('message.event.*', { pattern: true }),
+      () => context.pubsub.asyncIterator('*.message.event', { pattern: true }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
         if (variables.chatId) {
           return (

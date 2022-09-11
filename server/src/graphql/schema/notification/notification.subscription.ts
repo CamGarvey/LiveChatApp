@@ -9,7 +9,7 @@ export const NotificationSubscription = subscriptionField('notifications', {
     'Subscribe to any changes to all alerts, requests, and responses',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator('*.notification.*', { pattern: true }),
+      () => context.pubsub.asyncIterator('*.notification', { pattern: true }),
       (payload: SubscriptionPayload, _, context) => {
         return payload.recipients.includes(context.userId);
       }

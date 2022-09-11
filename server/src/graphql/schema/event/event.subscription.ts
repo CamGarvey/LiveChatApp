@@ -14,7 +14,7 @@ export const EventsSubscription = subscriptionField('events', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator('*.event.*', { pattern: true }),
+      () => context.pubsub.asyncIterator('*.event', { pattern: true }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
         if (variables.chatId) {
           return (
@@ -40,7 +40,7 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.event.created', {
+        context.pubsub.asyncIterator('created.*.event', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
@@ -68,7 +68,7 @@ export const EventDeletedSubscription = subscriptionField('eventDeleted', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.event.deleted', {
+        context.pubsub.asyncIterator('deleted.*.event', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
@@ -96,7 +96,7 @@ export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.event.updated', {
+        context.pubsub.asyncIterator('updated.*.event', {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
