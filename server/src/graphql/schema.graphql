@@ -201,7 +201,18 @@ type FriendRequest implements Notification & Request {
   id: HashId!
   isCreator: Boolean!
   recipients: [User!]!
-  responses: RequestStatus!
+  responses: [Response!]!
+}
+
+type FriendRequestResponse implements Notification & Response {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  request: Request!
+  requestId: HashId!
+  status: ResponseStatus!
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
@@ -324,7 +335,7 @@ type Message implements Event {
 
 type Mutation {
   """Accept a friend request"""
-  acceptFriendRequest(friendRequestId: HashId!): RequestResponse
+  acceptFriendRequest(friendRequestId: HashId!): FriendRequestResponse
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -364,7 +375,7 @@ type Mutation {
   ): Message
 
   """Decline a received Friend Request"""
-  declineFriendRequest(friendRequestId: HashId!): RequestResponse
+  declineFriendRequest(friendRequestId: HashId!): FriendRequestResponse
 
   """Delete a Chat"""
   deleteChat(
@@ -490,7 +501,7 @@ type Query {
     """Returns the last n elements from the list."""
     last: Int
   ): EventConnection!
-  friendRequests(status: RequestStatus): [FriendRequest!]!
+  friendRequests(status: ResponseStatus): [FriendRequest!]!
   friends: [Friend!]!
   me: Me
 
@@ -534,18 +545,21 @@ interface Request implements Notification {
   id: HashId!
   isCreator: Boolean!
   recipients: [User!]!
-  responses: RequestStatus!
+  responses: [Response!]!
 }
 
-type RequestResponse {
+interface Response implements Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
   request: Request!
   requestId: HashId!
-  status: RequestStatus!
-  user: User!
-  userId: HashId!
+  status: ResponseStatus!
 }
 
-enum RequestStatus {
+enum ResponseStatus {
   ACCEPTED
   DECLINED
   SEEN

@@ -27,8 +27,8 @@ export const Request = interfaceType({
           .recipients();
       },
     });
-    t.nonNull.field('responses', {
-      type: 'RequestStatus',
+    t.nonNull.list.nonNull.field('responses', {
+      type: 'Response',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.request
           .findUniqueOrThrow({

@@ -11,23 +11,22 @@ datasource db {
 }
 
 model User {
-  id                Int               @id @default(autoincrement()) @map("id")
-  email             String            @unique
+  id                Int            @id @default(autoincrement()) @map("id")
+  email             String         @unique
   name              String?
-  username          String            @unique
-  friends           User[]            @relation("Friends")
-  friendsOf         User[]            @relation("Friends")
-  likedMessages     Message[]         @relation("MessageLikedBy")
-  memberOfChats     Chat[]            @relation("ChatMembers")
-  adminOfChats      Chat[]            @relation("ChatAdmins")
-  creatorOfChats    Chat[]            @relation("ChatCreatedBy")
-  updatedAt         DateTime          @updatedAt
-  createdAt         DateTime          @default(now())
-  notifications     Notification[]    @relation("NotificationsReceived")
-  notificationsSent Notification[]    @relation("NotificationsSent")
-  eventsCreated     Event[]           @relation("EventsCreated")
+  username          String         @unique
+  friends           User[]         @relation("Friends")
+  friendsOf         User[]         @relation("Friends")
+  likedMessages     Message[]      @relation("MessageLikedBy")
+  memberOfChats     Chat[]         @relation("ChatMembers")
+  adminOfChats      Chat[]         @relation("ChatAdmins")
+  creatorOfChats    Chat[]         @relation("ChatCreatedBy")
+  updatedAt         DateTime       @updatedAt
+  createdAt         DateTime       @default(now())
+  notifications     Notification[] @relation("NotificationsReceived")
+  notificationsSent Notification[] @relation("NotificationsSent")
+  eventsCreated     Event[]        @relation("EventsCreated")
   chatUpdates       ChatUpdate[]
-  requestResponses  RequestResponse[] @relation("RequestResponses")
 }
 
 model Notification {
@@ -39,11 +38,30 @@ model Notification {
   createdAt   DateTime         @default(now())
   alert       Alert?
   request     Request?
+  response    Response?
 }
 
 enum NotificationType {
   Alert
   Request
+  Response
+}
+
+// Response is a type of notifcation that is a response to another notification
+// for example a notification of type friend request is sent to a user
+// this user accepts this request and sends a notification of response
+model Response {
+  notification   Notification   @relation(fields: [notificationId], references: [id])
+  notificationId Int            @unique
+  request        Request        @relation(fields: [requestId], references: [notificationId])
+  requestId      Int            @unique
+  status         ResponseStatus
+}
+
+enum ResponseStatus {
+  SEEN
+  ACCEPTED
+  DECLINED
 }
 
 /// Alert is a type of notification that does not request action
@@ -64,33 +82,16 @@ enum AlertType {
 
 /// Request is a type of notification that requires action
 model Request {
-  notification   Notification      @relation(fields: [notificationId], references: [id])
-  notificationId Int               @unique
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int          @unique
   type           RequestType
-  responses      RequestResponse[]
+  responses      Response[]
 
   @@id([notificationId])
 }
 
 enum RequestType {
   FriendRequest
-}
-
-model RequestResponse {
-  request   Request       @relation(fields: [requestId], references: [notificationId])
-  requestId Int           @unique
-  user      User          @relation("RequestResponses", fields: [userId], references: [id])
-  userId    Int
-  status    RequestStatus
-
-  @@id([requestId])
-  @@unique([userId, requestId])
-}
-
-enum RequestStatus {
-  SEEN
-  ACCEPTED
-  DECLINED
 }
 
 model Chat {

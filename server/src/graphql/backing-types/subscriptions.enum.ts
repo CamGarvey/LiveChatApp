@@ -22,7 +22,5 @@ export enum Subscription {
   FriendRequestAccepted = 'friend.request.notification.accepted',
   FriendRequestSent = 'friend.request.notification.sent',
   FriendRequestDeclined = 'friend.request.notification.declined',
-  FriendDeleted = 'friend.alert.notification.deleted',
-  FriendCreated = 'friend.alert.notification.created',
   GroupChatCreated = 'group.chat.alert.notification.created',
 }
