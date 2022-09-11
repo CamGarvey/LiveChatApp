@@ -5,6 +5,8 @@ import SubscriptionPayload from '../../backing-types/subscription-payload';
 
 export const NotificationSubscription = subscriptionField('notifications', {
   type: 'Notification',
+  description:
+    'Subscribe to any changes to all alerts, requests, and responses',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('*.notification.*', { pattern: true }),

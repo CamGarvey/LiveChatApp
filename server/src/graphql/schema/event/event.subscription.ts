@@ -58,7 +58,7 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
 });
 
 export const EventDeletedSubscription = subscriptionField('eventDeleted', {
-  type: 'Event',
+  type: 'DeletedEvent',
   description: 'Subscribe to deleted events in chat',
   args: {
     chatId: hashIdArg(),

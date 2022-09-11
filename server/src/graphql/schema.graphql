@@ -44,6 +44,26 @@ interface Chat {
   updatedAt: Date
 }
 
+type ChatCreatedAlert implements Alert & Notification {
+  chat: Chat!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+}
+
+type ChatDeletedAlert implements Alert & Notification {
+  chat: Chat!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+}
+
 union ChatSubscriptionResult = AdminsAdded | AdminsRemoved | DescriptionUpdated | DirectMessageChat | GroupChat | MembersAdded | MembersRemoved | NameUpdated
 
 union ChatUpdate = AdminsAdded | AdminsRemoved | DescriptionUpdated | MembersAdded | MembersRemoved | NameUpdated
@@ -186,6 +206,16 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
+type FriendDeletedAlert implements Alert & Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  user: Stranger!
+}
+
 type FriendEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
@@ -243,16 +273,6 @@ type GroupChat implements Chat {
   members: [User!]!
   name: String!
   updatedAt: Date
-}
-
-type GroupChatCreated implements Alert & Notification {
-  chat: Chat!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  recipients: [User!]!
 }
 
 scalar HashId
@@ -439,13 +459,14 @@ type NameUpdated implements Event {
   updatedAt: Date!
 }
 
-type NewFriendAlert implements Alert & Notification {
+type NewFriend implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
   recipients: [User!]!
+  user: Friend!
 }
 
 interface Notification {
@@ -501,7 +522,6 @@ type Query {
     """Returns the last n elements from the list."""
     last: Int
   ): EventConnection!
-  friendRequests(status: ResponseStatus): [FriendRequest!]!
   friends: [Friend!]!
   me: Me
 
@@ -609,7 +629,7 @@ type Subscription {
   eventCreated(chatId: HashId): Event
 
   """Subscribe to deleted events in chat"""
-  eventDeleted(chatId: HashId): Event
+  eventDeleted(chatId: HashId): DeletedEvent
 
   """Subscribe to updated events in chat"""
   eventUpdated(chatId: HashId): Event
@@ -621,20 +641,34 @@ type Subscription {
   friendRequests: FriendRequest
   friends: User
 
-  """SUbscribe to created messages in chat"""
+  """Subscribe to created messages in chat"""
   messageCreated(chatId: HashId): Message
 
   """Subscribe to deleted messages in chat"""
   messageDeleted(chatId: HashId): DeletedEvent
 
   """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId): Event
+  messageUpdated(chatId: HashId): Message
 
   """Subscribe to any created/updated/deleted messages"""
   messages(chatId: HashId): Event
+
+  """Subscribe to any changes to all alerts, requests, and responses"""
   notifications: Notification
 
-  """Subscribe to friend requests"""
+  """Subscribe to accepted requests"""
+  requestAccepted: Request
+
+  """Subscribe to cancelled requests"""
+  requestCancelled: Request
+
+  """Subscribe to declined requests"""
+  requestDeclined: Request
+
+  """Subscribe to sent requests"""
+  requestSent: Request
+
+  """Subscribe to requests"""
   requests: Request
 }
 

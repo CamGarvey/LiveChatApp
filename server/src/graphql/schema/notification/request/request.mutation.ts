@@ -16,7 +16,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
     // If there is already a friend request in the database then update that one
     const notification = await prisma.notification.create({
       data: {
-        type: 'Request',
+        type: 'RESPONSE',
         recipients: {
           connect: {
             id: friendId,
@@ -25,7 +25,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
         createdById: userId,
         request: {
           create: {
-            type: 'FriendRequest',
+            type: 'FRIEND_REQUEST',
           },
         },
       },
@@ -109,7 +109,7 @@ export const DeclineFriendRequestMutation = mutationField(
       // Create a new notification of type response
       const responseNotification = await prisma.notification.create({
         data: {
-          type: 'Response',
+          type: 'RESPONSE',
           createdById: userId,
           recipients: {
             connect: {
@@ -161,7 +161,7 @@ export const AcceptFriendRequestMutation = mutationField(
       // Create a new notification of type response
       const responseNotification = await prisma.notification.create({
         data: {
-          type: 'Response',
+          type: 'RESPONSE',
           createdById: userId,
           recipients: {
             connect: {
@@ -178,7 +178,7 @@ export const AcceptFriendRequestMutation = mutationField(
       });
 
       // Add as friend
-      const user = await prisma.user.update({
+      await prisma.user.update({
         where: {
           id: userId,
         },

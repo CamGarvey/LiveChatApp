@@ -3,7 +3,12 @@ import { interfaceType } from 'nexus';
 
 export const ChatInterface = interfaceType({
   name: 'Chat',
-  resolveType: (chat: Chat) => (chat.deletedAt ? 'DeletedChat' : chat.type),
+  resolveType: (chat: Chat) =>
+    chat.deletedAt
+      ? 'DeletedChat'
+      : chat.type === 'DIRECT_MESSAGE'
+      ? 'DirectMessageChat'
+      : 'GroupChat',
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.hashId('createdById');

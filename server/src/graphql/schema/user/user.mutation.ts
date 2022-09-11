@@ -2,6 +2,7 @@ import { mutationField, nonNull, stringArg } from 'nexus';
 import SubscriptionPayload from '../../backing-types/subscription-payload';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
+import { Notification } from '@prisma/client';
 
 export const UpdateUserMutation = mutationField('updateUser', {
   type: 'Me',
@@ -29,35 +30,51 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
   },
   authorize: (_, { friendId }, { auth }) => auth.canDeleteFriend(friendId),
   resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-    // Delete user
-    const user = await prisma.user.update({
+    // Delete friend
+    const friend = await prisma.user.update({
       where: {
-        id: userId,
+        id: friendId,
       },
       data: {
         friends: {
           disconnect: {
-            id: friendId,
+            id: userId,
           },
         },
         friendsOf: {
           disconnect: {
-            id: friendId,
+            id: userId,
           },
         },
       },
     });
 
-    const friend = await prisma.user.findUnique({
-      where: {
-        id: friendId,
+    // Create alert notification for deleted friend
+    const notification = await prisma.notification.create({
+      data: {
+        type: 'ALERT',
+        recipients: {
+          connect: {
+            id: friendId,
+          },
+        },
+        createdById: userId,
+        alert: {
+          create: {
+            type: 'FRIEND_DELETED',
+          },
+        },
       },
     });
 
-    pubsub.publish<SubscriptionPayload>(Subscription.FriendDeleted, {
-      recipients: [friendId],
-      content: user,
-    });
+    // Publish notification to deleted friend
+    pubsub.publish<SubscriptionPayload<Notification>>(
+      Subscription.FriendDeleted,
+      {
+        recipients: [friendId],
+        content: notification,
+      }
+    );
 
     return friend;
   },

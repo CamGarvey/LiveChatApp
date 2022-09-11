@@ -42,9 +42,9 @@ model Notification {
 }
 
 enum NotificationType {
-  Alert
-  Request
-  Response
+  ALERT
+  REQUEST
+  RESPONSE
 }
 
 // Response is a type of notifcation that is a response to another notification
@@ -69,15 +69,17 @@ model Alert {
   type           AlertType
   notification   Notification @relation(fields: [notificationId], references: [id])
   notificationId Int          @unique
-  chat           Chat         @relation(fields: [chatId], references: [id])
-  chatId         Int
+  chat           Chat?        @relation(fields: [chatId], references: [id])
+  chatId         Int?
 
   @@id([notificationId])
 }
 
 enum AlertType {
-  NewFriend
-  GroupChatCreated
+  FRIEND_CREATED
+  FRIEND_DELETED
+  CHAT_CREATED
+  CHAT_DELETED
 }
 
 /// Request is a type of notification that requires action
@@ -91,7 +93,7 @@ model Request {
 }
 
 enum RequestType {
-  FriendRequest
+  FRIEND_REQUEST
 }
 
 model Chat {
@@ -111,8 +113,8 @@ model Chat {
 }
 
 enum ChatType {
-  DirectMessageChat
-  GroupChat
+  DIRECT_MESSAGE
+  GROUP
 }
 
 model Event {
@@ -130,8 +132,8 @@ model Event {
 }
 
 enum EventType {
-  Message
-  ChatUpdate
+  MESSAGE
+  CHAT_UPDATE
 }
 
 model Message {
@@ -157,10 +159,10 @@ model ChatUpdate {
 }
 
 enum ChatUpdateType {
-  MembersAdded
-  MembersRemoved
-  AdminsAdded
-  AdminsRemoved
-  NameUpdated
-  DescriptionUpdated
+  MEMBERS_ADDED
+  MEMBERS_REMOVED
+  ADMINS_ADDED
+  ADMINS_REMOVED
+  NAME_UPDATED
+  DESCRIPTION_UPDATED
 }

@@ -32,7 +32,7 @@ export const MessagesSubscription = subscriptionField('messages', {
 
 export const MessageCreatedSubscription = subscriptionField('messageCreated', {
   type: 'Message',
-  description: 'SUbscribe to created messages in chat',
+  description: 'Subscribe to created messages in chat',
   args: {
     chatId: hashIdArg(),
   },
@@ -81,7 +81,7 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
 });
 
 export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
-  type: 'Event',
+  type: 'Message',
   description: 'Subscribe to updated messages in chat',
   args: {
     chatId: hashIdArg(),

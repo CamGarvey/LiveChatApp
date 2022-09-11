@@ -1,9 +1,8 @@
-import { NotificationType } from '@prisma/client';
 import { interfaceType } from 'nexus';
 
 export const NotificationInterface = interfaceType({
   name: 'Notification',
-  resolveType: (source: { type: NotificationType }) => source.type,
+  resolveType: (source: any) => (source.type as string).toLowerCase(),
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.field('createdBy', {

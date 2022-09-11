@@ -1,8 +1,6 @@
 export enum Subscription {
   // Chat updates
 
-  ChatCreated = 'chat.created',
-  ChatDeleted = 'chat.deleted',
   ChatNameUpdated = 'chat.update.name.updated',
   ChatDescriptionUpdated = 'chat.update.description.updated',
   ChatMembersAdded = 'chat.update.members.added',
@@ -22,5 +20,7 @@ export enum Subscription {
   FriendRequestAccepted = 'friend.request.notification.accepted',
   FriendRequestSent = 'friend.request.notification.sent',
   FriendRequestDeclined = 'friend.request.notification.declined',
-  GroupChatCreated = 'group.chat.alert.notification.created',
+  FriendDeleted = 'friend.alert.notification.deleted',
+  ChatCreated = 'chat.alert.notification.created',
+  ChatDeleted = 'chat.alert.notification.deleted',
 }

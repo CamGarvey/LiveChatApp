@@ -2,14 +2,7 @@ import { interfaceType } from 'nexus';
 
 export const Response = interfaceType({
   name: 'Response',
-  resolveType: (source) => {
-    // const request = await prisma.request.findUniqueOrThrow({
-    //   where: {
-    //     notificationId: source.requestId
-    //   }
-    // });
-    return 'FriendRequestResponse';
-  },
+  resolveType: (source) => 'FriendRequestResponse',
   definition: (t) => {
     t.implements('Notification');
     t.nonNull.hashId('requestId');

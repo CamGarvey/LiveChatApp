@@ -23,9 +23,9 @@ export const CreateMessageMutation = mutationField('createMessage', {
   resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
     const event = await prisma.event.create({
       data: {
+        type: 'MESSAGE',
         chatId,
         createdById: userId,
-        type: 'Message',
         message: {
           create: {
             content,
