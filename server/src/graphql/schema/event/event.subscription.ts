@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
 import { Event } from '@prisma/client';
 import { hashIdArg } from '../shared';
-import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
+import { Subscription, SubscriptionPayload } from '../../backing-types';
 
 export const EventsSubscription = subscriptionField('events', {
   type: 'Event',
@@ -14,7 +14,7 @@ export const EventsSubscription = subscriptionField('events', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator('*.event', { pattern: true }),
+      () => context.pubsub.asyncIterator('event.*', { pattern: true }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
         if (variables.chatId) {
           return (
@@ -40,7 +40,7 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('created.*.event', {
+        context.pubsub.asyncIterator(Subscription.EventCreated, {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
@@ -68,7 +68,7 @@ export const EventDeletedSubscription = subscriptionField('eventDeleted', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('deleted.*.event', {
+        context.pubsub.asyncIterator(Subscription.EventDeleted, {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Event>, variables, context) => {
@@ -96,7 +96,7 @@ export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('updated.*.event', {
+        context.pubsub.asyncIterator(Subscription.EventUpdated, {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Event>, variables, context) => {

@@ -1,6 +1,4 @@
-type SubscriptionPayload<T = any> = {
+export type SubscriptionPayload<T = any> = {
   recipients: number[];
   content: T;
 };
-
-export default SubscriptionPayload;

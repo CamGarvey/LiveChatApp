@@ -31,14 +31,9 @@ gql`
         status
       }
     }
-    ... on Alert {
-      status
-    }
     ... on Request {
       createdById
-      recipientId
       isCreator
-      status
       createdBy {
         ... on Stranger {
           friendRequest {
@@ -46,7 +41,7 @@ gql`
           }
         }
       }
-      recipient {
+      recipients {
         id
         ... on Stranger {
           status
@@ -66,9 +61,7 @@ gql`
 const filterNotifications = (
   notifications: LiveNotificationFragment[]
 ): LiveNotificationFragment[] =>
-  notifications
-    .filter((x) => ['SENT', 'SEEN'].includes(x.status))
-    .filter((x) => !x.isCreator) ?? [];
+  notifications.filter((x) => !x.isCreator) ?? [];
 
 type Props = {
   onNotification: (notification: NotificationsSubscription) => void;

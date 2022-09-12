@@ -11,18 +11,20 @@ import {
 } from 'graphql/generated/graphql';
 
 gql`
-  mutation AcceptFriendRequest($friendRequestId: HashId!) {
-    acceptFriendRequest(friendRequestId: $friendRequestId) {
-      ...RequestInfo
+  mutation AcceptRequest($requestId: HashId!) {
+    acceptRequest(requestId: $requestId) {
+      id
+      createdById
     }
   }
-  mutation DeclineFriendRequest($friendRequestId: HashId!) {
-    declineFriendRequest(friendRequestId: $friendRequestId) {
-      ...RequestInfo
+  mutation DeclineRequest($requestId: HashId!) {
+    declineRequest(requestId: $requestId) {
+      id
+      createdById
     }
   }
-  mutation CancelFriendRequest($friendRequestId: HashId!) {
-    cancelFriendRequest(friendRequestId: $friendRequestId) {
+  mutation CancelRequest($requestId: HashId!) {
+    cancelRequest(requestId: $requestId) {
       ...RequestInfo
     }
   }
@@ -40,9 +42,7 @@ gql`
   fragment RequestInfo on FriendRequest {
     id
     isCreator
-    status
     createdById
-    recipientId
   }
   fragment FriendRequestUser on User {
     id
@@ -55,7 +55,7 @@ gql`
   }
 `;
 
-export const useFriendRequest = () => {
+export const useRequest = () => {
   const [accept, { data: acceptData, loading: loadingAccept }] =
     useAcceptFriendRequestMutation();
   const [decline, { data: delcineData, loading: loadingDecline }] =
@@ -68,10 +68,10 @@ export const useFriendRequest = () => {
   const [remove, { data: deleteData, loading: loadingDelete }] =
     useDeleteFriendMutation();
 
-  const acceptRequest = (friendRequestId: string) =>
+  const acceptRequest = (requestId: string) =>
     accept({
       variables: {
-        friendRequestId,
+        requestId,
       },
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestUserFragment>(
@@ -90,47 +90,17 @@ export const useFriendRequest = () => {
       },
     });
 
-  const declineRequest = (friendRequestId: string) =>
+  const declineRequest = (requestId: string) =>
     decline({
       variables: {
-        friendRequestId,
-      },
-      update: (cache, { data: newData }) => {
-        cache.updateFragment<FriendRequestUserFragment>(
-          {
-            id: `User:${newData.declineFriendRequest.createdById}`,
-            fragment: FriendRequestUserFragmentDoc,
-          },
-          (data) => ({
-            ...data,
-            // Remove friend request
-            friendRequest: null,
-            // Update status
-            status: StrangerStatus.NoRequest,
-          })
-        );
+        requestId,
       },
     });
 
-  const cancelRequest = (friendRequestId: string) =>
+  const cancelRequest = (requestId: string) =>
     cancel({
       variables: {
-        friendRequestId,
-      },
-      update: (cache, { data: newData }) => {
-        cache.updateFragment<FriendRequestUserFragment>(
-          {
-            id: `User:${newData.cancelFriendRequest.recipientId}`,
-            fragment: FriendRequestUserFragmentDoc,
-          },
-          (data) => ({
-            ...data,
-            // Remove friend request
-            friendRequest: null,
-            // Update status
-            status: StrangerStatus.NoRequest,
-          })
-        );
+        requestId,
       },
     });
 

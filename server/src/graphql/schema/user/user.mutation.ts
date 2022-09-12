@@ -1,5 +1,5 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
-import SubscriptionPayload from '../../backing-types/subscription-payload';
+import { SubscriptionPayload } from '../../backing-types';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 import { Notification } from '@prisma/client';

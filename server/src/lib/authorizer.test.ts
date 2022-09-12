@@ -1172,7 +1172,7 @@ describe('canAcceptFriendRequest', () => {
       new Error()
     );
 
-    await expect(authorizer.canAcceptFriendRequest(100)).rejects.toThrowError();
+    await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError();
   });
 
   it('should throw if the user is not the recipent of the friend request', async () => {
@@ -1182,7 +1182,7 @@ describe('canAcceptFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    await expect(authorizer.canAcceptFriendRequest(100)).rejects.toThrowError(
+    await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError(
       'You do not have permission to accept this friend request'
     );
   });
@@ -1194,7 +1194,7 @@ describe('canAcceptFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    await expect(authorizer.canAcceptFriendRequest(100)).rejects.toThrowError(
+    await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError(
       'Invalid state'
     );
   });
@@ -1206,7 +1206,7 @@ describe('canAcceptFriendRequest', () => {
     } as unknown as FriendRequest;
     mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
 
-    const result = await authorizer.canAcceptFriendRequest(100);
+    const result = await authorizer.canAcceptRequest(100);
 
     expect(result).toBe(true);
     expect(mockCtx.prisma.friendRequest.findUniqueOrThrow).toBeCalledWith({

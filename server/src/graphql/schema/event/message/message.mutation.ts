@@ -1,7 +1,6 @@
 import { Event } from '@prisma/client';
 import { mutationField, nonNull, stringArg } from 'nexus';
-import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
-import { Subscription } from '../../../backing-types';
+import { Subscription, SubscriptionPayload } from '../../../backing-types';
 import { hashIdArg } from '../../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
@@ -50,50 +49,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Event>>(Subscription.MessageCreated, {
-      recipients: event.chat.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId),
-      content: event,
-    });
-
-    return event;
-  },
-});
-
-export const DeleteMessageMutation = mutationField('deleteMessage', {
-  type: 'DeletedEvent',
-  args: {
-    messageId: nonNull(
-      hashIdArg({
-        description: 'Id of Message to delete',
-      })
-    ),
-  },
-  description: 'Delete a Message',
-  authorize: (_, { messageId }, { auth }) => auth.canDeletedEvent(messageId),
-  resolve: async (_, { messageId }, { prisma, pubsub, userId }) => {
-    const event = await prisma.event.update({
-      data: {
-        deletedAt: new Date(),
-      },
-      include: {
-        chat: {
-          select: {
-            members: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
-      },
-      where: {
-        id: messageId,
-      },
-    });
-
-    pubsub.publish<SubscriptionPayload<Event>>(Subscription.MessageDeleted, {
+    pubsub.publish<SubscriptionPayload<Event>>(Subscription.EventCreated, {
       recipients: event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
@@ -146,7 +102,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Event>>(Subscription.MessageUpdated, {
+    pubsub.publish<SubscriptionPayload<Event>>(Subscription.EventUpdated, {
       recipients: message.event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),

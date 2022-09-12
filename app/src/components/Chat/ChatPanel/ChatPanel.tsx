@@ -102,13 +102,14 @@ const ChatPanel = () => {
               displayEventTime={event.displayEventTime}
               eventData={event}
               event={
-                event.__typename === 'ChatUpdate' ? (
-                  <ChatUpdate update={event} />
-                ) : (
+                event.__typename === 'DeletedEvent' ||
+                event.__typename === 'Message' ? (
                   <Message
                     displayAvatar={event.isLastEventInGroup}
                     message={event}
                   />
+                ) : (
+                  <></>
                 )
               }
             />

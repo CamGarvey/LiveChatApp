@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import SubscriptionPayload from '../../backing-types/subscription-payload';
+import { SubscriptionPayload } from '../../backing-types';
 import { IContext } from '../../context.interface';
 
 export const FriendSubscription = subscriptionField('friends', {

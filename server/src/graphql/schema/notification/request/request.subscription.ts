@@ -1,7 +1,7 @@
 import { Notification } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import SubscriptionPayload from '../../../backing-types/subscription-payload';
+import { Subscription, SubscriptionPayload } from '../../../backing-types';
 
 export const RequestSubscription = subscriptionField('requests', {
   type: 'Request',
@@ -28,7 +28,7 @@ export const RequestSentSubscription = subscriptionField('requestSent', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('sent.*.request.notification', {
+        context.pubsub.asyncIterator(Subscription.RequestSent, {
           pattern: true,
         }),
       (payload: SubscriptionPayload<Notification>) => {
@@ -49,7 +49,7 @@ export const RequestCancelledSubscription = subscriptionField(
     subscribe: async (rootValue, args, context) => {
       return withFilter(
         () =>
-          context.pubsub.asyncIterator('cancelled.*.request.notification', {
+          context.pubsub.asyncIterator(Subscription.RequestCancelled, {
             pattern: true,
           }),
         (payload: SubscriptionPayload<Notification>) => {
@@ -71,7 +71,7 @@ export const RequestAcceptedSubscription = subscriptionField(
     subscribe: async (rootValue, args, context) => {
       return withFilter(
         () =>
-          context.pubsub.asyncIterator('accepted.*.request.notification', {
+          context.pubsub.asyncIterator(Subscription.RequestAccepted, {
             pattern: true,
           }),
         (payload: SubscriptionPayload<Notification>) => {
@@ -93,7 +93,7 @@ export const RequestDeclinedSubscription = subscriptionField(
     subscribe: async (rootValue, args, context) => {
       return withFilter(
         () =>
-          context.pubsub.asyncIterator('declined.*.request.notification', {
+          context.pubsub.asyncIterator(Subscription.RequestDeclined, {
             pattern: true,
           }),
         (payload: SubscriptionPayload<Notification>) => {
@@ -106,22 +106,3 @@ export const RequestDeclinedSubscription = subscriptionField(
     },
   }
 );
-
-export const FriendRequestSubscription = subscriptionField('friendRequests', {
-  type: 'FriendRequest',
-  description: 'Subscribe to friend requests',
-  subscribe: async (rootValue, args, context) => {
-    return withFilter(
-      () =>
-        context.pubsub.asyncIterator('*.friend.request.notification', {
-          pattern: true,
-        }),
-      (payload: SubscriptionPayload<Notification>) => {
-        return payload.recipients.includes(context.userId);
-      }
-    )(rootValue, args, context);
-  },
-  resolve(payload: SubscriptionPayload<Notification>) {
-    return payload.content;
-  },
-});

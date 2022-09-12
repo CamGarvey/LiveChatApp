@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { UserMenuFragment } from 'graphql/generated/graphql';
-import { useFriendRequest } from 'hooks';
+import { useRequest } from 'hooks';
 import {
   IconMailbox,
   IconMailForward,
@@ -40,7 +40,7 @@ const UserMenu = ({
     loadingSend,
     deleteFriend,
     loadingDelete,
-  } = useFriendRequest();
+  } = useRequest();
 
   const anyLoading =
     loadingAccept ||
@@ -145,8 +145,8 @@ UserMenu.fragments = {
         friendRequest {
           id
           createdById
-          recipient {
-          id
+          recipients {
+            id
           }
           isCreator
         }

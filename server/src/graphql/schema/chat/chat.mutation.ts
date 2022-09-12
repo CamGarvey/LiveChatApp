@@ -1,8 +1,7 @@
 import { Chat, Event, Notification } from '@prisma/client';
 import { ForbiddenError } from 'apollo-server-core';
 import { list, mutationField, nonNull, stringArg } from 'nexus';
-import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
-import { Subscription } from '../../backing-types';
+import { Subscription, SubscriptionPayload } from '../../backing-types';
 import { hashIdArg } from '../shared';
 import { CreateGroupChatInput } from './chat.input';
 
@@ -200,9 +199,7 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
         },
       });
 
-      if (members.length == 0) return chat;
-
-      await prisma.event.create({
+      const event = await prisma.event.create({
         data: {
           type: 'CHAT_UPDATE',
           chat: {
@@ -228,18 +225,29 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
         },
       });
 
-      if (members.length == 0) return chat;
+      const recipients = chat.members
+        .map((x) => x.id)
+        .filter((x) => x !== userId);
 
-      // Publish the created chat to every member apart from the user who created it (userId)
-      await pubsub.publish<SubscriptionPayload<Chat>>(
-        Subscription.ChatAdminsRemoved,
+      // Publish new chat event
+      await pubsub.publish<SubscriptionPayload<Event>>(
+        Subscription.EventCreated,
         {
-          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          recipients,
+          content: event,
+        }
+      );
+
+      // Publish new notification
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatUpdated,
+        {
+          recipients,
           content: chat,
         }
       );
 
-      return chat;
+      return event;
     },
   }
 );
@@ -314,12 +322,25 @@ export const AddMembersToGroupChatMutation = mutationField(
         },
       });
 
-      // Publish the created chat to every member apart from the user who created it (userId)
+      const recipients = chat.members
+        .map((x) => x.id)
+        .filter((x) => x !== userId);
+
+      // Publish new chat event
       await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.ChatMembersAdded,
+        Subscription.EventCreated,
         {
-          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          recipients,
           content: event,
+        }
+      );
+
+      // Publish new notification
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatUpdated,
+        {
+          recipients,
+          content: chat,
         }
       );
 
@@ -398,13 +419,25 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
         },
       });
 
-      // Publish the created chat to every member
-      // apart from the user who created it (userId)
+      const recipients = chat.members
+        .map((x) => x.id)
+        .filter((x) => x !== userId);
+
+      // Publish new chat event
       await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.ChatAdminsRemoved,
+        Subscription.EventCreated,
         {
-          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          recipients,
           content: event,
+        }
+      );
+
+      // Publish new notification
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatUpdated,
+        {
+          recipients,
+          content: chat,
         }
       );
 
@@ -482,17 +515,29 @@ export const AddAdminsToGroupChatMutation = mutationField(
         },
       });
 
-      // Publish the created chat to every member
-      // apart from the user who created it (userId)
+      const recipients = chat.members
+        .map((x) => x.id)
+        .filter((x) => x !== userId);
+
+      // Publish new chat event
       await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.ChatAdminsAdded,
+        Subscription.EventCreated,
         {
-          recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+          recipients,
           content: event,
         }
       );
 
-      return chat;
+      // Publish new notification
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatUpdated,
+        {
+          recipients,
+          content: chat,
+        }
+      );
+
+      return event;
     },
   }
 );
@@ -553,17 +598,24 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
       },
     });
 
-    // Publish the created chat to every member
-    // apart from the user who created it (userId)
+    const recipients = chatAfterUpdate.members
+      .map((x) => x.id)
+      .filter((x) => x !== userId);
+
+    // Publish new chat event
     await pubsub.publish<SubscriptionPayload<Event>>(
-      Subscription.ChatNameUpdated,
+      Subscription.EventCreated,
       {
-        recipients: chatAfterUpdate.members
-          .map((x) => x.id)
-          .filter((x) => x !== userId),
+        recipients,
         content: event,
       }
     );
+
+    // Publish new notification
+    await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatUpdated, {
+      recipients,
+      content: chatAfterUpdate,
+    });
 
     return event;
   },
@@ -627,15 +679,25 @@ export const UpdateGroupChatDescription = mutationField(
         },
       });
 
-      // Publish the created chat to every member
-      // apart from the user who created it (userId)
+      const recipients = chatAfterUpdate.members
+        .map((x) => x.id)
+        .filter((x) => x !== userId);
+
+      // Publish new chat event
       await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.ChatDescriptionUpdated,
+        Subscription.EventCreated,
         {
-          recipients: chatAfterUpdate.members
-            .map((x) => x.id)
-            .filter((x) => x !== userId),
+          recipients,
           content: event,
+        }
+      );
+
+      // Publish new notification
+      await pubsub.publish<SubscriptionPayload<Chat>>(
+        Subscription.ChatUpdated,
+        {
+          recipients,
+          content: chatAfterUpdate,
         }
       );
 

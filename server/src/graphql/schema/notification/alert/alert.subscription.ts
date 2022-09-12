@@ -1,7 +1,7 @@
 import { Notification } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
+import { SubscriptionPayload } from '../../../backing-types';
 
 export const AlertSubscription = subscriptionField('alerts', {
   type: 'Alert',

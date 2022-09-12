@@ -638,7 +638,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canAcceptFriendRequest(requestId: number) {
+  public async canAcceptRequest(requestId: number) {
     const request = await this._prisma.request.findUniqueOrThrow({
       select: {
         notification: {

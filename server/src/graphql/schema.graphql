@@ -354,8 +354,8 @@ type Message implements Event {
 }
 
 type Mutation {
-  """Accept a friend request"""
-  acceptFriendRequest(friendRequestId: HashId!): FriendRequestResponse
+  """Accept a request"""
+  acceptRequest(requestId: HashId!): Response
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -373,8 +373,8 @@ type Mutation {
     members: [HashId!]!
   ): MembersAdded
 
-  """Cancel/Delete a sent Friend Request"""
-  cancelFriendRequest(friendRequestId: HashId!): FriendRequest
+  """Cancel a sent request"""
+  cancelRequest(requestId: HashId!): Request
 
   """Create a Chat"""
   createDirectMessageChat(
@@ -394,23 +394,21 @@ type Mutation {
     content: String!
   ): Message
 
-  """Decline a received Friend Request"""
-  declineFriendRequest(friendRequestId: HashId!): FriendRequestResponse
+  """Decline a received request"""
+  declineRequest(requestId: HashId!): Response
 
   """Delete a Chat"""
   deleteChat(
     """Id of Chat to be deleted"""
     chatId: HashId!
   ): DeletedChat
+  deleteEvent(
+    """Id of event"""
+    eventId: HashId
+  ): DeletedEvent
 
   """Delete a Friend"""
   deleteFriend(friendId: HashId!): Stranger
-
-  """Delete a Message"""
-  deleteMessage(
-    """Id of Message to delete"""
-    messageId: HashId!
-  ): DeletedEvent
 
   """Remove admins from a group chat"""
   removeAdminsFromGroupChat(
@@ -636,22 +634,7 @@ type Subscription {
 
   """Subscribe to any created/updated/deleted events"""
   events(chatId: HashId): Event
-
-  """Subscribe to friend requests"""
-  friendRequests: FriendRequest
   friends: User
-
-  """Subscribe to created messages in chat"""
-  messageCreated(chatId: HashId): Message
-
-  """Subscribe to deleted messages in chat"""
-  messageDeleted(chatId: HashId): DeletedEvent
-
-  """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId): Message
-
-  """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId): Event
 
   """Subscribe to any changes to all alerts, requests, and responses"""
   notifications: Notification

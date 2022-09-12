@@ -1,8 +1,7 @@
 import { Chat, Event } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
-import { Subscription } from '../../backing-types';
+import { Subscription, SubscriptionPayload } from '../../backing-types';
 
 export const ChatsSubscription = subscriptionField('chats', {
   type: 'ChatSubscriptionResult',
@@ -59,7 +58,7 @@ export const ChatDeletedSubscription = subscriptionField('chatDeleted', {
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Chat>) {
+  resolve(payload: SubscriptionPayload<Event>) {
     return payload.content;
   },
 });

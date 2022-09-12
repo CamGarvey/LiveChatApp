@@ -13,7 +13,9 @@ export const ChatUpdate = ({ update }: Props) => {
         <Text color={'dimmed'}>
           {update.createdBy.username} updated the chat name
         </Text>
-        <Text color={'dimmed'}>{update.name}</Text>
+        <Text color={'dimmed'}>
+          {update.__typename === 'NameUpdated' && update.nameAfter}
+        </Text>
       </Group>
     </Center>
   );
@@ -21,29 +23,15 @@ export const ChatUpdate = ({ update }: Props) => {
 
 ChatUpdate.fragments = {
   chatUpdate: gql`
-    fragment ChatUpdateEvent on ChatUpdate {
-      id
-      name
-      description
-      adminsAdded {
-        ...UserModified
-      }
-      adminsRemoved {
-        ...UserModified
-      }
-      membersAdded {
-        ...UserModified
-      }
-      membersRemoved {
-        ...UserModified
+    fragment ChatUpdateEvent on Event {
+      ... on NameUpdated {
+        nameBefore
+        nameAfter
       }
       createdBy {
+        id
         username
       }
-    }
-    fragment UserModified on User {
-      id
-      username
     }
   `,
 };

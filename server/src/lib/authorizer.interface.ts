@@ -32,7 +32,7 @@ export interface IAuthorizer {
   canSendFriendRequest: (friendId: number) => Promise<boolean>;
   canCancelRequest: (requestId: number) => Promise<boolean>;
   canDeclineRequest: (requestId: number) => Promise<boolean>;
-  canAcceptFriendRequest: (requestId: number) => Promise<boolean>;
+  canAcceptRequest: (requestId: number) => Promise<boolean>;
 
   canDeleteFriend: (friendId: number) => Promise<boolean>;
 }
