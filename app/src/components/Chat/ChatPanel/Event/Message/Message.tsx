@@ -11,7 +11,7 @@ import MessageBubble from './MessageBubble';
 
 gql`
   mutation DeleteMessage($messageId: HashId!) {
-    deleteMessage(messageId: $messageId) {
+    deleteEvent(eventId: $messageId) {
       id
     }
   }

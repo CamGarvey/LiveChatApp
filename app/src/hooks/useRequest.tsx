@@ -1,11 +1,8 @@
 import { gql } from '@apollo/client';
 import {
-  FriendRequestUserFragment,
-  FriendRequestUserFragmentDoc,
-  StrangerStatus,
-  useAcceptFriendRequestMutation,
-  useCancelFriendRequestMutation,
-  useDeclineFriendRequestMutation,
+  useAcceptRequestMutation,
+  useCancelRequestMutation,
+  useDeclineRequestMutation,
   useDeleteFriendMutation,
   useSendFriendRequestMutation,
 } from 'graphql/generated/graphql';
@@ -57,11 +54,11 @@ gql`
 
 export const useRequest = () => {
   const [accept, { data: acceptData, loading: loadingAccept }] =
-    useAcceptFriendRequestMutation();
+    useAcceptRequestMutation();
   const [decline, { data: delcineData, loading: loadingDecline }] =
-    useDeclineFriendRequestMutation();
+    useDeclineRequestMutation();
   const [cancel, { data: cancelData, loading: loadingCancel }] =
-    useCancelFriendRequestMutation();
+    useCancelRequestMutation();
   const [send, { data: sendData, loading: loadingSend }] =
     useSendFriendRequestMutation();
 

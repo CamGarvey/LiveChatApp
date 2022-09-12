@@ -531,14 +531,11 @@ export class Authorizer implements IAuthorizer {
             id: true,
           },
           where: {
-            type: 'Request',
+            type: 'REQUEST',
             recipientId: this.userId,
             request: {
               is: {
-                type: 'FriendRequest',
-                status: {
-                  in: ['SEEN', 'SENT'],
-                },
+                type: 'FRIEND_REQUEST',
               },
             },
           },

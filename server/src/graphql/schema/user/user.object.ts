@@ -74,22 +74,37 @@ export const Stranger = objectType({
           select: {
             notifications: {
               where: {
-                type: 'Request',
+                type: 'REQUEST',
                 request: {
-                  type: 'FriendRequest',
-                  status: {
-                    in: ['SEEN', 'SENT'],
+                  is: {
+                    type: 'FRIEND_REQUEST',
+                    notification: {
+                      createdById: parent.id,
+                    },
+                    responses: {
+                      none: {
+                        notification: {
+                          createdById: userId,
+                        },
+                      },
+                    },
                   },
                 },
               },
             },
             notificationsSent: {
               where: {
-                type: 'Request',
+                type: 'REQUEST',
                 request: {
-                  type: 'FriendRequest',
-                  status: {
-                    in: ['SEEN', 'SENT'],
+                  is: {
+                    type: 'FRIEND_REQUEST',
+                    notification: {
+                      recipients: {
+                        every: {
+                          id: parent.id,
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -120,22 +135,17 @@ export const Stranger = objectType({
           include: {
             notifications: {
               where: {
-                type: 'Request',
+                type: 'REQUEST',
                 request: {
-                  type: 'FriendRequest',
-                  status: {
-                    in: ['SEEN', 'SENT'],
-                  },
-                },
-              },
-            },
-            notificationsSent: {
-              where: {
-                type: 'Request',
-                request: {
-                  type: 'FriendRequest',
-                  status: {
-                    in: ['SEEN', 'SENT'],
+                  is: {
+                    type: 'FRIEND_REQUEST',
+                    responses: {
+                      none: {
+                        notification: {
+                          createdById: userId,
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -143,16 +153,7 @@ export const Stranger = objectType({
           },
         });
 
-        const sentRequest = user.notificationsSent.find(
-          (x) => x.recipientId == parent.id
-        );
-        if (sentRequest) {
-          return sentRequest;
-        }
-
-        const receivedRequest = user.notifications.find(
-          (x) => x.createdById == parent.id
-        );
+        const receivedRequest = user.notifications[0];
         if (receivedRequest) {
           return receivedRequest;
         }

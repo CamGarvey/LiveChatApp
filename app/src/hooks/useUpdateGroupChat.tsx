@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { useUser } from 'context/UserContext';
 import { useUpdateGroupChatMutation } from 'graphql/generated/graphql';
 
 gql`

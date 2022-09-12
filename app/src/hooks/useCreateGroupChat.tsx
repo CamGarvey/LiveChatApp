@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { showNotification } from '@mantine/notifications';
 import { useUser } from 'context/UserContext';
 import {
   GetChatsForDisplayDocument,
