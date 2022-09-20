@@ -1,8 +1,7 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
-import { SubscriptionPayload } from '../../backing-types';
+import { NotificationPayload, SubscriptionPayload } from '../../backing-types';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
-import { Notification } from '@prisma/client';
 
 export const UpdateUserMutation = mutationField('updateUser', {
   type: 'Me',
@@ -49,32 +48,24 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
       },
     });
 
-    // Create alert notification for deleted friend
-    const notification = await prisma.notification.create({
+    // Create alert for deleted friend
+    const alert = await prisma.alert.create({
       data: {
-        type: 'ALERT',
+        type: 'FRIEND_DELETED',
         recipients: {
           connect: {
             id: friendId,
           },
         },
         createdById: userId,
-        alert: {
-          create: {
-            type: 'FRIEND_DELETED',
-          },
-        },
       },
     });
 
     // Publish notification to deleted friend
-    pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.FriendDeleted,
-      {
-        recipients: [friendId],
-        content: notification,
-      }
-    );
+    pubsub.publish<NotificationPayload>(Subscription.FriendDeleted, {
+      recipients: [friendId],
+      content: alert,
+    });
 
     return friend;
   },

@@ -1,9 +1,8 @@
 import { objectType } from 'nexus';
 
-export const FriendRequestResponse = objectType({
-  name: 'FriendRequestResponse',
+export const Response = objectType({
+  name: 'Response',
   definition: (t) => {
-    t.implements('Response');
     t.nonNull.field('status', {
       type: 'ResponseStatus',
     });

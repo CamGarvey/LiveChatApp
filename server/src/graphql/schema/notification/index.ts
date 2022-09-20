@@ -3,4 +3,3 @@ export * from './notification.query';
 export * from './notification.subscription';
 export * from './request';
 export * from './alert';
-export * from './response';

@@ -2,7 +2,7 @@
 ### Do not make changes to this file directly
 
 
-type AdminsAdded implements Event {
+type AdminsAdded implements ChatUpdate & Event {
   adminsAdded: [User!]!
   chat: Chat!
   chatId: HashId!
@@ -14,7 +14,7 @@ type AdminsAdded implements Event {
   updatedAt: Date!
 }
 
-type AdminsRemoved implements Event {
+type AdminsRemoved implements ChatUpdate & Event {
   adminsRemoved: [User!]!
   chat: Chat!
   chatId: HashId!
@@ -66,7 +66,16 @@ type ChatDeletedAlert implements Alert & Notification {
 
 union ChatSubscriptionResult = AdminsAdded | AdminsRemoved | DescriptionUpdated | DirectMessageChat | GroupChat | MembersAdded | MembersRemoved | NameUpdated
 
-union ChatUpdate = AdminsAdded | AdminsRemoved | DescriptionUpdated | MembersAdded | MembersRemoved | NameUpdated
+interface ChatUpdate implements Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
 
 input CreateGroupChatInput {
   """Short description of the group chat"""
@@ -104,7 +113,7 @@ type DeletedEvent implements Event {
   updatedAt: Date!
 }
 
-type DescriptionUpdated implements Event {
+type DescriptionUpdated implements ChatUpdate & Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -206,6 +215,16 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
+type FriendCreatedAlert implements Alert & Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  user: Friend!
+}
+
 type FriendDeletedAlert implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
@@ -230,24 +249,14 @@ type FriendRequest implements Notification & Request {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipients: [User!]!
-  responses: [Response!]!
-}
-
-type FriendRequestResponse implements Notification & Response {
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  request: Request!
-  requestId: HashId!
-  status: ResponseStatus!
+  recipient: User!
+  recipientId: HashId!
+  response: Response
+  status: RequestStatus!
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements Chat {
-  adminIds: [HashId!]!
   admins: [User!]!
   createdAt: Date
   createdBy: User!
@@ -312,11 +321,13 @@ type Me implements KnownUser & User {
   ): FriendConnection!
   id: HashId!
   name: String
+  requests(status: RequestStatus): [Request!]!
+  sentRequests(status: RequestStatus): [Request!]!
   updatedAt: Date!
   username: String!
 }
 
-type MembersAdded implements Event {
+type MembersAdded implements ChatUpdate & Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -328,7 +339,7 @@ type MembersAdded implements Event {
   updatedAt: Date!
 }
 
-type MembersRemoved implements Event {
+type MembersRemoved implements ChatUpdate & Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -355,7 +366,7 @@ type Message implements Event {
 
 type Mutation {
   """Accept a request"""
-  acceptRequest(requestId: HashId!): Response
+  acceptRequest(requestId: HashId!): Alert
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -395,7 +406,7 @@ type Mutation {
   ): Message
 
   """Decline a received request"""
-  declineRequest(requestId: HashId!): Response
+  declineRequest(requestId: HashId!): Alert
 
   """Delete a Chat"""
   deleteChat(
@@ -427,7 +438,7 @@ type Mutation {
   ): MembersRemoved
 
   """Send a friend request to a user"""
-  sendFriendRequest(friendId: HashId!): FriendRequest
+  sendFriendRequest(strangerId: HashId!): FriendRequest
   updateGroupChatDescription(chatId: HashId!, description: String!): DescriptionUpdated
   updateGroupChatName(chatId: HashId!, name: String!): NameUpdated
 
@@ -444,7 +455,7 @@ type Mutation {
   updateUser(name: String!): Me
 }
 
-type NameUpdated implements Event {
+type NameUpdated implements ChatUpdate & Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -455,16 +466,6 @@ type NameUpdated implements Event {
   nameAfter: String!
   nameBefore: String!
   updatedAt: Date!
-}
-
-type NewFriend implements Alert & Notification {
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  recipients: [User!]!
-  user: Friend!
 }
 
 interface Notification {
@@ -529,6 +530,7 @@ type Query {
     messageId: HashId!
   ): Event
   notifications: [Notification!]!
+  requests(status: RequestStatus): [Request!]!
   user(
     """id of user"""
     userId: HashId!
@@ -562,18 +564,18 @@ interface Request implements Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipients: [User!]!
-  responses: [Response!]!
+  recipient: User!
+  recipientId: HashId!
+  response: Response
+  status: RequestStatus!
 }
 
-interface Response implements Notification {
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  request: Request!
-  requestId: HashId!
+enum RequestStatus {
+  CANCELLED
+  SENT
+}
+
+type Response {
   status: ResponseStatus!
 }
 

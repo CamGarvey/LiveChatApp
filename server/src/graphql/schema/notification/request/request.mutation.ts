@@ -1,45 +1,56 @@
-import { Notification } from '@prisma/client';
 import { mutationField, nonNull } from 'nexus';
-import { SubscriptionPayload, Subscription } from '../../../backing-types';
+import { Subscription, NotificationPayload } from '../../../backing-types';
 import { hashIdArg } from '../../shared';
 
 export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   type: 'FriendRequest',
   description: 'Send a friend request to a user',
   args: {
-    friendId: nonNull(hashIdArg()),
+    strangerId: nonNull(hashIdArg()),
   },
-  authorize: (_, { friendId }, { auth }) => auth.canSendFriendRequest(friendId),
-  resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
-    // Create a new friend request
-    // If there is already a friend request in the database then update that one
-    const notification = await prisma.notification.create({
-      data: {
-        type: 'RESPONSE',
-        recipients: {
+  authorize: (_, { strangerId }, { auth }) =>
+    auth.canSendFriendRequest(strangerId),
+  resolve: async (_, { strangerId }, { prisma, userId, pubsub }) => {
+    const time = new Date().toISOString();
+    // Create friend request
+    // If there is already a friend request in the database then return that one
+    const request = await prisma.request.upsert({
+      create: {
+        type: 'FRIEND_REQUEST',
+        createdAt: time,
+        recipient: {
           connect: {
-            id: friendId,
+            id: strangerId,
           },
         },
-        createdById: userId,
-        request: {
-          create: {
-            type: 'FRIEND_REQUEST',
+        createdBy: {
+          connect: {
+            id: userId,
           },
+        },
+      },
+      update: {
+        status: 'SENT',
+      },
+      where: {
+        recipientId_createdById_type: {
+          type: 'FRIEND_REQUEST',
+          createdById: userId,
+          recipientId: strangerId,
         },
       },
     });
 
-    // Publish this new request
-    pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.RequestSent,
-      {
-        recipients: [friendId],
-        content: notification,
-      }
-    );
+    // The request is new if the createdAt is equal to the time variable
+    if (request.createdAt.toISOString() === time) {
+      // Publish this new request
+      pubsub.publish<NotificationPayload>(Subscription.RequestSent, {
+        recipients: [strangerId],
+        content: request,
+      });
+    }
 
-    return notification;
+    return request;
   },
 });
 
@@ -51,87 +62,77 @@ export const CancelRequestMutation = mutationField('cancelRequest', {
   },
   authorize: (_, { requestId }, { auth }) => auth.canCancelRequest(requestId),
   resolve: async (_, { requestId }, { prisma, pubsub }) => {
-    // Delete the request by setting deletedAt
-    const request = await prisma.request.delete({
-      where: {
-        notificationId: requestId,
+    const request = await prisma.request.update({
+      data: {
+        status: 'CANCELLED',
       },
-      include: {
-        notification: {
-          include: {
-            recipients: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
+      where: {
+        id: requestId,
       },
     });
 
     // Publish this deleted request
-    pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.RequestCancelled,
-      {
-        recipients: request.notification.recipients.map((x) => x.id),
-        content: request.notification,
-      }
-    );
+    pubsub.publish<NotificationPayload>(Subscription.RequestCancelled, {
+      recipients: [request.recipientId],
+      content: request,
+    });
 
-    return request.notification;
+    return request;
   },
 });
 
 export const DeclineRequestMutation = mutationField('declineRequest', {
-  type: 'Response',
+  type: 'Alert',
   description: 'Decline a received request',
   args: {
     requestId: nonNull(hashIdArg()),
   },
   authorize: (_, { requestId }, { auth }) => auth.canDeclineRequest(requestId),
   resolve: async (_, { requestId }, { prisma, pubsub, userId }) => {
-    const requestNotification = await prisma.notification.findUniqueOrThrow({
-      where: {
-        id: requestId,
-      },
+    // Get the request
+    const request = await prisma.request.findUniqueOrThrow({
       select: {
         createdById: true,
       },
+      where: {
+        id: requestId,
+      },
     });
-    // Create a new notification of type response
-    const responseNotification = await prisma.notification.create({
+    // Respond to the request and create an alert
+    const alert = await prisma.alert.create({
       data: {
-        type: 'RESPONSE',
-        createdById: userId,
+        type: 'FRIEND_REQUEST_RESPONSE',
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
         recipients: {
           connect: {
-            id: requestNotification.createdById,
+            id: request.createdById,
           },
         },
         response: {
           create: {
             status: 'DECLINED',
-            requestId: requestId,
+            requestId,
           },
         },
       },
     });
 
-    // Publish response to the creator
-    pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.RequestDeclined,
-      {
-        recipients: [requestNotification.createdById],
-        content: responseNotification,
-      }
-    );
+    // Publish alert to the creator
+    pubsub.publish<NotificationPayload>(Subscription.RequestDeclined, {
+      recipients: [request.createdById],
+      content: alert,
+    });
 
-    return responseNotification;
+    return alert;
   },
 });
 
 export const AcceptRequestMutation = mutationField('acceptRequest', {
-  type: 'Response',
+  type: 'Alert',
   description: 'Accept a request',
   args: {
     requestId: nonNull(hashIdArg()),
@@ -139,39 +140,40 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
   authorize: async (_, { requestId }, { auth }) =>
     await auth.canAcceptRequest(requestId),
   resolve: async (_, { requestId }, { prisma, pubsub, userId }) => {
-    const requestNotification = await prisma.notification.findUniqueOrThrow({
+    // Get the request
+    const request = await prisma.request.findUniqueOrThrow({
+      select: {
+        createdById: true,
+        type: true,
+      },
       where: {
         id: requestId,
       },
-      select: {
-        createdById: true,
-        request: {
-          select: {
-            type: true,
+    });
+    // Respond to the request and create an alert
+    const alert = await prisma.alert.create({
+      data: {
+        type: 'FRIEND_REQUEST_RESPONSE',
+        createdBy: {
+          connect: {
+            id: userId,
           },
         },
-      },
-    });
-    // Create a new notification of type response
-    const responseNotification = await prisma.notification.create({
-      data: {
-        type: 'RESPONSE',
-        createdById: userId,
         recipients: {
           connect: {
-            id: requestNotification.createdById,
+            id: request.createdById,
           },
         },
         response: {
           create: {
-            status: 'ACCEPTED',
-            requestId: requestId,
+            status: 'DECLINED',
+            requestId,
           },
         },
       },
     });
 
-    if (requestNotification.request?.type === 'FRIEND_REQUEST') {
+    if (request.type === 'FRIEND_REQUEST') {
       // Add as friend
       await prisma.user.update({
         where: {
@@ -180,27 +182,24 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
         data: {
           friends: {
             connect: {
-              id: requestNotification.createdById,
+              id: request.createdById,
             },
           },
           friendsOf: {
             connect: {
-              id: requestNotification.createdById,
+              id: request.createdById,
             },
           },
         },
       });
     }
 
-    // Publish accepted request response
-    pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.RequestAccepted,
-      {
-        recipients: [requestNotification.createdById],
-        content: responseNotification,
-      }
-    );
+    // Publish alert
+    pubsub.publish<NotificationPayload>(Subscription.RequestAccepted, {
+      recipients: [request.createdById],
+      content: alert,
+    });
 
-    return responseNotification;
+    return alert;
   },
 });

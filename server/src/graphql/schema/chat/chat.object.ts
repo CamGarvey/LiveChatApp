@@ -89,7 +89,6 @@ export const GroupChat = objectType({
           .admins();
       },
     });
-    t.nonNull.list.nonNull.hashId('adminIds');
     t.nonNull.boolean('isAdmin', {
       resolve: async (parent, _, { prisma, userId }) => {
         const admins: User[] = await prisma.chat
@@ -130,16 +129,6 @@ export const GroupChat = objectType({
         );
       },
     });
-    // t.nonNull.list.nonNull.field('updates', {
-    //   type: 'IChat',
-    //   resolve: async (parent, _, { prisma }) => {
-    //     return await prisma.chat
-    //       .findUnique({
-    //         where: { id: parent.id || undefined },
-    //       })
-    //       .updates();
-    //   },
-    // });
   },
 });
 

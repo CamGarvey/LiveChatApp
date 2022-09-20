@@ -31,7 +31,7 @@ const loadChats = async (
 ) => {
   const chatFun = await prisma.chat.create({
     data: {
-      type: 'GroupChat',
+      type: 'GROUP',
       name: 'FUN',
       createdBy: {
         connect: {
@@ -41,7 +41,7 @@ const loadChats = async (
       event: {
         create: [
           {
-            type: 'Message',
+            type: 'MESSAGE',
             message: {
               create: {
                 content: 'Sup',
@@ -66,7 +66,7 @@ const loadChats = async (
   const chatBoring = await prisma.chat.create({
     data: {
       name: 'BORING',
-      type: 'GroupChat',
+      type: 'GROUP',
       createdBy: {
         connect: {
           id: masterUser.id,
@@ -81,7 +81,7 @@ const loadChats = async (
       event: {
         create: [
           {
-            type: 'Message',
+            type: 'MESSAGE',
             createdBy: {
               connect: {
                 id: masterUser.id,

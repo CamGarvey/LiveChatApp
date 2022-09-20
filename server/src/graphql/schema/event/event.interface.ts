@@ -3,7 +3,36 @@ import { interfaceType } from 'nexus';
 
 export const EventInterface = interfaceType({
   name: 'Event',
-  resolveType: (t: Event) => (t.deletedAt ? 'DeletedEvent' : t.type),
+  resolveType: async (source: Event, { prisma }) => {
+    if (source.deletedAt) {
+      return 'DeletedEvent';
+    }
+    if (source.type === 'MESSAGE') {
+      return 'Message';
+    }
+
+    const update = await prisma.chatUpdate.findUniqueOrThrow({
+      where: {
+        eventId: source.id,
+      },
+    });
+    switch (update.type) {
+      case 'ADMINS_ADDED':
+        return 'AdminsAdded';
+      case 'ADMINS_REMOVED':
+        return 'AdminsRemoved';
+      case 'MEMBERS_ADDED':
+        return 'MembersAdded';
+      case 'MEMBERS_REMOVED':
+        return 'MembersRemoved';
+      case 'NAME_UPDATED':
+        return 'NameUpdated';
+      case 'DESCRIPTION_UPDATED':
+        return 'DescriptionUpdated';
+      default:
+        return null;
+    }
+  },
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.hashId('createdById');

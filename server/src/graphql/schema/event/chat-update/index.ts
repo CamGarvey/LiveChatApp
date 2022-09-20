@@ -1,2 +1,2 @@
 export * from './chat-update.object';
-export * from './chat-update.union';
+export * from './chat-update.interface';

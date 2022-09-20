@@ -13,6 +13,44 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('User', 'KnownUser');
+    t.nonNull.list.nonNull.field('sentRequests', {
+      type: 'Request',
+      args: {
+        status: 'RequestStatus',
+      },
+      resolve: async (_, { status }, { prisma, userId }) => {
+        return await prisma.user
+          .findUniqueOrThrow({
+            where: {
+              id: userId,
+            },
+          })
+          .requestsSent({
+            where: {
+              status: status ?? undefined,
+            },
+          });
+      },
+    });
+    t.nonNull.list.nonNull.field('requests', {
+      type: 'Request',
+      args: {
+        status: 'RequestStatus',
+      },
+      resolve: async (_, { status }, { prisma, userId }) => {
+        return await prisma.user
+          .findUniqueOrThrow({
+            where: {
+              id: userId,
+            },
+          })
+          .requests({
+            where: {
+              status: status ?? undefined,
+            },
+          });
+      },
+    });
   },
 });
 
@@ -72,53 +110,52 @@ export const Stranger = objectType({
             id: userId,
           },
           select: {
-            notifications: {
+            requests: {
               where: {
-                type: 'REQUEST',
-                request: {
-                  is: {
-                    type: 'FRIEND_REQUEST',
-                    notification: {
-                      createdById: parent.id,
-                    },
-                    responses: {
-                      none: {
-                        notification: {
-                          createdById: userId,
+                type: 'FRIEND_REQUEST',
+                OR: [
+                  {
+                    response: null,
+                  },
+                  {
+                    response: {
+                      is: {
+                        status: {
+                          equals: 'SEEN',
                         },
                       },
                     },
                   },
-                },
+                ],
               },
             },
-            notificationsSent: {
+            requestsSent: {
               where: {
-                type: 'REQUEST',
-                request: {
-                  is: {
-                    type: 'FRIEND_REQUEST',
-                    notification: {
-                      recipients: {
-                        every: {
-                          id: parent.id,
+                type: 'FRIEND_REQUEST',
+                OR: [
+                  {
+                    response: null,
+                  },
+                  {
+                    response: {
+                      is: {
+                        status: {
+                          equals: 'SEEN',
                         },
                       },
                     },
                   },
-                },
+                ],
               },
             },
           },
         });
 
-        if (user.notifications.map((x) => x.createdById).includes(parent.id)) {
+        if (user.requests.find((x) => x.createdById === parent.id)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (
-          user.notificationsSent.map((x) => x.recipientId).includes(parent.id)
-        ) {
+        if (user.requestsSent.find((x) => x.recipientId === parent.id)) {
           return 'REQUEST_SENT';
         }
 
@@ -132,31 +169,57 @@ export const Stranger = objectType({
           where: {
             id: userId,
           },
-          include: {
-            notifications: {
+          select: {
+            requests: {
               where: {
-                type: 'REQUEST',
-                request: {
-                  is: {
-                    type: 'FRIEND_REQUEST',
-                    responses: {
-                      none: {
-                        notification: {
-                          createdById: userId,
+                type: 'FRIEND_REQUEST',
+                OR: [
+                  {
+                    response: null,
+                  },
+                  {
+                    response: {
+                      is: {
+                        status: {
+                          equals: 'SEEN',
                         },
                       },
                     },
                   },
-                },
+                ],
+              },
+            },
+            requestsSent: {
+              where: {
+                type: 'FRIEND_REQUEST',
+                OR: [
+                  {
+                    response: null,
+                  },
+                  {
+                    response: {
+                      is: {
+                        status: {
+                          equals: 'SEEN',
+                        },
+                      },
+                    },
+                  },
+                ],
               },
             },
           },
         });
-
-        const receivedRequest = user.notifications[0];
-        if (receivedRequest) {
-          return receivedRequest;
+        let request = user.requests.find((x) => x.createdById === parent.id);
+        if (request) {
+          return request;
         }
+
+        request = user.requestsSent.find((x) => x.recipientId === parent.id);
+        if (request) {
+          return request;
+        }
+
         return null;
       },
     });

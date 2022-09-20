@@ -1,4 +1,4 @@
-import { PrismaClient, RequestStatus } from '@prisma/client';
+import { prisma, PrismaClient, RequestStatus } from '@prisma/client';
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { IAuthorizer } from './authorizer.interface';
 
@@ -513,9 +513,9 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canSendFriendRequest(friendId: number) {
-    const friend = await this._prisma.user.findUniqueOrThrow({
+    const user = await this._prisma.user.findUniqueOrThrow({
       where: {
-        id: friendId,
+        id: this.userId,
       },
       select: {
         friends: {
@@ -523,54 +523,14 @@ export class Authorizer implements IAuthorizer {
             id: true,
           },
           where: {
-            id: this.userId,
-          },
-        },
-        notificationsSent: {
-          select: {
-            id: true,
-          },
-          where: {
-            type: 'REQUEST',
-            recipientId: this.userId,
-            request: {
-              is: {
-                type: 'FRIEND_REQUEST',
-              },
-            },
-          },
-        },
-        notifications: {
-          select: {
-            id: true,
-          },
-          where: {
-            createdById: this.userId,
-            request: {
-              is: {
-                type: 'FriendRequest',
-                status: {
-                  in: ['SEEN', 'SEEN'],
-                },
-              },
-            },
+            id: friendId,
           },
         },
       },
     });
 
-    if (friend.friends.length !== 0) {
+    if (user.friends.length !== 0) {
       throw new ForbiddenError('Already friends with this user');
-    }
-
-    // Make sure a request is not already sent out, either way
-    if (friend.notifications.length !== 0) {
-      throw new ForbiddenError('Already sent a friend request to this user');
-    }
-    if (friend.notificationsSent.length !== 0) {
-      throw new ForbiddenError(
-        'Already received a friend requets from this user'
-      );
     }
 
     return true;
@@ -578,27 +538,21 @@ export class Authorizer implements IAuthorizer {
 
   public async canCancelRequest(requestId: number) {
     const request = await this._prisma.request.findUniqueOrThrow({
-      include: {
-        notification: {
-          select: {
-            createdById: true,
-          },
-        },
-      },
       where: {
-        notificationId: requestId,
+        id: requestId,
+      },
+      include: {
+        response: true,
       },
     });
 
-    if (request.notification.createdById !== this.userId) {
+    if (request.createdById !== this.userId) {
       throw new ForbiddenError(
         'You do not have permission to cancel this request'
       );
     }
 
-    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
-
-    if (!pendingStates.includes(request.status)) {
+    if (['ACCEPTED', 'DECLINED'].includes(request.response?.status ?? '')) {
       throw new ForbiddenError('Invalid state');
     }
 
