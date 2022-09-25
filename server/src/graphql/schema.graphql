@@ -26,7 +26,7 @@ type AdminsRemoved implements ChatUpdate & Event {
   updatedAt: Date!
 }
 
-interface Alert {
+interface Alert implements Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -50,7 +50,7 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatCreatedAlert implements Alert {
+type ChatCreatedAlert implements Alert & Notification {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -60,7 +60,7 @@ type ChatCreatedAlert implements Alert {
   recipients: [User!]!
 }
 
-type ChatDeletedAlert implements Alert {
+type ChatDeletedAlert implements Alert & Notification {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -221,7 +221,7 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
-type FriendDeletedAlert implements Alert {
+type FriendDeletedAlert implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -239,7 +239,7 @@ type FriendEdge {
   node: Friend
 }
 
-type FriendRequest implements Request {
+type FriendRequest implements Notification & Request {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -463,6 +463,14 @@ type NameUpdated implements ChatUpdate & Event {
   updatedAt: Date!
 }
 
+interface Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+}
+
 """
 PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
 """
@@ -517,6 +525,7 @@ type Query {
     """id of message"""
     messageId: HashId!
   ): Event
+  notifications: Notification
   requests(state: RequestState): [Request!]!
   user(
     """id of user"""
@@ -545,7 +554,7 @@ type Query {
   ): UserConnection!
 }
 
-interface Request {
+interface Request implements Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -556,7 +565,7 @@ interface Request {
   state: RequestState!
 }
 
-type RequestAcceptedAlert implements Alert {
+type RequestAcceptedAlert implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -567,7 +576,7 @@ type RequestAcceptedAlert implements Alert {
   requestId: HashId!
 }
 
-type RequestDeclinedAlert implements Alert {
+type RequestDeclinedAlert implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!

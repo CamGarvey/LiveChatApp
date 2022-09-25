@@ -248,6 +248,7 @@ export interface NexusGenInterfaces {
   ChatUpdate: NexusGenRootTypes['AdminsAdded'] | NexusGenRootTypes['AdminsRemoved'] | NexusGenRootTypes['DescriptionUpdated'] | NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'] | NexusGenRootTypes['NameUpdated'];
   Event: NexusGenRootTypes['AdminsAdded'] | NexusGenRootTypes['AdminsRemoved'] | NexusGenRootTypes['DeletedEvent'] | NexusGenRootTypes['DescriptionUpdated'] | NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'] | NexusGenRootTypes['Message'] | NexusGenRootTypes['NameUpdated'];
   KnownUser: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'];
+  Notification: NexusGenRootTypes['ChatCreatedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['FriendRequest'] | NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
   Request: NexusGenRootTypes['FriendRequest'];
   User: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'] | NexusGenRootTypes['Stranger'];
 }
@@ -493,6 +494,7 @@ export interface NexusGenFieldTypes {
     friends: NexusGenRootTypes['Friend'][]; // [Friend!]!
     me: NexusGenRootTypes['Me'] | null; // Me
     message: NexusGenRootTypes['Event'] | null; // Event
+    notifications: NexusGenRootTypes['Notification'] | null; // Notification
     requests: NexusGenRootTypes['Request'][]; // [Request!]!
     user: NexusGenRootTypes['User'] | null; // User
     users: NexusGenRootTypes['UserConnection']; // UserConnection!
@@ -590,6 +592,13 @@ export interface NexusGenFieldTypes {
   KnownUser: { // field return type
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
     friends: NexusGenRootTypes['FriendConnection']; // FriendConnection!
+  }
+  Notification: { // field return type
+    createdAt: NexusGenScalars['Date']; // Date!
+    createdBy: NexusGenRootTypes['User']; // User!
+    createdById: NexusGenScalars['HashId']; // HashId!
+    id: NexusGenScalars['HashId']; // HashId!
+    isCreator: boolean; // Boolean!
   }
   Request: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
@@ -843,6 +852,7 @@ export interface NexusGenFieldTypeNames {
     friends: 'Friend'
     me: 'Me'
     message: 'Event'
+    notifications: 'Notification'
     requests: 'Request'
     user: 'User'
     users: 'UserConnection'
@@ -940,6 +950,13 @@ export interface NexusGenFieldTypeNames {
   KnownUser: { // field return type name
     chats: 'Chat'
     friends: 'FriendConnection'
+  }
+  Notification: { // field return type name
+    createdAt: 'Date'
+    createdBy: 'User'
+    createdById: 'HashId'
+    id: 'HashId'
+    isCreator: 'Boolean'
   }
   Request: { // field return type name
     createdAt: 'Date'
@@ -1134,6 +1151,7 @@ export interface NexusGenAbstractTypeMembers {
   ChatUpdate: "AdminsAdded" | "AdminsRemoved" | "DescriptionUpdated" | "MembersAdded" | "MembersRemoved" | "NameUpdated"
   Event: "AdminsAdded" | "AdminsRemoved" | "DeletedEvent" | "DescriptionUpdated" | "MembersAdded" | "MembersRemoved" | "Message" | "NameUpdated"
   KnownUser: "Friend" | "Me"
+  Notification: "ChatCreatedAlert" | "ChatDeletedAlert" | "FriendDeletedAlert" | "FriendRequest" | "RequestAcceptedAlert" | "RequestDeclinedAlert"
   Request: "FriendRequest"
   User: "Friend" | "Me" | "Stranger"
 }
@@ -1141,25 +1159,27 @@ export interface NexusGenAbstractTypeMembers {
 export interface NexusGenTypeInterfaces {
   AdminsAdded: "ChatUpdate" | "Event"
   AdminsRemoved: "ChatUpdate" | "Event"
-  ChatCreatedAlert: "Alert"
-  ChatDeletedAlert: "Alert"
+  ChatCreatedAlert: "Alert" | "Notification"
+  ChatDeletedAlert: "Alert" | "Notification"
   DeletedChat: "Chat"
   DeletedEvent: "Event"
   DescriptionUpdated: "ChatUpdate" | "Event"
   DirectMessageChat: "Chat"
   Friend: "KnownUser" | "User"
-  FriendDeletedAlert: "Alert"
-  FriendRequest: "Request"
+  FriendDeletedAlert: "Alert" | "Notification"
+  FriendRequest: "Notification" | "Request"
   GroupChat: "Chat"
   Me: "KnownUser" | "User"
   MembersAdded: "ChatUpdate" | "Event"
   MembersRemoved: "ChatUpdate" | "Event"
   Message: "Event"
   NameUpdated: "ChatUpdate" | "Event"
-  RequestAcceptedAlert: "Alert"
-  RequestDeclinedAlert: "Alert"
+  RequestAcceptedAlert: "Alert" | "Notification"
+  RequestDeclinedAlert: "Alert" | "Notification"
   Stranger: "User"
+  Alert: "Notification"
   ChatUpdate: "Event"
+  Request: "Notification"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -1176,7 +1196,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "Alert" | "Chat" | "ChatSubscriptionResult" | "ChatUpdate" | "Event" | "KnownUser" | "Request" | "User";
+export type NexusGenAbstractsUsingStrategyResolveType = "Alert" | "Chat" | "ChatSubscriptionResult" | "ChatUpdate" | "Event" | "KnownUser" | "Notification" | "Request" | "User";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

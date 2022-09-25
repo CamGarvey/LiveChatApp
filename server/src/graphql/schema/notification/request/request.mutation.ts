@@ -3,8 +3,8 @@ import {
   Subscription,
   RequestPayload,
   AlertPayload,
-} from '../../backing-types';
-import { hashIdArg } from '../shared';
+} from '../../../backing-types';
+import { hashIdArg } from '../../shared';
 
 export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   type: 'FriendRequest',

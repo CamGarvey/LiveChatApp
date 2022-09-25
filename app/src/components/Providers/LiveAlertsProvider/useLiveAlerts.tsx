@@ -9,17 +9,17 @@ import {
 import { useEffect } from 'react';
 
 gql`
-  query GetNotifications {
-    notifications {
+  query GetAlerts {
+    alerts {
       ...LiveNotification
     }
   }
-  subscription Notifications {
-    notifications {
+  subscription Alerts {
+    alerts {
       ...LiveNotification
     }
   }
-  fragment LiveNotification on Notification {
+  fragment LiveAlerts on Alert {
     id
     createdAt
     isCreator

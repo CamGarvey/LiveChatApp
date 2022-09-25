@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { AlertPayload } from '../../backing-types';
+import { AlertPayload } from '../../../backing-types';
 
 export const AlertSubscription = subscriptionField('alerts', {
   type: 'Alert',

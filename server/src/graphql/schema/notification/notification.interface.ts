@@ -1,9 +1,11 @@
-import { Alert as PrismaAlert } from '@prisma/client';
+import { Alert, Request } from '@prisma/client';
 import { interfaceType } from 'nexus';
 
-export const Alert = interfaceType({
-  name: 'Alert',
-  resolveType: (source: PrismaAlert) => {
+export const Notification = interfaceType({
+  name: 'Notification',
+  resolveType: (source: Alert | Request) => {
+    console.log(source);
+
     switch (source.type) {
       case 'CHAT_CREATED':
         return 'ChatCreatedAlert';
@@ -15,6 +17,8 @@ export const Alert = interfaceType({
         return 'RequestAcceptedAlert';
       case 'REQUEST_DECLINED':
         return 'RequestDeclinedAlert';
+      case 'FRIEND_REQUEST':
+        return 'FriendRequest';
       default:
         return null;
     }
@@ -36,17 +40,5 @@ export const Alert = interfaceType({
     });
     t.nonNull.hashId('createdById');
     t.nonNull.date('createdAt');
-    t.nonNull.list.nonNull.field('recipients', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.alert
-          .findUniqueOrThrow({
-            where: {
-              id: parent.id,
-            },
-          })
-          .recipients();
-      },
-    });
   },
 });

@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { RequestPayload, Subscription } from '../../backing-types';
+import { RequestPayload, Subscription } from '../../../backing-types';
 
 export const RequestSubscription = subscriptionField('requests', {
   type: 'Request',

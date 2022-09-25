@@ -1,1 +1,1 @@
-export { default } from './LiveNotificationsProvider';
+export { default } from './LiveAlertsProvider';

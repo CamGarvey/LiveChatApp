@@ -8,7 +8,7 @@ import ChatNav from 'components/Layout/Nav';
 import Header from 'components/Layout/Header/Header';
 import ChatInfoAside from 'components/Chat/ChatInfoAside';
 import UserProvider from './UserProvider';
-import LiveNotificationsProvider from './LiveNotificationsProvider';
+import LiveNotificationsProvider from './LiveAlertsProvider';
 import { FriendSelectorModal } from 'components/Modals/FriendSelectorModal';
 
 type Props = {
