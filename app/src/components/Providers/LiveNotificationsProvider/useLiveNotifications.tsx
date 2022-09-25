@@ -9,13 +9,13 @@ import {
 import { useEffect } from 'react';
 
 gql`
-  query GetAlerts {
-    alerts {
+  query GetNotifications {
+    notifications {
       ...LiveNotification
     }
   }
-  subscription Alerts {
-    alerts {
+  subscription Notifications {
+    notifications {
       ...LiveNotification
     }
   }

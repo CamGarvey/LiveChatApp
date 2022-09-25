@@ -1,7 +1,6 @@
 import { ForbiddenError } from 'apollo-server-core';
 import { list, mutationField, nonNull, stringArg } from 'nexus';
 import {
-  ChatPayload,
   EventPayload,
   NotificationPayload,
   Subscription,

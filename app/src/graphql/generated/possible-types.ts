@@ -7,10 +7,11 @@
       const result: PossibleTypesResultData = {
   "possibleTypes": {
     "Alert": [
-      "ChatCreatedAlert",
-      "ChatDeletedAlert",
-      "FriendDeletedAlert",
-      "NewFriend"
+      "ChatCreated",
+      "ChatDeleted",
+      "FriendDeleted",
+      "RequestAccepted",
+      "RequestDeclined"
     ],
     "Chat": [
       "DeletedChat",
@@ -18,14 +19,9 @@
       "GroupChat"
     ],
     "ChatSubscriptionResult": [
-      "AdminsAdded",
-      "AdminsRemoved",
-      "DescriptionUpdated",
+      "DeletedChat",
       "DirectMessageChat",
-      "GroupChat",
-      "MembersAdded",
-      "MembersRemoved",
-      "NameUpdated"
+      "GroupChat"
     ],
     "ChatUpdate": [
       "AdminsAdded",
@@ -50,18 +46,15 @@
       "Me"
     ],
     "Notification": [
-      "ChatCreatedAlert",
-      "ChatDeletedAlert",
-      "FriendDeletedAlert",
+      "ChatCreated",
+      "ChatDeleted",
+      "FriendDeleted",
       "FriendRequest",
-      "FriendRequestResponse",
-      "NewFriend"
+      "RequestAccepted",
+      "RequestDeclined"
     ],
     "Request": [
       "FriendRequest"
-    ],
-    "Response": [
-      "FriendRequestResponse"
     ],
     "User": [
       "Friend",

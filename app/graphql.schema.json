@@ -172,6 +172,11 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
+            "name": "ChatUpdate",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
             "name": "Event",
             "ofType": null
           }
@@ -341,6 +346,11 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
+            "name": "ChatUpdate",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
             "name": "Event",
             "ofType": null
           }
@@ -351,7 +361,7 @@
       {
         "kind": "INTERFACE",
         "name": "Alert",
-        "description": null,
+        "description": "Alert is a type of notification that does not require a response and can be sent to multiple users",
         "fields": [
           {
             "name": "createdAt",
@@ -470,25 +480,59 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "ChatCreatedAlert",
+            "name": "ChatCreated",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "ChatDeletedAlert",
+            "name": "ChatDeleted",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "FriendDeletedAlert",
+            "name": "FriendDeleted",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "NewFriend",
+            "name": "RequestAccepted",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "RequestDeclined",
             "ofType": null
           }
         ]
+      },
+      {
+        "kind": "ENUM",
+        "name": "AlertState",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ALL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SEEN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "UNSEEN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
       },
       {
         "kind": "SCALAR",
@@ -617,7 +661,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ChatCreatedAlert",
+        "name": "ChatCreated",
         "description": null,
         "fields": [
           {
@@ -759,7 +803,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ChatDeletedAlert",
+        "name": "ChatDeleted",
         "description": null,
         "fields": [
           {
@@ -910,17 +954,7 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "AdminsAdded",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "AdminsRemoved",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "DescriptionUpdated",
+            "name": "DeletedChat",
             "ofType": null
           },
           {
@@ -932,31 +966,151 @@
             "kind": "OBJECT",
             "name": "GroupChat",
             "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "MembersAdded",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "MembersRemoved",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "NameUpdated",
-            "ofType": null
           }
         ]
       },
       {
-        "kind": "UNION",
+        "kind": "INTERFACE",
         "name": "ChatUpdate",
         "description": null,
-        "fields": null,
+        "fields": [
+          {
+            "name": "chat",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Chat",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chatId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdBy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdById",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isCreator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "inputFields": null,
-        "interfaces": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Event",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": [
           {
@@ -1510,6 +1664,11 @@
         ],
         "inputFields": null,
         "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "ChatUpdate",
+            "ofType": null
+          },
           {
             "kind": "INTERFACE",
             "name": "Event",
@@ -2199,7 +2358,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "FriendDeletedAlert",
+        "name": "FriendDeleted",
         "description": null,
         "fields": [
           {
@@ -2464,48 +2623,48 @@
             "deprecationReason": null
           },
           {
-            "name": "recipients",
+            "name": "recipient",
             "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "User",
-                    "ofType": null
-                  }
-                }
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
               }
             },
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "responses",
+            "name": "recipientId",
             "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "Response",
-                    "ofType": null
-                  }
-                }
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "state",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "RequestState",
+                "ofType": null
               }
             },
             "isDeprecated": false,
@@ -2530,183 +2689,9 @@
       },
       {
         "kind": "OBJECT",
-        "name": "FriendRequestResponse",
-        "description": null,
-        "fields": [
-          {
-            "name": "createdAt",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Date",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdBy",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INTERFACE",
-                "name": "User",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdById",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "id",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "isCreator",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "request",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INTERFACE",
-                "name": "Request",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestId",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "status",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "ResponseStatus",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Notification",
-            "ofType": null
-          },
-          {
-            "kind": "INTERFACE",
-            "name": "Response",
-            "ofType": null
-          }
-        ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
         "name": "GroupChat",
         "description": "A Group Chat is a chat that contains more than 2 members",
         "fields": [
-          {
-            "name": "adminIds",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "HashId",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
           {
             "name": "admins",
             "description": null,
@@ -3250,6 +3235,80 @@
             "deprecationReason": null
           },
           {
+            "name": "requests",
+            "description": null,
+            "args": [
+              {
+                "name": "state",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "RequestState",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "Request",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sentRequests",
+            "description": null,
+            "args": [
+              {
+                "name": "state",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "RequestState",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "Request",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updatedAt",
             "description": null,
             "args": [],
@@ -3460,6 +3519,11 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
+            "name": "ChatUpdate",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
             "name": "Event",
             "ofType": null
           }
@@ -3627,6 +3691,11 @@
         ],
         "inputFields": null,
         "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "ChatUpdate",
+            "ofType": null
+          },
           {
             "kind": "INTERFACE",
             "name": "Event",
@@ -3849,7 +3918,36 @@
             ],
             "type": {
               "kind": "INTERFACE",
-              "name": "Response",
+              "name": "Request",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "acknowledgeAlert",
+            "description": null,
+            "args": [
+              {
+                "name": "alertId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "HashId",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "INTERFACE",
+              "name": "Alert",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4116,7 +4214,7 @@
             ],
             "type": {
               "kind": "INTERFACE",
-              "name": "Response",
+              "name": "Request",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4316,7 +4414,7 @@
             "description": "Send a friend request to a user",
             "args": [
               {
-                "name": "friendId",
+                "name": "strangerId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -4680,149 +4778,12 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
+            "name": "ChatUpdate",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
             "name": "Event",
-            "ofType": null
-          }
-        ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "NewFriend",
-        "description": null,
-        "fields": [
-          {
-            "name": "createdAt",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Date",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdBy",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INTERFACE",
-                "name": "User",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "createdById",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "id",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "HashId",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "isCreator",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "recipients",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "User",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "user",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Friend",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Alert",
-            "ofType": null
-          },
-          {
-            "kind": "INTERFACE",
-            "name": "Notification",
             "ofType": null
           }
         ],
@@ -4921,17 +4882,17 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "ChatCreatedAlert",
+            "name": "ChatCreated",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "ChatDeletedAlert",
+            "name": "ChatDeleted",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "FriendDeletedAlert",
+            "name": "FriendDeleted",
             "ofType": null
           },
           {
@@ -4941,12 +4902,12 @@
           },
           {
             "kind": "OBJECT",
-            "name": "FriendRequestResponse",
+            "name": "RequestAccepted",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "NewFriend",
+            "name": "RequestDeclined",
             "ofType": null
           }
         ]
@@ -5023,6 +4984,47 @@
         "name": "Query",
         "description": null,
         "fields": [
+          {
+            "name": "alerts",
+            "description": null,
+            "args": [
+              {
+                "name": "state",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "ENUM",
+                    "name": "AlertState",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": "UNSEEN",
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "Alert",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "chat",
             "description": null,
@@ -5224,7 +5226,7 @@
           },
           {
             "name": "notifications",
-            "description": null,
+            "description": "Get all notifications for current user",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5238,6 +5240,43 @@
                   "ofType": {
                     "kind": "INTERFACE",
                     "name": "Notification",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "requests",
+            "description": null,
+            "args": [
+              {
+                "name": "state",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "RequestState",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "Request",
                     "ofType": null
                   }
                 }
@@ -5373,6 +5412,157 @@
       {
         "kind": "INTERFACE",
         "name": "Request",
+        "description": "Request is a type of notification that requires a response and is sent to a single user",
+        "fields": [
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdBy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdById",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isCreator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "recipient",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "recipientId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "state",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "RequestState",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Notification",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "FriendRequest",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "RequestAccepted",
         "description": null,
         "fields": [
           {
@@ -5480,24 +5670,32 @@
             "deprecationReason": null
           },
           {
-            "name": "responses",
+            "name": "request",
             "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "Response",
-                    "ofType": null
-                  }
-                }
+                "kind": "INTERFACE",
+                "name": "Request",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "requestId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
               }
             },
             "isDeprecated": false,
@@ -5508,22 +5706,21 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
+            "name": "Alert",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
             "name": "Notification",
             "ofType": null
           }
         ],
         "enumValues": null,
-        "possibleTypes": [
-          {
-            "kind": "OBJECT",
-            "name": "FriendRequest",
-            "ofType": null
-          }
-        ]
+        "possibleTypes": null
       },
       {
-        "kind": "INTERFACE",
-        "name": "Response",
+        "kind": "OBJECT",
+        "name": "RequestDeclined",
         "description": null,
         "fields": [
           {
@@ -5607,6 +5804,30 @@
             "deprecationReason": null
           },
           {
+            "name": "recipients",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "request",
             "description": null,
             "args": [],
@@ -5637,26 +5858,15 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          },
-          {
-            "name": "status",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "ResponseStatus",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
           }
         ],
         "inputFields": null,
         "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Alert",
+            "ofType": null
+          },
           {
             "kind": "INTERFACE",
             "name": "Notification",
@@ -5664,17 +5874,11 @@
           }
         ],
         "enumValues": null,
-        "possibleTypes": [
-          {
-            "kind": "OBJECT",
-            "name": "FriendRequestResponse",
-            "ofType": null
-          }
-        ]
+        "possibleTypes": null
       },
       {
         "kind": "ENUM",
-        "name": "ResponseStatus",
+        "name": "RequestState",
         "description": null,
         "fields": null,
         "inputFields": null,
@@ -5687,6 +5891,12 @@
             "deprecationReason": null
           },
           {
+            "name": "CANCELLED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "DECLINED",
             "description": null,
             "isDeprecated": false,
@@ -5694,6 +5904,12 @@
           },
           {
             "name": "SEEN",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SENT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -5955,48 +6171,12 @@
         "description": null,
         "fields": [
           {
-            "name": "chatCreated",
-            "description": null,
+            "name": "alerts",
+            "description": "Subscribe to alerts",
             "args": [],
             "type": {
               "kind": "INTERFACE",
-              "name": "Chat",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "chatDeleted",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "DeletedChat",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "chatUpdated",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "UNION",
-              "name": "ChatUpdate",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "chats",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "UNION",
-              "name": "ChatSubscriptionResult",
+              "name": "Alert",
               "ofType": null
             },
             "isDeprecated": false,
@@ -6103,72 +6283,12 @@
             "deprecationReason": null
           },
           {
-            "name": "friends",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "INTERFACE",
-              "name": "User",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "notifications",
-            "description": "Subscribe to any changes to all alerts, requests, and responses",
+            "description": "Subscribe to all types of notifications",
             "args": [],
             "type": {
               "kind": "INTERFACE",
               "name": "Notification",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestAccepted",
-            "description": "Subscribe to accepted requests",
-            "args": [],
-            "type": {
-              "kind": "INTERFACE",
-              "name": "Request",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestCancelled",
-            "description": "Subscribe to cancelled requests",
-            "args": [],
-            "type": {
-              "kind": "INTERFACE",
-              "name": "Request",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestDeclined",
-            "description": "Subscribe to declined requests",
-            "args": [],
-            "type": {
-              "kind": "INTERFACE",
-              "name": "Request",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestSent",
-            "description": "Subscribe to sent requests",
-            "args": [],
-            "type": {
-              "kind": "INTERFACE",
-              "name": "Request",
               "ofType": null
             },
             "isDeprecated": false,

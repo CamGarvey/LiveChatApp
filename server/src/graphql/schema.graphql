@@ -641,9 +641,6 @@ enum StrangerStatus {
 type Subscription {
   """Subscribe to alerts"""
   alerts: Alert
-  chatCreated: Chat
-  chatDeleted: DeletedChat
-  chats: ChatSubscriptionResult
 
   """Subscribe to created events in chat"""
   eventCreated(chatId: HashId): Event

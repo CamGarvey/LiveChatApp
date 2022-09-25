@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 import { useUser } from 'context/UserContext';
 import {
-  GetChatsForDisplayDocument,
-  GetChatsForDisplayQuery,
+  GetChatsForChatDisplayDocument,
+  GetChatsForChatDisplayQuery,
   useCreateGroupChatMutation,
 } from 'graphql/generated/graphql';
 import { useNavigate } from 'react-router-dom';
@@ -27,8 +27,8 @@ export const useCreateGroupChat = () => {
 
   const create = useCreateGroupChatMutation({
     update: (cache, { data: { createGroupChat } }) => {
-      const { chats } = cache.readQuery<GetChatsForDisplayQuery>({
-        query: GetChatsForDisplayDocument,
+      const { chats } = cache.readQuery<GetChatsForChatDisplayQuery>({
+        query: GetChatsForChatDisplayDocument,
       });
 
       const updatedChats = [
@@ -43,7 +43,7 @@ export const useCreateGroupChat = () => {
       ];
 
       cache.writeQuery({
-        query: GetChatsForDisplayDocument,
+        query: GetChatsForChatDisplayDocument,
         data: {
           chats: updatedChats,
         },

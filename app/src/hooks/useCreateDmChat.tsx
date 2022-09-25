@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 import { useUser } from 'context/UserContext';
 import {
-  GetChatsForDisplayDocument,
-  GetChatsForDisplayQuery,
+  GetChatsForChatDisplayDocument,
+  GetChatsForChatDisplayQuery,
   useCreateDirectMessageChatMutation,
 } from 'graphql/generated/graphql';
 import { useNavigate } from 'react-router-dom';
@@ -28,8 +28,8 @@ export const useCreateDmChat = () => {
 
   const create = useCreateDirectMessageChatMutation({
     update: (cache, { data: { createDirectMessageChat } }) => {
-      const { chats } = cache.readQuery<GetChatsForDisplayQuery>({
-        query: GetChatsForDisplayDocument,
+      const { chats } = cache.readQuery<GetChatsForChatDisplayQuery>({
+        query: GetChatsForChatDisplayDocument,
       });
 
       if (
@@ -50,7 +50,7 @@ export const useCreateDmChat = () => {
           },
         ];
         cache.writeQuery({
-          query: GetChatsForDisplayDocument,
+          query: GetChatsForChatDisplayDocument,
           data: {
             chats: updatedChats,
           },

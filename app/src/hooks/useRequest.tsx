@@ -93,15 +93,15 @@ export const useRequest = () => {
       },
     });
 
-  const sendRequest = (friendId: string) =>
+  const sendRequest = (strangerId: string) =>
     send({
       variables: {
-        friendId,
+        strangerId,
       },
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestUserFragment>(
           {
-            id: `User:${friendId}`,
+            id: `User:${strangerId}`,
             fragment: FriendRequestUserFragmentDoc,
           },
           (data) => ({

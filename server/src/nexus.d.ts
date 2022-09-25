@@ -532,9 +532,6 @@ export interface NexusGenFieldTypes {
   }
   Subscription: { // field return type
     alerts: NexusGenRootTypes['Alert'] | null; // Alert
-    chatCreated: NexusGenRootTypes['Chat'] | null; // Chat
-    chatDeleted: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
-    chats: NexusGenRootTypes['ChatSubscriptionResult'] | null; // ChatSubscriptionResult
     eventCreated: NexusGenRootTypes['Event'] | null; // Event
     eventDeleted: NexusGenRootTypes['DeletedEvent'] | null; // DeletedEvent
     eventUpdated: NexusGenRootTypes['Event'] | null; // Event
@@ -887,9 +884,6 @@ export interface NexusGenFieldTypeNames {
   }
   Subscription: { // field return type name
     alerts: 'Alert'
-    chatCreated: 'Chat'
-    chatDeleted: 'DeletedChat'
-    chats: 'ChatSubscriptionResult'
     eventCreated: 'Event'
     eventDeleted: 'DeletedEvent'
     eventUpdated: 'Event'
