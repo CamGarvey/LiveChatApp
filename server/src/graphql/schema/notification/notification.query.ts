@@ -1,7 +1,8 @@
-import { queryField } from 'nexus';
+import { list, nonNull, queryField } from 'nexus';
 
 export const Notifications = queryField('notifications', {
-  type: 'Notification',
+  type: nonNull(list(nonNull('Notification'))),
+  description: 'Get all notifications for current user',
   resolve: async (_, __, { prisma, userId }) => {
     const user = await prisma.user.findUniqueOrThrow({
       include: {

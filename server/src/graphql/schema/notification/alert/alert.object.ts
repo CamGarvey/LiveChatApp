@@ -1,7 +1,7 @@
 import { objectType } from 'nexus';
 
-export const RequestAcceptedAlert = objectType({
-  name: 'RequestAcceptedAlert',
+export const RequestAccepted = objectType({
+  name: 'RequestAccepted',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.hashId('requestId');
@@ -18,8 +18,8 @@ export const RequestAcceptedAlert = objectType({
   },
 });
 
-export const RequestDeclinedAlert = objectType({
-  name: 'RequestDeclinedAlert',
+export const RequestDeclined = objectType({
+  name: 'RequestDeclined',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.hashId('requestId');
@@ -36,8 +36,8 @@ export const RequestDeclinedAlert = objectType({
   },
 });
 
-export const FriendDeletedAlert = objectType({
-  name: 'FriendDeletedAlert',
+export const FriendDeleted = objectType({
+  name: 'FriendDeleted',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.field('user', {
@@ -57,8 +57,8 @@ export const FriendDeletedAlert = objectType({
   },
 });
 
-export const ChatCreatedAlert = objectType({
-  name: 'ChatCreatedAlert',
+export const ChatCreated = objectType({
+  name: 'ChatCreated',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.field('chat', {
@@ -81,8 +81,8 @@ export const ChatCreatedAlert = objectType({
   },
 });
 
-export const ChatDeletedAlert = objectType({
-  name: 'ChatDeletedAlert',
+export const ChatDeleted = objectType({
+  name: 'ChatDeleted',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.field('chat', {

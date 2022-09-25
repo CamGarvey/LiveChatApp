@@ -1,6 +1,5 @@
-import { Event } from '@prisma/client';
 import { mutationField, nonNull, stringArg } from 'nexus';
-import { Subscription, SubscriptionPayload } from '../../../backing-types';
+import { EventPayload, Subscription } from '../../../backing-types';
 import { hashIdArg } from '../../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
@@ -49,7 +48,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Event>>(Subscription.EventCreated, {
+    pubsub.publish<EventPayload>(Subscription.EventCreated, {
       recipients: event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
@@ -102,7 +101,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Event>>(Subscription.EventUpdated, {
+    pubsub.publish<EventPayload>(Subscription.EventUpdated, {
       recipients: message.event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),

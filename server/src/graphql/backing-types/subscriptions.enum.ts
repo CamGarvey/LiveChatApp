@@ -1,5 +1,5 @@
 export enum Subscription {
-  // Chat events
+  // In chat events
   EventCreated = 'event.created',
   EventUpdated = 'event.updated',
   EventDeleted = 'event.deleted',

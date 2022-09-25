@@ -1,7 +1,11 @@
-import { Chat, Event, Notification } from '@prisma/client';
 import { ForbiddenError } from 'apollo-server-core';
 import { list, mutationField, nonNull, stringArg } from 'nexus';
-import { Subscription, SubscriptionPayload } from '../../backing-types';
+import {
+  ChatPayload,
+  EventPayload,
+  NotificationPayload,
+  Subscription,
+} from '../../backing-types';
 import { hashIdArg } from '../shared';
 import { CreateGroupChatInput } from './chat.input';
 
@@ -45,35 +49,31 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
       },
     });
 
-    // Create an alert notification for members
-    const notification = await prisma.notification.create({
+    // Create an alert for members
+    const alert = await prisma.alert.create({
       data: {
-        type: 'ALERT',
-        createdById: userId,
+        type: 'CHAT_CREATED',
+        chat: {
+          connect: {
+            id: chat.id,
+          },
+        },
         recipients: {
           connect: chat.members,
         },
-        alert: {
-          create: {
-            type: 'CHAT_CREATED',
-            chat: {
-              connect: {
-                id: chat.id,
-              },
-            },
+        createdBy: {
+          connect: {
+            id: userId,
           },
         },
       },
     });
 
-    // Publish notification to members
-    await pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.ChatCreated,
-      {
-        recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
-        content: notification,
-      }
-    );
+    // Publish alert to members
+    await pubsub.publish<NotificationPayload>(Subscription.ChatCreated, {
+      recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+      content: alert,
+    });
 
     return chat;
   },
@@ -124,34 +124,32 @@ export const CreateDirectMessageChatMutation = mutationField(
         },
       });
 
-      // Create notification for single member
-      const notification = await prisma.notification.create({
+      // Create an alert for members
+      const alert = await prisma.alert.create({
         data: {
-          type: 'ALERT',
-          recipients: {
-            connect: [userId, friendId].map((id) => ({ id })),
+          type: 'CHAT_CREATED',
+          chat: {
+            connect: {
+              id: chat.id,
+            },
           },
-          createdById: userId,
-          alert: {
-            create: {
-              type: 'CHAT_CREATED',
-              chat: {
-                connect: {
-                  id: chat.id,
-                },
-              },
+          recipients: {
+            connect: {
+              id: userId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
             },
           },
         },
       });
-      // Publish the created chat to every member apart from the user who created it (userId)
-      await pubsub.publish<SubscriptionPayload<Notification>>(
-        Subscription.ChatCreated,
-        {
-          recipients: [userId],
-          content: notification,
-        }
-      );
+
+      await pubsub.publish<NotificationPayload>(Subscription.ChatCreated, {
+        recipients: [userId],
+        content: alert,
+      });
 
       return chat;
     },
@@ -230,22 +228,10 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
         .filter((x) => x !== userId);
 
       // Publish new chat event
-      await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.EventCreated,
-        {
-          recipients,
-          content: event,
-        }
-      );
-
-      // Publish new notification
-      await pubsub.publish<SubscriptionPayload<Chat>>(
-        Subscription.ChatUpdated,
-        {
-          recipients,
-          content: chat,
-        }
-      );
+      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
+        recipients,
+        content: event,
+      });
 
       return event;
     },
@@ -327,22 +313,10 @@ export const AddMembersToGroupChatMutation = mutationField(
         .filter((x) => x !== userId);
 
       // Publish new chat event
-      await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.EventCreated,
-        {
-          recipients,
-          content: event,
-        }
-      );
-
-      // Publish new notification
-      await pubsub.publish<SubscriptionPayload<Chat>>(
-        Subscription.ChatUpdated,
-        {
-          recipients,
-          content: chat,
-        }
-      );
+      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
+        recipients,
+        content: event,
+      });
 
       return event;
     },
@@ -424,22 +398,10 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
         .filter((x) => x !== userId);
 
       // Publish new chat event
-      await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.EventCreated,
-        {
-          recipients,
-          content: event,
-        }
-      );
-
-      // Publish new notification
-      await pubsub.publish<SubscriptionPayload<Chat>>(
-        Subscription.ChatUpdated,
-        {
-          recipients,
-          content: chat,
-        }
-      );
+      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
+        recipients,
+        content: event,
+      });
 
       return event;
     },
@@ -520,22 +482,10 @@ export const AddAdminsToGroupChatMutation = mutationField(
         .filter((x) => x !== userId);
 
       // Publish new chat event
-      await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.EventCreated,
-        {
-          recipients,
-          content: event,
-        }
-      );
-
-      // Publish new notification
-      await pubsub.publish<SubscriptionPayload<Chat>>(
-        Subscription.ChatUpdated,
-        {
-          recipients,
-          content: chat,
-        }
-      );
+      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
+        recipients,
+        content: event,
+      });
 
       return event;
     },
@@ -603,18 +553,9 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
       .filter((x) => x !== userId);
 
     // Publish new chat event
-    await pubsub.publish<SubscriptionPayload<Event>>(
-      Subscription.EventCreated,
-      {
-        recipients,
-        content: event,
-      }
-    );
-
-    // Publish new notification
-    await pubsub.publish<SubscriptionPayload<Chat>>(Subscription.ChatUpdated, {
+    await pubsub.publish<EventPayload>(Subscription.EventCreated, {
       recipients,
-      content: chatAfterUpdate,
+      content: event,
     });
 
     return event;
@@ -684,22 +625,10 @@ export const UpdateGroupChatDescription = mutationField(
         .filter((x) => x !== userId);
 
       // Publish new chat event
-      await pubsub.publish<SubscriptionPayload<Event>>(
-        Subscription.EventCreated,
-        {
-          recipients,
-          content: event,
-        }
-      );
-
-      // Publish new notification
-      await pubsub.publish<SubscriptionPayload<Chat>>(
-        Subscription.ChatUpdated,
-        {
-          recipients,
-          content: chatAfterUpdate,
-        }
-      );
+      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
+        recipients,
+        content: event,
+      });
 
       return event;
     },
@@ -736,35 +665,27 @@ export const DeleteChatMutation = mutationField('deleteChat', {
       },
     });
 
-    const event = await prisma.notification.create({
+    const alert = await prisma.alert.create({
       data: {
-        type: 'ALERT',
+        type: 'CHAT_DELETED',
+        chat: {
+          connect: {
+            id: chat.id,
+          },
+        },
         createdBy: {
           connect: {
             id: userId,
-          },
-        },
-        alert: {
-          create: {
-            type: 'CHAT_DELETED',
-            chat: {
-              connect: {
-                id: chat.id,
-              },
-            },
           },
         },
       },
     });
 
     // Publish the created chat to every member apart from the user who created it (userId)
-    await pubsub.publish<SubscriptionPayload<Notification>>(
-      Subscription.ChatDeleted,
-      {
-        recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
-        content: event,
-      }
-    );
+    await pubsub.publish<NotificationPayload>(Subscription.ChatDeleted, {
+      recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+      content: alert,
+    });
 
     return chat;
   },

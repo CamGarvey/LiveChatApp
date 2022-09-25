@@ -1,9 +1,5 @@
 import { mutationField, nonNull } from 'nexus';
-import {
-  Subscription,
-  RequestPayload,
-  AlertPayload,
-} from '../../../backing-types';
+import { Subscription, NotificationPayload } from '../../../backing-types';
 import { hashIdArg } from '../../shared';
 
 export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
@@ -48,9 +44,9 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
     // The request is new if the createdAt is equal to the time variable
     if (request.createdAt.toISOString() === time) {
       // Publish this new request
-      pubsub.publish<RequestPayload>(Subscription.RequestSent, {
+      pubsub.publish<NotificationPayload>(Subscription.RequestSent, {
         recipients: [strangerId],
-        request,
+        content: request,
       });
     }
 
@@ -76,9 +72,9 @@ export const CancelRequestMutation = mutationField('cancelRequest', {
     });
 
     // Publish this deleted request
-    pubsub.publish<RequestPayload>(Subscription.RequestCancelled, {
+    pubsub.publish<NotificationPayload>(Subscription.RequestCancelled, {
       recipients: [request.recipientId],
-      request,
+      content: request,
     });
 
     return request;
@@ -117,9 +113,9 @@ export const DeclineRequestMutation = mutationField('declineRequest', {
     });
 
     // Publish alert to the creator
-    pubsub.publish<AlertPayload>(Subscription.RequestCancelled, {
+    pubsub.publish<NotificationPayload>(Subscription.RequestCancelled, {
       recipients: [request.createdById],
-      alert,
+      content: alert,
     });
 
     return request;
@@ -180,9 +176,9 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
     }
 
     // Publish alert
-    pubsub.publish<AlertPayload>(Subscription.RequestAccepted, {
+    pubsub.publish<NotificationPayload>(Subscription.RequestAccepted, {
       recipients: [request.createdById],
-      alert,
+      content: alert,
     });
 
     return request;

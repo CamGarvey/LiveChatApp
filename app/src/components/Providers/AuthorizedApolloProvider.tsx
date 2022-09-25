@@ -77,11 +77,11 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
           },
         },
         FriendRequest: {
-          // Make requests unique by user / user
+          // Make friend requests unique by user / user
           keyFields: (object) =>
             object.isCreator
-              ? `FriendRequest:${object.recipientId}`
-              : `FriendRequest:${object.createdById}`,
+              ? `Request:${object.recipientId}`
+              : `Request:${object.createdById}`,
         },
         Message: {
           keyFields: (object) => `Event:${object.id}`,

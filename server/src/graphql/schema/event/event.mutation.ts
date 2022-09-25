@@ -1,6 +1,6 @@
 import { Event } from '@prisma/client';
 import { mutationField } from 'nexus';
-import { Subscription, SubscriptionPayload } from '../../backing-types';
+import { Subscription, EventPayload } from '../../backing-types';
 import { hashIdArg } from '../shared';
 
 export const DeleteEventMutation = mutationField('deleteEvent', {
@@ -11,7 +11,7 @@ export const DeleteEventMutation = mutationField('deleteEvent', {
     }),
   },
   authorize: (_, { eventId }, { auth }) => auth.canDeletedEvent(eventId),
-  resolve: async (_, { messageId }, { prisma, pubsub, userId }) => {
+  resolve: async (_, { eventId }, { prisma, pubsub, userId }) => {
     const event = await prisma.event.update({
       data: {
         deletedAt: new Date(),
@@ -28,11 +28,11 @@ export const DeleteEventMutation = mutationField('deleteEvent', {
         },
       },
       where: {
-        id: messageId,
+        id: eventId,
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Event>>(Subscription.EventDeleted, {
+    pubsub.publish<EventPayload>(Subscription.EventDeleted, {
       recipients: event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),

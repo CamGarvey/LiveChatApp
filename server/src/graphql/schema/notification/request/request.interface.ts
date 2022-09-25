@@ -3,6 +3,8 @@ import { interfaceType } from 'nexus';
 
 export const Request = interfaceType({
   name: 'Request',
+  description:
+    'Request is a type of notification that requires a response and is sent to a single user',
   resolveType: (source: PrismaRequest) => {
     switch (source.type) {
       case 'FRIEND_REQUEST':

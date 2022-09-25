@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { AlertPayload } from '../../../backing-types';
+import { NotificationPayload } from '../../../backing-types';
 
 export const AlertSubscription = subscriptionField('alerts', {
   type: 'Alert',
@@ -11,12 +11,12 @@ export const AlertSubscription = subscriptionField('alerts', {
         context.pubsub.asyncIterator('notification.alert.*', {
           pattern: true,
         }),
-      (payload: AlertPayload) => {
+      (payload: NotificationPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: AlertPayload) {
-    return payload.alert;
+  resolve(payload: NotificationPayload) {
+    return payload.content;
   },
 });

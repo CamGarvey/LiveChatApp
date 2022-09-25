@@ -4,19 +4,17 @@ import { interfaceType } from 'nexus';
 export const Notification = interfaceType({
   name: 'Notification',
   resolveType: (source: Alert | Request) => {
-    console.log(source);
-
     switch (source.type) {
       case 'CHAT_CREATED':
-        return 'ChatCreatedAlert';
+        return 'ChatCreated';
       case 'CHAT_DELETED':
-        return 'ChatDeletedAlert';
+        return 'ChatDeleted';
       case 'FRIEND_DELETED':
-        return 'FriendDeletedAlert';
+        return 'FriendDeleted';
       case 'REQUEST_ACCEPTED':
-        return 'RequestAcceptedAlert';
+        return 'RequestAccepted';
       case 'REQUEST_DECLINED':
-        return 'RequestDeclinedAlert';
+        return 'RequestDeclined';
       case 'FRIEND_REQUEST':
         return 'FriendRequest';
       default:

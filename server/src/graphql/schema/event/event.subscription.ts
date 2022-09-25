@@ -2,7 +2,7 @@ import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
 import { Event } from '@prisma/client';
 import { hashIdArg } from '../shared';
-import { Subscription, SubscriptionPayload } from '../../backing-types';
+import { Subscription, EventPayload } from '../../backing-types';
 
 export const EventsSubscription = subscriptionField('events', {
   type: 'Event',
@@ -15,7 +15,7 @@ export const EventsSubscription = subscriptionField('events', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('event.*', { pattern: true }),
-      (payload: SubscriptionPayload<Event>, variables, context) => {
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -26,7 +26,7 @@ export const EventsSubscription = subscriptionField('events', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Event>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });
 
 export const EventCreatedSubscription = subscriptionField('eventCreated', {
@@ -43,7 +43,7 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
         context.pubsub.asyncIterator(Subscription.EventCreated, {
           pattern: true,
         }),
-      (payload: SubscriptionPayload<Event>, variables, context) => {
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -54,7 +54,7 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Event>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });
 
 export const EventDeletedSubscription = subscriptionField('eventDeleted', {
@@ -71,7 +71,7 @@ export const EventDeletedSubscription = subscriptionField('eventDeleted', {
         context.pubsub.asyncIterator(Subscription.EventDeleted, {
           pattern: true,
         }),
-      (payload: SubscriptionPayload<Event>, variables, context) => {
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -82,7 +82,7 @@ export const EventDeletedSubscription = subscriptionField('eventDeleted', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Event>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });
 
 export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
@@ -99,7 +99,7 @@ export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
         context.pubsub.asyncIterator(Subscription.EventUpdated, {
           pattern: true,
         }),
-      (payload: SubscriptionPayload<Event>, variables, context) => {
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -110,5 +110,5 @@ export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Event>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });

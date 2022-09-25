@@ -3,18 +3,20 @@ import { interfaceType } from 'nexus';
 
 export const Alert = interfaceType({
   name: 'Alert',
+  description:
+    'Alert is a type of notification that does not require a response and can be sent to multiple users',
   resolveType: (source: PrismaAlert) => {
     switch (source.type) {
       case 'CHAT_CREATED':
-        return 'ChatCreatedAlert';
+        return 'ChatCreated';
       case 'CHAT_DELETED':
-        return 'ChatDeletedAlert';
+        return 'ChatDeleted';
       case 'FRIEND_DELETED':
-        return 'FriendDeletedAlert';
+        return 'FriendDeleted';
       case 'REQUEST_ACCEPTED':
-        return 'RequestAcceptedAlert';
+        return 'RequestAccepted';
       case 'REQUEST_DECLINED':
-        return 'RequestDeclinedAlert';
+        return 'RequestDeclined';
       default:
         return null;
     }

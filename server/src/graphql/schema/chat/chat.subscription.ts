@@ -1,19 +1,18 @@
-import { Chat, Event } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { Subscription, SubscriptionPayload } from '../../backing-types';
+import { ChatPayload, Subscription } from '../../backing-types';
 
 export const ChatsSubscription = subscriptionField('chats', {
   type: 'ChatSubscriptionResult',
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator('chat.*', { pattern: true }),
-      (payload: SubscriptionPayload<Chat>) => {
+      (payload: ChatPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Chat | Event>) {
+  resolve(payload: ChatPayload) {
     return payload.content;
   },
 });
@@ -23,27 +22,12 @@ export const ChatCreatedSubscription = subscriptionField('chatCreated', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatCreated),
-      (payload: SubscriptionPayload<Chat>) => {
+      (payload: ChatPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Chat>) {
-    return payload.content;
-  },
-});
-
-export const ChatUpdatedSubscription = subscriptionField('chatUpdated', {
-  type: 'ChatUpdate',
-  subscribe: async (rootValue, args, context) => {
-    return withFilter(
-      () => context.pubsub.asyncIterator('chat.update.*', { pattern: true }),
-      (payload: SubscriptionPayload<Event>) => {
-        return payload.recipients.includes(context.userId);
-      }
-    )(rootValue, args, context);
-  },
-  resolve(payload: SubscriptionPayload<Event>) {
+  resolve(payload: ChatPayload) {
     return payload.content;
   },
 });
@@ -53,12 +37,12 @@ export const ChatDeletedSubscription = subscriptionField('chatDeleted', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () => context.pubsub.asyncIterator(Subscription.ChatDeleted),
-      (payload: SubscriptionPayload<Chat>) => {
+      (payload: ChatPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Event>) {
+  resolve(payload: ChatPayload) {
     return payload.content;
   },
 });

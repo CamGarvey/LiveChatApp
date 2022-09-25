@@ -1,16 +1,18 @@
-import { NexusGenInterfaces } from 'src/nexus';
-
-export type SubscriptionPayload<T = any> = {
+import { Alert, Chat, Event, Request } from '@prisma/client';
+/**
+ * Events in a chat
+ */
+export type EventPayload = {
   recipients: number[];
-  content: T;
+  content: Event;
 };
 
-export type RequestPayload = {
+export type NotificationPayload = {
   recipients: number[];
-  request: NexusGenInterfaces['Request'];
+  content: Alert | Request;
 };
 
-export type AlertPayload = {
+export type ChatPayload = {
   recipients: number[];
-  alert: NexusGenInterfaces['Alert'];
+  content: Chat;
 };

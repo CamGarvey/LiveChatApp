@@ -1,5 +1,5 @@
 import { LiveNotificationsContext } from 'context/LiveNotificationsContext';
-import { useLiveNotifications } from './useLiveAlerts';
+import { useLiveNotifications } from './useLiveNotifications';
 
 type Props = {
   children: React.ReactNode;

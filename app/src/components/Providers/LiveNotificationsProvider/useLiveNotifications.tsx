@@ -19,7 +19,7 @@ gql`
       ...LiveNotification
     }
   }
-  fragment LiveAlerts on Alert {
+  fragment LiveNotification on Notification {
     id
     createdAt
     isCreator
@@ -41,7 +41,7 @@ gql`
           }
         }
       }
-      recipients {
+      recipient {
         id
         ... on Stranger {
           status

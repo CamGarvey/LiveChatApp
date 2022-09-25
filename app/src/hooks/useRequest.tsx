@@ -109,7 +109,7 @@ export const useRequest = () => {
             // Attach new friend request
             friendRequest: newData.sendFriendRequest,
             // Update status
-            status: StrangerStatus.RequestSent,
+            // status: StrangerStatus.RequestSent,
           })
         );
       },

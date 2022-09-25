@@ -26,6 +26,9 @@ type AdminsRemoved implements ChatUpdate & Event {
   updatedAt: Date!
 }
 
+"""
+Alert is a type of notification that does not require a response and can be sent to multiple users
+"""
 interface Alert implements Notification {
   createdAt: Date!
   createdBy: User!
@@ -50,7 +53,7 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatCreatedAlert implements Alert & Notification {
+type ChatCreated implements Alert & Notification {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -60,7 +63,7 @@ type ChatCreatedAlert implements Alert & Notification {
   recipients: [User!]!
 }
 
-type ChatDeletedAlert implements Alert & Notification {
+type ChatDeleted implements Alert & Notification {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -70,7 +73,7 @@ type ChatDeletedAlert implements Alert & Notification {
   recipients: [User!]!
 }
 
-union ChatSubscriptionResult = AdminsAdded | AdminsRemoved | DescriptionUpdated | DirectMessageChat | GroupChat | MembersAdded | MembersRemoved | NameUpdated
+union ChatSubscriptionResult = DeletedChat | DirectMessageChat | GroupChat
 
 interface ChatUpdate implements Event {
   chat: Chat!
@@ -221,7 +224,7 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
-type FriendDeletedAlert implements Alert & Notification {
+type FriendDeleted implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -362,6 +365,7 @@ type Message implements Event {
 type Mutation {
   """Accept a request"""
   acceptRequest(requestId: HashId!): Request
+  acknowledgeAlert(alertId: HashId!): Alert
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -525,7 +529,9 @@ type Query {
     """id of message"""
     messageId: HashId!
   ): Event
-  notifications: Notification
+
+  """Get all notifications for current user"""
+  notifications: [Notification!]!
   requests(state: RequestState): [Request!]!
   user(
     """id of user"""
@@ -554,6 +560,9 @@ type Query {
   ): UserConnection!
 }
 
+"""
+Request is a type of notification that requires a response and is sent to a single user
+"""
 interface Request implements Notification {
   createdAt: Date!
   createdBy: User!
@@ -565,7 +574,7 @@ interface Request implements Notification {
   state: RequestState!
 }
 
-type RequestAcceptedAlert implements Alert & Notification {
+type RequestAccepted implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -576,7 +585,7 @@ type RequestAcceptedAlert implements Alert & Notification {
   requestId: HashId!
 }
 
-type RequestDeclinedAlert implements Alert & Notification {
+type RequestDeclined implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -630,9 +639,10 @@ enum StrangerStatus {
 }
 
 type Subscription {
+  """Subscribe to alerts"""
+  alerts: Alert
   chatCreated: Chat
   chatDeleted: DeletedChat
-  chatUpdated: ChatUpdate
   chats: ChatSubscriptionResult
 
   """Subscribe to created events in chat"""
@@ -646,19 +656,9 @@ type Subscription {
 
   """Subscribe to any created/updated/deleted events"""
   events(chatId: HashId): Event
-  friends: User
 
-  """Subscribe to accepted requests"""
-  requestAccepted: Request
-
-  """Subscribe to cancelled requests"""
-  requestCancelled: Request
-
-  """Subscribe to declined requests"""
-  requestDeclined: Request
-
-  """Subscribe to sent requests"""
-  requestSent: Request
+  """Subscribe to all types of notifications"""
+  notifications: Notification
 
   """Subscribe to requests"""
   requests: Request
