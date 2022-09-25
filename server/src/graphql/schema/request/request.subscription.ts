@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { NotificationPayload, Subscription } from '../../../backing-types';
+import { RequestPayload, Subscription } from '../../backing-types';
 
 export const RequestSubscription = subscriptionField('requests', {
   type: 'Request',
@@ -8,16 +8,16 @@ export const RequestSubscription = subscriptionField('requests', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.request.notification', {
+        context.pubsub.asyncIterator('notification.request.*', {
           pattern: true,
         }),
-      (payload: NotificationPayload) => {
+      (payload: RequestPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: NotificationPayload) {
-    return payload.content;
+  resolve(payload: RequestPayload) {
+    return payload.request;
   },
 });
 
@@ -30,13 +30,13 @@ export const RequestSentSubscription = subscriptionField('requestSent', {
         context.pubsub.asyncIterator(Subscription.RequestSent, {
           pattern: true,
         }),
-      (payload: NotificationPayload) => {
+      (payload: RequestPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: NotificationPayload) {
-    return payload.content;
+  resolve(payload: RequestPayload) {
+    return payload.request;
   },
 });
 
@@ -51,13 +51,13 @@ export const RequestCancelledSubscription = subscriptionField(
           context.pubsub.asyncIterator(Subscription.RequestCancelled, {
             pattern: true,
           }),
-        (payload: NotificationPayload) => {
+        (payload: RequestPayload) => {
           return payload.recipients.includes(context.userId);
         }
       )(rootValue, args, context);
     },
-    resolve(payload: NotificationPayload) {
-      return payload.content;
+    resolve(payload: RequestPayload) {
+      return payload.request;
     },
   }
 );
@@ -73,13 +73,13 @@ export const RequestAcceptedSubscription = subscriptionField(
           context.pubsub.asyncIterator(Subscription.RequestAccepted, {
             pattern: true,
           }),
-        (payload: NotificationPayload) => {
+        (payload: RequestPayload) => {
           return payload.recipients.includes(context.userId);
         }
       )(rootValue, args, context);
     },
-    resolve(payload: NotificationPayload) {
-      return payload.content;
+    resolve(payload: RequestPayload) {
+      return payload.request;
     },
   }
 );
@@ -95,13 +95,13 @@ export const RequestDeclinedSubscription = subscriptionField(
           context.pubsub.asyncIterator(Subscription.RequestDeclined, {
             pattern: true,
           }),
-        (payload: NotificationPayload) => {
+        (payload: RequestPayload) => {
           return payload.recipients.includes(context.userId);
         }
       )(rootValue, args, context);
     },
-    resolve(payload: NotificationPayload) {
-      return payload.content;
+    resolve(payload: RequestPayload) {
+      return payload.request;
     },
   }
 );

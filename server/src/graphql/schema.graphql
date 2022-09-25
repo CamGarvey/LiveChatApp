@@ -26,13 +26,19 @@ type AdminsRemoved implements ChatUpdate & Event {
   updatedAt: Date!
 }
 
-interface Alert implements Notification {
+interface Alert {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
   recipients: [User!]!
+}
+
+enum AlertState {
+  ALL
+  SEEN
+  UNSEEN
 }
 
 interface Chat {
@@ -44,7 +50,7 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatCreatedAlert implements Alert & Notification {
+type ChatCreatedAlert implements Alert {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -54,7 +60,7 @@ type ChatCreatedAlert implements Alert & Notification {
   recipients: [User!]!
 }
 
-type ChatDeletedAlert implements Alert & Notification {
+type ChatDeletedAlert implements Alert {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -215,17 +221,7 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
-type FriendCreatedAlert implements Alert & Notification {
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  recipients: [User!]!
-  user: Friend!
-}
-
-type FriendDeletedAlert implements Alert & Notification {
+type FriendDeletedAlert implements Alert {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -243,7 +239,7 @@ type FriendEdge {
   node: Friend
 }
 
-type FriendRequest implements Notification & Request {
+type FriendRequest implements Request {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -251,8 +247,7 @@ type FriendRequest implements Notification & Request {
   isCreator: Boolean!
   recipient: User!
   recipientId: HashId!
-  response: Response
-  status: RequestStatus!
+  state: RequestState!
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
@@ -321,8 +316,8 @@ type Me implements KnownUser & User {
   ): FriendConnection!
   id: HashId!
   name: String
-  requests(status: RequestStatus): [Request!]!
-  sentRequests(status: RequestStatus): [Request!]!
+  requests(state: RequestState): [Request!]!
+  sentRequests(state: RequestState): [Request!]!
   updatedAt: Date!
   username: String!
 }
@@ -366,7 +361,7 @@ type Message implements Event {
 
 type Mutation {
   """Accept a request"""
-  acceptRequest(requestId: HashId!): Alert
+  acceptRequest(requestId: HashId!): Request
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -406,7 +401,7 @@ type Mutation {
   ): Message
 
   """Decline a received request"""
-  declineRequest(requestId: HashId!): Alert
+  declineRequest(requestId: HashId!): Request
 
   """Delete a Chat"""
   deleteChat(
@@ -468,14 +463,6 @@ type NameUpdated implements ChatUpdate & Event {
   updatedAt: Date!
 }
 
-interface Notification {
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-}
-
 """
 PageInfo cursor, as defined in https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
 """
@@ -502,6 +489,7 @@ type PageInfo {
 }
 
 type Query {
+  alerts(state: AlertState! = UNSEEN): [Alert!]!
   chat(
     """Id of chat"""
     chatId: HashId!
@@ -529,8 +517,7 @@ type Query {
     """id of message"""
     messageId: HashId!
   ): Event
-  notifications: [Notification!]!
-  requests(status: RequestStatus): [Request!]!
+  requests(state: RequestState): [Request!]!
   user(
     """id of user"""
     userId: HashId!
@@ -558,7 +545,7 @@ type Query {
   ): UserConnection!
 }
 
-interface Request implements Notification {
+interface Request {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -566,23 +553,37 @@ interface Request implements Notification {
   isCreator: Boolean!
   recipient: User!
   recipientId: HashId!
-  response: Response
-  status: RequestStatus!
+  state: RequestState!
 }
 
-enum RequestStatus {
-  CANCELLED
-  SENT
+type RequestAcceptedAlert implements Alert {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  request: Request!
+  requestId: HashId!
 }
 
-type Response {
-  status: ResponseStatus!
+type RequestDeclinedAlert implements Alert {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  request: Request!
+  requestId: HashId!
 }
 
-enum ResponseStatus {
+enum RequestState {
   ACCEPTED
+  CANCELLED
   DECLINED
   SEEN
+  SENT
 }
 
 enum Sort {
@@ -637,9 +638,6 @@ type Subscription {
   """Subscribe to any created/updated/deleted events"""
   events(chatId: HashId): Event
   friends: User
-
-  """Subscribe to any changes to all alerts, requests, and responses"""
-  notifications: Notification
 
   """Subscribe to accepted requests"""
   requestAccepted: Request

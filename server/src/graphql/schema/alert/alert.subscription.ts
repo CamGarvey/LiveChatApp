@@ -1,7 +1,6 @@
-import { Notification } from '@prisma/client';
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { SubscriptionPayload } from '../../../backing-types';
+import { AlertPayload } from '../../backing-types';
 
 export const AlertSubscription = subscriptionField('alerts', {
   type: 'Alert',
@@ -9,15 +8,15 @@ export const AlertSubscription = subscriptionField('alerts', {
   subscribe: async (rootValue, args, context) => {
     return withFilter(
       () =>
-        context.pubsub.asyncIterator('*.alert.notification', {
+        context.pubsub.asyncIterator('notification.alert.*', {
           pattern: true,
         }),
-      (payload: SubscriptionPayload<Notification>) => {
+      (payload: AlertPayload) => {
         return payload.recipients.includes(context.userId);
       }
     )(rootValue, args, context);
   },
-  resolve(payload: SubscriptionPayload<Notification>) {
-    return payload.content;
+  resolve(payload: AlertPayload) {
+    return payload.alert;
   },
 });

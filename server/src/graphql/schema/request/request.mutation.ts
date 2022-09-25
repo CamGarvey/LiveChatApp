@@ -1,6 +1,10 @@
 import { mutationField, nonNull } from 'nexus';
-import { Subscription, NotificationPayload } from '../../../backing-types';
-import { hashIdArg } from '../../shared';
+import {
+  Subscription,
+  RequestPayload,
+  AlertPayload,
+} from '../../backing-types';
+import { hashIdArg } from '../shared';
 
 export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   type: 'FriendRequest',
@@ -30,7 +34,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
         },
       },
       update: {
-        status: 'SENT',
+        state: 'SENT',
       },
       where: {
         recipientId_createdById_type: {
@@ -44,9 +48,9 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
     // The request is new if the createdAt is equal to the time variable
     if (request.createdAt.toISOString() === time) {
       // Publish this new request
-      pubsub.publish<NotificationPayload>(Subscription.RequestSent, {
+      pubsub.publish<RequestPayload>(Subscription.RequestSent, {
         recipients: [strangerId],
-        content: request,
+        request,
       });
     }
 
@@ -64,7 +68,7 @@ export const CancelRequestMutation = mutationField('cancelRequest', {
   resolve: async (_, { requestId }, { prisma, pubsub }) => {
     const request = await prisma.request.update({
       data: {
-        status: 'CANCELLED',
+        state: 'CANCELLED',
       },
       where: {
         id: requestId,
@@ -72,9 +76,9 @@ export const CancelRequestMutation = mutationField('cancelRequest', {
     });
 
     // Publish this deleted request
-    pubsub.publish<NotificationPayload>(Subscription.RequestCancelled, {
+    pubsub.publish<RequestPayload>(Subscription.RequestCancelled, {
       recipients: [request.recipientId],
-      content: request,
+      request,
     });
 
     return request;
@@ -82,57 +86,48 @@ export const CancelRequestMutation = mutationField('cancelRequest', {
 });
 
 export const DeclineRequestMutation = mutationField('declineRequest', {
-  type: 'Alert',
+  type: 'Request',
   description: 'Decline a received request',
   args: {
     requestId: nonNull(hashIdArg()),
   },
   authorize: (_, { requestId }, { auth }) => auth.canDeclineRequest(requestId),
   resolve: async (_, { requestId }, { prisma, pubsub, userId }) => {
-    // Get the request
-    const request = await prisma.request.findUniqueOrThrow({
-      select: {
-        createdById: true,
+    // Decline request
+    const request = await prisma.request.update({
+      data: {
+        state: 'DECLINED',
       },
       where: {
         id: requestId,
       },
     });
-    // Respond to the request and create an alert
+    // create an response alert
     const alert = await prisma.alert.create({
       data: {
-        type: 'FRIEND_REQUEST_RESPONSE',
-        createdBy: {
-          connect: {
-            id: userId,
-          },
-        },
+        type: 'REQUEST_DECLINED',
+        createdById: userId,
         recipients: {
           connect: {
             id: request.createdById,
           },
         },
-        response: {
-          create: {
-            status: 'DECLINED',
-            requestId,
-          },
-        },
+        requestId,
       },
     });
 
     // Publish alert to the creator
-    pubsub.publish<NotificationPayload>(Subscription.RequestDeclined, {
+    pubsub.publish<AlertPayload>(Subscription.RequestCancelled, {
       recipients: [request.createdById],
-      content: alert,
+      alert,
     });
 
-    return alert;
+    return request;
   },
 });
 
 export const AcceptRequestMutation = mutationField('acceptRequest', {
-  type: 'Alert',
+  type: 'Request',
   description: 'Accept a request',
   args: {
     requestId: nonNull(hashIdArg()),
@@ -141,10 +136,9 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
     await auth.canAcceptRequest(requestId),
   resolve: async (_, { requestId }, { prisma, pubsub, userId }) => {
     // Get the request
-    const request = await prisma.request.findUniqueOrThrow({
-      select: {
-        createdById: true,
-        type: true,
+    const request = await prisma.request.update({
+      data: {
+        state: 'ACCEPTED',
       },
       where: {
         id: requestId,
@@ -153,23 +147,14 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
     // Respond to the request and create an alert
     const alert = await prisma.alert.create({
       data: {
-        type: 'FRIEND_REQUEST_RESPONSE',
-        createdBy: {
-          connect: {
-            id: userId,
-          },
-        },
+        type: 'REQUEST_ACCEPTED',
+        createdById: userId,
         recipients: {
           connect: {
             id: request.createdById,
           },
         },
-        response: {
-          create: {
-            status: 'DECLINED',
-            requestId,
-          },
-        },
+        requestId,
       },
     });
 
@@ -195,11 +180,11 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
     }
 
     // Publish alert
-    pubsub.publish<NotificationPayload>(Subscription.RequestAccepted, {
+    pubsub.publish<AlertPayload>(Subscription.RequestAccepted, {
       recipients: [request.createdById],
-      content: alert,
+      alert,
     });
 
-    return alert;
+    return request;
   },
 });

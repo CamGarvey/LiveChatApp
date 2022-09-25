@@ -57,8 +57,8 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  RequestStatus: "CANCELLED" | "SENT"
-  ResponseStatus: "ACCEPTED" | "DECLINED" | "SEEN"
+  AlertState: "ALL" | "SEEN" | "UNSEEN"
+  RequestState: "ACCEPTED" | "CANCELLED" | "DECLINED" | "SEEN" | "SENT"
   Sort: "asc" | "desc"
   StrangerStatus: "NO_REQUEST" | "REQUEST_RECEIVED" | "REQUEST_SENT"
 }
@@ -145,11 +145,6 @@ export interface NexusGenObjects {
     edges?: Array<NexusGenRootTypes['FriendEdge'] | null> | null; // [FriendEdge]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
   }
-  FriendCreatedAlert: { // root type
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-  }
   FriendDeletedAlert: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
     createdById: NexusGenScalars['HashId']; // HashId!
@@ -164,7 +159,7 @@ export interface NexusGenObjects {
     createdById: NexusGenScalars['HashId']; // HashId!
     id: NexusGenScalars['HashId']; // HashId!
     recipientId: NexusGenScalars['HashId']; // HashId!
-    status: NexusGenEnums['RequestStatus']; // RequestStatus!
+    state: NexusGenEnums['RequestState']; // RequestState!
   }
   GroupChat: { // root type
     createdAt?: NexusGenScalars['Date'] | null; // Date
@@ -217,8 +212,17 @@ export interface NexusGenObjects {
     startCursor?: string | null; // String
   }
   Query: {};
-  Response: { // root type
-    status: NexusGenEnums['ResponseStatus']; // ResponseStatus!
+  RequestAcceptedAlert: { // root type
+    createdAt: NexusGenScalars['Date']; // Date!
+    createdById: NexusGenScalars['HashId']; // HashId!
+    id: NexusGenScalars['HashId']; // HashId!
+    requestId: NexusGenScalars['HashId']; // HashId!
+  }
+  RequestDeclinedAlert: { // root type
+    createdAt: NexusGenScalars['Date']; // Date!
+    createdById: NexusGenScalars['HashId']; // HashId!
+    id: NexusGenScalars['HashId']; // HashId!
+    requestId: NexusGenScalars['HashId']; // HashId!
   }
   Stranger: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
@@ -239,12 +243,11 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Alert: NexusGenRootTypes['ChatCreatedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['FriendCreatedAlert'] | NexusGenRootTypes['FriendDeletedAlert'];
+  Alert: NexusGenRootTypes['ChatCreatedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
   Chat: NexusGenRootTypes['DeletedChat'] | NexusGenRootTypes['DirectMessageChat'] | NexusGenRootTypes['GroupChat'];
   ChatUpdate: NexusGenRootTypes['AdminsAdded'] | NexusGenRootTypes['AdminsRemoved'] | NexusGenRootTypes['DescriptionUpdated'] | NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'] | NexusGenRootTypes['NameUpdated'];
   Event: NexusGenRootTypes['AdminsAdded'] | NexusGenRootTypes['AdminsRemoved'] | NexusGenRootTypes['DeletedEvent'] | NexusGenRootTypes['DescriptionUpdated'] | NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'] | NexusGenRootTypes['Message'] | NexusGenRootTypes['NameUpdated'];
   KnownUser: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'];
-  Notification: NexusGenRootTypes['ChatCreatedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['FriendCreatedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['FriendRequest'];
   Request: NexusGenRootTypes['FriendRequest'];
   User: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'] | NexusGenRootTypes['Stranger'];
 }
@@ -361,15 +364,6 @@ export interface NexusGenFieldTypes {
     edges: Array<NexusGenRootTypes['FriendEdge'] | null> | null; // [FriendEdge]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
   }
-  FriendCreatedAlert: { // field return type
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdBy: NexusGenRootTypes['User']; // User!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-    isCreator: boolean; // Boolean!
-    recipients: NexusGenRootTypes['User'][]; // [User!]!
-    user: NexusGenRootTypes['Friend']; // Friend!
-  }
   FriendDeletedAlert: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
@@ -391,8 +385,7 @@ export interface NexusGenFieldTypes {
     isCreator: boolean; // Boolean!
     recipient: NexusGenRootTypes['User']; // User!
     recipientId: NexusGenScalars['HashId']; // HashId!
-    response: NexusGenRootTypes['Response'] | null; // Response
-    status: NexusGenEnums['RequestStatus']; // RequestStatus!
+    state: NexusGenEnums['RequestState']; // RequestState!
   }
   GroupChat: { // field return type
     admins: NexusGenRootTypes['User'][]; // [User!]!
@@ -455,14 +448,14 @@ export interface NexusGenFieldTypes {
     updatedAt: NexusGenScalars['Date']; // Date!
   }
   Mutation: { // field return type
-    acceptRequest: NexusGenRootTypes['Alert'] | null; // Alert
+    acceptRequest: NexusGenRootTypes['Request'] | null; // Request
     addAdminsToGroupChat: NexusGenRootTypes['AdminsAdded'] | null; // AdminsAdded
     addMembersToGroupChat: NexusGenRootTypes['MembersAdded'] | null; // MembersAdded
     cancelRequest: NexusGenRootTypes['Request'] | null; // Request
     createDirectMessageChat: NexusGenRootTypes['DirectMessageChat'] | null; // DirectMessageChat
     createGroupChat: NexusGenRootTypes['GroupChat'] | null; // GroupChat
     createMessage: NexusGenRootTypes['Message'] | null; // Message
-    declineRequest: NexusGenRootTypes['Alert'] | null; // Alert
+    declineRequest: NexusGenRootTypes['Request'] | null; // Request
     deleteChat: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     deleteEvent: NexusGenRootTypes['DeletedEvent'] | null; // DeletedEvent
     deleteFriend: NexusGenRootTypes['Stranger'] | null; // Stranger
@@ -493,19 +486,36 @@ export interface NexusGenFieldTypes {
     startCursor: string | null; // String
   }
   Query: { // field return type
+    alerts: NexusGenRootTypes['Alert'][]; // [Alert!]!
     chat: NexusGenRootTypes['Chat'] | null; // Chat
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
     events: NexusGenRootTypes['EventConnection']; // EventConnection!
     friends: NexusGenRootTypes['Friend'][]; // [Friend!]!
     me: NexusGenRootTypes['Me'] | null; // Me
     message: NexusGenRootTypes['Event'] | null; // Event
-    notifications: NexusGenRootTypes['Notification'][]; // [Notification!]!
     requests: NexusGenRootTypes['Request'][]; // [Request!]!
     user: NexusGenRootTypes['User'] | null; // User
     users: NexusGenRootTypes['UserConnection']; // UserConnection!
   }
-  Response: { // field return type
-    status: NexusGenEnums['ResponseStatus']; // ResponseStatus!
+  RequestAcceptedAlert: { // field return type
+    createdAt: NexusGenScalars['Date']; // Date!
+    createdBy: NexusGenRootTypes['User']; // User!
+    createdById: NexusGenScalars['HashId']; // HashId!
+    id: NexusGenScalars['HashId']; // HashId!
+    isCreator: boolean; // Boolean!
+    recipients: NexusGenRootTypes['User'][]; // [User!]!
+    request: NexusGenRootTypes['Request']; // Request!
+    requestId: NexusGenScalars['HashId']; // HashId!
+  }
+  RequestDeclinedAlert: { // field return type
+    createdAt: NexusGenScalars['Date']; // Date!
+    createdBy: NexusGenRootTypes['User']; // User!
+    createdById: NexusGenScalars['HashId']; // HashId!
+    id: NexusGenScalars['HashId']; // HashId!
+    isCreator: boolean; // Boolean!
+    recipients: NexusGenRootTypes['User'][]; // [User!]!
+    request: NexusGenRootTypes['Request']; // Request!
+    requestId: NexusGenScalars['HashId']; // HashId!
   }
   Stranger: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
@@ -527,7 +537,6 @@ export interface NexusGenFieldTypes {
     eventUpdated: NexusGenRootTypes['Event'] | null; // Event
     events: NexusGenRootTypes['Event'] | null; // Event
     friends: NexusGenRootTypes['User'] | null; // User
-    notifications: NexusGenRootTypes['Notification'] | null; // Notification
     requestAccepted: NexusGenRootTypes['Request'] | null; // Request
     requestCancelled: NexusGenRootTypes['Request'] | null; // Request
     requestDeclined: NexusGenRootTypes['Request'] | null; // Request
@@ -582,13 +591,6 @@ export interface NexusGenFieldTypes {
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
     friends: NexusGenRootTypes['FriendConnection']; // FriendConnection!
   }
-  Notification: { // field return type
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdBy: NexusGenRootTypes['User']; // User!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-    isCreator: boolean; // Boolean!
-  }
   Request: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
@@ -597,8 +599,7 @@ export interface NexusGenFieldTypes {
     isCreator: boolean; // Boolean!
     recipient: NexusGenRootTypes['User']; // User!
     recipientId: NexusGenScalars['HashId']; // HashId!
-    response: NexusGenRootTypes['Response'] | null; // Response
-    status: NexusGenEnums['RequestStatus']; // RequestStatus!
+    state: NexusGenEnums['RequestState']; // RequestState!
   }
   User: { // field return type
     createdAt: NexusGenScalars['Date']; // Date!
@@ -713,15 +714,6 @@ export interface NexusGenFieldTypeNames {
     edges: 'FriendEdge'
     pageInfo: 'PageInfo'
   }
-  FriendCreatedAlert: { // field return type name
-    createdAt: 'Date'
-    createdBy: 'User'
-    createdById: 'HashId'
-    id: 'HashId'
-    isCreator: 'Boolean'
-    recipients: 'User'
-    user: 'Friend'
-  }
   FriendDeletedAlert: { // field return type name
     createdAt: 'Date'
     createdBy: 'User'
@@ -743,8 +735,7 @@ export interface NexusGenFieldTypeNames {
     isCreator: 'Boolean'
     recipient: 'User'
     recipientId: 'HashId'
-    response: 'Response'
-    status: 'RequestStatus'
+    state: 'RequestState'
   }
   GroupChat: { // field return type name
     admins: 'User'
@@ -807,14 +798,14 @@ export interface NexusGenFieldTypeNames {
     updatedAt: 'Date'
   }
   Mutation: { // field return type name
-    acceptRequest: 'Alert'
+    acceptRequest: 'Request'
     addAdminsToGroupChat: 'AdminsAdded'
     addMembersToGroupChat: 'MembersAdded'
     cancelRequest: 'Request'
     createDirectMessageChat: 'DirectMessageChat'
     createGroupChat: 'GroupChat'
     createMessage: 'Message'
-    declineRequest: 'Alert'
+    declineRequest: 'Request'
     deleteChat: 'DeletedChat'
     deleteEvent: 'DeletedEvent'
     deleteFriend: 'Stranger'
@@ -845,19 +836,36 @@ export interface NexusGenFieldTypeNames {
     startCursor: 'String'
   }
   Query: { // field return type name
+    alerts: 'Alert'
     chat: 'Chat'
     chats: 'Chat'
     events: 'EventConnection'
     friends: 'Friend'
     me: 'Me'
     message: 'Event'
-    notifications: 'Notification'
     requests: 'Request'
     user: 'User'
     users: 'UserConnection'
   }
-  Response: { // field return type name
-    status: 'ResponseStatus'
+  RequestAcceptedAlert: { // field return type name
+    createdAt: 'Date'
+    createdBy: 'User'
+    createdById: 'HashId'
+    id: 'HashId'
+    isCreator: 'Boolean'
+    recipients: 'User'
+    request: 'Request'
+    requestId: 'HashId'
+  }
+  RequestDeclinedAlert: { // field return type name
+    createdAt: 'Date'
+    createdBy: 'User'
+    createdById: 'HashId'
+    id: 'HashId'
+    isCreator: 'Boolean'
+    recipients: 'User'
+    request: 'Request'
+    requestId: 'HashId'
   }
   Stranger: { // field return type name
     createdAt: 'Date'
@@ -879,7 +887,6 @@ export interface NexusGenFieldTypeNames {
     eventUpdated: 'Event'
     events: 'Event'
     friends: 'User'
-    notifications: 'Notification'
     requestAccepted: 'Request'
     requestCancelled: 'Request'
     requestDeclined: 'Request'
@@ -934,13 +941,6 @@ export interface NexusGenFieldTypeNames {
     chats: 'Chat'
     friends: 'FriendConnection'
   }
-  Notification: { // field return type name
-    createdAt: 'Date'
-    createdBy: 'User'
-    createdById: 'HashId'
-    id: 'HashId'
-    isCreator: 'Boolean'
-  }
   Request: { // field return type name
     createdAt: 'Date'
     createdBy: 'User'
@@ -949,8 +949,7 @@ export interface NexusGenFieldTypeNames {
     isCreator: 'Boolean'
     recipient: 'User'
     recipientId: 'HashId'
-    response: 'Response'
-    status: 'RequestStatus'
+    state: 'RequestState'
   }
   User: { // field return type name
     createdAt: 'Date'
@@ -994,10 +993,10 @@ export interface NexusGenArgTypes {
       last?: number | null; // Int
     }
     requests: { // args
-      status?: NexusGenEnums['RequestStatus'] | null; // RequestStatus
+      state?: NexusGenEnums['RequestState'] | null; // RequestState
     }
     sentRequests: { // args
-      status?: NexusGenEnums['RequestStatus'] | null; // RequestStatus
+      state?: NexusGenEnums['RequestState'] | null; // RequestState
     }
   }
   Mutation: {
@@ -1065,6 +1064,9 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    alerts: { // args
+      state: NexusGenEnums['AlertState']; // AlertState!
+    }
     chat: { // args
       chatId: NexusGenScalars['HashId']; // HashId!
     }
@@ -1079,7 +1081,7 @@ export interface NexusGenArgTypes {
       messageId: NexusGenScalars['HashId']; // HashId!
     }
     requests: { // args
-      status?: NexusGenEnums['RequestStatus'] | null; // RequestStatus
+      state?: NexusGenEnums['RequestState'] | null; // RequestState
     }
     user: { // args
       userId: NexusGenScalars['HashId']; // HashId!
@@ -1127,12 +1129,11 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   ChatSubscriptionResult: "AdminsAdded" | "AdminsRemoved" | "DescriptionUpdated" | "DirectMessageChat" | "GroupChat" | "MembersAdded" | "MembersRemoved" | "NameUpdated"
-  Alert: "ChatCreatedAlert" | "ChatDeletedAlert" | "FriendCreatedAlert" | "FriendDeletedAlert"
+  Alert: "ChatCreatedAlert" | "ChatDeletedAlert" | "FriendDeletedAlert" | "RequestAcceptedAlert" | "RequestDeclinedAlert"
   Chat: "DeletedChat" | "DirectMessageChat" | "GroupChat"
   ChatUpdate: "AdminsAdded" | "AdminsRemoved" | "DescriptionUpdated" | "MembersAdded" | "MembersRemoved" | "NameUpdated"
   Event: "AdminsAdded" | "AdminsRemoved" | "DeletedEvent" | "DescriptionUpdated" | "MembersAdded" | "MembersRemoved" | "Message" | "NameUpdated"
   KnownUser: "Friend" | "Me"
-  Notification: "ChatCreatedAlert" | "ChatDeletedAlert" | "FriendCreatedAlert" | "FriendDeletedAlert" | "FriendRequest"
   Request: "FriendRequest"
   User: "Friend" | "Me" | "Stranger"
 }
@@ -1140,26 +1141,25 @@ export interface NexusGenAbstractTypeMembers {
 export interface NexusGenTypeInterfaces {
   AdminsAdded: "ChatUpdate" | "Event"
   AdminsRemoved: "ChatUpdate" | "Event"
-  ChatCreatedAlert: "Alert" | "Notification"
-  ChatDeletedAlert: "Alert" | "Notification"
+  ChatCreatedAlert: "Alert"
+  ChatDeletedAlert: "Alert"
   DeletedChat: "Chat"
   DeletedEvent: "Event"
   DescriptionUpdated: "ChatUpdate" | "Event"
   DirectMessageChat: "Chat"
   Friend: "KnownUser" | "User"
-  FriendCreatedAlert: "Alert" | "Notification"
-  FriendDeletedAlert: "Alert" | "Notification"
-  FriendRequest: "Notification" | "Request"
+  FriendDeletedAlert: "Alert"
+  FriendRequest: "Request"
   GroupChat: "Chat"
   Me: "KnownUser" | "User"
   MembersAdded: "ChatUpdate" | "Event"
   MembersRemoved: "ChatUpdate" | "Event"
   Message: "Event"
   NameUpdated: "ChatUpdate" | "Event"
+  RequestAcceptedAlert: "Alert"
+  RequestDeclinedAlert: "Alert"
   Stranger: "User"
-  Alert: "Notification"
   ChatUpdate: "Event"
-  Request: "Notification"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -1176,7 +1176,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "Alert" | "Chat" | "ChatSubscriptionResult" | "ChatUpdate" | "Event" | "KnownUser" | "Notification" | "Request" | "User";
+export type NexusGenAbstractsUsingStrategyResolveType = "Alert" | "Chat" | "ChatSubscriptionResult" | "ChatUpdate" | "Event" | "KnownUser" | "Request" | "User";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

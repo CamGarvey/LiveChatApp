@@ -3,9 +3,9 @@ import { list, nonNull, queryField } from 'nexus';
 export const RequestsQuery = queryField('requests', {
   type: nonNull(list(nonNull('Request'))),
   args: {
-    status: 'RequestStatus',
+    state: 'RequestState',
   },
-  resolve: async (_, { status }, { prisma, userId }) => {
+  resolve: async (_, { state }, { prisma, userId }) => {
     return await prisma.user
       .findUnique({
         where: {
@@ -14,7 +14,7 @@ export const RequestsQuery = queryField('requests', {
       })
       .requests({
         where: {
-          status: status ?? undefined,
+          state: state ?? undefined,
         },
       });
   },

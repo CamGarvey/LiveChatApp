@@ -1,9 +1,10 @@
 import { gql } from '@apollo/client';
 import {
+  FriendRequestUserFragment,
+  FriendRequestUserFragmentDoc,
   useAcceptRequestMutation,
   useCancelRequestMutation,
   useDeclineRequestMutation,
-  useDeleteFriendMutation,
   useSendFriendRequestMutation,
 } from 'graphql/generated/graphql';
 
@@ -25,15 +26,9 @@ gql`
       ...RequestInfo
     }
   }
-  mutation SendFriendRequest($friendId: HashId!) {
-    sendFriendRequest(friendId: $friendId) {
+  mutation SendFriendRequest($strangerId: HashId!) {
+    sendFriendRequest(strangerId: $strangerId) {
       ...RequestInfo
-    }
-  }
-  mutation DeleteFriend($friendId: HashId!) {
-    deleteFriend(friendId: $friendId) {
-      id
-      status
     }
   }
   fragment RequestInfo on FriendRequest {
@@ -62,9 +57,6 @@ export const useRequest = () => {
   const [send, { data: sendData, loading: loadingSend }] =
     useSendFriendRequestMutation();
 
-  const [remove, { data: deleteData, loading: loadingDelete }] =
-    useDeleteFriendMutation();
-
   const acceptRequest = (requestId: string) =>
     accept({
       variables: {
@@ -73,7 +65,7 @@ export const useRequest = () => {
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestUserFragment>(
           {
-            id: `User:${newData.acceptFriendRequest.createdById}`,
+            id: `User:${newData.acceptRequest.createdById}`,
             fragment: FriendRequestUserFragmentDoc,
           },
           (data) => ({
@@ -123,29 +115,6 @@ export const useRequest = () => {
       },
     });
 
-  const deleteFriend = (friendId: string) =>
-    remove({
-      variables: {
-        friendId,
-      },
-      update: (cache) => {
-        cache.updateFragment<FriendRequestUserFragment>(
-          {
-            id: `User:${friendId}`,
-            fragment: FriendRequestUserFragmentDoc,
-          },
-          (data) => ({
-            ...data,
-            __typename: 'Stranger',
-            // Attach new friend request
-            friendRequest: null,
-            // Update status
-            status: StrangerStatus.NoRequest,
-          })
-        );
-      },
-    });
-
   return {
     acceptRequest,
     loadingAccept,
@@ -159,8 +128,5 @@ export const useRequest = () => {
     sendRequest,
     sendData,
     loadingSend,
-    deleteFriend,
-    deleteData,
-    loadingDelete,
   };
 };

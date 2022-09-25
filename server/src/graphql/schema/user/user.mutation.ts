@@ -1,5 +1,5 @@
 import { mutationField, nonNull, stringArg } from 'nexus';
-import { NotificationPayload, SubscriptionPayload } from '../../backing-types';
+import { AlertPayload, RequestPayload } from '../../backing-types';
 import { Subscription } from '../../backing-types';
 import { hashIdArg } from '../shared';
 
@@ -62,9 +62,9 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     });
 
     // Publish notification to deleted friend
-    pubsub.publish<NotificationPayload>(Subscription.FriendDeleted, {
+    pubsub.publish<AlertPayload>(Subscription.FriendDeleted, {
       recipients: [friendId],
-      content: alert,
+      alert,
     });
 
     return friend;

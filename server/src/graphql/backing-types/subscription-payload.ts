@@ -5,7 +5,12 @@ export type SubscriptionPayload<T = any> = {
   content: T;
 };
 
-export type NotificationPayload = {
+export type RequestPayload = {
   recipients: number[];
-  content: NexusGenInterfaces['Notification'];
+  request: NexusGenInterfaces['Request'];
+};
+
+export type AlertPayload = {
+  recipients: number[];
+  alert: NexusGenInterfaces['Alert'];
 };

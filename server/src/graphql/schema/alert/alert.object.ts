@@ -1,21 +1,36 @@
 import { objectType } from 'nexus';
 
-export const FriendCreatedAlert = objectType({
-  name: 'FriendCreatedAlert',
+export const RequestAcceptedAlert = objectType({
+  name: 'RequestAcceptedAlert',
   definition: (t) => {
     t.implements('Alert');
-    t.nonNull.field('user', {
-      type: 'Friend',
+    t.nonNull.hashId('requestId');
+    t.nonNull.field('request', {
+      type: 'Request',
       resolve: async (parent, _, { prisma }) => {
-        const alert = await prisma.alert.findUniqueOrThrow({
+        return await prisma.request.findUniqueOrThrow({
           where: {
-            id: parent.id ?? undefined,
-          },
-          include: {
-            createdBy: true,
+            id: parent.requestId ?? undefined,
           },
         });
-        return alert.createdBy;
+      },
+    });
+  },
+});
+
+export const RequestDeclinedAlert = objectType({
+  name: 'RequestDeclinedAlert',
+  definition: (t) => {
+    t.implements('Alert');
+    t.nonNull.hashId('requestId');
+    t.nonNull.field('request', {
+      type: 'Request',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.request.findUniqueOrThrow({
+          where: {
+            id: parent.requestId ?? undefined,
+          },
+        });
       },
     });
   },

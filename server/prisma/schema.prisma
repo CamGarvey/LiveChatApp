@@ -24,6 +24,7 @@ model User {
   updatedAt      DateTime     @updatedAt
   createdAt      DateTime     @default(now())
   alerts         Alert[]      @relation("AlertsReceived")
+  alertsSeen     Alert[]      @relation("AlertsSeen")
   alertsSent     Alert[]      @relation("AlertsSent")
   requests       Request[]    @relation("RequestsReceived")
   requestsSent   Request[]    @relation("RequestsSent")
@@ -37,42 +38,29 @@ model User {
 // Request is a type of notification that requires action
 // They have a single recipient 
 model Request {
-  id          Int           @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   type        RequestType
-  status      RequestStatus @default(SENT)
-  recipient   User          @relation("RequestsReceived", fields: [recipientId], references: [id])
+  state       RequestState @default(SENT)
+  recipient   User         @relation("RequestsReceived", fields: [recipientId], references: [id])
   recipientId Int
-  createdBy   User          @relation("RequestsSent", fields: [createdById], references: [id])
+  createdBy   User         @relation("RequestsSent", fields: [createdById], references: [id])
   createdById Int
-  createdAt   DateTime      @unique @default(now())
-  response    Response?
+  createdAt   DateTime     @unique @default(now())
+  alert       Alert?
 
   @@unique([recipientId, createdById, type])
 }
 
-enum RequestStatus {
+enum RequestState {
   SENT
+  SEEN
   CANCELLED
+  ACCEPTED
+  DECLINED
 }
 
 enum RequestType {
   FRIEND_REQUEST
-}
-
-model Response {
-  request       Request        @relation(fields: [requestId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  requestId     Int            @unique
-  responseAlert Alert?
-  status        ResponseStatus
-
-  @@index([status])
-  @@index([requestId])
-}
-
-enum ResponseStatus {
-  SEEN
-  ACCEPTED
-  DECLINED
 }
 
 // Alert is a type of notifcation that does not require action
@@ -81,26 +69,27 @@ model Alert {
   id          Int       @id @default(autoincrement())
   type        AlertType
   recipients  User[]    @relation("AlertsReceived")
+  seenBy      User[]    @relation("AlertsSeen")
   createdBy   User      @relation("AlertsSent", fields: [createdById], references: [id])
   createdById Int
   createdAt   DateTime  @unique @default(now())
   chat        Chat?     @relation(fields: [chatId], references: [id])
   chatId      Int?
-  response    Response? @relation(references: [requestId], fields: [responseId], onDelete: Cascade)
-  responseId  Int?      @unique
+  request     Request?  @relation(references: [id], fields: [requestId], onDelete: Cascade)
+  requestId   Int?      @unique
 
   @@index([createdById])
   @@index([chatId])
-  @@index([responseId])
+  @@index([requestId])
   @@index([type])
 }
 
 enum AlertType {
-  FRIEND_CREATED
   FRIEND_DELETED
   CHAT_CREATED
   CHAT_DELETED
-  FRIEND_REQUEST_RESPONSE
+  REQUEST_ACCEPTED
+  REQUEST_DECLINED
 }
 
 model Chat {

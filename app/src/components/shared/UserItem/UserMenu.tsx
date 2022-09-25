@@ -38,17 +38,10 @@ const UserMenu = ({
     loadingCancel,
     loadingDecline,
     loadingSend,
-    deleteFriend,
-    loadingDelete,
   } = useRequest();
 
   const anyLoading =
-    loadingAccept ||
-    loadingCancel ||
-    loadingDecline ||
-    loadingSend ||
-    loadingDelete ||
-    loading;
+    loadingAccept || loadingCancel || loadingDecline || loadingSend || loading;
 
   return (
     <Menu width={'max-content'}>
@@ -78,7 +71,7 @@ const UserMenu = ({
             <Menu.Item
               color={'red'}
               icon={<IconUserMinus size={iconSize} />}
-              onClick={() => deleteFriend(user.id)}
+              // onClick={() => deleteFriend(user.id)}
             >
               UnFriend
             </Menu.Item>
@@ -145,7 +138,7 @@ UserMenu.fragments = {
         friendRequest {
           id
           createdById
-          recipients {
+          recipient {
             id
           }
           isCreator

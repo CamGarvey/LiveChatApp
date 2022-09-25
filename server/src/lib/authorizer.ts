@@ -1,4 +1,4 @@
-import { prisma, PrismaClient, RequestStatus } from '@prisma/client';
+import { prisma, PrismaClient, RequestState } from '@prisma/client';
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { IAuthorizer } from './authorizer.interface';
 
@@ -27,7 +27,7 @@ export class Authorizer implements IAuthorizer {
         },
         memberOfChats: {
           where: {
-            type: 'DirectMessageChat',
+            type: 'DIRECT_MESSAGE',
             members: {
               every: {
                 id: this.userId,
@@ -104,7 +104,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (chat.type === 'DirectMessageChat') {
+    if (chat.type === 'DIRECT_MESSAGE') {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
@@ -138,7 +138,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (chat.type === 'DirectMessageChat') {
+    if (chat.type === 'DIRECT_MESSAGE') {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
@@ -207,7 +207,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (chat.type === 'DirectMessageChat') {
+    if (chat.type === 'DIRECT_MESSAGE') {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
@@ -265,7 +265,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (chat.type === 'DirectMessageChat') {
+    if (chat.type === 'DIRECT_MESSAGE') {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
@@ -323,7 +323,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (chat.type === 'DirectMessageChat') {
+    if (chat.type === 'DIRECT_MESSAGE') {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
@@ -541,9 +541,6 @@ export class Authorizer implements IAuthorizer {
       where: {
         id: requestId,
       },
-      include: {
-        response: true,
-      },
     });
 
     if (request.createdById !== this.userId) {
@@ -552,7 +549,7 @@ export class Authorizer implements IAuthorizer {
       );
     }
 
-    if (['ACCEPTED', 'DECLINED'].includes(request.response?.status ?? '')) {
+    if (['ACCEPTED', 'DECLINED'].includes(request?.state ?? '')) {
       throw new ForbiddenError('Invalid state');
     }
 
@@ -562,27 +559,23 @@ export class Authorizer implements IAuthorizer {
   public async canDeclineRequest(requestId: number) {
     const request = await this._prisma.request.findUniqueOrThrow({
       select: {
-        notification: {
-          select: {
-            recipientId: true,
-          },
-        },
-        status: true,
+        recipientId: true,
+        state: true,
       },
       where: {
-        notificationId: requestId,
+        id: requestId,
       },
     });
 
-    if (request.notification.recipientId !== this.userId) {
+    if (request.recipientId !== this.userId) {
       throw new ForbiddenError(
         'You do not have permission to decline this friend request'
       );
     }
 
-    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
+    const pendingStates: RequestState[] = ['SEEN', 'SENT'];
 
-    if (!pendingStates.includes(request.status)) {
+    if (!pendingStates.includes(request.state)) {
       throw new ForbiddenError('Invalid state');
     }
 
@@ -592,27 +585,23 @@ export class Authorizer implements IAuthorizer {
   public async canAcceptRequest(requestId: number) {
     const request = await this._prisma.request.findUniqueOrThrow({
       select: {
-        notification: {
-          select: {
-            recipientId: true,
-          },
-        },
-        status: true,
+        recipientId: true,
+        state: true,
       },
       where: {
-        notificationId: requestId,
+        id: requestId,
       },
     });
 
-    if (request.notification.recipientId !== this.userId) {
+    if (request.recipientId !== this.userId) {
       throw new ForbiddenError(
         'You do not have permission to accept this friend request'
       );
     }
 
-    const pendingStates: RequestStatus[] = ['SEEN', 'SENT'];
+    const pendingStates: RequestState[] = ['SEEN', 'SENT'];
 
-    if (!pendingStates.includes(request.status)) {
+    if (!pendingStates.includes(request.state)) {
       throw new ForbiddenError('Invalid state');
     }
 

@@ -16,9 +16,9 @@ export const Me = objectType({
     t.nonNull.list.nonNull.field('sentRequests', {
       type: 'Request',
       args: {
-        status: 'RequestStatus',
+        state: 'RequestState',
       },
-      resolve: async (_, { status }, { prisma, userId }) => {
+      resolve: async (_, { state }, { prisma, userId }) => {
         return await prisma.user
           .findUniqueOrThrow({
             where: {
@@ -27,7 +27,7 @@ export const Me = objectType({
           })
           .requestsSent({
             where: {
-              status: status ?? undefined,
+              state: state ?? undefined,
             },
           });
       },
@@ -35,9 +35,9 @@ export const Me = objectType({
     t.nonNull.list.nonNull.field('requests', {
       type: 'Request',
       args: {
-        status: 'RequestStatus',
+        state: 'RequestState',
       },
-      resolve: async (_, { status }, { prisma, userId }) => {
+      resolve: async (_, { state }, { prisma, userId }) => {
         return await prisma.user
           .findUniqueOrThrow({
             where: {
@@ -46,7 +46,7 @@ export const Me = objectType({
           })
           .requests({
             where: {
-              status: status ?? undefined,
+              state: state ?? undefined,
             },
           });
       },
@@ -113,39 +113,17 @@ export const Stranger = objectType({
             requests: {
               where: {
                 type: 'FRIEND_REQUEST',
-                OR: [
-                  {
-                    response: null,
-                  },
-                  {
-                    response: {
-                      is: {
-                        status: {
-                          equals: 'SEEN',
-                        },
-                      },
-                    },
-                  },
-                ],
+                state: {
+                  in: ['SEEN', 'SENT'],
+                },
               },
             },
             requestsSent: {
               where: {
                 type: 'FRIEND_REQUEST',
-                OR: [
-                  {
-                    response: null,
-                  },
-                  {
-                    response: {
-                      is: {
-                        status: {
-                          equals: 'SEEN',
-                        },
-                      },
-                    },
-                  },
-                ],
+                state: {
+                  in: ['SEEN', 'SENT'],
+                },
               },
             },
           },
@@ -173,39 +151,17 @@ export const Stranger = objectType({
             requests: {
               where: {
                 type: 'FRIEND_REQUEST',
-                OR: [
-                  {
-                    response: null,
-                  },
-                  {
-                    response: {
-                      is: {
-                        status: {
-                          equals: 'SEEN',
-                        },
-                      },
-                    },
-                  },
-                ],
+                state: {
+                  in: ['SEEN', 'SENT'],
+                },
               },
             },
             requestsSent: {
               where: {
                 type: 'FRIEND_REQUEST',
-                OR: [
-                  {
-                    response: null,
-                  },
-                  {
-                    response: {
-                      is: {
-                        status: {
-                          equals: 'SEEN',
-                        },
-                      },
-                    },
-                  },
-                ],
+                state: {
+                  in: ['SEEN', 'SENT'],
+                },
               },
             },
           },
