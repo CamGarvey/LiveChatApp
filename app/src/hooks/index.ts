@@ -3,4 +3,4 @@ export * from './useCreateGroupChat';
 export * from './useDeleteChat';
 export * from './useCreateDmChat';
 export * from './useUpdateGroupChat';
-export * from './useFriendRequest';
+export * from './useRequest';

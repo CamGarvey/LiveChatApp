@@ -1,5 +1,5 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Message, Prisma, User } from '@prisma/client';
+import { Event, Prisma, User } from '@prisma/client';
 import { objectType } from 'nexus';
 
 export const DirectMessageChat = objectType({
@@ -17,23 +17,23 @@ export const DirectMessageChat = objectType({
           .members();
 
         // There can only be 2 members in a Direct Message Chat so just grab other user
-        return members.find((x) => x.id !== userId);
+        return members.find((x) => x.id !== userId)!;
       },
     });
-    t.nonNull.connectionField('messages', {
-      type: 'MessageResult',
+    t.nonNull.connectionField('events', {
+      type: 'Event',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
-          Message,
-          Pick<Prisma.MessageWhereUniqueInput, 'id'>
+          Event,
+          Pick<Prisma.EventWhereUniqueInput, 'id'>
         >(
           (args) =>
-            prisma.message.findMany({
+            prisma.event.findMany({
               ...args,
               ...{ where: { id: parent.id || undefined } },
             }),
           () =>
-            prisma.message.count({
+            prisma.event.count({
               ...{ where: { id: parent.id || undefined } },
             }),
           args,
@@ -89,7 +89,6 @@ export const GroupChat = objectType({
           .admins();
       },
     });
-    t.nonNull.list.nonNull.hashId('adminIds');
     t.nonNull.boolean('isAdmin', {
       resolve: async (parent, _, { prisma, userId }) => {
         const admins: User[] = await prisma.chat
@@ -103,20 +102,20 @@ export const GroupChat = objectType({
         return admins.map((x) => x.id).includes(userId);
       },
     });
-    t.nonNull.connectionField('messages', {
-      type: 'MessageResult',
+    t.nonNull.connectionField('events', {
+      type: 'Event',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
-          Message,
-          Pick<Prisma.MessageWhereUniqueInput, 'id'>
+          Event,
+          Pick<Prisma.EventWhereUniqueInput, 'id'>
         >(
           (args) =>
-            prisma.message.findMany({
+            prisma.event.findMany({
               ...args,
               ...{ where: { id: parent.id || undefined } },
             }),
           () =>
-            prisma.message.count({
+            prisma.event.count({
               ...{ where: { id: parent.id || undefined } },
             }),
           args,
@@ -130,16 +129,6 @@ export const GroupChat = objectType({
         );
       },
     });
-    // t.nonNull.list.nonNull.field('updates', {
-    //   type: 'IChat',
-    //   resolve: async (parent, _, { prisma }) => {
-    //     return await prisma.chat
-    //       .findUnique({
-    //         where: { id: parent.id || undefined },
-    //       })
-    //       .updates();
-    //   },
-    // });
   },
 });
 

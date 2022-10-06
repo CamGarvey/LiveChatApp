@@ -1,16 +1,46 @@
 import { ActionIcon, Input, Tabs, Tooltip } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { IconSearch, IconUser, IconUsers, IconCirclePlus } from '@tabler/icons';
-import useLiveChats from './useLiveChats';
 import ChatList from './ChatList';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 import { useDrawer } from 'store';
 import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
 import { useCreateDmChat } from 'hooks';
+import { gql } from '@apollo/client';
+import ChatItem from './ChatItem';
+import { useGetChatsForChatDisplayQuery } from 'graphql/generated/graphql';
+
+gql`
+  query GetChatsForChatDisplay {
+    chats {
+      id
+      ...ChatItem
+      createdBy {
+        id
+        username
+      }
+      ... on GroupChat {
+        members {
+          id
+          username
+          name
+        }
+      }
+      ... on DirectMessageChat {
+        friend {
+          id
+          username
+          name
+        }
+      }
+    }
+  }
+  ${ChatItem.fragments.chat}
+`;
 
 const ChatDisplay = () => {
   const [activeTab, setActiveTab] = useState<string | null>('groups');
-  const { loading, chats } = useLiveChats();
+  const { loading, data } = useGetChatsForChatDisplayQuery();
   const [filter, setFilter] = useState('');
   const openCreateGroupChat = useCreateGroupChatModal();
   const openFriendSelector = useFriendSelectorModal();
@@ -18,7 +48,7 @@ const ChatDisplay = () => {
   const drawer = useDrawer();
   const filteredChats = useMemo(
     () =>
-      chats.filter((c) => {
+      data?.chats?.filter((c) => {
         if (c.__typename === 'GroupChat') {
           return c.name.toLowerCase().includes(filter);
         }
@@ -29,8 +59,8 @@ const ChatDisplay = () => {
           );
         }
         return false;
-      }),
-    [chats, filter]
+      }) ?? [],
+    [data?.chats, filter]
   );
 
   const filteredGroupChats = useMemo(

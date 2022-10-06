@@ -1,9 +1,8 @@
 import { gql } from '@apollo/client';
-import { showNotification } from '@mantine/notifications';
 import { useUser } from 'context/UserContext';
 import {
-  GetChatsForDisplayDocument,
-  GetChatsForDisplayQuery,
+  GetChatsForChatDisplayDocument,
+  GetChatsForChatDisplayQuery,
   useCreateGroupChatMutation,
 } from 'graphql/generated/graphql';
 import { useNavigate } from 'react-router-dom';
@@ -27,31 +26,39 @@ export const useCreateGroupChat = () => {
   const navigate = useNavigate();
 
   const create = useCreateGroupChatMutation({
-    update: (cache, { data: { createGroupChat } }) => {
-      const { chats } = cache.readQuery<GetChatsForDisplayQuery>({
-        query: GetChatsForDisplayDocument,
+    update: (cache, { data }) => {
+      const query = cache.readQuery<GetChatsForChatDisplayQuery>({
+        query: GetChatsForChatDisplayDocument,
       });
 
+      if (!query) {
+        throw new Error('Could not find query');
+      }
+
+      if (!data) {
+        throw new Error('No data');
+      }
+
       const updatedChats = [
-        ...chats,
+        ...query.chats,
         {
           createdBy: {
             __typename: 'Me',
             ...user,
           },
-          ...createGroupChat,
+          ...data.createGroupChat,
         },
       ];
 
       cache.writeQuery({
-        query: GetChatsForDisplayDocument,
+        query: GetChatsForChatDisplayDocument,
         data: {
           chats: updatedChats,
         },
       });
     },
     onCompleted: (data) => {
-      navigate(`/chats/${data.createGroupChat.id}`, { replace: true });
+      navigate(`/chats/${data.createGroupChat?.id}`, { replace: true });
     },
   });
 

@@ -1,7 +1,5 @@
-import { Message } from '@prisma/client';
 import { mutationField, nonNull, stringArg } from 'nexus';
-import SubscriptionPayload from 'src/graphql/backing-types/subscription-payload';
-import { Subscription } from '../../../backing-types';
+import { EventPayload, Subscription } from '../../../backing-types';
 import { hashIdArg } from '../../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
@@ -19,15 +17,25 @@ export const CreateMessageMutation = mutationField('createMessage', {
       })
     ),
   },
-  authorize: (_, { chatId }, { auth }) => auth.canCreateMessage(chatId),
+  authorize: (_, { chatId }, { auth }) => auth.canCreateEvent(chatId),
   resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
-    const message = await prisma.message.create({
+    const event = await prisma.event.create({
       data: {
+        type: 'MESSAGE',
         chatId,
         createdById: userId,
-        content,
+        message: {
+          create: {
+            content,
+          },
+        },
       },
       include: {
+        message: {
+          select: {
+            content: true,
+          },
+        },
         chat: {
           select: {
             members: {
@@ -40,57 +48,14 @@ export const CreateMessageMutation = mutationField('createMessage', {
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Message>>(Subscription.MessageCreated, {
-      recipients: message.chat.members
+    pubsub.publish<EventPayload>(Subscription.EventCreated, {
+      recipients: event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
-      content: message,
+      content: event,
     });
 
-    return message;
-  },
-});
-
-export const DeleteMessageMutation = mutationField('deleteMessage', {
-  type: 'DeletedMessage',
-  args: {
-    messageId: nonNull(
-      hashIdArg({
-        description: 'Id of Message to delete',
-      })
-    ),
-  },
-  description: 'Delete a Message',
-  authorize: (_, { messageId }, { auth }) => auth.canDeletedMessage(messageId),
-  resolve: async (_, { messageId }, { prisma, pubsub, userId }) => {
-    const message = await prisma.message.update({
-      data: {
-        deletedAt: new Date(),
-      },
-      include: {
-        chat: {
-          select: {
-            members: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
-      },
-      where: {
-        id: messageId,
-      },
-    });
-
-    pubsub.publish<SubscriptionPayload<Message>>(Subscription.MessageDeleted, {
-      recipients: message.chat.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId),
-      content: message,
-    });
-
-    return message;
+    return event;
   },
 });
 
@@ -109,7 +74,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
     ),
   },
   description: 'Update a Message',
-  authorize: (_, { messageId }, { auth }) => auth.canUpdateMessage(messageId),
+  authorize: (_, { messageId }, { auth }) => auth.canUpdateEvent(messageId),
   resolve: async (_, { messageId, content }, { prisma, pubsub, userId }) => {
     // Update message
     const message = await prisma.message.update({
@@ -117,28 +82,32 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
         content,
       },
       include: {
-        chat: {
-          select: {
-            members: {
+        event: {
+          include: {
+            chat: {
               select: {
-                id: true,
+                members: {
+                  select: {
+                    id: true,
+                  },
+                },
               },
             },
           },
         },
       },
       where: {
-        id: messageId,
+        eventId: messageId,
       },
     });
 
-    pubsub.publish<SubscriptionPayload<Message>>(Subscription.MessageUpdated, {
-      recipients: message.chat.members
+    pubsub.publish<EventPayload>(Subscription.EventUpdated, {
+      recipients: message.event.chat.members
         .map((x) => x.id)
         .filter((x) => x !== userId),
-      content: message,
+      content: message.event,
     });
 
-    return message;
+    return message.event;
   },
 });

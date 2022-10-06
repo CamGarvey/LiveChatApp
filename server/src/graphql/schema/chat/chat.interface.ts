@@ -1,11 +1,14 @@
+import { Chat } from '@prisma/client';
 import { interfaceType } from 'nexus';
 
 export const ChatInterface = interfaceType({
   name: 'Chat',
-  resolveType: (chat: any) => {
-    if (chat.deletedAt !== null) return 'DeletedChat';
-    return chat.isDM ? 'DirectMessageChat' : 'GroupChat';
-  },
+  resolveType: (chat: Chat) =>
+    chat.deletedAt
+      ? 'DeletedChat'
+      : chat.type === 'DIRECT_MESSAGE'
+      ? 'DirectMessageChat'
+      : 'GroupChat',
   definition: (t) => {
     t.nonNull.hashId('id');
     t.nonNull.hashId('createdById');

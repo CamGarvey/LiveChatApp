@@ -1,1 +1,2 @@
-export * from './message';
+export * from './event-processor';
+export * from './avatar';

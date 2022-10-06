@@ -1,27 +1,24 @@
 import { list, nonNull, queryField } from 'nexus';
 
-export const NotificationQuery = queryField('notifications', {
+export const Notifications = queryField('notifications', {
   type: nonNull(list(nonNull('Notification'))),
+  description: 'Get all notifications for current user',
   resolve: async (_, __, { prisma, userId }) => {
-    const result = await prisma.user.findUniqueOrThrow({
-      where: {
-        id: userId,
-      },
+    const user = await prisma.user.findUniqueOrThrow({
       include: {
-        receivedChatInvites: true,
-        receivedFriendRequests: {
+        requests: {
           where: {
-            status: {
+            state: {
               in: ['SENT', 'SEEN'],
             },
           },
         },
+        alerts: true,
+      },
+      where: {
+        id: userId,
       },
     });
-
-    return [
-      ...(result?.receivedChatInvites ?? []),
-      ...(result?.receivedFriendRequests ?? []),
-    ];
+    return [...user.requests, ...user.alerts];
   },
 });

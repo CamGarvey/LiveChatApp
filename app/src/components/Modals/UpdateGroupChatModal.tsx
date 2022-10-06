@@ -14,12 +14,14 @@ import { useDeleteChat } from 'hooks';
 import { AdminSelector } from 'components/shared/AdminSelector';
 import { gql } from '@apollo/client';
 import { useUpdateGroupChat } from 'hooks/useUpdateGroupChat';
+import { useUser } from 'context/UserContext';
 
 gql`
   query GetChatForUpdate($chatId: HashId!) {
     chat(chatId: $chatId) {
       id
       isCreator
+      createdById
       ... on GroupChat {
         name
         description
@@ -58,10 +60,10 @@ export const UpdateGroupChatModal = ({
     },
   });
   const chat = data?.chat;
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { deleteChat, loading: loadingDelete } = useDeleteChat();
-  const { updateChat, loading: loadingUpdate } = useUpdateGroupChat();
+  const { update, loading: loadingUpdate } = useUpdateGroupChat();
 
   const {
     loading: loadingFriends,
@@ -69,12 +71,12 @@ export const UpdateGroupChatModal = ({
     error: friendError,
   } = useGetFriendsForUpdateGroupChatQuery();
 
-  const memberIds = useMemo(
+  const memberIds = useMemo<string[]>(
     () =>
       chat?.__typename === 'GroupChat' ? chat.members.map((x) => x.id) : [],
     [chat]
   );
-  const adminIds = useMemo(
+  const adminIds = useMemo<string[]>(
     () =>
       chat?.__typename === 'GroupChat' ? chat.admins.map((x) => x.id) : [],
     [chat]
@@ -88,14 +90,16 @@ export const UpdateGroupChatModal = ({
     if (chat?.__typename !== 'GroupChat') return [];
     if (friendData)
       return _.unionBy(
-        chat.members,
-        friendData.friends.map((x) => ({
-          ...x,
+        chat.members.filter((user) => adminIds.includes(user.id)),
+        chat.admins.map((user) => ({
+          ...user,
+          canRemove: false, // Cannot remove admins unless creator
         })),
+        friendData.friends,
         'id'
       );
     return chat.members;
-  }, [chat, friendData]);
+  }, [chat, friendData, adminIds]);
 
   if (loadingChat)
     return (
@@ -104,14 +108,21 @@ export const UpdateGroupChatModal = ({
       </Center>
     );
 
-  if (chat?.__typename === 'DeletedChat')
+  if (!chat || !chat.__typename)
+    return (
+      <Center>
+        <Text>Could not find chat</Text>
+      </Center>
+    );
+
+  if (chat.__typename === 'DeletedChat')
     return (
       <Center>
         <Text>Chat is deleted</Text>
       </Center>
     );
 
-  if (chat?.__typename === 'DirectMessageChat')
+  if (chat.__typename !== 'GroupChat')
     return (
       <Center>
         <Text>Chat must be a group chat</Text>
@@ -132,6 +143,7 @@ export const UpdateGroupChatModal = ({
           const membersRemoved = memberIds.filter(
             (x) => !values.memberIds.includes(x)
           );
+
           const membersAdded = values.memberIds.filter(
             (x) => !memberIds.includes(x)
           );
@@ -141,15 +153,18 @@ export const UpdateGroupChatModal = ({
           const adminsAdded = values.adminIds.filter(
             (x) => !adminIds.includes(x)
           );
-          updateChat({
-            chatId: chat.id,
-            name: values.name,
-            description: values.description,
-            addMemberIds: membersAdded,
-            removeMemberIds: membersRemoved,
-            addAdminIds: adminsAdded,
-            removeAdminIds: adminsRemoved,
-          }).then(() => context.closeModal(id));
+          update(chat.id, {
+            name: chat.name !== values.name ? values.name : null,
+            description:
+              chat.description !== values.description
+                ? values.description
+                : null,
+            addMembers: membersAdded,
+            removeMembers: membersRemoved,
+            addAdmins: adminsAdded,
+            removeAdmins: adminsRemoved,
+          });
+          context.closeModal(id);
         }}
       >
         {(props) => (
@@ -176,7 +191,7 @@ export const UpdateGroupChatModal = ({
                   id="description"
                   type="text"
                   onChange={props.handleChange}
-                  value={props.values.description}
+                  value={props.values.description ?? ''}
                 />
               </Input.Wrapper>
               <Input.Wrapper>

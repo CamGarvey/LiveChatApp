@@ -33,9 +33,7 @@ gql`
     }
     ... on Request {
       createdById
-      recipientId
       isCreator
-      status
       createdBy {
         ... on Stranger {
           friendRequest {
@@ -63,12 +61,10 @@ gql`
 const filterNotifications = (
   notifications: LiveNotificationFragment[]
 ): LiveNotificationFragment[] =>
-  notifications
-    .filter((x) => ['SENT', 'SEEN'].includes(x.status))
-    .filter((x) => !x.isCreator) ?? [];
+  notifications.filter((x) => !x.isCreator) ?? [];
 
 type Props = {
-  onNotification: (notification: NotificationsSubscription) => void;
+  onNotification: (notification: LiveNotificationFragment) => void;
 };
 
 /**
@@ -85,7 +81,12 @@ export const useLiveNotifications = ({ onNotification }: Props) => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const notification = subscriptionData.data.notifications;
-        onNotification(subscriptionData.data);
+
+        if (!notification) {
+          throw new Error('No notification found');
+        }
+
+        onNotification(notification);
         const newCache = Object.assign({}, prev, {
           notifications: [
             ...prev.notifications.filter((x) => x.id !== notification.id),

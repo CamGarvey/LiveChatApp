@@ -13,21 +13,42 @@ export const Me = objectType({
   name: 'Me',
   definition: (t) => {
     t.implements('User', 'KnownUser');
-    t.nonNull.list.nonNull.field('friendRequests', {
-      type: 'FriendRequest',
+    t.nonNull.list.nonNull.field('sentRequests', {
+      type: 'Request',
       args: {
-        status: 'RequestStatus',
+        state: 'RequestState',
       },
-      resolve: async (parent, { status }, { prisma }) => {
-        return await prisma.friendRequest.findMany({
-          where: {
-            recipientId: parent.id,
-            status: status || undefined,
-          },
-          include: {
-            recipient: true,
-          },
-        });
+      resolve: async (_, { state }, { prisma, userId }) => {
+        return await prisma.user
+          .findUniqueOrThrow({
+            where: {
+              id: userId,
+            },
+          })
+          .requestsSent({
+            where: {
+              state: state ?? undefined,
+            },
+          });
+      },
+    });
+    t.nonNull.list.nonNull.field('requests', {
+      type: 'Request',
+      args: {
+        state: 'RequestState',
+      },
+      resolve: async (_, { state }, { prisma, userId }) => {
+        return await prisma.user
+          .findUniqueOrThrow({
+            where: {
+              id: userId,
+            },
+          })
+          .requests({
+            where: {
+              state: state ?? undefined,
+            },
+          });
       },
     });
   },
@@ -89,16 +110,18 @@ export const Stranger = objectType({
             id: userId,
           },
           select: {
-            sentFriendRequests: {
+            requests: {
               where: {
-                status: {
+                type: 'FRIEND_REQUEST',
+                state: {
                   in: ['SEEN', 'SENT'],
                 },
               },
             },
-            receivedFriendRequests: {
+            requestsSent: {
               where: {
-                status: {
+                type: 'FRIEND_REQUEST',
+                state: {
                   in: ['SEEN', 'SENT'],
                 },
               },
@@ -106,17 +129,11 @@ export const Stranger = objectType({
           },
         });
 
-        if (
-          user.receivedFriendRequests
-            .map((x) => x.createdById)
-            .includes(parent.id)
-        ) {
+        if (user.requests.find((x) => x.createdById === parent.id)) {
           return 'REQUEST_RECEIVED';
         }
 
-        if (
-          user.sentFriendRequests.map((x) => x.recipientId).includes(parent.id)
-        ) {
+        if (user.requestsSent.find((x) => x.recipientId === parent.id)) {
           return 'REQUEST_SENT';
         }
 
@@ -130,37 +147,35 @@ export const Stranger = objectType({
           where: {
             id: userId,
           },
-          include: {
-            sentFriendRequests: {
+          select: {
+            requests: {
               where: {
-                status: {
+                type: 'FRIEND_REQUEST',
+                state: {
                   in: ['SEEN', 'SENT'],
                 },
               },
             },
-            receivedFriendRequests: {
+            requestsSent: {
               where: {
-                status: {
+                type: 'FRIEND_REQUEST',
+                state: {
                   in: ['SEEN', 'SENT'],
                 },
               },
             },
           },
         });
-
-        const sentRequest = user.sentFriendRequests.find(
-          (x) => x.recipientId == parent.id
-        );
-        if (sentRequest) {
-          return sentRequest;
+        let request = user.requests.find((x) => x.createdById === parent.id);
+        if (request) {
+          return request;
         }
 
-        const receivedRequest = user.receivedFriendRequests.find(
-          (x) => x.createdById == parent.id
-        );
-        if (receivedRequest) {
-          return receivedRequest;
+        request = user.requestsSent.find((x) => x.recipientId === parent.id);
+        if (request) {
+          return request;
         }
+
         return null;
       },
     });

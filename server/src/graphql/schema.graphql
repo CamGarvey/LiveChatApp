@@ -2,6 +2,49 @@
 ### Do not make changes to this file directly
 
 
+type AdminsAdded implements ChatUpdate & Event {
+  adminsAdded: [User!]!
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+type AdminsRemoved implements ChatUpdate & Event {
+  adminsRemoved: [User!]!
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+"""
+Alert is a type of notification that does not require a response
+    and can be sent to multiple users
+"""
+interface Alert implements Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+}
+
+enum AlertState {
+  ALL
+  SEEN
+  UNSEEN
+}
+
 interface Chat {
   createdAt: Date
   createdBy: User!
@@ -11,17 +54,37 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatInvite implements Notification & Request {
-  chat: Chat
+type ChatCreated implements Alert & Notification {
+  chat: Chat!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+}
+
+type ChatDeleted implements Alert & Notification {
+  chat: Chat!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+}
+
+union ChatSubscriptionResult = DeletedChat | DirectMessageChat | GroupChat
+
+interface ChatUpdate implements Event {
+  chat: Chat!
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User
-  recipientId: HashId!
-  status: RequestStatus!
+  updatedAt: Date!
 }
 
 input CreateGroupChatInput {
@@ -48,13 +111,26 @@ type DeletedChat implements Chat {
   updatedAt: Date
 }
 
-type DeletedMessage implements Event {
+type DeletedEvent implements Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
-  deletedAt: Date
+  deletedAt: Date!
+  id: HashId!
+  isCreator: Boolean!
+  updatedAt: Date!
+}
+
+type DescriptionUpdated implements ChatUpdate & Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  descriptionAfter: String!
+  descriptionBefore: String!
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
@@ -65,10 +141,7 @@ type DirectMessageChat implements Chat {
   createdAt: Date
   createdBy: User!
   createdById: HashId!
-  friend: Friend!
-  id: HashId!
-  isCreator: Boolean!
-  messages(
+  events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -80,7 +153,10 @@ type DirectMessageChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): EventConnection!
+  friend: Friend!
+  id: HashId!
+  isCreator: Boolean!
   updatedAt: Date
 }
 
@@ -93,6 +169,26 @@ interface Event {
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
+}
+
+type EventConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [EventEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type EventEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: Event
 }
 
 type Friend implements KnownUser & User {
@@ -129,6 +225,16 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
+type FriendDeleted implements Alert & Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  user: Stranger!
+}
+
 type FriendEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
@@ -143,25 +249,19 @@ type FriendRequest implements Notification & Request {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User
+  recipient: User!
   recipientId: HashId!
-  status: RequestStatus!
+  state: RequestState!
 }
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements Chat {
-  adminIds: [HashId!]!
   admins: [User!]!
   createdAt: Date
   createdBy: User!
   createdById: HashId!
   description: String
-  id: HashId!
-  isAdmin: Boolean!
-  isCreator: Boolean!
-  memberCount: Int!
-  members: [User!]!
-  messages(
+  events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -173,7 +273,12 @@ type GroupChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): EventConnection!
+  id: HashId!
+  isAdmin: Boolean!
+  isCreator: Boolean!
+  memberCount: Int!
+  members: [User!]!
   name: String!
   updatedAt: Date
 }
@@ -200,7 +305,6 @@ interface KnownUser {
 type Me implements KnownUser & User {
   chats: [Chat!]!
   createdAt: Date!
-  friendRequests(status: RequestStatus): [FriendRequest!]!
   friends(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -216,8 +320,34 @@ type Me implements KnownUser & User {
   ): FriendConnection!
   id: HashId!
   name: String
+  requests(state: RequestState): [Request!]!
+  sentRequests(state: RequestState): [Request!]!
   updatedAt: Date!
   username: String!
+}
+
+type MembersAdded implements ChatUpdate & Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  membersAdded: [User!]!
+  updatedAt: Date!
+}
+
+type MembersRemoved implements ChatUpdate & Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  membersRemoved: [User!]!
+  updatedAt: Date!
 }
 
 type Message implements Event {
@@ -233,31 +363,10 @@ type Message implements Event {
   updatedAt: Date!
 }
 
-union MessageResult = DeletedMessage | Message
-
-type MessageResultConnection {
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
-  """
-  edges: [MessageResultEdge]
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
-  """
-  pageInfo: PageInfo!
-}
-
-type MessageResultEdge {
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
-  cursor: String!
-
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: MessageResult
-}
-
 type Mutation {
-  """Accept a friend request"""
-  acceptFriendRequest(friendRequestId: HashId!): FriendRequest
+  """Accept a request"""
+  acceptRequest(requestId: HashId!): Request
+  acknowledgeAlert(alertId: HashId!): Alert
 
   """Add admins to a group chat"""
   addAdminsToGroupChat(
@@ -265,7 +374,7 @@ type Mutation {
 
     """Ids of admins to be added to the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): AdminsAdded
 
   """Add members to a group chat"""
   addMembersToGroupChat(
@@ -273,10 +382,10 @@ type Mutation {
 
     """Ids of members to be added into the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): MembersAdded
 
-  """Cancel/Delete a sent Friend Request"""
-  cancelFriendRequest(friendRequestId: HashId!): FriendRequest
+  """Cancel a sent request"""
+  cancelRequest(requestId: HashId!): Request
 
   """Create a Chat"""
   createDirectMessageChat(
@@ -296,23 +405,21 @@ type Mutation {
     content: String!
   ): Message
 
-  """Decline a received Friend Request"""
-  declineFriendRequest(friendRequestId: HashId!): FriendRequest
+  """Decline a received request"""
+  declineRequest(requestId: HashId!): Request
 
   """Delete a Chat"""
   deleteChat(
     """Id of Chat to be deleted"""
     chatId: HashId!
   ): DeletedChat
+  deleteEvent(
+    """Id of event"""
+    eventId: HashId
+  ): DeletedEvent
 
   """Delete a Friend"""
   deleteFriend(friendId: HashId!): Stranger
-
-  """Delete a Message"""
-  deleteMessage(
-    """Id of Message to delete"""
-    messageId: HashId!
-  ): DeletedMessage
 
   """Remove admins from a group chat"""
   removeAdminsFromGroupChat(
@@ -320,7 +427,7 @@ type Mutation {
 
     """Ids of admins to be removed from the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): AdminsRemoved
 
   """Remove members from a group chat"""
   removeMembersFromGroupChat(
@@ -328,13 +435,12 @@ type Mutation {
 
     """Ids of members to be removed from the chat"""
     members: [HashId!]!
-  ): GroupChat
+  ): MembersRemoved
 
   """Send a friend request to a user"""
-  sendFriendRequest(friendId: HashId!): FriendRequest
-
-  """Update basic group chat information"""
-  updateGroupChat(data: UpdateGroupChatInput!): GroupChat
+  sendFriendRequest(strangerId: HashId!): FriendRequest
+  updateGroupChatDescription(chatId: HashId!, description: String!): DescriptionUpdated
+  updateGroupChatName(chatId: HashId!, name: String!): NameUpdated
 
   """Update a Message"""
   updateMessage(
@@ -347,6 +453,19 @@ type Mutation {
 
   """Update current user"""
   updateUser(name: String!): Me
+}
+
+type NameUpdated implements ChatUpdate & Event {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  nameAfter: String!
+  nameBefore: String!
+  updatedAt: Date!
 }
 
 interface Notification {
@@ -383,22 +502,19 @@ type PageInfo {
 }
 
 type Query {
+  alerts(state: AlertState! = UNSEEN): [Alert!]!
   chat(
     """Id of chat"""
     chatId: HashId!
   ): Chat
-  chatInvites(status: RequestStatus): [ChatInvite!]!
   chats: [Chat!]!
-  friendRequests(status: RequestStatus): [FriendRequest!]!
-  friends: [Friend!]!
-  me: Me
 
-  """Get a message by id"""
-  message(
-    """id of message"""
-    messageId: HashId!
-  ): MessageResult
-  messages(
+  """Get a event by id"""
+  event(
+    """id of event"""
+    eventId: HashId!
+  ): Event
+  events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -411,8 +527,13 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): MessageResultConnection!
+  ): EventConnection!
+  friends: [Friend!]!
+  me: Me
+
+  """Get all notifications for current user"""
   notifications: [Notification!]!
+  requests(state: RequestState): [Request!]!
   user(
     """id of user"""
     userId: HashId!
@@ -440,18 +561,44 @@ type Query {
   ): UserConnection!
 }
 
-interface Request {
+"""
+Request is a type of notification that requires a response 
+    and is sent to a single user
+"""
+interface Request implements Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  recipient: User
+  recipient: User!
   recipientId: HashId!
-  status: RequestStatus!
+  state: RequestState!
 }
 
-enum RequestStatus {
+type RequestAccepted implements Alert & Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  request: Request!
+  requestId: HashId!
+}
+
+type RequestDeclined implements Alert & Notification {
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  recipients: [User!]!
+  request: Request!
+  requestId: HashId!
+}
+
+enum RequestState {
   ACCEPTED
   CANCELLED
   DECLINED
@@ -494,38 +641,26 @@ enum StrangerStatus {
 }
 
 type Subscription {
-  chatCreated: Chat
-  chatDeleted: DeletedChat
-  chatUpdated: Chat
-  chats: Chat
+  """Subscribe to alerts"""
+  alerts: Alert
 
-  """Subscribe to friend requests"""
-  friendRequests: FriendRequest
-  friends: User
+  """Subscribe to created events in chat"""
+  eventCreated(chatId: HashId): Event
 
-  """SUbscribe to created messages in chat"""
-  messageCreated(chatId: HashId): Message
+  """Subscribe to deleted events in chat"""
+  eventDeleted(chatId: HashId): DeletedEvent
 
-  """Subscribe to deleted messages in chat"""
-  messageDeleted(chatId: HashId): DeletedMessage
+  """Subscribe to updated events in chat"""
+  eventUpdated(chatId: HashId): Event
 
-  """Subscribe to updated messages in chat"""
-  messageUpdated(chatId: HashId): MessageResult
+  """Subscribe to any created/updated/deleted events"""
+  events(chatId: HashId): Event
 
-  """Subscribe to any created/updated/deleted messages"""
-  messages(chatId: HashId): MessageResult
+  """Subscribe to all types of notifications"""
   notifications: Notification
-}
 
-input UpdateGroupChatInput {
-  """Id of chat to update"""
-  chatId: HashId!
-
-  """New description for chat"""
-  description: String
-
-  """New name for chat"""
-  name: String
+  """Subscribe to requests"""
+  requests: Request
 }
 
 interface User {

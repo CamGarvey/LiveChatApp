@@ -48,7 +48,7 @@ gql`
 const ChatInfoAside = () => {
   const { chatId } = useParams();
   const [getChat, { data, loading }] = useGetChatForChatInfoAsideLazyQuery();
-  const { removeMember, loading: loadingRemove } = useUpdateGroupChat();
+  const { update, loading: loadingRemove } = useUpdateGroupChat();
 
   useEffect(() => {
     if (chatId)
@@ -57,7 +57,7 @@ const ChatInfoAside = () => {
           chatId,
         },
       });
-  }, [getChat, chatId]);
+  }, [chatId, getChat]);
 
   const chat = data?.chat;
 
@@ -65,7 +65,7 @@ const ChatInfoAside = () => {
     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
       <Aside p="md" hiddenBreakpoint="md" width={{ md: 300, lg: 300 }}>
         <LoadingOverlay visible={loading} />
-        {chat && chat.__typename !== 'DeletedChat' && (
+        {chatId && chat && chat.__typename !== 'DeletedChat' && (
           <>
             <Aside.Section>
               <Title order={2}>
@@ -75,12 +75,13 @@ const ChatInfoAside = () => {
               </Title>
             </Aside.Section>
             <Aside.Section>
-              {chat.__typename === 'GroupChat' ? (
+              {chat.__typename === 'GroupChat' && (
                 <Group>
                   <ChatUpdateAction />
                   <Title order={4}>{chat.name}</Title>
                 </Group>
-              ) : (
+              )}
+              {chat.__typename === 'DirectMessageChat' && (
                 <UserItem
                   user={chat.friend}
                   menu={<UserMenu user={chat.friend} />}
@@ -127,9 +128,8 @@ const ChatInfoAside = () => {
                             chat.isAdmin && (
                               <Menu.Item
                                 onClick={() => {
-                                  removeMember({
-                                    userId: member.id,
-                                    chatId,
+                                  update(chatId, {
+                                    removeMembers: [member.id],
                                   });
                                 }}
                                 icon={<IconKarate size={14} />}

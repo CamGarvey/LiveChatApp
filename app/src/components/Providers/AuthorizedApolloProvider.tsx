@@ -73,21 +73,17 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         Query: {
           fields: {
             users: relayStylePagination(['usernameFilter']),
-            messages: relayStylePagination(['chatId']),
+            events: relayStylePagination(['chatId']),
           },
         },
-        FriendRequest: {
-          // Make requests unique by user / user
-          keyFields: (object) =>
-            object.isCreator
-              ? `FriendRequest:${object.recipientId}`
-              : `FriendRequest:${object.createdById}`,
+        Message: {
+          keyFields: (object) => `Event:${object.id}`,
         },
-        InstantMessage: {
-          keyFields: (object) => `Message:${object.id}`,
+        DeletedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
         },
-        DeletedMessage: {
-          keyFields: (object) => `Message:${object.id}`,
+        ChatUpdate: {
+          keyFields: (object) => `Event:${object.id}`,
         },
         Friend: {
           keyFields: (object) => `User:${object.id}`,

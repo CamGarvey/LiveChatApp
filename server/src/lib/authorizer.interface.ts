@@ -24,15 +24,15 @@ export interface IAuthorizer {
 
   canDeleteChat: (chatId: number) => Promise<boolean>;
 
-  canViewMessage: (messageId: number) => Promise<boolean>;
-  canCreateMessage: (chatId: number) => Promise<boolean>;
-  canUpdateMessage: (messageId: number) => Promise<boolean>;
-  canDeletedMessage: (messageId: number) => Promise<boolean>;
+  canViewEvent: (eventId: number) => Promise<boolean>;
+  canCreateEvent: (chatId: number) => Promise<boolean>;
+  canUpdateEvent: (eventId: number) => Promise<boolean>;
+  canDeletedEvent: (eventId: number) => Promise<boolean>;
 
   canSendFriendRequest: (friendId: number) => Promise<boolean>;
-  canCancelFriendRequest: (requestId: number) => Promise<boolean>;
-  canDeclineFriendRequest: (requestId: number) => Promise<boolean>;
-  canAcceptFriendRequest: (requestId: number) => Promise<boolean>;
+  canCancelRequest: (requestId: number) => Promise<boolean>;
+  canDeclineRequest: (requestId: number) => Promise<boolean>;
+  canAcceptRequest: (requestId: number) => Promise<boolean>;
 
   canDeleteFriend: (friendId: number) => Promise<boolean>;
 }

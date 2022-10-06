@@ -4,24 +4,25 @@ export const Message = objectType({
   name: 'Message',
   definition(t) {
     t.implements('Event');
-    t.nonNull.string('content');
+    t.nonNull.string('content', {
+      resolve: async (parent, _, { prisma }) => {
+        const message = await prisma.message.findUniqueOrThrow({
+          where: { eventId: parent.id || undefined },
+        });
+        return message.content;
+      },
+    });
     t.nonNull.list.nonNull.field('likedBy', {
       type: 'User',
-      resolve: (parent, _, { prisma }) => {
-        return prisma.message
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.message
           .findUniqueOrThrow({
-            where: { id: parent.id || undefined },
+            where: {
+              eventId: parent.id,
+            },
           })
           .likedBy();
       },
     });
-  },
-});
-
-export const DeletedMessage = objectType({
-  name: 'DeletedMessage',
-  definition: (t) => {
-    t.implements('Event');
-    t.date('deletedAt');
   },
 });

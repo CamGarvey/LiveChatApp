@@ -1,10 +1,7 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
-import {
-  useGetChatForChatUpdateActionLazyQuery,
-  useGetChatForChatUpdateActionQuery,
-} from 'graphql/generated/graphql';
+import { useGetChatForChatUpdateActionLazyQuery } from 'graphql/generated/graphql';
 import { IconSettings } from '@tabler/icons';
 import { useParams } from 'react-router-dom';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
@@ -63,7 +60,7 @@ const ChatUpdateAction = (props: Props) => {
         loading={loading}
         disabled={disabled}
         onClick={() => {
-          if (chat?.__typename === 'GroupChat') {
+          if (chatId && chat?.__typename === 'GroupChat') {
             openGroupChatUpdate({ chatId });
           }
         }}

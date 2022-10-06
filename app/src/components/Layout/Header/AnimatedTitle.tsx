@@ -5,7 +5,7 @@ import { useDrawer } from 'store';
 import { useMediaQuery } from '@mantine/hooks';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import { gql } from '@apollo/client';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useGetChatForAnimatedTitleLazyQuery } from 'graphql/generated/graphql';
 import { useParams } from 'react-router-dom';
 
@@ -49,12 +49,28 @@ const AnimatedTitle = () => {
 
   const chat = data?.chat;
 
-  const shouldShowTitle =
-    drawer.isOpen ||
-    isLargerScreen ||
-    !chatId ||
-    !chat ||
-    chat?.__typename === 'DeletedChat';
+  const shouldShowTitle = useMemo(
+    () =>
+      drawer.isOpen ||
+      isLargerScreen ||
+      !chatId ||
+      !chat ||
+      chat.__typename === 'DeletedChat',
+    [chat, chatId, drawer.isOpen, isLargerScreen]
+  );
+
+  const title = useMemo(() => {
+    switch (chat?.__typename) {
+      case 'GroupChat':
+        return chat.name;
+      case 'DeletedChat':
+        return 'Deleted';
+      case 'DirectMessageChat':
+        return chat.friend.username;
+      default:
+        return 'unknown';
+    }
+  }, [chat]);
 
   return (
     <AnimatePresence custom={drawer.isOpen} exitBeforeEnter>
@@ -72,25 +88,29 @@ const AnimatedTitle = () => {
           ) : (
             <Group spacing={2}>
               <Group spacing={2}>
-                {chat.__typename === 'GroupChat' && <ChatUpdateAction />}
-                <Stack spacing={0}>
-                  <Text p={0} size={'lg'}>
-                    {chat.__typename === 'GroupChat'
-                      ? chat.name
-                      : chat.friend.username}
-                  </Text>
-
-                  {chat.__typename === 'GroupChat' && chat.description && (
-                    <Text color={'dimmed'} p={0} size={'xs'}>
-                      {chat.description}
-                    </Text>
-                  )}
-                  {chat.__typename === 'DirectMessageChat' && chat.friend.name && (
-                    <Text color={'dimmed'} p={0} size={'xs'}>
-                      {chat.friend.name}
-                    </Text>
-                  )}
-                </Stack>
+                {!!chat ? (
+                  <>
+                    {chat.__typename === 'GroupChat' && <ChatUpdateAction />}
+                    <Stack spacing={0}>
+                      <Text p={0} size={'lg'}>
+                        {title}
+                      </Text>
+                      {chat.__typename === 'GroupChat' && chat.description && (
+                        <Text color={'dimmed'} p={0} size={'xs'}>
+                          {chat.description}
+                        </Text>
+                      )}
+                      {chat.__typename === 'DirectMessageChat' &&
+                        chat.friend.name && (
+                          <Text color={'dimmed'} p={0} size={'xs'}>
+                            {chat.friend.name}
+                          </Text>
+                        )}
+                    </Stack>
+                  </>
+                ) : (
+                  <>No chat</>
+                )}
               </Group>
             </Group>
           )}

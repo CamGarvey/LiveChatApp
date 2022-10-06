@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 
 type Props = {
-  viewport: React.MutableRefObject<HTMLDivElement>;
+  viewport: React.MutableRefObject<HTMLDivElement | null>;
   minPopupHeight: number;
   onHitTop?: () => void;
   onHitBottom?: () => void;
@@ -32,7 +32,7 @@ export const useScroller = ({
   const scrollToBottom = (behavior: 'smooth' | 'auto') => {
     setIsScrollToBottomOpened(false);
     setIsAutoScrollingDown(true);
-    viewport?.current.scrollTo({
+    viewport?.current?.scrollTo({
       top: viewport?.current.scrollHeight,
       behavior,
     });

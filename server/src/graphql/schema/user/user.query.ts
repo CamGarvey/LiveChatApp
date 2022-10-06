@@ -98,7 +98,7 @@ export const UsersQuery = queryField((t) => {
           take: first!,
           skip: offset,
           where,
-          orderBy: orderBy,
+          orderBy: orderBy ?? undefined,
         }),
       ]);
 

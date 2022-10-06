@@ -14,18 +14,3 @@ export const CreateGroupChatInput = inputObjectType({
     });
   },
 });
-
-export const UpdateGroupChatInput = inputObjectType({
-  name: 'UpdateGroupChatInput',
-  definition: (t) => {
-    t.nonNull.hashId('chatId', {
-      description: 'Id of chat to update',
-    });
-    t.string('name', {
-      description: 'New name for chat',
-    });
-    t.string('description', {
-      description: 'New description for chat',
-    });
-  },
-});

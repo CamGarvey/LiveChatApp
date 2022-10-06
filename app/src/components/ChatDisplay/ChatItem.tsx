@@ -1,6 +1,9 @@
 import { gql } from '@apollo/client';
 import { Avatar, NavLink } from '@mantine/core';
-import { ChatItemFragment } from 'graphql/generated/graphql';
+import {
+  ChatItemFragment,
+  ChatItemUserFragment,
+} from 'graphql/generated/graphql';
 import { Link, useLocation } from 'react-router-dom';
 import { useDrawer } from 'store';
 import ChatAvatar from '../shared/ChatAvatar';
@@ -25,14 +28,22 @@ const ChatItem = ({ chat }: Props) => {
     case 'GroupChat':
       name = chat.name;
       break;
+    default:
+      name = '';
   }
 
-  const members =
-    chat.__typename === 'DeletedChat'
-      ? []
-      : chat.__typename === 'DirectMessageChat'
-      ? [chat.friend]
-      : chat.members;
+  let members: ChatItemUserFragment[];
+
+  switch (chat.__typename) {
+    case 'DirectMessageChat':
+      members = [chat.friend];
+      break;
+    case 'GroupChat':
+      members = chat.members;
+      break;
+    default:
+      members = [];
+  }
 
   return (
     <NavLink
@@ -66,17 +77,19 @@ ChatItem.fragments = {
       ...ChatAvatar
       ... on DirectMessageChat {
         friend {
-          id
-          username
+          ...ChatItemUser
         }
       }
       ... on GroupChat {
         name
         members {
-          id
-          username
+          ...ChatItemUser
         }
       }
+    }
+    fragment ChatItemUser on User {
+      id
+      username
     }
     ${ChatAvatar.fragments.chat}
   `,

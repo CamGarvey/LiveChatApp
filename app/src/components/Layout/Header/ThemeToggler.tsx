@@ -1,5 +1,4 @@
 import { ActionIcon, useMantineColorScheme } from '@mantine/core';
-import React from 'react';
 import { IconMoonStars, IconSun } from '@tabler/icons';
 
 type Props = {

@@ -3,74 +3,62 @@ import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from './ChatInput';
 import Scroller from 'components/shared/Scroller/Scroller';
 import { useCreateMessage } from './useCreateMessage';
-import { useMessages } from './useMessages';
+import { useEvents } from './useEvents';
 import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
-import { useParams } from 'react-router-dom';
+import { ChatUpdate } from './Event/ChatUpdate';
+import DeletedEvent from './Event/DeletedEvent';
 
 gql`
-  query GetMessages($chatId: HashId!, $last: Int, $before: String) {
-    messages(chatId: $chatId, last: $last, before: $before) {
+  query GetEvents($chatId: HashId!, $last: Int, $before: String) {
+    events(chatId: $chatId, last: $last, before: $before) {
       pageInfo {
         hasPreviousPage
         startCursor
       }
       edges {
         node {
-          ...ChatPanelMessage
-          ...UseMessage
+          ...ChatPanelEvent
         }
       }
     }
   }
-  subscription Messages($chatId: HashId) {
-    messages(chatId: $chatId) {
-      ...ChatPanelMessage
-      ...UseMessage
+  subscription Events($chatId: HashId) {
+    events(chatId: $chatId) {
+      ...ChatPanelEvent
     }
   }
-  fragment UseMessageEvent on Event {
+  fragment ChatPanelEvent on Event {
     id
     createdAt
     createdBy {
       id
     }
-  }
-  fragment UseMessage on MessageResult {
-    ... on Message {
-      id
-      ...UseMessageEvent
-    }
-    ... on DeletedMessage {
-      id
-      ...UseMessageEvent
-    }
-  }
-  fragment ChatPanelMessage on Event {
-    id
     ...EventContainer
     ...MessageEvent
-    createdAt
+    ...DeletedEventComponent
+    ... on ChatUpdate {
+      ...ChatUpdateEvent
+    }
   }
   ${EventContainer.fragments.event}
   ${Message.fragments.message}
+  ${DeletedEvent.fragments.event}
+  ${ChatUpdate.fragments.event}
 `;
 
-const ChatPanel = () => {
-  const { chatId } = useParams();
-  const {
-    messages,
-    hasPreviousPage,
-    loading,
-    error,
-    isFetchingMore,
-    fetchMore,
-  } = useMessages({ chatId });
+type Props = {
+  chatId: string;
+};
+
+const ChatPanel = ({ chatId }: Props) => {
+  const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } =
+    useEvents({ chatId });
   const { createMessage } = useCreateMessage({ chatId });
 
-  let topMessage = null;
+  let topMessage: string = '';
   if (!loading) {
-    if (messages.length === 0) {
+    if (events.length === 0) {
       topMessage = 'no messages';
     } else if (!hasPreviousPage) {
       topMessage = 'start of conversation';
@@ -93,7 +81,7 @@ const ChatPanel = () => {
         >
           <Text>Failed to load messages</Text>
         </Center>
-      ) : messages.length === 0 && !loading ? (
+      ) : events.length === 0 && !loading ? (
         <Center
           style={{
             height: '100%',
@@ -113,16 +101,35 @@ const ChatPanel = () => {
             }
           }}
         >
-          {messages.map((message) => (
+          {events.map((event) => (
             <EventContainer
-              key={message.createdAt}
-              displayEventTime={message.displayEventTime}
-              eventData={message}
+              key={event.createdAt}
+              displayEventTime={event.displayEventTime}
+              eventData={event}
               event={
-                <Message
-                  displayAvatar={message.isLastMessageInGroup}
-                  message={message}
-                />
+                <>
+                  {event.__typename === 'Message' && (
+                    <Message
+                      displayAvatar={event.isLastEventInGroup}
+                      message={event}
+                    />
+                  )}
+                  {event.__typename === 'DeletedEvent' && (
+                    <DeletedEvent
+                      displayAvatar={event.isLastEventInGroup}
+                      event={event}
+                    />
+                  )}
+                  {event.__typename &&
+                    [
+                      'NameUpdated',
+                      'DescriptionUpdated',
+                      'MembersAdded',
+                      'MembersRemoved',
+                    ].includes(event.__typename) && (
+                      <ChatUpdate update={event as any} />
+                    )}
+                </>
               }
             />
           ))}

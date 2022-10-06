@@ -1,9 +1,8 @@
 import { gql } from '@apollo/client';
-import { showNotification } from '@mantine/notifications';
 import { useUser } from 'context/UserContext';
 import {
-  GetChatsForDisplayDocument,
-  GetChatsForDisplayQuery,
+  GetChatsForChatDisplayDocument,
+  GetChatsForChatDisplayQuery,
   useCreateDirectMessageChatMutation,
 } from 'graphql/generated/graphql';
 import { useNavigate } from 'react-router-dom';
@@ -28,30 +27,39 @@ export const useCreateDmChat = () => {
   const navigate = useNavigate();
 
   const create = useCreateDirectMessageChatMutation({
-    update: (cache, { data: { createDirectMessageChat } }) => {
-      const { chats } = cache.readQuery<GetChatsForDisplayQuery>({
-        query: GetChatsForDisplayDocument,
+    update: (cache, { data }) => {
+      const query = cache.readQuery<GetChatsForChatDisplayQuery>({
+        query: GetChatsForChatDisplayDocument,
       });
 
+      if (!query) {
+        throw new Error('No query');
+      }
+
+      const friend = data?.createDirectMessageChat?.friend;
+
+      if (!friend) {
+        throw new Error('No friend in mutation response');
+      }
+
       if (
-        !chats.find(
+        !query.chats.find(
           (x) =>
-            x.__typename === 'DirectMessageChat' &&
-            x.friend.id === createDirectMessageChat.friend.id
+            x.__typename === 'DirectMessageChat' && x.friend.id === friend.id
         )
       ) {
         const updatedChats = [
-          ...chats,
+          ...query.chats,
           {
             createdBy: {
               __typename: 'Me',
               ...user,
             },
-            ...createDirectMessageChat,
+            ...data.createDirectMessageChat,
           },
         ];
         cache.writeQuery({
-          query: GetChatsForDisplayDocument,
+          query: GetChatsForChatDisplayDocument,
           data: {
             chats: updatedChats,
           },

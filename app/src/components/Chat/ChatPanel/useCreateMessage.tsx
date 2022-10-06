@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 import { useUser } from 'context/UserContext';
 import {
-  GetMessagesDocument,
-  GetMessagesQuery,
+  GetEventsDocument,
+  GetEventsQuery,
   useCreateMessageMutation,
 } from 'graphql/generated/graphql';
 
@@ -39,7 +39,9 @@ export const useCreateMessage = ({ chatId }: Props) => {
       },
       optimisticResponse: ({ content }) => {
         const id = `temp-id.${createdAt}`;
-
+        if (!user) {
+          throw new Error('No user');
+        }
         return {
           createMessage: {
             __typename: 'Message',
@@ -53,23 +55,33 @@ export const useCreateMessage = ({ chatId }: Props) => {
       },
 
       update: (cache, { data }) => {
-        const result = cache.readQuery<GetMessagesQuery>({
-          query: GetMessagesDocument,
+        const query = cache.readQuery<GetEventsQuery>({
+          query: GetEventsDocument,
           variables: {
             chatId,
           },
         });
 
-        cache.writeQuery<GetMessagesQuery>({
-          query: GetMessagesDocument,
+        if (!data) {
+          throw new Error('No result from message creation');
+        }
+
+        if (!query) {
+          throw new Error('Could not find query');
+        }
+
+        const edges = (query.events.edges as any[]) ?? [];
+
+        cache.writeQuery<GetEventsQuery>({
+          query: GetEventsDocument,
           variables: {
             chatId,
           },
           data: {
-            messages: {
-              pageInfo: result.messages.pageInfo,
+            events: {
+              pageInfo: query.events.pageInfo,
               edges: [
-                ...result.messages.edges,
+                ...edges,
                 {
                   node: {
                     __typename: 'Message',

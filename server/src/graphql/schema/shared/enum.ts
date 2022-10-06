@@ -7,8 +7,3 @@ export const Sort = enumType({
     desc: 'desc',
   },
 });
-
-export const RequestStatusEnum = enumType({
-  name: 'RequestStatus',
-  members: ['SENT', 'SEEN', 'CANCELLED', 'DECLINED', 'ACCEPTED'],
-});

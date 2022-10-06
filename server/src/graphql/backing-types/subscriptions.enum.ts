@@ -1,21 +1,18 @@
 export enum Subscription {
-  ChatInfoUpdated = 'chat.info.updated',
-  ChatCreated = 'chat.created',
-  ChatDeleted = 'chat.deleted',
-  ChatMembersDeleted = 'chat.members.deleted',
-  ChatMembersAdded = 'chat.members.added',
-  ChatAdminsDeleted = 'chat.admins.deleted',
-  ChatAdminsAdded = 'chat.admins.added',
+  // In chat events
+  EventCreated = 'event.created',
+  EventUpdated = 'event.updated',
+  EventDeleted = 'event.deleted',
 
-  MessageCreated = 'message.created',
-  MessageUpdated = 'message.updated',
-  MessageDeleted = 'message.deleted',
+  // Requests Notifications
+  RequestSent = 'notification.request.sent',
+  RequestCancelled = 'notification.request.cancelled',
 
-  FriendRequestCancelled = 'notification.friendrequest.cancelled',
-  FriendRequestAccepted = 'notification.friendrequest.accepted',
-  FriendRequestSent = 'notification.friendrequest.sent',
-  FriendRequestDeclined = 'notification.friendrequest.declined',
-
-  FriendDeleted = 'friend.deleted',
-  FriendCreated = 'friend.created',
+  // Alert Notifications
+  RequestAccepted = 'notification.alert.request.accepted',
+  RequestDeclined = 'notification.alert.request.declined',
+  FriendDeleted = 'notification.alert.friend.deleted',
+  ChatCreated = 'notification.alert.chat.created',
+  ChatDeleted = 'notification.alert.chat.deleted',
+  ChatUpdated = 'notification.alert.chat.updated',
 }

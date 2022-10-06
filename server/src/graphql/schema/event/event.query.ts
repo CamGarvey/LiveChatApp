@@ -1,32 +1,32 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Message, Prisma } from '@prisma/client';
+import { Event, Prisma } from '@prisma/client';
 import { nonNull, queryField } from 'nexus';
-import { hashIdArg } from '../../shared';
+import { hashIdArg } from '../shared';
 
-export const MessageQuery = queryField('message', {
-  type: 'MessageResult',
-  description: 'Get a message by id',
+export const EventQuery = queryField('event', {
+  type: 'Event',
+  description: 'Get a event by id',
   args: {
-    messageId: nonNull(
+    eventId: nonNull(
       hashIdArg({
-        description: 'id of message',
+        description: 'id of event',
       })
     ),
   },
-  authorize: async (_, { messageId }, { auth }) =>
-    await auth.canViewMessage(messageId),
-  resolve: async (_, { messageId }, { prisma }) => {
-    return await prisma.message.findUniqueOrThrow({
+  authorize: async (_, { eventId }, { auth }) =>
+    await auth.canViewEvent(eventId),
+  resolve: async (_, { eventId }, { prisma }) => {
+    return await prisma.event.findFirstOrThrow({
       where: {
-        id: messageId,
+        id: eventId,
       },
     });
   },
 });
 
-export const MessagesQuery = queryField((t) => {
-  t.nonNull.connectionField('messages', {
-    type: 'MessageResult',
+export const EventsQuery = queryField((t) => {
+  t.nonNull.connectionField('events', {
+    type: 'Event',
     additionalArgs: {
       chatId: nonNull(hashIdArg()),
     },
@@ -34,11 +34,11 @@ export const MessagesQuery = queryField((t) => {
       await auth.canViewChat(chatId),
     resolve: async (_, { chatId, after, first, before, last }, { prisma }) => {
       return findManyCursorConnection<
-        Message,
+        Event,
         Pick<Prisma.UserWhereUniqueInput, 'id'>
       >(
         (args) => {
-          return prisma.message.findMany({
+          return prisma.event.findMany({
             ...args,
             ...{
               where: { chatId },
@@ -50,7 +50,7 @@ export const MessagesQuery = queryField((t) => {
         },
 
         () =>
-          prisma.message.count({
+          prisma.event.count({
             where: {
               id: chatId,
             },

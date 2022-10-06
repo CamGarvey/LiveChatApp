@@ -1,13 +1,12 @@
 import { gql } from '@apollo/client';
-import { Container, Group, Loader, Tooltip } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { Group, Loader } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { OutgoingEventFragment } from 'graphql/generated/graphql';
 import { useState } from 'react';
 import EventInfo from './EventInfo';
 
 type Props = {
-  state: 'sending' | 'sent';
+  state?: 'sending' | 'sent';
   event: OutgoingEventFragment;
   children: JSX.Element;
   actions?: JSX.Element;
@@ -15,11 +14,12 @@ type Props = {
 
 const MotionGroup = motion(Group);
 
-const OutgoingEvent = ({ state, children, event, actions }: Props) => {
+const OutgoingEvent = ({ state = 'sent', children, event, actions }: Props) => {
   const [isHovered, setHovered] = useState(false);
 
   return (
     <MotionGroup
+      className={'outgoing'}
       pb={3}
       key={event.createdAt}
       variants={{
@@ -32,6 +32,8 @@ const OutgoingEvent = ({ state, children, event, actions }: Props) => {
       }}
       style={{
         gap: '3px',
+        display: 'flex',
+        justifyContent: 'right',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

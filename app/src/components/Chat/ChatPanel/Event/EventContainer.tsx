@@ -16,12 +16,10 @@ type Props = {
 
 const EventContainer = ({ event, eventData, displayEventTime }: Props) => {
   return (
-    <Stack>
+    <Stack className={'event-container'}>
       {displayEventTime && <EventTime time={moment(eventData.createdAt)} />}
       <div
         style={{
-          display: 'flex',
-          justifyContent: eventData.isCreator ? 'right' : 'left',
           overflowX: 'hidden',
         }}
       >

@@ -1,6 +1,6 @@
 import { Center, Text } from '@mantine/core';
 import moment from 'moment';
-import { formatMessageTime } from 'utils';
+import { formatEventTime } from 'utils';
 
 type Props = {
   time: moment.Moment;
@@ -9,7 +9,7 @@ type Props = {
 const EventTime = ({ time }: Props) => {
   return (
     <Center>
-      <Text color={'dimmed'}>{formatMessageTime(time)}</Text>
+      <Text color={'dimmed'}>{formatEventTime(time)}</Text>
     </Center>
   );
 };

@@ -1,12 +1,15 @@
 import { useContext, createContext } from 'react';
 
 export const UserContext = createContext<{
-  isLoading: boolean;
-  user: {
-    id: string;
-    username: string;
-    name?: string;
-  };
-}>({ user: null, isLoading: false });
+  loading: boolean;
+  user:
+    | {
+        id: any;
+        username: string;
+        name?: string | null | undefined;
+      }
+    | undefined
+    | null;
+}>({ user: null, loading: false });
 
 export const useUser = () => useContext(UserContext);

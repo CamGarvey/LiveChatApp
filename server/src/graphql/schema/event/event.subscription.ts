@@ -1,13 +1,12 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import SubscriptionPayload from '../../../backing-types/subscription-payload';
-import { Subscription } from '../../../backing-types';
-import { hashIdArg } from '../../shared';
-import { Message } from '@prisma/client';
+import { Event } from '@prisma/client';
+import { hashIdArg } from '../shared';
+import { Subscription, EventPayload } from '../../backing-types';
 
-export const MessagesSubscription = subscriptionField('messages', {
-  type: 'MessageResult',
-  description: 'Subscribe to any created/updated/deleted messages',
+export const EventsSubscription = subscriptionField('events', {
+  type: 'Event',
+  description: 'Subscribe to any created/updated/deleted events',
   args: {
     chatId: hashIdArg(),
   },
@@ -15,8 +14,8 @@ export const MessagesSubscription = subscriptionField('messages', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator('message.*', { pattern: true }),
-      (payload: SubscriptionPayload<Message>, variables, context) => {
+      () => context.pubsub.asyncIterator('event.*', { pattern: true }),
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -27,12 +26,12 @@ export const MessagesSubscription = subscriptionField('messages', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Message>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });
 
-export const MessageCreatedSubscription = subscriptionField('messageCreated', {
-  type: 'Message',
-  description: 'SUbscribe to created messages in chat',
+export const EventCreatedSubscription = subscriptionField('eventCreated', {
+  type: 'Event',
+  description: 'Subscribe to created events in chat',
   args: {
     chatId: hashIdArg(),
   },
@@ -40,8 +39,11 @@ export const MessageCreatedSubscription = subscriptionField('messageCreated', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator(Subscription.MessageCreated),
-      (payload: SubscriptionPayload<Message>, variables, context) => {
+      () =>
+        context.pubsub.asyncIterator(Subscription.EventCreated, {
+          pattern: true,
+        }),
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -52,12 +54,12 @@ export const MessageCreatedSubscription = subscriptionField('messageCreated', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Message>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });
 
-export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
-  type: 'DeletedMessage',
-  description: 'Subscribe to deleted messages in chat',
+export const EventDeletedSubscription = subscriptionField('eventDeleted', {
+  type: 'DeletedEvent',
+  description: 'Subscribe to deleted events in chat',
   args: {
     chatId: hashIdArg(),
   },
@@ -65,8 +67,11 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator(Subscription.MessageDeleted),
-      (payload: SubscriptionPayload<Message>, variables, context) => {
+      () =>
+        context.pubsub.asyncIterator(Subscription.EventDeleted, {
+          pattern: true,
+        }),
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -77,12 +82,12 @@ export const MessageDeletedSubscription = subscriptionField('messageDeleted', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Message>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });
 
-export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
-  type: 'MessageResult',
-  description: 'Subscribe to updated messages in chat',
+export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
+  type: 'Event',
+  description: 'Subscribe to updated events in chat',
   args: {
     chatId: hashIdArg(),
   },
@@ -90,8 +95,11 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
     chatId ? auth.canViewChat(chatId) : true,
   subscribe: async (rootValue, args, context) => {
     return withFilter(
-      () => context.pubsub.asyncIterator(Subscription.MessageUpdated),
-      (payload: SubscriptionPayload<Message>, variables, context) => {
+      () =>
+        context.pubsub.asyncIterator(Subscription.EventUpdated, {
+          pattern: true,
+        }),
+      (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
             payload.content.createdById !== context.userId &&
@@ -102,5 +110,5 @@ export const MessageUpdatedSubscription = subscriptionField('messageUpdated', {
       }
     )(rootValue, args, context);
   },
-  resolve: (payload: SubscriptionPayload<Message>) => payload.content,
+  resolve: (payload: EventPayload) => payload.content,
 });

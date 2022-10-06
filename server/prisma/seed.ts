@@ -31,40 +31,42 @@ const loadChats = async (
 ) => {
   const chatFun = await prisma.chat.create({
     data: {
+      type: 'GROUP',
       name: 'FUN',
       createdBy: {
         connect: {
           id: masterUser.id,
         },
       },
-      messages: {
+      event: {
         create: [
           {
-            content: 'Sup',
-            createdById: masterUser.id,
-          },
-          {
-            content: "yo! I'm having so much fun",
-            createdById: otherUsers[0].id,
-          },
-          {
-            content: 'Yeah same here',
-            createdById: masterUser.id,
+            type: 'MESSAGE',
+            message: {
+              create: {
+                content: 'Sup',
+              },
+            },
+            createdBy: {
+              connect: {
+                id: masterUser.id,
+              },
+            },
           },
         ],
       },
       members: {
         connect: [
-          { id: masterUser.id },
           ...otherUsers.map(({ id }) => ({ id })),
+          { id: masterUser.id },
         ],
       },
-      isDM: false,
     },
   });
   const chatBoring = await prisma.chat.create({
     data: {
       name: 'BORING',
+      type: 'GROUP',
       createdBy: {
         connect: {
           id: masterUser.id,
@@ -72,27 +74,27 @@ const loadChats = async (
       },
       members: {
         connect: [
-          { id: masterUser.id },
           ...otherUsers.map(({ id }) => ({ id })),
+          { id: masterUser.id },
         ],
       },
-      messages: {
+      event: {
         create: [
           {
-            content: 'Yo',
-            createdById: masterUser.id,
-          },
-          {
-            content: 'oh hey... im bored man',
-            createdById: otherUsers[0].id,
-          },
-          {
-            content: 'Yeah same here',
-            createdById: masterUser.id,
+            type: 'MESSAGE',
+            createdBy: {
+              connect: {
+                id: masterUser.id,
+              },
+            },
+            message: {
+              create: {
+                content: 'Yo',
+              },
+            },
           },
         ],
       },
-      isDM: false,
     },
   });
   return [chatFun, chatBoring];

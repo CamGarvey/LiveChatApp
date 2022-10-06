@@ -1,6 +1,18 @@
-type SubscriptionPayload<T = any> = {
+import { Alert, Chat, Event, Request } from '@prisma/client';
+/**
+ * Events in a chat
+ */
+export type EventPayload = {
   recipients: number[];
-  content: T;
+  content: Event;
 };
 
-export default SubscriptionPayload;
+export type NotificationPayload = {
+  recipients: number[];
+  content: Alert | Request;
+};
+
+export type ChatPayload = {
+  recipients: number[];
+  content: Chat;
+};
