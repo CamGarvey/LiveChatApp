@@ -126,6 +126,8 @@ const ChatPanel = ({ chatId }: Props) => {
                       'DescriptionUpdated',
                       'MembersAdded',
                       'MembersRemoved',
+                      'AdminsAdded',
+                      'AdminsRemoved',
                     ].includes(event.__typename) && (
                       <ChatUpdate update={event as any} />
                     )}

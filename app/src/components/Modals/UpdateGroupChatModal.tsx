@@ -1,7 +1,8 @@
 import { Formik } from 'formik';
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import UserMultiSelect from '../shared/UserSelector/UserMultiSelect';
 import {
+  UpdateGroupUserFragment,
   useGetChatForUpdateQuery,
   useGetFriendsForUpdateGroupChatQuery,
 } from 'graphql/generated/graphql';
@@ -11,10 +12,8 @@ import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteChat } from 'hooks';
-import { AdminSelector } from 'components/shared/AdminSelector';
 import { gql } from '@apollo/client';
 import { useUpdateGroupChat } from 'hooks/useUpdateGroupChat';
-import { useUser } from 'context/UserContext';
 
 gql`
   query GetChatForUpdate($chatId: HashId!) {
@@ -31,6 +30,7 @@ gql`
         admins {
           ...UpdateGroupUser
         }
+        isAdmin
       }
     }
   }
@@ -82,24 +82,37 @@ export const UpdateGroupChatModal = ({
     [chat]
   );
 
+  const canRemoveUser = useCallback(
+    (user: UpdateGroupUserFragment) => {
+      if (!chat || chat.__typename !== 'GroupChat') {
+        return false;
+      }
+      if (chat.isCreator && chat.createdById !== user.id) {
+        return true;
+      }
+      if (!adminIds.includes(user.id)) {
+        return true;
+      }
+      return false;
+    },
+    [adminIds, chat]
+  );
+
   // Since other friends can add either friends
   // We need to make sure that we get all of the users in the chat
   // So that if the user takes a non friend out of the UserSelector
   // they can add them back in if it was a mistake
-  const totalUsers = useMemo(() => {
+  const users = useMemo(() => {
+    let users: (UpdateGroupUserFragment & { canRemove?: boolean })[] = [];
     if (chat?.__typename !== 'GroupChat') return [];
     if (friendData)
-      return _.unionBy(
-        chat.members.filter((user) => adminIds.includes(user.id)),
-        chat.admins.map((user) => ({
-          ...user,
-          canRemove: false, // Cannot remove admins unless creator
-        })),
-        friendData.friends,
-        'id'
-      );
-    return chat.members;
-  }, [chat, friendData, adminIds]);
+      users = _.unionBy(chat.members, chat.admins, friendData.friends, 'id');
+    users = chat.members;
+    return users.map((user) => ({
+      ...user,
+      canRemove: canRemoveUser(user),
+    }));
+  }, [chat, friendData, canRemoveUser]);
 
   if (loadingChat)
     return (
@@ -143,7 +156,6 @@ export const UpdateGroupChatModal = ({
           const membersRemoved = memberIds.filter(
             (x) => !values.memberIds.includes(x)
           );
-
           const membersAdded = values.memberIds.filter(
             (x) => !memberIds.includes(x)
           );
@@ -205,17 +217,20 @@ export const UpdateGroupChatModal = ({
                   <>
                     <UserMultiSelect
                       label={'Members'}
-                      users={totalUsers}
+                      users={users}
                       defaultValue={chat.members}
                       onChange={(value: any) => {
                         props.setFieldValue('memberIds', value);
                       }}
                     />
-                    <AdminSelector
-                      chatId={chat.id}
+                    <UserMultiSelect
+                      label={'Admins'}
+                      users={users}
+                      defaultValue={chat.admins}
                       onChange={(value: any) => {
                         props.setFieldValue('adminIds', value);
                       }}
+                      disabled={!(chat.isCreator || chat.isAdmin)}
                     />
                   </>
                 )}
