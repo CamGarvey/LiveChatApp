@@ -2,7 +2,6 @@ import { gql } from '@apollo/client';
 import {
   FriendRequestStrangerFragment,
   FriendRequestStrangerFragmentDoc,
-  StrangerStatus,
   useAcceptRequestMutation,
   useCancelRequestMutation,
   useDeclineRequestMutation,
@@ -39,7 +38,6 @@ gql`
   }
   fragment FriendRequestStranger on Stranger {
     id
-    status
     friendRequest {
       id
     }
@@ -85,22 +83,17 @@ export const useRequest = () => {
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestStrangerFragment>(
           {
-            id: cache.identify({
-              __typename: 'Stranger',
-              id: strangerId,
-            }),
+            id: `User:${strangerId}`,
             fragment: FriendRequestStrangerFragmentDoc,
           },
           (data) => {
             if (!data) {
-              throw new Error('No data');
+              throw new Error('No data poopy');
             }
             return {
               ...data,
               // Attach new friend request
               friendRequest: newData?.sendFriendRequest,
-              // Update status
-              status: StrangerStatus.RequestSent,
             };
           }
         );

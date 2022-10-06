@@ -11,13 +11,11 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   authorize: (_, { strangerId }, { auth }) =>
     auth.canSendFriendRequest(strangerId),
   resolve: async (_, { strangerId }, { prisma, userId, pubsub }) => {
-    const time = new Date().toISOString();
     // Create friend request
     // If there is already a friend request in the database then return that one
     const request = await prisma.request.upsert({
       create: {
         type: 'FRIEND_REQUEST',
-        createdAt: time,
         recipient: {
           connect: {
             id: strangerId,
@@ -31,6 +29,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
       },
       update: {
         state: 'SENT',
+        createdAt: new Date().toISOString(),
       },
       where: {
         recipientId_createdById_type: {
@@ -41,14 +40,11 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
       },
     });
 
-    // The request is new if the createdAt is equal to the time variable
-    if (request.createdAt.toISOString() === time) {
-      // Publish this new request
-      pubsub.publish<NotificationPayload>(Subscription.RequestSent, {
-        recipients: [strangerId],
-        content: request,
-      });
-    }
+    // Publish this new request
+    pubsub.publish<NotificationPayload>(Subscription.RequestSent, {
+      recipients: [strangerId],
+      content: request,
+    });
 
     return request;
   },
@@ -99,8 +95,8 @@ export const DeclineRequestMutation = mutationField('declineRequest', {
       },
     });
     // create an response alert
-    const alert = await prisma.alert.create({
-      data: {
+    const alert = await prisma.alert.upsert({
+      create: {
         type: 'REQUEST_DECLINED',
         createdById: userId,
         recipients: {
@@ -108,6 +104,10 @@ export const DeclineRequestMutation = mutationField('declineRequest', {
             id: request.createdById,
           },
         },
+        requestId,
+      },
+      update: {},
+      where: {
         requestId,
       },
     });
@@ -141,8 +141,8 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
       },
     });
     // Respond to the request and create an alert
-    const alert = await prisma.alert.create({
-      data: {
+    const alert = await prisma.alert.upsert({
+      create: {
         type: 'REQUEST_ACCEPTED',
         createdById: userId,
         recipients: {
@@ -150,6 +150,10 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
             id: request.createdById,
           },
         },
+        requestId,
+      },
+      update: {},
+      where: {
         requestId,
       },
     });

@@ -7,11 +7,11 @@
       const result: PossibleTypesResultData = {
   "possibleTypes": {
     "Alert": [
-      "ChatCreated",
-      "ChatDeleted",
-      "FriendDeleted",
-      "RequestAccepted",
-      "RequestDeclined"
+      "ChatCreatedAlert",
+      "ChatDeletedAlert",
+      "FriendDeletedAlert",
+      "RequestAcceptedAlert",
+      "RequestDeclinedAlert"
     ],
     "Chat": [
       "DeletedChat",
@@ -46,12 +46,12 @@
       "Me"
     ],
     "Notification": [
-      "ChatCreated",
-      "ChatDeleted",
-      "FriendDeleted",
+      "ChatCreatedAlert",
+      "ChatDeletedAlert",
+      "FriendDeletedAlert",
       "FriendRequest",
-      "RequestAccepted",
-      "RequestDeclined"
+      "RequestAcceptedAlert",
+      "RequestDeclinedAlert"
     ],
     "Request": [
       "FriendRequest"

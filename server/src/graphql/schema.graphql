@@ -54,7 +54,7 @@ interface Chat {
   updatedAt: Date
 }
 
-type ChatCreated implements Alert & Notification {
+type ChatCreatedAlert implements Alert & Notification {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -64,7 +64,7 @@ type ChatCreated implements Alert & Notification {
   recipients: [User!]!
 }
 
-type ChatDeleted implements Alert & Notification {
+type ChatDeletedAlert implements Alert & Notification {
   chat: Chat!
   createdAt: Date!
   createdBy: User!
@@ -225,7 +225,7 @@ type FriendConnection {
   pageInfo: PageInfo!
 }
 
-type FriendDeleted implements Alert & Notification {
+type FriendDeletedAlert implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -576,7 +576,7 @@ interface Request implements Notification {
   state: RequestState!
 }
 
-type RequestAccepted implements Alert & Notification {
+type RequestAcceptedAlert implements Alert & Notification & RequestResponseAlert {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
@@ -587,13 +587,18 @@ type RequestAccepted implements Alert & Notification {
   requestId: HashId!
 }
 
-type RequestDeclined implements Alert & Notification {
+type RequestDeclinedAlert implements Alert & Notification & RequestResponseAlert {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
   recipients: [User!]!
+  request: Request!
+  requestId: HashId!
+}
+
+interface RequestResponseAlert {
   request: Request!
   requestId: HashId!
 }

@@ -31,9 +31,22 @@ gql`
         status
       }
     }
+    ... on RequestDeclinedAlert {
+      request {
+        id
+        state
+      }
+    }
+    ... on RequestAcceptedAlert {
+      request {
+        id
+        state
+      }
+    }
     ... on Request {
       createdById
       isCreator
+      state
       createdBy {
         ... on Stranger {
           friendRequest {
@@ -61,7 +74,12 @@ gql`
 const filterNotifications = (
   notifications: LiveNotificationFragment[]
 ): LiveNotificationFragment[] =>
-  notifications.filter((x) => !x.isCreator) ?? [];
+  notifications.filter(
+    (x) =>
+      !x.isCreator &&
+      x.__typename === 'FriendRequest' &&
+      ['SEEN', 'SENT'].includes(x.state)
+  ) ?? [];
 
 type Props = {
   onNotification: (notification: LiveNotificationFragment) => void;

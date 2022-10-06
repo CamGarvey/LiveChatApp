@@ -37,3 +37,30 @@ export const Alert = interfaceType({
     });
   },
 });
+
+export const RequestResponseAlert = interfaceType({
+  name: 'RequestResponseAlert',
+  resolveType: (source: PrismaAlert) => {
+    switch (source.type) {
+      case 'REQUEST_ACCEPTED':
+        return 'RequestAccepted';
+      case 'REQUEST_DECLINED':
+        return 'RequestDeclined';
+      default:
+        return null;
+    }
+  },
+  definition: (t) => {
+    t.nonNull.hashId('requestId');
+    t.nonNull.field('request', {
+      type: 'Request',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.request.findUniqueOrThrow({
+          where: {
+            id: parent.requestId ?? undefined,
+          },
+        });
+      },
+    });
+  },
+});

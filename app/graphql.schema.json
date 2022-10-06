@@ -490,27 +490,27 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "ChatCreated",
+            "name": "ChatCreatedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "ChatDeleted",
+            "name": "ChatDeletedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "FriendDeleted",
+            "name": "FriendDeletedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "RequestAccepted",
+            "name": "RequestAcceptedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "RequestDeclined",
+            "name": "RequestDeclinedAlert",
             "ofType": null
           }
         ]
@@ -671,7 +671,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ChatCreated",
+        "name": "ChatCreatedAlert",
         "description": null,
         "fields": [
           {
@@ -813,7 +813,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ChatDeleted",
+        "name": "ChatDeletedAlert",
         "description": null,
         "fields": [
           {
@@ -2368,7 +2368,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "FriendDeleted",
+        "name": "FriendDeletedAlert",
         "description": null,
         "fields": [
           {
@@ -4902,17 +4902,17 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "ChatCreated",
+            "name": "ChatCreatedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "ChatDeleted",
+            "name": "ChatDeletedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "FriendDeleted",
+            "name": "FriendDeletedAlert",
             "ofType": null
           },
           {
@@ -4922,12 +4922,12 @@
           },
           {
             "kind": "OBJECT",
-            "name": "RequestAccepted",
+            "name": "RequestAcceptedAlert",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "RequestDeclined",
+            "name": "RequestDeclinedAlert",
             "ofType": null
           }
         ]
@@ -5582,7 +5582,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "RequestAccepted",
+        "name": "RequestAcceptedAlert",
         "description": null,
         "fields": [
           {
@@ -5740,7 +5740,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "RequestDeclined",
+        "name": "RequestDeclinedAlert",
         "description": null,
         "fields": [
           {

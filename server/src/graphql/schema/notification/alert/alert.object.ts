@@ -1,43 +1,23 @@
 import { objectType } from 'nexus';
 
-export const RequestAccepted = objectType({
-  name: 'RequestAccepted',
+export const RequestAcceptedAlert = objectType({
+  name: 'RequestAcceptedAlert',
   definition: (t) => {
     t.implements('Alert');
-    t.nonNull.hashId('requestId');
-    t.nonNull.field('request', {
-      type: 'Request',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.request.findUniqueOrThrow({
-          where: {
-            id: parent.requestId ?? undefined,
-          },
-        });
-      },
-    });
+    t.implements('RequestResponseAlert');
   },
 });
 
-export const RequestDeclined = objectType({
-  name: 'RequestDeclined',
+export const RequestDeclinedAlert = objectType({
+  name: 'RequestDeclinedAlert',
   definition: (t) => {
     t.implements('Alert');
-    t.nonNull.hashId('requestId');
-    t.nonNull.field('request', {
-      type: 'Request',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.request.findUniqueOrThrow({
-          where: {
-            id: parent.requestId ?? undefined,
-          },
-        });
-      },
-    });
+    t.implements('RequestResponseAlert');
   },
 });
 
-export const FriendDeleted = objectType({
-  name: 'FriendDeleted',
+export const FriendDeletedAlert = objectType({
+  name: 'FriendDeletedAlert',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.field('user', {
@@ -57,8 +37,8 @@ export const FriendDeleted = objectType({
   },
 });
 
-export const ChatCreated = objectType({
-  name: 'ChatCreated',
+export const ChatCreatedAlert = objectType({
+  name: 'ChatCreatedAlert',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.field('chat', {
@@ -82,7 +62,7 @@ export const ChatCreated = objectType({
 });
 
 export const ChatDeleted = objectType({
-  name: 'ChatDeleted',
+  name: 'ChatDeletedAlert',
   definition: (t) => {
     t.implements('Alert');
     t.nonNull.field('chat', {
