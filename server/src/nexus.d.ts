@@ -251,6 +251,7 @@ export interface NexusGenInterfaces {
   Notification: NexusGenRootTypes['ChatCreated'] | NexusGenRootTypes['ChatDeleted'] | NexusGenRootTypes['FriendDeleted'] | NexusGenRootTypes['FriendRequest'] | NexusGenRootTypes['RequestAccepted'] | NexusGenRootTypes['RequestDeclined'];
   Request: NexusGenRootTypes['FriendRequest'];
   User: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'] | NexusGenRootTypes['Stranger'];
+  UserAlteration: NexusGenRootTypes['AdminsAdded'] | NexusGenRootTypes['AdminsRemoved'] | NexusGenRootTypes['MembersAdded'] | NexusGenRootTypes['MembersRemoved'];
 }
 
 export interface NexusGenUnions {
@@ -263,7 +264,6 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   AdminsAdded: { // field return type
-    adminsAdded: NexusGenRootTypes['User'][]; // [User!]!
     chat: NexusGenRootTypes['Chat']; // Chat!
     chatId: NexusGenScalars['HashId']; // HashId!
     createdAt: NexusGenScalars['Date']; // Date!
@@ -272,9 +272,9 @@ export interface NexusGenFieldTypes {
     id: NexusGenScalars['HashId']; // HashId!
     isCreator: boolean; // Boolean!
     updatedAt: NexusGenScalars['Date']; // Date!
+    users: NexusGenRootTypes['User'][]; // [User!]!
   }
   AdminsRemoved: { // field return type
-    adminsRemoved: NexusGenRootTypes['User'][]; // [User!]!
     chat: NexusGenRootTypes['Chat']; // Chat!
     chatId: NexusGenScalars['HashId']; // HashId!
     createdAt: NexusGenScalars['Date']; // Date!
@@ -283,6 +283,7 @@ export interface NexusGenFieldTypes {
     id: NexusGenScalars['HashId']; // HashId!
     isCreator: boolean; // Boolean!
     updatedAt: NexusGenScalars['Date']; // Date!
+    users: NexusGenRootTypes['User'][]; // [User!]!
   }
   ChatCreated: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
@@ -422,8 +423,8 @@ export interface NexusGenFieldTypes {
     createdById: NexusGenScalars['HashId']; // HashId!
     id: NexusGenScalars['HashId']; // HashId!
     isCreator: boolean; // Boolean!
-    membersAdded: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!
+    users: NexusGenRootTypes['User'][]; // [User!]!
   }
   MembersRemoved: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
@@ -433,8 +434,8 @@ export interface NexusGenFieldTypes {
     createdById: NexusGenScalars['HashId']; // HashId!
     id: NexusGenScalars['HashId']; // HashId!
     isCreator: boolean; // Boolean!
-    membersRemoved: NexusGenRootTypes['User'][]; // [User!]!
     updatedAt: NexusGenScalars['Date']; // Date!
+    users: NexusGenRootTypes['User'][]; // [User!]!
   }
   Message: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
@@ -611,11 +612,13 @@ export interface NexusGenFieldTypes {
     updatedAt: NexusGenScalars['Date']; // Date!
     username: string; // String!
   }
+  UserAlteration: { // field return type
+    users: NexusGenRootTypes['User'][]; // [User!]!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
   AdminsAdded: { // field return type name
-    adminsAdded: 'User'
     chat: 'Chat'
     chatId: 'HashId'
     createdAt: 'Date'
@@ -624,9 +627,9 @@ export interface NexusGenFieldTypeNames {
     id: 'HashId'
     isCreator: 'Boolean'
     updatedAt: 'Date'
+    users: 'User'
   }
   AdminsRemoved: { // field return type name
-    adminsRemoved: 'User'
     chat: 'Chat'
     chatId: 'HashId'
     createdAt: 'Date'
@@ -635,6 +638,7 @@ export interface NexusGenFieldTypeNames {
     id: 'HashId'
     isCreator: 'Boolean'
     updatedAt: 'Date'
+    users: 'User'
   }
   ChatCreated: { // field return type name
     chat: 'Chat'
@@ -774,8 +778,8 @@ export interface NexusGenFieldTypeNames {
     createdById: 'HashId'
     id: 'HashId'
     isCreator: 'Boolean'
-    membersAdded: 'User'
     updatedAt: 'Date'
+    users: 'User'
   }
   MembersRemoved: { // field return type name
     chat: 'Chat'
@@ -785,8 +789,8 @@ export interface NexusGenFieldTypeNames {
     createdById: 'HashId'
     id: 'HashId'
     isCreator: 'Boolean'
-    membersRemoved: 'User'
     updatedAt: 'Date'
+    users: 'User'
   }
   Message: { // field return type name
     chat: 'Chat'
@@ -962,6 +966,9 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     updatedAt: 'Date'
     username: 'String'
+  }
+  UserAlteration: { // field return type name
+    users: 'User'
   }
 }
 
@@ -1145,11 +1152,12 @@ export interface NexusGenAbstractTypeMembers {
   Notification: "ChatCreated" | "ChatDeleted" | "FriendDeleted" | "FriendRequest" | "RequestAccepted" | "RequestDeclined"
   Request: "FriendRequest"
   User: "Friend" | "Me" | "Stranger"
+  UserAlteration: "AdminsAdded" | "AdminsRemoved" | "MembersAdded" | "MembersRemoved"
 }
 
 export interface NexusGenTypeInterfaces {
-  AdminsAdded: "ChatUpdate" | "Event"
-  AdminsRemoved: "ChatUpdate" | "Event"
+  AdminsAdded: "ChatUpdate" | "Event" | "UserAlteration"
+  AdminsRemoved: "ChatUpdate" | "Event" | "UserAlteration"
   ChatCreated: "Alert" | "Notification"
   ChatDeleted: "Alert" | "Notification"
   DeletedChat: "Chat"
@@ -1161,8 +1169,8 @@ export interface NexusGenTypeInterfaces {
   FriendRequest: "Notification" | "Request"
   GroupChat: "Chat"
   Me: "KnownUser" | "User"
-  MembersAdded: "ChatUpdate" | "Event"
-  MembersRemoved: "ChatUpdate" | "Event"
+  MembersAdded: "ChatUpdate" | "Event" | "UserAlteration"
+  MembersRemoved: "ChatUpdate" | "Event" | "UserAlteration"
   Message: "Event"
   NameUpdated: "ChatUpdate" | "Event"
   RequestAccepted: "Alert" | "Notification"
@@ -1187,7 +1195,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "Alert" | "Chat" | "ChatSubscriptionResult" | "ChatUpdate" | "Event" | "KnownUser" | "Notification" | "Request" | "User";
+export type NexusGenAbstractsUsingStrategyResolveType = "Alert" | "Chat" | "ChatSubscriptionResult" | "ChatUpdate" | "Event" | "KnownUser" | "Notification" | "Request" | "User" | "UserAlteration";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

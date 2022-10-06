@@ -58,18 +58,7 @@ export const ChatAdminsAddedUpdated = objectType({
   name: 'AdminsAdded',
   definition: (t) => {
     t.implements('ChatUpdate');
-    t.nonNull.list.nonNull.field('adminsAdded', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.chatUpdate
-          .findUniqueOrThrow({
-            where: {
-              eventId: parent.id,
-            },
-          })
-          .users();
-      },
-    });
+    t.implements('UserAlteration');
   },
 });
 
@@ -77,18 +66,7 @@ export const ChatAdminsRemovedUpdated = objectType({
   name: 'AdminsRemoved',
   definition: (t) => {
     t.implements('ChatUpdate');
-    t.nonNull.list.nonNull.field('adminsRemoved', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.chatUpdate
-          .findUniqueOrThrow({
-            where: {
-              eventId: parent.id,
-            },
-          })
-          .users();
-      },
-    });
+    t.implements('UserAlteration');
   },
 });
 
@@ -96,18 +74,7 @@ export const ChatMembersAddedUpdated = objectType({
   name: 'MembersAdded',
   definition: (t) => {
     t.implements('ChatUpdate');
-    t.nonNull.list.nonNull.field('membersAdded', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.chatUpdate
-          .findUniqueOrThrow({
-            where: {
-              eventId: parent.id,
-            },
-          })
-          .users();
-      },
-    });
+    t.implements('UserAlteration');
   },
 });
 
@@ -115,17 +82,6 @@ export const ChatMembersRemovedUpdate = objectType({
   name: 'MembersRemoved',
   definition: (t) => {
     t.implements('ChatUpdate');
-    t.nonNull.list.nonNull.field('membersRemoved', {
-      type: 'User',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.chatUpdate
-          .findUniqueOrThrow({
-            where: {
-              eventId: parent.id,
-            },
-          })
-          .users();
-      },
-    });
+    t.implements('UserAlteration');
   },
 });

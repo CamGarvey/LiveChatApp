@@ -16,30 +16,6 @@
         "description": null,
         "fields": [
           {
-            "name": "adminsAdded",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "User",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "chat",
             "description": null,
             "args": [],
@@ -166,6 +142,30 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "users",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -178,6 +178,11 @@
           {
             "kind": "INTERFACE",
             "name": "Event",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "UserAlteration",
             "ofType": null
           }
         ],
@@ -190,30 +195,6 @@
         "description": null,
         "fields": [
           {
-            "name": "adminsRemoved",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "User",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "chat",
             "description": null,
             "args": [],
@@ -340,6 +321,30 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "users",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -352,6 +357,11 @@
           {
             "kind": "INTERFACE",
             "name": "Event",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "UserAlteration",
             "ofType": null
           }
         ],
@@ -3475,7 +3485,23 @@
             "deprecationReason": null
           },
           {
-            "name": "membersAdded",
+            "name": "updatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "users",
             "description": null,
             "args": [],
             "type": {
@@ -3497,22 +3523,6 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          },
-          {
-            "name": "updatedAt",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Date",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -3525,6 +3535,11 @@
           {
             "kind": "INTERFACE",
             "name": "Event",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "UserAlteration",
             "ofType": null
           }
         ],
@@ -3649,7 +3664,23 @@
             "deprecationReason": null
           },
           {
-            "name": "membersRemoved",
+            "name": "updatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "users",
             "description": null,
             "args": [],
             "type": {
@@ -3671,22 +3702,6 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          },
-          {
-            "name": "updatedAt",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Date",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -3699,6 +3714,11 @@
           {
             "kind": "INTERFACE",
             "name": "Event",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "UserAlteration",
             "ofType": null
           }
         ],
@@ -6411,6 +6431,62 @@
           {
             "kind": "OBJECT",
             "name": "Stranger",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "UserAlteration",
+        "description": null,
+        "fields": [
+          {
+            "name": "users",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INTERFACE",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "AdminsAdded",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "AdminsRemoved",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "MembersAdded",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "MembersRemoved",
             "ofType": null
           }
         ]

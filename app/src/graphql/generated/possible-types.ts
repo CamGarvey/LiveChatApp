@@ -60,6 +60,12 @@
       "Friend",
       "Me",
       "Stranger"
+    ],
+    "UserAlteration": [
+      "AdminsAdded",
+      "AdminsRemoved",
+      "MembersAdded",
+      "MembersRemoved"
     ]
   }
 };

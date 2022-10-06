@@ -46,10 +46,7 @@ gql`
   mutation AddMembersToGroupChat($chatId: HashId!, $members: [HashId!]!) {
     addMembersToGroupChat(chatId: $chatId, members: $members) {
       ...GroupChatUpdate
-      membersAdded {
-        id
-        username
-      }
+      ...UserAlerationGroupChatUpdate
       chat {
         id
         ... on GroupChat {
@@ -63,10 +60,7 @@ gql`
   mutation RemoveMembersFromGroupChat($chatId: HashId!, $members: [HashId!]!) {
     removeMembersFromGroupChat(chatId: $chatId, members: $members) {
       ...GroupChatUpdate
-      membersRemoved {
-        id
-        username
-      }
+      ...UserAlerationGroupChatUpdate
       chat {
         id
         ... on GroupChat {
@@ -80,10 +74,7 @@ gql`
   mutation AddAdminsToGroupChat($chatId: HashId!, $members: [HashId!]!) {
     addAdminsToGroupChat(chatId: $chatId, members: $members) {
       ...GroupChatUpdate
-      adminsAdded {
-        id
-        username
-      }
+      ...UserAlerationGroupChatUpdate
       chat {
         id
         ... on GroupChat {
@@ -97,10 +88,7 @@ gql`
   mutation RemoveAdminsFromGroupChat($chatId: HashId!, $members: [HashId!]!) {
     removeAdminsFromGroupChat(chatId: $chatId, members: $members) {
       ...GroupChatUpdate
-      adminsRemoved {
-        id
-        username
-      }
+      ...UserAlerationGroupChatUpdate
       chat {
         id
         ... on GroupChat {
@@ -116,6 +104,12 @@ gql`
     id
     createdBy {
       id
+    }
+  }
+  fragment UserAlerationGroupChatUpdate on UserAlteration {
+    users {
+      id
+      username
     }
   }
 `;

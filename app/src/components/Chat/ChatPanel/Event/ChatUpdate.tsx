@@ -27,19 +27,19 @@ export const ChatUpdate = ({ update }: Props) => {
         return `${update.createdBy.username} set the group description ${update.descriptionAfter}`;
       case 'MembersAdded':
         return `${update.createdBy.username} added ${membersDesc(
-          update.membersAdded
+          update.users
         )} to the group`;
       case 'MembersRemoved':
         return `${update.createdBy.username} removed ${membersDesc(
-          update.membersRemoved
+          update.users
         )} from the group`;
       case 'AdminsAdded':
         return `${update.createdBy.username} added ${membersDesc(
-          update.adminsAdded
+          update.users
         )} as group admin`;
       case 'AdminsRemoved':
         return `${update.createdBy.username} removed ${membersDesc(
-          update.adminsRemoved
+          update.users
         )} as group admin`;
       default:
         return 'WHOOPS';
@@ -77,28 +77,23 @@ ChatUpdate.fragments = {
         descriptionAfter
       }
       ... on MembersAdded {
-        membersAdded {
-          id
-          username
-        }
+        ...ChatUpdateUserAlteration
       }
       ... on MembersRemoved {
-        membersRemoved {
-          id
-          username
-        }
+        ...ChatUpdateUserAlteration
       }
       ... on AdminsAdded {
-        adminsAdded {
-          id
-          username
-        }
+        ...ChatUpdateUserAlteration
       }
       ... on AdminsRemoved {
-        adminsRemoved {
-          id
-          username
-        }
+        ...ChatUpdateUserAlteration
+      }
+    }
+
+    fragment ChatUpdateUserAlteration on UserAlteration {
+      users {
+        id
+        username
       }
     }
   `,

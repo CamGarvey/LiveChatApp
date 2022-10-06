@@ -2,8 +2,7 @@
 ### Do not make changes to this file directly
 
 
-type AdminsAdded implements ChatUpdate & Event {
-  adminsAdded: [User!]!
+type AdminsAdded implements ChatUpdate & Event & UserAlteration {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -12,10 +11,10 @@ type AdminsAdded implements ChatUpdate & Event {
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
+  users: [User!]!
 }
 
-type AdminsRemoved implements ChatUpdate & Event {
-  adminsRemoved: [User!]!
+type AdminsRemoved implements ChatUpdate & Event & UserAlteration {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -24,6 +23,7 @@ type AdminsRemoved implements ChatUpdate & Event {
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date!
+  users: [User!]!
 }
 
 """
@@ -326,7 +326,7 @@ type Me implements KnownUser & User {
   username: String!
 }
 
-type MembersAdded implements ChatUpdate & Event {
+type MembersAdded implements ChatUpdate & Event & UserAlteration {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -334,11 +334,11 @@ type MembersAdded implements ChatUpdate & Event {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  membersAdded: [User!]!
   updatedAt: Date!
+  users: [User!]!
 }
 
-type MembersRemoved implements ChatUpdate & Event {
+type MembersRemoved implements ChatUpdate & Event & UserAlteration {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -346,8 +346,8 @@ type MembersRemoved implements ChatUpdate & Event {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
-  membersRemoved: [User!]!
   updatedAt: Date!
+  users: [User!]!
 }
 
 type Message implements Event {
@@ -669,6 +669,10 @@ interface User {
   name: String
   updatedAt: Date!
   username: String!
+}
+
+interface UserAlteration {
+  users: [User!]!
 }
 
 type UserConnection {
