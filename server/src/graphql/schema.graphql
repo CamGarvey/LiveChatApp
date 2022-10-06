@@ -27,7 +27,8 @@ type AdminsRemoved implements ChatUpdate & Event {
 }
 
 """
-Alert is a type of notification that does not require a response and can be sent to multiple users
+Alert is a type of notification that does not require a response
+    and can be sent to multiple users
 """
 interface Alert implements Notification {
   createdAt: Date!
@@ -507,6 +508,12 @@ type Query {
     chatId: HashId!
   ): Chat
   chats: [Chat!]!
+
+  """Get a event by id"""
+  event(
+    """id of event"""
+    eventId: HashId!
+  ): Event
   events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -523,12 +530,6 @@ type Query {
   ): EventConnection!
   friends: [Friend!]!
   me: Me
-
-  """Get a message by id"""
-  message(
-    """id of message"""
-    messageId: HashId!
-  ): Event
 
   """Get all notifications for current user"""
   notifications: [Notification!]!
@@ -561,7 +562,8 @@ type Query {
 }
 
 """
-Request is a type of notification that requires a response and is sent to a single user
+Request is a type of notification that requires a response 
+    and is sent to a single user
 """
 interface Request implements Notification {
   createdAt: Date!

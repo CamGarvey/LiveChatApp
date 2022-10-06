@@ -1,7 +1,8 @@
 import { gql } from '@apollo/client';
 import {
-  FriendRequestUserFragment,
-  FriendRequestUserFragmentDoc,
+  FriendRequestStrangerFragment,
+  FriendRequestStrangerFragmentDoc,
+  StrangerStatus,
   useAcceptRequestMutation,
   useCancelRequestMutation,
   useDeclineRequestMutation,
@@ -11,14 +12,12 @@ import {
 gql`
   mutation AcceptRequest($requestId: HashId!) {
     acceptRequest(requestId: $requestId) {
-      id
-      createdById
+      ...RequestInfo
     }
   }
   mutation DeclineRequest($requestId: HashId!) {
     declineRequest(requestId: $requestId) {
-      id
-      createdById
+      ...RequestInfo
     }
   }
   mutation CancelRequest($requestId: HashId!) {
@@ -35,14 +34,14 @@ gql`
     id
     isCreator
     createdById
+    recipientId
+    state
   }
-  fragment FriendRequestUser on User {
+  fragment FriendRequestStranger on Stranger {
     id
-    ... on Stranger {
-      status
-      friendRequest {
-        id
-      }
+    status
+    friendRequest {
+      id
     }
   }
 `;
@@ -61,21 +60,6 @@ export const useRequest = () => {
     accept({
       variables: {
         requestId,
-      },
-      update: (cache, { data: newData }) => {
-        cache.updateFragment<FriendRequestUserFragment>(
-          {
-            id: `User:${newData.acceptRequest.createdById}`,
-            fragment: FriendRequestUserFragmentDoc,
-          },
-          (data) => ({
-            ...data,
-            // Update typename
-            __typename: 'Friend',
-            // Remove friend request
-            friendRequest: null,
-          })
-        );
       },
     });
 
@@ -99,34 +83,39 @@ export const useRequest = () => {
         strangerId,
       },
       update: (cache, { data: newData }) => {
-        cache.updateFragment<FriendRequestUserFragment>(
+        cache.updateFragment<FriendRequestStrangerFragment>(
           {
-            id: `User:${strangerId}`,
-            fragment: FriendRequestUserFragmentDoc,
+            id: cache.identify({
+              __typename: 'Stranger',
+              id: strangerId,
+            }),
+            fragment: FriendRequestStrangerFragmentDoc,
           },
-          (data) => ({
-            ...data,
-            // Attach new friend request
-            friendRequest: newData.sendFriendRequest,
-            // Update status
-            // status: StrangerStatus.RequestSent,
-          })
+          (data) => {
+            if (!data) {
+              throw new Error('No data');
+            }
+            return {
+              ...data,
+              // Attach new friend request
+              friendRequest: newData?.sendFriendRequest,
+              // Update status
+              status: StrangerStatus.RequestSent,
+            };
+          }
         );
       },
     });
 
   return {
     acceptRequest,
-    loadingAccept,
     acceptData,
     declineRequest,
-    loadingDecline,
     delcineData,
     cancelRequest,
     cancelData,
-    loadingCancel,
     sendRequest,
     sendData,
-    loadingSend,
+    loading: loadingAccept || loadingCancel || loadingDecline || loadingSend,
   };
 };

@@ -23,11 +23,15 @@ const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
       sx={(theme) => ({
         maxWidth: largeScreen ? '380px' : smallScreen ? '170px' : '250px',
         backgroundColor:
-          variant === 'light' &&
-          (theme.colorScheme === 'dark'
-            ? theme.colors.blue[7]
-            : theme.colors.blue[1]),
-        color: variant === 'light' && theme.colorScheme === 'dark' && '#fff',
+          variant === 'light'
+            ? theme.colorScheme === 'dark'
+              ? theme.colors.blue[7]
+              : theme.colors.blue[1]
+            : undefined,
+        color:
+          variant === 'light' && theme.colorScheme === 'dark'
+            ? '#fff'
+            : undefined,
       })}
       withBorder
     >

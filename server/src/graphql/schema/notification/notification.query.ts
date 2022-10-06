@@ -6,7 +6,13 @@ export const Notifications = queryField('notifications', {
   resolve: async (_, __, { prisma, userId }) => {
     const user = await prisma.user.findUniqueOrThrow({
       include: {
-        requests: true,
+        requests: {
+          where: {
+            state: {
+              in: ['SENT', 'SEEN'],
+            },
+          },
+        },
         alerts: true,
       },
       where: {

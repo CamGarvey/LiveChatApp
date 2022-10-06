@@ -214,7 +214,7 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
               type: 'MEMBERS_REMOVED',
               users: members
                 ? {
-                    connect: members.map(({ id }) => ({ id })),
+                    connect: members.map((id) => ({ id })),
                   }
                 : undefined,
             },
@@ -299,7 +299,7 @@ export const AddMembersToGroupChatMutation = mutationField(
               type: 'MEMBERS_ADDED',
               users: members
                 ? {
-                    connect: members.map(({ id }) => ({ id })),
+                    connect: members.map((id) => ({ id })),
                   }
                 : undefined,
             },
@@ -384,7 +384,7 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
               type: 'ADMINS_REMOVED',
               users: members
                 ? {
-                    connect: members.map(({ id }) => ({ id })),
+                    connect: members.map((id) => ({ id })),
                   }
                 : undefined,
             },
@@ -468,7 +468,7 @@ export const AddAdminsToGroupChatMutation = mutationField(
               type: 'ADMINS_ADDED',
               users: members
                 ? {
-                    connect: members.map(({ id }) => ({ id })),
+                    connect: members.map((id) => ({ id })),
                   }
                 : undefined,
             },
@@ -508,6 +508,11 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
         name: true,
       },
     });
+
+    if (name === chatBeforeUpdate.name) {
+      throw new ForbiddenError('Name has not changed');
+    }
+
     const chatAfterUpdate = await prisma.chat.update({
       data: {
         name,
@@ -580,11 +585,17 @@ export const UpdateGroupChatDescription = mutationField(
           description: true,
         },
       });
+
+      if (description === chatBeforeUpdate.description) {
+        throw new ForbiddenError('Description has not changed');
+      }
+
       const chatAfterUpdate = await prisma.chat.update({
         data: {
           description,
         },
-        include: {
+        select: {
+          description: true,
           members: {
             select: {
               id: true,

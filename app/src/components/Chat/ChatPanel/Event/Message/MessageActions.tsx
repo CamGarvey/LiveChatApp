@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 import { MessageActionsFragment } from 'graphql/generated/graphql';
-import React from 'react';
 import DeleteEventAction from '../DeleteEventAction';
 
 type Props = {
@@ -9,8 +8,8 @@ type Props = {
 };
 
 const MessageActions = ({ message, onDelete }: Props) => {
-  if (message.__typename === 'DeletedEvent' || !message.isCreator) {
-    return;
+  if (!message.isCreator) {
+    return <></>;
   }
   return (
     <>

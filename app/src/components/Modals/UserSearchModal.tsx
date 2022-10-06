@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGetUserSearchLazyQuery } from 'graphql/generated/graphql';
+import {
+  useGetUserSearchLazyQuery,
+  UserSearchModelUserFragment,
+} from 'graphql/generated/graphql';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { gql } from '@apollo/client';
@@ -15,11 +18,14 @@ gql`
       edges {
         cursor
         node {
-          id
-          ...UserList
+          ...UserSearchModelUser
         }
       }
     }
+  }
+  fragment UserSearchModelUser on User {
+    id
+    ...UserList
   }
   ${UserList.fragments.user}
 `;
@@ -49,7 +55,10 @@ export const UserSearchModal = () => {
     inputRef?.current?.focus();
   }, [inputRef?.current?.id]);
 
-  const users = data?.users.edges?.map((edge) => edge.node) ?? [];
+  const users =
+    data?.users.edges
+      ?.map((edge) => edge?.node)
+      .filter((x): x is UserSearchModelUserFragment => !!x) ?? [];
 
   return (
     <UserList
@@ -64,7 +73,7 @@ export const UserSearchModal = () => {
         fetchMore({
           variables: {
             first: USER_PAGINATION_COUNT,
-            after: data.users.pageInfo.endCursor,
+            after: data?.users.pageInfo.endCursor,
           },
         })
       }

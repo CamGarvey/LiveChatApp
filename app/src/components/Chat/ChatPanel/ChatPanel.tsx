@@ -6,8 +6,8 @@ import { useCreateMessage } from './useCreateMessage';
 import { useEvents } from './useEvents';
 import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
-import { useParams } from 'react-router-dom';
 import { ChatUpdate } from './Event/ChatUpdate';
+import DeletedEvent from './Event/DeletedEvent';
 
 gql`
   query GetEvents($chatId: HashId!, $last: Int, $before: String) {
@@ -36,22 +36,27 @@ gql`
     }
     ...EventContainer
     ...MessageEvent
+    ...DeletedEventComponent
     ... on ChatUpdate {
       ...ChatUpdateEvent
     }
   }
   ${EventContainer.fragments.event}
   ${Message.fragments.message}
-  ${ChatUpdate.fragments.chatUpdate}
+  ${DeletedEvent.fragments.event}
+  ${ChatUpdate.fragments.event}
 `;
 
-const ChatPanel = () => {
-  const { chatId } = useParams();
+type Props = {
+  chatId: string;
+};
+
+const ChatPanel = ({ chatId }: Props) => {
   const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } =
     useEvents({ chatId });
   const { createMessage } = useCreateMessage({ chatId });
 
-  let topMessage = null;
+  let topMessage: string = '';
   if (!loading) {
     if (events.length === 0) {
       topMessage = 'no messages';
@@ -102,15 +107,29 @@ const ChatPanel = () => {
               displayEventTime={event.displayEventTime}
               eventData={event}
               event={
-                event.__typename === 'DeletedEvent' ||
-                event.__typename === 'Message' ? (
-                  <Message
-                    displayAvatar={event.isLastEventInGroup}
-                    message={event}
-                  />
-                ) : (
-                  <></>
-                )
+                <>
+                  {event.__typename === 'Message' && (
+                    <Message
+                      displayAvatar={event.isLastEventInGroup}
+                      message={event}
+                    />
+                  )}
+                  {event.__typename === 'DeletedEvent' && (
+                    <DeletedEvent
+                      displayAvatar={event.isLastEventInGroup}
+                      event={event}
+                    />
+                  )}
+                  {event.__typename &&
+                    [
+                      'NameUpdated',
+                      'DescriptionUpdated',
+                      'MembersAdded',
+                      'MembersRemoved',
+                    ].includes(event.__typename) && (
+                      <ChatUpdate update={event as any} />
+                    )}
+                </>
               }
             />
           ))}

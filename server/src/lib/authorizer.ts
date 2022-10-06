@@ -1,4 +1,4 @@
-import { prisma, PrismaClient, RequestState } from '@prisma/client';
+import { PrismaClient, RequestState } from '@prisma/client';
 import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { IAuthorizer } from './authorizer.interface';
 

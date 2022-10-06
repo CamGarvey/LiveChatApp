@@ -59,7 +59,7 @@ export const EventInterface = interfaceType({
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUniqueOrThrow({
           where: {
-            id: parent.id || undefined,
+            id: parent.chatId || undefined,
           },
         });
       },

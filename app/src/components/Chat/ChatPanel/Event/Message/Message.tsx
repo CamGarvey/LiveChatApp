@@ -5,7 +5,6 @@ import {
 } from 'graphql/generated/graphql';
 import IncomingEvent from '../IncomingEvent';
 import OutgoingEvent from '../OutgoingEvent';
-import { DeletedMessage } from './DeletedMessage';
 import MessageActions from './MessageActions';
 import MessageBubble from './MessageBubble';
 
@@ -18,21 +17,12 @@ gql`
 `;
 
 type Props = {
-  message: { __typename?: 'Message' | 'DeletedEvent' } & MessageEventFragment;
+  message: { __typename?: 'Message' } & MessageEventFragment;
   displayAvatar: boolean;
 };
 
 export const Message = ({ message, displayAvatar }: Props) => {
   const [deleteMessage] = useDeleteMessageMutation();
-  const messageContent =
-    message.__typename === 'DeletedEvent' ? (
-      <DeletedMessage iconSide={message.isCreator ? 'left' : 'right'} />
-    ) : (
-      <MessageBubble
-        message={message}
-        variant={message.isCreator ? 'light' : 'default'}
-      />
-    );
 
   if (message.isCreator) {
     return (
@@ -41,7 +31,12 @@ export const Message = ({ message, displayAvatar }: Props) => {
         state={
           (message.id as string).startsWith('temp-id') ? 'sending' : 'sent'
         }
-        children={messageContent}
+        children={
+          <MessageBubble
+            message={message}
+            variant={message.isCreator ? 'light' : 'default'}
+          />
+        }
         actions={
           <MessageActions
             message={message}
@@ -62,23 +57,25 @@ export const Message = ({ message, displayAvatar }: Props) => {
     <IncomingEvent
       event={message}
       displayAvatar={displayAvatar}
-      children={messageContent}
+      children={
+        <MessageBubble
+          message={message}
+          variant={message.isCreator ? 'light' : 'default'}
+        />
+      }
     />
   );
 };
 
 Message.fragments = {
   message: gql`
-    fragment MessageEvent on Event {
+    fragment MessageEvent on Message {
       id
       isCreator
+      content
       ...OutgoingEvent
       ...IncomingEvent
-
-      ... on Message {
-        content
-        ...MessageActions
-      }
+      ...MessageActions
     }
     ${OutgoingEvent.fragments.event}
     ${IncomingEvent.fragments.event}

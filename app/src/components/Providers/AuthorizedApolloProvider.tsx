@@ -76,13 +76,6 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
             events: relayStylePagination(['chatId']),
           },
         },
-        FriendRequest: {
-          // Make friend requests unique by user / user
-          keyFields: (object) =>
-            object.isCreator
-              ? `Request:${object.recipientId}`
-              : `Request:${object.createdById}`,
-        },
         Message: {
           keyFields: (object) => `Event:${object.id}`,
         },

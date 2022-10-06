@@ -361,7 +361,7 @@
       {
         "kind": "INTERFACE",
         "name": "Alert",
-        "description": "Alert is a type of notification that does not require a response and can be sent to multiple users",
+        "description": "Alert is a type of notification that does not require a response\n    and can be sent to multiple users",
         "fields": [
           {
             "name": "createdAt",
@@ -5079,6 +5079,35 @@
             "deprecationReason": null
           },
           {
+            "name": "event",
+            "description": "Get a event by id",
+            "args": [
+              {
+                "name": "eventId",
+                "description": "id of event",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "HashId",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "INTERFACE",
+              "name": "Event",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "events",
             "description": null,
             "args": [
@@ -5190,35 +5219,6 @@
             "type": {
               "kind": "OBJECT",
               "name": "Me",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "message",
-            "description": "Get a message by id",
-            "args": [
-              {
-                "name": "messageId",
-                "description": "id of message",
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "HashId",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "INTERFACE",
-              "name": "Event",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5412,7 +5412,7 @@
       {
         "kind": "INTERFACE",
         "name": "Request",
-        "description": "Request is a type of notification that requires a response and is sent to a single user",
+        "description": "Request is a type of notification that requires a response \n    and is sent to a single user",
         "fields": [
           {
             "name": "createdAt",

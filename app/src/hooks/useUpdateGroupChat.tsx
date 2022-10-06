@@ -1,70 +1,58 @@
-import { gql } from '@apollo/client';
-import { useUpdateGroupChatMutation } from 'graphql/generated/graphql';
+import { ApolloCache, FetchResult, gql } from '@apollo/client';
+import {
+  AddAdminsToGroupChatMutation,
+  AddMembersToGroupChatMutation,
+  GetEventsDocument,
+  GetEventsQuery,
+  RemoveAdminsFromGroupChatMutation,
+  RemoveMembersFromGroupChatMutation,
+  UpdateGroupChatDescriptionMutation,
+  UpdateGroupChatNameMutation,
+  useAddAdminsToGroupChatMutation,
+  useAddMembersToGroupChatMutation,
+  useRemoveAdminsFromGroupChatMutation,
+  useRemoveMembersFromGroupChatMutation,
+  useUpdateGroupChatDescriptionMutation,
+  useUpdateGroupChatNameMutation,
+} from 'graphql/generated/graphql';
 
 gql`
-  mutation UpdateGroupChat(
-    $chatId: HashId!
-    $name: String!
-    $description: String!
-    $addMembers: [HashId!]!
-    $removeMembers: [HashId!]!
-    $addAdmins: [HashId!]!
-    $removeAdmins: [HashId!]!
-  ) {
+  mutation UpdateGroupChatName($chatId: HashId!, $name: String!) {
     updateGroupChatName(chatId: $chatId, name: $name) {
+      ...GroupChatUpdate
       nameBefore
       nameAfter
       chat {
+        id
         ... on GroupChat {
-          id
           name
         }
       }
     }
+  }
+  mutation UpdateGroupChatDescription($chatId: HashId!, $description: String!) {
     updateGroupChatDescription(chatId: $chatId, description: $description) {
+      ...GroupChatUpdate
       descriptionBefore
       descriptionAfter
       chat {
+        id
         ... on GroupChat {
-          id
           description
         }
       }
     }
-    addMembersToGroupChat(chatId: $chatId, members: $addMembers) {
-      chat {
-        ... on GroupChat {
-          id
-          members {
-            id
-          }
-        }
+  }
+  mutation AddMembersToGroupChat($chatId: HashId!, $members: [HashId!]!) {
+    addMembersToGroupChat(chatId: $chatId, members: $members) {
+      ...GroupChatUpdate
+      membersAdded {
+        id
+        username
       }
-    }
-    removeMembersFromGroupChat(chatId: $chatId, members: $removeMembers) {
       chat {
+        id
         ... on GroupChat {
-          id
-          members {
-            id
-          }
-        }
-      }
-    }
-    addAdminsToGroupChat(chatId: $chatId, members: $addAdmins) {
-      chat {
-        ... on GroupChat {
-          id
-          members {
-            id
-          }
-        }
-      }
-    }
-    removeAdminsFromGroupChat(chatId: $chatId, members: $removeAdmins) {
-      chat {
-        ... on GroupChat {
-          id
           members {
             id
           }
@@ -72,122 +60,246 @@ gql`
       }
     }
   }
+  mutation RemoveMembersFromGroupChat($chatId: HashId!, $members: [HashId!]!) {
+    removeMembersFromGroupChat(chatId: $chatId, members: $members) {
+      ...GroupChatUpdate
+      membersRemoved {
+        id
+        username
+      }
+      chat {
+        id
+        ... on GroupChat {
+          members {
+            id
+          }
+        }
+      }
+    }
+  }
+  mutation AddAdminsToGroupChat($chatId: HashId!, $members: [HashId!]!) {
+    addAdminsToGroupChat(chatId: $chatId, members: $members) {
+      ...GroupChatUpdate
+      adminsAdded {
+        id
+        username
+      }
+      chat {
+        id
+        ... on GroupChat {
+          admins {
+            id
+          }
+        }
+      }
+    }
+  }
+  mutation RemoveAdminsFromGroupChat($chatId: HashId!, $members: [HashId!]!) {
+    removeAdminsFromGroupChat(chatId: $chatId, members: $members) {
+      ...GroupChatUpdate
+      adminsRemoved {
+        id
+        username
+      }
+      chat {
+        id
+        ... on GroupChat {
+          admins {
+            id
+          }
+        }
+      }
+    }
+  }
+
+  fragment GroupChatUpdate on ChatUpdate {
+    id
+    createdBy {
+      id
+    }
+  }
 `;
 
-type MutateUserProps = {
-  chatId: string;
-  userIds: string[];
-};
-
-type UpdateChatData = {
-  name?: string;
-  description?: string;
-  addMembers?: string[];
-  removeMembers?: string[];
-  addAdmins?: string[];
-  removeAdmins?: string[];
-};
-
-type UpdateChatProps = {
-  chatId: string;
-  data: UpdateChatData;
+type UpdateProps = {
+  name?: string | null;
+  description?: string | null;
+  addMembers?: string[] | null;
+  removeMembers?: string[] | null;
+  addAdmins?: string[] | null;
+  removeAdmins?: string[] | null;
 };
 
 export const useUpdateGroupChat = () => {
-  const [update, { loading }] = useUpdateGroupChatMutation();
+  const [updateNameMutation, { loading: loadingName }] =
+    useUpdateGroupChatNameMutation();
+  const [updateDescriptionMutation, { loading: loadingDesc }] =
+    useUpdateGroupChatDescriptionMutation();
+  const [addMembersMutation, { loading: loadingAddMembers }] =
+    useAddMembersToGroupChatMutation();
+  const [removeMembersMutation, { loading: loadingRemoveMembers }] =
+    useRemoveMembersFromGroupChatMutation();
+  const [addAdminsMutation, { loading: loadingAddAdmins }] =
+    useAddAdminsToGroupChatMutation();
+  const [removeAdminsMutation, { loading: loadingRemoveAdmins }] =
+    useRemoveAdminsFromGroupChatMutation();
 
-  const updateChat = ({
-    chatId,
-    data: {
+  const loading =
+    loadingName ||
+    loadingDesc ||
+    loadingAddMembers ||
+    loadingRemoveMembers ||
+    loadingAddAdmins ||
+    loadingRemoveAdmins;
+
+  const update = (
+    chatId: string,
+    {
       name,
       description,
-      addAdmins = [],
-      removeAdmins = [],
-      addMembers = [],
-      removeMembers = [],
-    },
-  }: UpdateChatProps) => {
-    return update({
-      variables: {
-        chatId,
-        name,
-        description,
-        addAdmins,
-        removeAdmins,
-        addMembers,
-        removeMembers,
-      },
-    });
-  };
+      addMembers,
+      removeMembers,
+      addAdmins,
+      removeAdmins,
+    }: UpdateProps
+  ) => {
+    if (name && name.length > 2) {
+      updateNameMutation({
+        variables: {
+          chatId,
+          name,
+        },
+        update: addEvent(chatId),
+      });
+    }
+    if (description && description.length > 2) {
+      updateDescriptionMutation({
+        variables: {
+          chatId,
+          description,
+        },
+        update: addEvent(chatId),
+      });
+    }
 
-  const updateName = ({ chatId, name }: { chatId: string; name: string }) => {
-    return updateChat({
-      chatId,
-      data: {
-        name,
-      },
-    });
-  };
+    if (addMembers?.length) {
+      addMembersMutation({
+        variables: {
+          chatId,
+          members: addMembers,
+        },
+        update: addEvent(chatId),
+      });
+    }
 
-  const updateDescription = ({
-    chatId,
-    description,
-  }: {
-    chatId: string;
-    description: string;
-  }) => {
-    return updateChat({
-      chatId,
-      data: {
-        description,
-      },
-    });
-  };
+    if (removeMembers?.length) {
+      removeMembersMutation({
+        variables: {
+          chatId,
+          members: removeMembers,
+        },
+        update: addEvent(chatId),
+      });
+    }
 
-  const removeMembers = ({ chatId, userIds }: MutateUserProps) => {
-    return updateChat({
-      chatId,
-      data: {
-        removeMembers: userIds,
-      },
-    });
-  };
+    if (addAdmins?.length) {
+      addAdminsMutation({
+        variables: {
+          chatId,
+          members: addAdmins,
+        },
+        update: addEvent(chatId),
+      });
+    }
 
-  const addMembers = ({ chatId, userIds }: MutateUserProps) => {
-    return updateChat({
-      chatId,
-      data: {
-        addMembers: userIds,
-      },
-    });
-  };
-
-  const removeAdmins = ({ chatId, userIds }: MutateUserProps) => {
-    return updateChat({
-      chatId,
-      data: {
-        removeAdmins: userIds,
-      },
-    });
-  };
-
-  const addAdmins = ({ chatId, userIds }: MutateUserProps) => {
-    return updateChat({
-      chatId,
-      data: {
-        addAdmins: userIds,
-      },
-    });
+    if (removeAdmins?.length) {
+      removeAdminsMutation({
+        variables: {
+          chatId,
+          members: removeAdmins,
+        },
+        update: addEvent(chatId),
+      });
+    }
   };
 
   return {
-    updateChat,
-    updateName,
-    updateDescription,
-    removeMembers,
-    addMembers,
-    removeAdmins,
-    addAdmins,
+    update,
     loading,
+  };
+};
+
+const addEvent = (chatId: string) => {
+  return (
+    cache: ApolloCache<any>,
+    {
+      data,
+    }: Omit<
+      FetchResult<
+        | UpdateGroupChatNameMutation
+        | UpdateGroupChatDescriptionMutation
+        | AddMembersToGroupChatMutation
+        | RemoveMembersFromGroupChatMutation
+        | AddAdminsToGroupChatMutation
+        | RemoveAdminsFromGroupChatMutation,
+        Record<string, any>,
+        Record<string, any>
+      >,
+      'context'
+    >
+  ) => {
+    const query = cache.readQuery<GetEventsQuery>({
+      query: GetEventsDocument,
+      variables: {
+        chatId,
+      },
+    });
+
+    if (!data) {
+      throw new Error('No result from update');
+    }
+    if (!query) {
+      throw new Error('Could not find query');
+    }
+
+    let node: any = null;
+
+    if ('updateGroupChatName' in data) {
+      node = data['updateGroupChatName'];
+    } else if ('updateGroupChatDescription' in data) {
+      node = data['updateGroupChatDescription'];
+    } else if ('addMembersToGroupChat' in data) {
+      node = data['addMembersToGroupChat'];
+    } else if ('removeMembersFromGroupChat' in data) {
+      node = data['removeMembersFromGroupChat'];
+    } else if ('addAdminsToGroupChat' in data) {
+      node = data['addAdminsToGroupChat'];
+    } else if ('removeAdminsFromGroupChat' in data) {
+      node = data['removeAdminsFromGroupChat'];
+    }
+
+    if (!node) {
+      throw new Error('No node');
+    }
+
+    const edges = (query.events.edges as any[]) ?? [];
+
+    cache.writeQuery<GetEventsQuery>({
+      query: GetEventsDocument,
+      variables: {
+        chatId,
+      },
+      data: {
+        events: {
+          pageInfo: query.events.pageInfo,
+          edges: [
+            ...edges,
+            {
+              __typename: 'EventEdge',
+              node,
+            },
+          ],
+        },
+      },
+    });
   };
 };

@@ -39,7 +39,9 @@ export const useCreateMessage = ({ chatId }: Props) => {
       },
       optimisticResponse: ({ content }) => {
         const id = `temp-id.${createdAt}`;
-
+        if (!user) {
+          throw new Error('No user');
+        }
         return {
           createMessage: {
             __typename: 'Message',
@@ -53,12 +55,22 @@ export const useCreateMessage = ({ chatId }: Props) => {
       },
 
       update: (cache, { data }) => {
-        const result = cache.readQuery<GetEventsQuery>({
+        const query = cache.readQuery<GetEventsQuery>({
           query: GetEventsDocument,
           variables: {
             chatId,
           },
         });
+
+        if (!data) {
+          throw new Error('No result from message creation');
+        }
+
+        if (!query) {
+          throw new Error('Could not find query');
+        }
+
+        const edges = (query.events.edges as any[]) ?? [];
 
         cache.writeQuery<GetEventsQuery>({
           query: GetEventsDocument,
@@ -67,9 +79,9 @@ export const useCreateMessage = ({ chatId }: Props) => {
           },
           data: {
             events: {
-              pageInfo: result.events.pageInfo,
+              pageInfo: query.events.pageInfo,
               edges: [
-                ...result.events.edges,
+                ...edges,
                 {
                   node: {
                     __typename: 'Message',

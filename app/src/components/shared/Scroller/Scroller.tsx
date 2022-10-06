@@ -40,9 +40,9 @@ const Scroller = ({
   onScroll,
   isLoading = false,
   isLoadingMore = false,
-  topMessage = null,
+  topMessage,
 }: Props) => {
-  const viewport = useRef<HTMLDivElement>();
+  const viewport = useRef<HTMLDivElement>(null);
   const { scrollToBottom, isScrollToBottomOpened } = useScroller({
     viewport,
     onHitBottom,

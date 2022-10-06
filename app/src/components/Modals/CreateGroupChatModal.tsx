@@ -19,11 +19,17 @@ gql`
   }
 `;
 
+type FormikValues = {
+  name: string;
+  description: string;
+  memberIds: string[];
+};
+
 export const CreateGroupChatModal = ({
   context,
   id,
 }: ContextModalProps<{}>) => {
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const {
     loading: loadingFriends,
@@ -38,7 +44,7 @@ export const CreateGroupChatModal = ({
     inputRef?.current?.focus();
   }, [inputRef?.current?.id]);
 
-  const formik = useFormik({
+  const formik = useFormik<FormikValues>({
     initialValues: {
       name: '',
       description: '',
@@ -95,7 +101,7 @@ export const CreateGroupChatModal = ({
           ) : (
             <UserMultiSelect
               label={'Friends'}
-              users={friendData.friends}
+              users={friendData?.friends ?? []}
               onChange={(users) => {
                 formik.values.memberIds = users.map((x) => x);
                 formik.handleChange('');

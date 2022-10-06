@@ -1,25 +1,24 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { Event, Prisma } from '@prisma/client';
 import { nonNull, queryField } from 'nexus';
-import { hashIdArg } from '../../shared';
+import { hashIdArg } from '../shared';
 
-export const MessageQuery = queryField('message', {
+export const EventQuery = queryField('event', {
   type: 'Event',
-  description: 'Get a message by id',
+  description: 'Get a event by id',
   args: {
-    messageId: nonNull(
+    eventId: nonNull(
       hashIdArg({
-        description: 'id of message',
+        description: 'id of event',
       })
     ),
   },
-  authorize: async (_, { messageId }, { auth }) =>
-    await auth.canViewEvent(messageId),
-  resolve: async (_, { messageId }, { prisma }) => {
+  authorize: async (_, { eventId }, { auth }) =>
+    await auth.canViewEvent(eventId),
+  resolve: async (_, { eventId }, { prisma }) => {
     return await prisma.event.findFirstOrThrow({
       where: {
-        id: messageId,
-        type: 'Message',
+        id: eventId,
       },
     });
   },

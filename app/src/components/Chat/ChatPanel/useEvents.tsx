@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import moment from 'moment';
 import { groupEvents } from 'utils';
 import {
+  ChatPanelEventFragment,
   EventsDocument,
   EventsSubscription,
   useGetEventsQuery,
@@ -36,13 +37,13 @@ export const useEvents = ({ chatId }: Props) => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const event = subscriptionData.data.events;
-        if (event.__typename === 'DeletedEvent') {
+        if (event?.__typename === 'DeletedEvent') {
           return prev;
         }
         const newCache = Object.assign({}, prev, {
           events: {
             edges: [
-              ...prev.events.edges,
+              ...(prev?.events?.edges ?? []),
               {
                 __typename: 'EventEdge',
                 node: event,
@@ -58,8 +59,6 @@ export const useEvents = ({ chatId }: Props) => {
   }, [chatId, subscribeToMore]);
 
   const hasPreviousPage = data?.events?.pageInfo?.hasPreviousPage ?? false;
-  let rawEvents = data?.events?.edges?.map((x) => x.node) ?? [];
-  const groupedEvents = groupEvents(rawEvents);
 
   const shouldDisplayEventTime = useCallback(
     (
@@ -75,32 +74,43 @@ export const useEvents = ({ chatId }: Props) => {
     []
   );
 
-  let previousEventTime: moment.Moment | undefined;
-  const events = groupedEvents
-    .map((group) =>
-      group
-        .map((event, eventIndex: number) => {
-          const isLastEventInGroup = eventIndex === group.length - 1;
-          const currentEventTime = moment(event.createdAt);
-          const displayEventTime = shouldDisplayEventTime(
-            currentEventTime,
-            eventIndex,
-            previousEventTime,
-            group.length
-          );
+  const events = useMemo(() => {
+    // Map and filter
+    const rawEvents =
+      data?.events?.edges
+        ?.map((x) => x?.node)
+        .filter((x): x is ChatPanelEventFragment => !!x) ?? [];
 
-          // Set previous time
-          previousEventTime = currentEventTime;
+    // Group
+    const groupedEvents = groupEvents(rawEvents);
 
-          return {
-            displayEventTime,
-            isLastEventInGroup,
-            ...event,
-          };
-        })
-        .flat()
-    )
-    .flat();
+    let previousEventTime: moment.Moment | undefined;
+    return groupedEvents
+      .map((group) =>
+        group
+          .map((event, eventIndex: number) => {
+            const isLastEventInGroup = eventIndex === group.length - 1;
+            const currentEventTime = moment(event.createdAt);
+            const displayEventTime = shouldDisplayEventTime(
+              currentEventTime,
+              eventIndex,
+              previousEventTime,
+              group.length
+            );
+
+            // Set previous time
+            previousEventTime = currentEventTime;
+
+            return {
+              displayEventTime,
+              isLastEventInGroup,
+              ...event,
+            };
+          })
+          .flat()
+      )
+      .flat();
+  }, [data, shouldDisplayEventTime]);
 
   const fetchMore = () => {
     setIsFetchingMore(true);
@@ -108,7 +118,7 @@ export const useEvents = ({ chatId }: Props) => {
       variables: {
         chatId,
         last: 20,
-        before: data.events.pageInfo.startCursor,
+        before: data?.events.pageInfo.startCursor,
       },
     }).finally(() => setIsFetchingMore(false));
   };

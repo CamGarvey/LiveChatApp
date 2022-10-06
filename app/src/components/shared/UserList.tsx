@@ -37,7 +37,7 @@ const UserList = ({
   loading = false,
   hasNextPage = false,
 }: Props) => {
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [hasInput, setHasInput] = useState(false);
 
   return (

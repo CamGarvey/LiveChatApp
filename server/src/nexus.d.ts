@@ -491,10 +491,10 @@ export interface NexusGenFieldTypes {
     alerts: NexusGenRootTypes['Alert'][]; // [Alert!]!
     chat: NexusGenRootTypes['Chat'] | null; // Chat
     chats: NexusGenRootTypes['Chat'][]; // [Chat!]!
+    event: NexusGenRootTypes['Event'] | null; // Event
     events: NexusGenRootTypes['EventConnection']; // EventConnection!
     friends: NexusGenRootTypes['Friend'][]; // [Friend!]!
     me: NexusGenRootTypes['Me'] | null; // Me
-    message: NexusGenRootTypes['Event'] | null; // Event
     notifications: NexusGenRootTypes['Notification'][]; // [Notification!]!
     requests: NexusGenRootTypes['Request'][]; // [Request!]!
     user: NexusGenRootTypes['User'] | null; // User
@@ -843,10 +843,10 @@ export interface NexusGenFieldTypeNames {
     alerts: 'Alert'
     chat: 'Chat'
     chats: 'Chat'
+    event: 'Event'
     events: 'EventConnection'
     friends: 'Friend'
     me: 'Me'
-    message: 'Event'
     notifications: 'Notification'
     requests: 'Request'
     user: 'User'
@@ -1078,15 +1078,15 @@ export interface NexusGenArgTypes {
     chat: { // args
       chatId: NexusGenScalars['HashId']; // HashId!
     }
+    event: { // args
+      eventId: NexusGenScalars['HashId']; // HashId!
+    }
     events: { // args
       after?: string | null; // String
       before?: string | null; // String
       chatId: NexusGenScalars['HashId']; // HashId!
       first?: number | null; // Int
       last?: number | null; // Int
-    }
-    message: { // args
-      messageId: NexusGenScalars['HashId']; // HashId!
     }
     requests: { // args
       state?: NexusGenEnums['RequestState'] | null; // RequestState

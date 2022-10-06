@@ -11,6 +11,9 @@ import {
   IconUserMinus,
   IconUserPlus,
 } from '@tabler/icons';
+import { useMemo } from 'react';
+
+type StrangerStatus = 'REQUEST_RECEIVED' | 'REQUEST_SENT' | 'NO_REQUEST';
 
 type Props = {
   user: UserMenuFragment;
@@ -34,29 +37,34 @@ const UserMenu = ({
     sendRequest,
     acceptRequest,
     declineRequest,
-    loadingAccept,
-    loadingCancel,
-    loadingDecline,
-    loadingSend,
+    loading: loadingRequest,
   } = useRequest();
 
-  const anyLoading =
-    loadingAccept || loadingCancel || loadingDecline || loadingSend || loading;
+  const status = useMemo<StrangerStatus>(() => {
+    if (user.__typename === 'Stranger' && user.friendRequest) {
+      if (['SENT', 'SEEN'].includes(user.friendRequest.state)) {
+        return user.friendRequest.isCreator
+          ? 'REQUEST_SENT'
+          : 'REQUEST_RECEIVED';
+      }
+    }
+    return 'NO_REQUEST';
+  }, [user]);
 
   return (
     <Menu width={'max-content'}>
       <Menu.Target>
         <Tooltip hidden={!!user} label={!user && 'Failed to load user'}>
-          <ActionIcon loading={anyLoading}>
+          <ActionIcon loading={loadingRequest || loading}>
             {target?.icon ? (
               <>{target.icon}</>
             ) : (
               <>
                 {user.__typename === 'Stranger' && (
                   <>
-                    {user.status === 'REQUEST_RECEIVED' && <IconMailbox />}
-                    {user.status === 'REQUEST_SENT' && <IconMailForward />}
-                    {user.status === 'NO_REQUEST' && <IconUserPlus />}
+                    {status === 'REQUEST_RECEIVED' && <IconMailbox />}
+                    {status === 'REQUEST_SENT' && <IconMailForward />}
+                    {status === 'NO_REQUEST' && <IconUserPlus />}
                   </>
                 )}
                 {user.__typename === 'Friend' && <IconUserCircle />}
@@ -78,7 +86,7 @@ const UserMenu = ({
           )}
           {user.__typename === 'Stranger' && (
             <>
-              {user.status === 'REQUEST_RECEIVED' && (
+              {status === 'REQUEST_RECEIVED' && (
                 <>
                   <Menu.Label>Friend Request</Menu.Label>
                   <Menu.Item
@@ -99,7 +107,7 @@ const UserMenu = ({
                   </Menu.Item>
                 </>
               )}
-              {user.status === 'REQUEST_SENT' && (
+              {status === 'REQUEST_SENT' && (
                 <Menu.Item
                   disabled={user.friendRequest === null}
                   onClick={() => cancelRequest(user.friendRequest!.id)}
@@ -107,7 +115,7 @@ const UserMenu = ({
                   Cancel Friend Request
                 </Menu.Item>
               )}
-              {user.status === 'NO_REQUEST' && (
+              {status === 'NO_REQUEST' && (
                 <Menu.Item
                   icon={<IconMailForward size={iconSize} />}
                   onClick={() => sendRequest(user.id)}
@@ -134,14 +142,12 @@ UserMenu.fragments = {
     fragment UserMenu on User {
       id
       ... on Stranger {
-        status
         friendRequest {
           id
-          createdById
-          recipient {
-            id
-          }
           isCreator
+          createdById
+          recipientId
+          state
         }
       }
     }
