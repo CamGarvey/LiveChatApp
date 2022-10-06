@@ -1,9 +1,9 @@
 import { objectType } from 'nexus';
 
-export const ChatNameUpdated = objectType({
-  name: 'NameUpdated',
+export const NameUpdatedEvent = objectType({
+  name: 'NameUpdatedEvent',
   definition: (t) => {
-    t.implements('ChatUpdate');
+    t.implements('ChatUpdateEvent');
     t.nonNull.string('nameBefore', {
       resolve: async (parent, _, { prisma }) => {
         const update = await prisma.chatUpdate.findUniqueOrThrow({
@@ -27,10 +27,10 @@ export const ChatNameUpdated = objectType({
   },
 });
 
-export const ChatDescriptionUpdated = objectType({
-  name: 'DescriptionUpdated',
+export const DescriptionUpdatedEvent = objectType({
+  name: 'DescriptionUpdatedEvent',
   definition: (t) => {
-    t.implements('ChatUpdate');
+    t.implements('ChatUpdateEvent');
     t.nonNull.string('descriptionBefore', {
       resolve: async (parent, _, { prisma }) => {
         const update = await prisma.chatUpdate.findUniqueOrThrow({
@@ -54,34 +54,30 @@ export const ChatDescriptionUpdated = objectType({
   },
 });
 
-export const ChatAdminsAddedUpdated = objectType({
-  name: 'AdminsAdded',
+export const AdminsAddedEvent = objectType({
+  name: 'AdminsAddedEvent',
   definition: (t) => {
-    t.implements('ChatUpdate');
-    t.implements('UserAlteration');
+    t.implements('UserAlterationEvent');
   },
 });
 
-export const ChatAdminsRemovedUpdated = objectType({
-  name: 'AdminsRemoved',
+export const AdminsRemovedEvent = objectType({
+  name: 'AdminsRemovedEvent',
   definition: (t) => {
-    t.implements('ChatUpdate');
-    t.implements('UserAlteration');
+    t.implements('UserAlterationEvent');
   },
 });
 
-export const ChatMembersAddedUpdated = objectType({
-  name: 'MembersAdded',
+export const MembersAddedEvent = objectType({
+  name: 'MembersAddedEvent',
   definition: (t) => {
-    t.implements('ChatUpdate');
-    t.implements('UserAlteration');
+    t.implements('UserAlterationEvent');
   },
 });
 
-export const ChatMembersRemovedUpdate = objectType({
-  name: 'MembersRemoved',
+export const MembersRemovedEvent = objectType({
+  name: 'MembersRemovedEvent',
   definition: (t) => {
-    t.implements('ChatUpdate');
-    t.implements('UserAlteration');
+    t.implements('UserAlterationEvent');
   },
 });

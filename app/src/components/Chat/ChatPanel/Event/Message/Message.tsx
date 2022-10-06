@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import {
-  MessageEventFragment,
+  MessageEventComponentFragment,
   useDeleteMessageMutation,
 } from 'graphql/generated/graphql';
 import IncomingEvent from '../IncomingEvent';
@@ -17,7 +17,7 @@ gql`
 `;
 
 type Props = {
-  message: { __typename?: 'Message' } & MessageEventFragment;
+  message: { __typename?: 'MessageEvent' } & MessageEventComponentFragment;
   displayAvatar: boolean;
 };
 
@@ -69,7 +69,7 @@ export const Message = ({ message, displayAvatar }: Props) => {
 
 Message.fragments = {
   message: gql`
-    fragment MessageEvent on Message {
+    fragment MessageEventComponent on MessageEvent {
       id
       isCreator
       content

@@ -12,7 +12,7 @@
     "types": [
       {
         "kind": "OBJECT",
-        "name": "AdminsAdded",
+        "name": "AdminsAddedEvent",
         "description": null,
         "fields": [
           {
@@ -172,7 +172,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "ChatUpdate",
+            "name": "ChatUpdateEvent",
             "ofType": null
           },
           {
@@ -182,7 +182,7 @@
           },
           {
             "kind": "INTERFACE",
-            "name": "UserAlteration",
+            "name": "UserAlterationEvent",
             "ofType": null
           }
         ],
@@ -191,7 +191,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "AdminsRemoved",
+        "name": "AdminsRemovedEvent",
         "description": null,
         "fields": [
           {
@@ -351,7 +351,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "ChatUpdate",
+            "name": "ChatUpdateEvent",
             "ofType": null
           },
           {
@@ -361,7 +361,7 @@
           },
           {
             "kind": "INTERFACE",
-            "name": "UserAlteration",
+            "name": "UserAlterationEvent",
             "ofType": null
           }
         ],
@@ -981,7 +981,7 @@
       },
       {
         "kind": "INTERFACE",
-        "name": "ChatUpdate",
+        "name": "ChatUpdateEvent",
         "description": null,
         "fields": [
           {
@@ -1125,32 +1125,32 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "AdminsAdded",
+            "name": "AdminsAddedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "AdminsRemoved",
+            "name": "AdminsRemovedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "DescriptionUpdated",
+            "name": "DescriptionUpdatedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "MembersAdded",
+            "name": "MembersAddedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "MembersRemoved",
+            "name": "MembersRemovedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "NameUpdated",
+            "name": "NameUpdatedEvent",
             "ofType": null
           }
         ]
@@ -1508,7 +1508,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "DescriptionUpdated",
+        "name": "DescriptionUpdatedEvent",
         "description": null,
         "fields": [
           {
@@ -1676,7 +1676,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "ChatUpdate",
+            "name": "ChatUpdateEvent",
             "ofType": null
           },
           {
@@ -2014,12 +2014,12 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "AdminsAdded",
+            "name": "AdminsAddedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "AdminsRemoved",
+            "name": "AdminsRemovedEvent",
             "ofType": null
           },
           {
@@ -2029,27 +2029,27 @@
           },
           {
             "kind": "OBJECT",
-            "name": "DescriptionUpdated",
+            "name": "DescriptionUpdatedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "MembersAdded",
+            "name": "MembersAddedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "MembersRemoved",
+            "name": "MembersRemovedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "Message",
+            "name": "MessageEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "NameUpdated",
+            "name": "NameUpdatedEvent",
             "ofType": null
           }
         ]
@@ -3369,7 +3369,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "MembersAdded",
+        "name": "MembersAddedEvent",
         "description": null,
         "fields": [
           {
@@ -3529,7 +3529,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "ChatUpdate",
+            "name": "ChatUpdateEvent",
             "ofType": null
           },
           {
@@ -3539,7 +3539,7 @@
           },
           {
             "kind": "INTERFACE",
-            "name": "UserAlteration",
+            "name": "UserAlterationEvent",
             "ofType": null
           }
         ],
@@ -3548,7 +3548,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "MembersRemoved",
+        "name": "MembersRemovedEvent",
         "description": null,
         "fields": [
           {
@@ -3708,7 +3708,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "ChatUpdate",
+            "name": "ChatUpdateEvent",
             "ofType": null
           },
           {
@@ -3718,7 +3718,7 @@
           },
           {
             "kind": "INTERFACE",
-            "name": "UserAlteration",
+            "name": "UserAlterationEvent",
             "ofType": null
           }
         ],
@@ -3727,7 +3727,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "Message",
+        "name": "MessageEvent",
         "description": null,
         "fields": [
           {
@@ -4020,7 +4020,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "AdminsAdded",
+              "name": "AdminsAddedEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4073,7 +4073,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "MembersAdded",
+              "name": "MembersAddedEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4205,7 +4205,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Message",
+              "name": "MessageEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4370,7 +4370,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "AdminsRemoved",
+              "name": "AdminsRemovedEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4423,7 +4423,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "MembersRemoved",
+              "name": "MembersRemovedEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4497,7 +4497,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "DescriptionUpdated",
+              "name": "DescriptionUpdatedEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4542,7 +4542,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "NameUpdated",
+              "name": "NameUpdatedEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4587,7 +4587,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Message",
+              "name": "MessageEvent",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4630,7 +4630,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "NameUpdated",
+        "name": "NameUpdatedEvent",
         "description": null,
         "fields": [
           {
@@ -4798,7 +4798,7 @@
         "interfaces": [
           {
             "kind": "INTERFACE",
-            "name": "ChatUpdate",
+            "name": "ChatUpdateEvent",
             "ofType": null
           },
           {
@@ -5733,6 +5733,11 @@
             "kind": "INTERFACE",
             "name": "Notification",
             "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "RequestResponseAlert",
+            "ofType": null
           }
         ],
         "enumValues": null,
@@ -5891,10 +5896,69 @@
             "kind": "INTERFACE",
             "name": "Notification",
             "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "RequestResponseAlert",
+            "ofType": null
           }
         ],
         "enumValues": null,
         "possibleTypes": null
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "RequestResponseAlert",
+        "description": null,
+        "fields": [
+          {
+            "name": "request",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Request",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "requestId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "RequestAcceptedAlert",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "RequestDeclinedAlert",
+            "ofType": null
+          }
+        ]
       },
       {
         "kind": "ENUM",
@@ -6437,9 +6501,137 @@
       },
       {
         "kind": "INTERFACE",
-        "name": "UserAlteration",
+        "name": "UserAlterationEvent",
         "description": null,
         "fields": [
+          {
+            "name": "chat",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Chat",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chatId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdBy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdById",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isCreator",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Date",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "users",
             "description": null,
@@ -6466,27 +6658,38 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "ChatUpdateEvent",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "Event",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "AdminsAdded",
+            "name": "AdminsAddedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "AdminsRemoved",
+            "name": "AdminsRemovedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "MembersAdded",
+            "name": "MembersAddedEvent",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "MembersRemoved",
+            "name": "MembersRemovedEvent",
             "ofType": null
           }
         ]

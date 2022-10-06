@@ -23,23 +23,23 @@
       "DirectMessageChat",
       "GroupChat"
     ],
-    "ChatUpdate": [
-      "AdminsAdded",
-      "AdminsRemoved",
-      "DescriptionUpdated",
-      "MembersAdded",
-      "MembersRemoved",
-      "NameUpdated"
+    "ChatUpdateEvent": [
+      "AdminsAddedEvent",
+      "AdminsRemovedEvent",
+      "DescriptionUpdatedEvent",
+      "MembersAddedEvent",
+      "MembersRemovedEvent",
+      "NameUpdatedEvent"
     ],
     "Event": [
-      "AdminsAdded",
-      "AdminsRemoved",
+      "AdminsAddedEvent",
+      "AdminsRemovedEvent",
       "DeletedEvent",
-      "DescriptionUpdated",
-      "MembersAdded",
-      "MembersRemoved",
-      "Message",
-      "NameUpdated"
+      "DescriptionUpdatedEvent",
+      "MembersAddedEvent",
+      "MembersRemovedEvent",
+      "MessageEvent",
+      "NameUpdatedEvent"
     ],
     "KnownUser": [
       "Friend",
@@ -56,16 +56,20 @@
     "Request": [
       "FriendRequest"
     ],
+    "RequestResponseAlert": [
+      "RequestAcceptedAlert",
+      "RequestDeclinedAlert"
+    ],
     "User": [
       "Friend",
       "Me",
       "Stranger"
     ],
-    "UserAlteration": [
-      "AdminsAdded",
-      "AdminsRemoved",
-      "MembersAdded",
-      "MembersRemoved"
+    "UserAlterationEvent": [
+      "AdminsAddedEvent",
+      "AdminsRemovedEvent",
+      "MembersAddedEvent",
+      "MembersRemovedEvent"
     ]
   }
 };

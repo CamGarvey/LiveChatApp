@@ -100,13 +100,13 @@ gql`
     }
   }
 
-  fragment GroupChatUpdate on ChatUpdate {
+  fragment GroupChatUpdate on ChatUpdateEvent {
     id
     createdBy {
       id
     }
   }
-  fragment UserAlerationGroupChatUpdate on UserAlteration {
+  fragment UserAlerationGroupChatUpdate on UserAlterationEvent {
     users {
       id
       username

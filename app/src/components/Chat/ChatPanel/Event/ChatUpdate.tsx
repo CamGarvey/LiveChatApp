@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 import { Center, Text } from '@mantine/core';
-import { ChatUpdateEventFragment } from 'graphql/generated/graphql';
+import { ChatUpdateEventComponentFragment } from 'graphql/generated/graphql';
 import { useMemo } from 'react';
 
 type Props = {
-  update: ChatUpdateEventFragment;
+  update: ChatUpdateEventComponentFragment;
 };
 
 const membersDesc = (members: { username: string }[]) => {
@@ -21,23 +21,23 @@ export const ChatUpdate = ({ update }: Props) => {
   // const isSmallScreen = useMediaQuery('(max-width: 500px)');
   const message = useMemo(() => {
     switch (update.__typename) {
-      case 'NameUpdated':
+      case 'NameUpdatedEvent':
         return `${update.createdBy.username} named the group ${update.nameAfter}`;
-      case 'DescriptionUpdated':
+      case 'DescriptionUpdatedEvent':
         return `${update.createdBy.username} set the group description ${update.descriptionAfter}`;
-      case 'MembersAdded':
+      case 'MembersAddedEvent':
         return `${update.createdBy.username} added ${membersDesc(
           update.users
         )} to the group`;
-      case 'MembersRemoved':
+      case 'MembersRemovedEvent':
         return `${update.createdBy.username} removed ${membersDesc(
           update.users
         )} from the group`;
-      case 'AdminsAdded':
+      case 'AdminsAddedEvent':
         return `${update.createdBy.username} added ${membersDesc(
           update.users
         )} as group admin`;
-      case 'AdminsRemoved':
+      case 'AdminsRemovedEvent':
         return `${update.createdBy.username} removed ${membersDesc(
           update.users
         )} as group admin`;
@@ -65,32 +65,32 @@ export const ChatUpdate = ({ update }: Props) => {
 
 ChatUpdate.fragments = {
   event: gql`
-    fragment ChatUpdateEvent on ChatUpdate {
+    fragment ChatUpdateEventComponent on ChatUpdateEvent {
       createdBy {
         id
         username
       }
-      ... on NameUpdated {
+      ... on NameUpdatedEvent {
         nameAfter
       }
-      ... on DescriptionUpdated {
+      ... on DescriptionUpdatedEvent {
         descriptionAfter
       }
-      ... on MembersAdded {
+      ... on MembersAddedEvent {
         ...ChatUpdateUserAlteration
       }
-      ... on MembersRemoved {
+      ... on MembersRemovedEvent {
         ...ChatUpdateUserAlteration
       }
-      ... on AdminsAdded {
+      ... on AdminsAddedEvent {
         ...ChatUpdateUserAlteration
       }
-      ... on AdminsRemoved {
+      ... on AdminsRemovedEvent {
         ...ChatUpdateUserAlteration
       }
     }
 
-    fragment ChatUpdateUserAlteration on UserAlteration {
+    fragment ChatUpdateUserAlteration on UserAlterationEvent {
       users {
         id
         username

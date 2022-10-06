@@ -1,7 +1,7 @@
 import { objectType } from 'nexus';
 
-export const Message = objectType({
-  name: 'Message',
+export const MessageEvent = objectType({
+  name: 'MessageEvent',
   definition(t) {
     t.implements('Event');
     t.nonNull.string('content', {

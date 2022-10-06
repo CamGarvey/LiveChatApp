@@ -158,7 +158,7 @@ export const CreateDirectMessageChatMutation = mutationField(
 export const RemoveMembersFromGroupChatMutation = mutationField(
   'removeMembersFromGroupChat',
   {
-    type: 'MembersRemoved',
+    type: 'MembersRemovedEvent',
     args: {
       chatId: nonNull(hashIdArg()),
       members: nonNull(
@@ -240,7 +240,7 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
 export const AddMembersToGroupChatMutation = mutationField(
   'addMembersToGroupChat',
   {
-    type: 'MembersAdded',
+    type: 'MembersAddedEvent',
     args: {
       chatId: nonNull(hashIdArg()),
       members: nonNull(
@@ -325,7 +325,7 @@ export const AddMembersToGroupChatMutation = mutationField(
 export const RemoveAdminsFromGroupChatMutation = mutationField(
   'removeAdminsFromGroupChat',
   {
-    type: 'AdminsRemoved',
+    type: 'AdminsRemovedEvent',
     args: {
       chatId: nonNull(hashIdArg()),
       members: nonNull(
@@ -410,7 +410,7 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
 export const AddAdminsToGroupChatMutation = mutationField(
   'addAdminsToGroupChat',
   {
-    type: 'AdminsAdded',
+    type: 'AdminsAddedEvent',
     args: {
       chatId: nonNull(hashIdArg()),
       members: nonNull(
@@ -492,7 +492,7 @@ export const AddAdminsToGroupChatMutation = mutationField(
 );
 
 export const UpdateGroupChatName = mutationField('updateGroupChatName', {
-  type: 'NameUpdated',
+  type: 'NameUpdatedEvent',
   args: {
     chatId: nonNull(hashIdArg()),
     name: nonNull(stringArg()),
@@ -569,7 +569,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
 export const UpdateGroupChatDescription = mutationField(
   'updateGroupChatDescription',
   {
-    type: 'DescriptionUpdated',
+    type: 'DescriptionUpdatedEvent',
     args: {
       chatId: nonNull(hashIdArg()),
       description: nonNull(stringArg()),

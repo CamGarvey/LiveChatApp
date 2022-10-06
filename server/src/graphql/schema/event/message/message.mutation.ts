@@ -3,7 +3,7 @@ import { EventPayload, Subscription } from '../../../backing-types';
 import { hashIdArg } from '../../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
-  type: 'Message',
+  type: 'MessageEvent',
   description: 'Create a Message in a Chat',
   args: {
     chatId: nonNull(
@@ -60,7 +60,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
 });
 
 export const UpdateMessageMutation = mutationField('updateMessage', {
-  type: 'Message',
+  type: 'MessageEvent',
   args: {
     messageId: nonNull(
       hashIdArg({

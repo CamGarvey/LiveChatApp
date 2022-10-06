@@ -49,7 +49,7 @@ const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
 
 MessageBubble.fragments = {
   message: gql`
-    fragment MessageBubble on Message {
+    fragment MessageBubble on MessageEvent {
       id
       content
     }

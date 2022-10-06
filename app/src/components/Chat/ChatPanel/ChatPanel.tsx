@@ -35,10 +35,10 @@ gql`
       id
     }
     ...EventContainer
-    ...MessageEvent
+    ...MessageEventComponent
     ...DeletedEventComponent
-    ... on ChatUpdate {
-      ...ChatUpdateEvent
+    ... on ChatUpdateEvent {
+      ...ChatUpdateEventComponent
     }
   }
   ${EventContainer.fragments.event}
@@ -108,7 +108,7 @@ const ChatPanel = ({ chatId }: Props) => {
               eventData={event}
               event={
                 <>
-                  {event.__typename === 'Message' && (
+                  {event.__typename === 'MessageEvent' && (
                     <Message
                       displayAvatar={event.isLastEventInGroup}
                       message={event}
@@ -122,12 +122,12 @@ const ChatPanel = ({ chatId }: Props) => {
                   )}
                   {event.__typename &&
                     [
-                      'NameUpdated',
-                      'DescriptionUpdated',
-                      'MembersAdded',
-                      'MembersRemoved',
-                      'AdminsAdded',
-                      'AdminsRemoved',
+                      'NameUpdatedEvent',
+                      'DescriptionUpdatedEvent',
+                      'MembersAddedEvent',
+                      'MembersRemovedEvent',
+                      'AdminsAddedEvent',
+                      'AdminsRemovedEvent',
                     ].includes(event.__typename) && (
                       <ChatUpdate update={event as any} />
                     )}

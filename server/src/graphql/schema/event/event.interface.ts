@@ -8,7 +8,7 @@ export const EventInterface = interfaceType({
       return 'DeletedEvent';
     }
     if (source.type === 'MESSAGE') {
-      return 'Message';
+      return 'MessageEvent';
     }
 
     const update = await prisma.chatUpdate.findUniqueOrThrow({
@@ -18,17 +18,17 @@ export const EventInterface = interfaceType({
     });
     switch (update.type) {
       case 'ADMINS_ADDED':
-        return 'AdminsAdded';
+        return 'AdminsAddedEvent';
       case 'ADMINS_REMOVED':
-        return 'AdminsRemoved';
+        return 'AdminsRemovedEvent';
       case 'MEMBERS_ADDED':
-        return 'MembersAdded';
+        return 'MembersAddedEvent';
       case 'MEMBERS_REMOVED':
-        return 'MembersRemoved';
+        return 'MembersRemovedEvent';
       case 'NAME_UPDATED':
-        return 'NameUpdated';
+        return 'NameUpdatedEvent';
       case 'DESCRIPTION_UPDATED':
-        return 'DescriptionUpdated';
+        return 'DescriptionUpdatedEvent';
       default:
         return null;
     }

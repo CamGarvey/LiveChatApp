@@ -1,7 +1,7 @@
 import { interfaceType } from 'nexus';
 
-export const ChatUpdate = interfaceType({
-  name: 'ChatUpdate',
+export const ChatUpdateEvent = interfaceType({
+  name: 'ChatUpdateEvent',
   resolveType: async (source, { prisma }) => {
     const update = await prisma.chatUpdate.findUniqueOrThrow({
       where: {
@@ -10,17 +10,17 @@ export const ChatUpdate = interfaceType({
     });
     switch (update.type) {
       case 'ADMINS_ADDED':
-        return 'AdminsAdded';
+        return 'AdminsAddedEvent';
       case 'ADMINS_REMOVED':
-        return 'AdminsRemoved';
+        return 'AdminsRemovedEvent';
       case 'MEMBERS_ADDED':
-        return 'MembersAdded';
+        return 'MembersAddedEvent';
       case 'MEMBERS_REMOVED':
-        return 'MembersRemoved';
+        return 'MembersRemovedEvent';
       case 'NAME_UPDATED':
-        return 'NameUpdated';
+        return 'NameUpdatedEvent';
       case 'DESCRIPTION_UPDATED':
-        return 'DescriptionUpdated';
+        return 'DescriptionUpdatedEvent';
       default:
         return null;
     }
@@ -30,8 +30,8 @@ export const ChatUpdate = interfaceType({
   },
 });
 
-export const UserAlteration = interfaceType({
-  name: 'UserAlteration',
+export const UserAlterationEvent = interfaceType({
+  name: 'UserAlterationEvent',
   resolveType: async (source, { prisma }) => {
     const update = await prisma.chatUpdate.findUniqueOrThrow({
       where: {
@@ -40,18 +40,19 @@ export const UserAlteration = interfaceType({
     });
     switch (update.type) {
       case 'ADMINS_ADDED':
-        return 'AdminsAdded';
+        return 'AdminsAddedEvent';
       case 'ADMINS_REMOVED':
-        return 'AdminsRemoved';
+        return 'AdminsRemovedEvent';
       case 'MEMBERS_ADDED':
-        return 'MembersAdded';
+        return 'MembersAddedEvent';
       case 'MEMBERS_REMOVED':
-        return 'MembersRemoved';
+        return 'MembersRemovedEvent';
       default:
         return null;
     }
   },
   definition: (t) => {
+    t.implements('ChatUpdateEvent');
     t.nonNull.list.nonNull.field('users', {
       type: 'User',
       resolve: async (parent, _, { prisma }) => {
