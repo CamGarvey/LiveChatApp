@@ -76,13 +76,31 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
             events: relayStylePagination(['chatId']),
           },
         },
-        Message: {
+        MessageEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
         DeletedEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
-        ChatUpdate: {
+        ChatUpdateEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        NameUpdatedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        DescriptionUpdatedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        MembersAddedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        MembersRemovedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        AdminsAddedEvent: {
+          keyFields: (object) => `Event:${object.id}`,
+        },
+        AdminsRemovedEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
         Friend: {

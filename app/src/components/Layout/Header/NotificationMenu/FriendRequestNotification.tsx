@@ -4,14 +4,14 @@ import { IconCircleX, IconCircleCheck } from '@tabler/icons';
 import { FriendRequestNotificationFragment } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
 import { gql } from '@apollo/client';
-import { useRequest } from 'hooks';
+import { useFriendship } from 'hooks';
 
 type Props = {
   request: FriendRequestNotificationFragment;
 };
 
 const FriendRequestNotification = ({ request }: Props) => {
-  const { acceptRequest, declineRequest } = useRequest();
+  const { acceptFriendRequest, declineFriendRequest } = useFriendship();
 
   return (
     <Group>
@@ -31,7 +31,7 @@ const FriendRequestNotification = ({ request }: Props) => {
               },
             }}
             onClick={() => {
-              declineRequest(request.id);
+              declineFriendRequest(request.id);
             }}
           >
             <IconCircleX />
@@ -45,7 +45,7 @@ const FriendRequestNotification = ({ request }: Props) => {
               },
             }}
             onClick={() => {
-              acceptRequest(request.id);
+              acceptFriendRequest(request.id);
             }}
           >
             <IconCircleCheck />

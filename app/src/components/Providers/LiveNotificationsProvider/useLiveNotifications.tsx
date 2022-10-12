@@ -31,13 +31,7 @@ gql`
         status
       }
     }
-    ... on RequestDeclinedAlert {
-      request {
-        id
-        state
-      }
-    }
-    ... on RequestAcceptedAlert {
+    ... on RequestResponseAlert {
       request {
         id
         state

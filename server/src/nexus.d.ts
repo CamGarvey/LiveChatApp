@@ -607,6 +607,12 @@ export interface NexusGenFieldTypes {
     state: NexusGenEnums['RequestState']; // RequestState!
   }
   RequestResponseAlert: { // field return type
+    createdAt: NexusGenScalars['Date']; // Date!
+    createdBy: NexusGenRootTypes['User']; // User!
+    createdById: NexusGenScalars['HashId']; // HashId!
+    id: NexusGenScalars['HashId']; // HashId!
+    isCreator: boolean; // Boolean!
+    recipients: NexusGenRootTypes['User'][]; // [User!]!
     request: NexusGenRootTypes['Request']; // Request!
     requestId: NexusGenScalars['HashId']; // HashId!
   }
@@ -974,6 +980,12 @@ export interface NexusGenFieldTypeNames {
     state: 'RequestState'
   }
   RequestResponseAlert: { // field return type name
+    createdAt: 'Date'
+    createdBy: 'User'
+    createdById: 'HashId'
+    id: 'HashId'
+    isCreator: 'Boolean'
+    recipients: 'User'
     request: 'Request'
     requestId: 'HashId'
   }
@@ -1205,6 +1217,7 @@ export interface NexusGenTypeInterfaces {
   Alert: "Notification"
   ChatUpdateEvent: "Event"
   Request: "Notification"
+  RequestResponseAlert: "Alert" | "Notification"
   UserAlterationEvent: "ChatUpdateEvent" | "Event"
 }
 

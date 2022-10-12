@@ -103,11 +103,10 @@ export const UpdateGroupChatModal = ({
   // So that if the user takes a non friend out of the UserSelector
   // they can add them back in if it was a mistake
   const users = useMemo(() => {
-    let users: (UpdateGroupUserFragment & { canRemove?: boolean })[] = [];
     if (chat?.__typename !== 'GroupChat') return [];
-    if (friendData)
-      users = _.unionBy(chat.members, chat.admins, friendData.friends, 'id');
-    users = chat.members;
+    const users: (UpdateGroupUserFragment & { canRemove?: boolean })[] =
+      _.unionBy(chat.members, chat.admins, friendData?.friends ?? [], 'id');
+
     return users.map((user) => ({
       ...user,
       canRemove: canRemoveUser(user),

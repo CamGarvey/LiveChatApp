@@ -6,15 +6,15 @@ export const Notification = interfaceType({
   resolveType: (source: Alert | Request) => {
     switch (source.type) {
       case 'CHAT_CREATED':
-        return 'ChatCreated';
+        return 'ChatCreatedAlert';
       case 'CHAT_DELETED':
-        return 'ChatDeleted';
+        return 'ChatDeletedAlert';
       case 'FRIEND_DELETED':
-        return 'FriendDeleted';
+        return 'FriendDeletedAlert';
       case 'REQUEST_ACCEPTED':
-        return 'RequestAccepted';
+        return 'RequestAcceptedAlert';
       case 'REQUEST_DECLINED':
-        return 'RequestDeclined';
+        return 'RequestDeclinedAlert';
       case 'FRIEND_REQUEST':
         return 'FriendRequest';
       default:

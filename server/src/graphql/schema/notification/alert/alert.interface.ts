@@ -8,15 +8,15 @@ export const Alert = interfaceType({
   resolveType: (source: PrismaAlert) => {
     switch (source.type) {
       case 'CHAT_CREATED':
-        return 'ChatCreated';
+        return 'ChatCreatedAlert';
       case 'CHAT_DELETED':
-        return 'ChatDeleted';
+        return 'ChatDeletedAlert';
       case 'FRIEND_DELETED':
-        return 'FriendDeleted';
+        return 'FriendDeletedAlert';
       case 'REQUEST_ACCEPTED':
-        return 'RequestAccepted';
+        return 'RequestAcceptedAlert';
       case 'REQUEST_DECLINED':
-        return 'RequestDeclined';
+        return 'RequestDeclinedAlert';
       default:
         return null;
     }
@@ -43,14 +43,15 @@ export const RequestResponseAlert = interfaceType({
   resolveType: (source: PrismaAlert) => {
     switch (source.type) {
       case 'REQUEST_ACCEPTED':
-        return 'RequestAccepted';
+        return 'RequestAcceptedAlert';
       case 'REQUEST_DECLINED':
-        return 'RequestDeclined';
+        return 'RequestDeclinedAlert';
       default:
         return null;
     }
   },
   definition: (t) => {
+    t.implements('Alert');
     t.nonNull.hashId('requestId');
     t.nonNull.field('request', {
       type: 'Request',

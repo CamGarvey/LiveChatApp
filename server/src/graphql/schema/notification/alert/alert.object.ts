@@ -3,7 +3,6 @@ import { objectType } from 'nexus';
 export const RequestAcceptedAlert = objectType({
   name: 'RequestAcceptedAlert',
   definition: (t) => {
-    t.implements('Alert');
     t.implements('RequestResponseAlert');
   },
 });
@@ -11,7 +10,6 @@ export const RequestAcceptedAlert = objectType({
 export const RequestDeclinedAlert = objectType({
   name: 'RequestDeclinedAlert',
   definition: (t) => {
-    t.implements('Alert');
     t.implements('RequestResponseAlert');
   },
 });

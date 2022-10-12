@@ -649,6 +649,12 @@ export type RequestDeclinedAlert = Alert & Notification & RequestResponseAlert &
 };
 
 export type RequestResponseAlert = {
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  recipients: Array<User>;
   request: Request;
   requestId: Scalars['HashId'];
 };
@@ -1172,26 +1178,26 @@ type UseDeleteChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any };
 
 export type UseDeleteChatFragment = UseDeleteChat_DeletedChat_Fragment | UseDeleteChat_DirectMessageChat_Fragment | UseDeleteChat_GroupChat_Fragment;
 
-export type AcceptRequestMutationVariables = Exact<{
+export type AcceptFriendRequestMutationVariables = Exact<{
   requestId: Scalars['HashId'];
 }>;
 
 
-export type AcceptRequestMutation = { __typename?: 'Mutation', acceptRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
-export type DeclineRequestMutationVariables = Exact<{
+export type DeclineFriendRequestMutationVariables = Exact<{
   requestId: Scalars['HashId'];
 }>;
 
 
-export type DeclineRequestMutation = { __typename?: 'Mutation', declineRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
-export type CancelRequestMutationVariables = Exact<{
+export type CancelFriendRequestMutationVariables = Exact<{
   requestId: Scalars['HashId'];
 }>;
 
 
-export type CancelRequestMutation = { __typename?: 'Mutation', cancelRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
 export type SendFriendRequestMutationVariables = Exact<{
   strangerId: Scalars['HashId'];
@@ -1200,9 +1206,16 @@ export type SendFriendRequestMutationVariables = Exact<{
 
 export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
+export type DeleteFriendMutationVariables = Exact<{
+  friendId: Scalars['HashId'];
+}>;
+
+
+export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: { __typename?: 'Stranger', id: any } | null };
+
 export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState };
 
-export type FriendRequestStrangerFragment = { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any } | null };
+export type FriendRequestStrangerFragment = { __typename?: 'Stranger', id: any, status: StrangerStatus, friendRequest?: { __typename?: 'FriendRequest', id: any } | null };
 
 export type UpdateGroupChatNameMutationVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1517,13 +1530,7 @@ export const LiveNotificationFragmentDoc = gql`
       status
     }
   }
-  ... on RequestDeclinedAlert {
-    request {
-      id
-      state
-    }
-  }
-  ... on RequestAcceptedAlert {
+  ... on RequestResponseAlert {
     request {
       id
       state
@@ -1578,6 +1585,7 @@ export const RequestInfoFragmentDoc = gql`
 export const FriendRequestStrangerFragmentDoc = gql`
     fragment FriendRequestStranger on Stranger {
   id
+  status
   friendRequest {
     id
   }
@@ -2381,105 +2389,105 @@ export function useDeleteChatMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteChatMutationHookResult = ReturnType<typeof useDeleteChatMutation>;
 export type DeleteChatMutationResult = Apollo.MutationResult<DeleteChatMutation>;
 export type DeleteChatMutationOptions = Apollo.BaseMutationOptions<DeleteChatMutation, DeleteChatMutationVariables>;
-export const AcceptRequestDocument = gql`
-    mutation AcceptRequest($requestId: HashId!) {
+export const AcceptFriendRequestDocument = gql`
+    mutation AcceptFriendRequest($requestId: HashId!) {
   acceptRequest(requestId: $requestId) {
     ...RequestInfo
   }
 }
     ${RequestInfoFragmentDoc}`;
-export type AcceptRequestMutationFn = Apollo.MutationFunction<AcceptRequestMutation, AcceptRequestMutationVariables>;
+export type AcceptFriendRequestMutationFn = Apollo.MutationFunction<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
 
 /**
- * __useAcceptRequestMutation__
+ * __useAcceptFriendRequestMutation__
  *
- * To run a mutation, you first call `useAcceptRequestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAcceptRequestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAcceptFriendRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptFriendRequestMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [acceptRequestMutation, { data, loading, error }] = useAcceptRequestMutation({
+ * const [acceptFriendRequestMutation, { data, loading, error }] = useAcceptFriendRequestMutation({
  *   variables: {
  *      requestId: // value for 'requestId'
  *   },
  * });
  */
-export function useAcceptRequestMutation(baseOptions?: Apollo.MutationHookOptions<AcceptRequestMutation, AcceptRequestMutationVariables>) {
+export function useAcceptFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AcceptRequestMutation, AcceptRequestMutationVariables>(AcceptRequestDocument, options);
+        return Apollo.useMutation<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>(AcceptFriendRequestDocument, options);
       }
-export type AcceptRequestMutationHookResult = ReturnType<typeof useAcceptRequestMutation>;
-export type AcceptRequestMutationResult = Apollo.MutationResult<AcceptRequestMutation>;
-export type AcceptRequestMutationOptions = Apollo.BaseMutationOptions<AcceptRequestMutation, AcceptRequestMutationVariables>;
-export const DeclineRequestDocument = gql`
-    mutation DeclineRequest($requestId: HashId!) {
+export type AcceptFriendRequestMutationHookResult = ReturnType<typeof useAcceptFriendRequestMutation>;
+export type AcceptFriendRequestMutationResult = Apollo.MutationResult<AcceptFriendRequestMutation>;
+export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
+export const DeclineFriendRequestDocument = gql`
+    mutation DeclineFriendRequest($requestId: HashId!) {
   declineRequest(requestId: $requestId) {
     ...RequestInfo
   }
 }
     ${RequestInfoFragmentDoc}`;
-export type DeclineRequestMutationFn = Apollo.MutationFunction<DeclineRequestMutation, DeclineRequestMutationVariables>;
+export type DeclineFriendRequestMutationFn = Apollo.MutationFunction<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
 
 /**
- * __useDeclineRequestMutation__
+ * __useDeclineFriendRequestMutation__
  *
- * To run a mutation, you first call `useDeclineRequestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeclineRequestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeclineFriendRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeclineFriendRequestMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [declineRequestMutation, { data, loading, error }] = useDeclineRequestMutation({
+ * const [declineFriendRequestMutation, { data, loading, error }] = useDeclineFriendRequestMutation({
  *   variables: {
  *      requestId: // value for 'requestId'
  *   },
  * });
  */
-export function useDeclineRequestMutation(baseOptions?: Apollo.MutationHookOptions<DeclineRequestMutation, DeclineRequestMutationVariables>) {
+export function useDeclineFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeclineRequestMutation, DeclineRequestMutationVariables>(DeclineRequestDocument, options);
+        return Apollo.useMutation<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>(DeclineFriendRequestDocument, options);
       }
-export type DeclineRequestMutationHookResult = ReturnType<typeof useDeclineRequestMutation>;
-export type DeclineRequestMutationResult = Apollo.MutationResult<DeclineRequestMutation>;
-export type DeclineRequestMutationOptions = Apollo.BaseMutationOptions<DeclineRequestMutation, DeclineRequestMutationVariables>;
-export const CancelRequestDocument = gql`
-    mutation CancelRequest($requestId: HashId!) {
+export type DeclineFriendRequestMutationHookResult = ReturnType<typeof useDeclineFriendRequestMutation>;
+export type DeclineFriendRequestMutationResult = Apollo.MutationResult<DeclineFriendRequestMutation>;
+export type DeclineFriendRequestMutationOptions = Apollo.BaseMutationOptions<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
+export const CancelFriendRequestDocument = gql`
+    mutation CancelFriendRequest($requestId: HashId!) {
   cancelRequest(requestId: $requestId) {
     ...RequestInfo
   }
 }
     ${RequestInfoFragmentDoc}`;
-export type CancelRequestMutationFn = Apollo.MutationFunction<CancelRequestMutation, CancelRequestMutationVariables>;
+export type CancelFriendRequestMutationFn = Apollo.MutationFunction<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
 
 /**
- * __useCancelRequestMutation__
+ * __useCancelFriendRequestMutation__
  *
- * To run a mutation, you first call `useCancelRequestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCancelRequestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useCancelFriendRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelFriendRequestMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [cancelRequestMutation, { data, loading, error }] = useCancelRequestMutation({
+ * const [cancelFriendRequestMutation, { data, loading, error }] = useCancelFriendRequestMutation({
  *   variables: {
  *      requestId: // value for 'requestId'
  *   },
  * });
  */
-export function useCancelRequestMutation(baseOptions?: Apollo.MutationHookOptions<CancelRequestMutation, CancelRequestMutationVariables>) {
+export function useCancelFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CancelRequestMutation, CancelRequestMutationVariables>(CancelRequestDocument, options);
+        return Apollo.useMutation<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>(CancelFriendRequestDocument, options);
       }
-export type CancelRequestMutationHookResult = ReturnType<typeof useCancelRequestMutation>;
-export type CancelRequestMutationResult = Apollo.MutationResult<CancelRequestMutation>;
-export type CancelRequestMutationOptions = Apollo.BaseMutationOptions<CancelRequestMutation, CancelRequestMutationVariables>;
+export type CancelFriendRequestMutationHookResult = ReturnType<typeof useCancelFriendRequestMutation>;
+export type CancelFriendRequestMutationResult = Apollo.MutationResult<CancelFriendRequestMutation>;
+export type CancelFriendRequestMutationOptions = Apollo.BaseMutationOptions<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
 export const SendFriendRequestDocument = gql`
     mutation SendFriendRequest($strangerId: HashId!) {
   sendFriendRequest(strangerId: $strangerId) {
@@ -2513,6 +2521,39 @@ export function useSendFriendRequestMutation(baseOptions?: Apollo.MutationHookOp
 export type SendFriendRequestMutationHookResult = ReturnType<typeof useSendFriendRequestMutation>;
 export type SendFriendRequestMutationResult = Apollo.MutationResult<SendFriendRequestMutation>;
 export type SendFriendRequestMutationOptions = Apollo.BaseMutationOptions<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
+export const DeleteFriendDocument = gql`
+    mutation DeleteFriend($friendId: HashId!) {
+  deleteFriend(friendId: $friendId) {
+    id
+  }
+}
+    `;
+export type DeleteFriendMutationFn = Apollo.MutationFunction<DeleteFriendMutation, DeleteFriendMutationVariables>;
+
+/**
+ * __useDeleteFriendMutation__
+ *
+ * To run a mutation, you first call `useDeleteFriendMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFriendMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFriendMutation, { data, loading, error }] = useDeleteFriendMutation({
+ *   variables: {
+ *      friendId: // value for 'friendId'
+ *   },
+ * });
+ */
+export function useDeleteFriendMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFriendMutation, DeleteFriendMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteFriendMutation, DeleteFriendMutationVariables>(DeleteFriendDocument, options);
+      }
+export type DeleteFriendMutationHookResult = ReturnType<typeof useDeleteFriendMutation>;
+export type DeleteFriendMutationResult = Apollo.MutationResult<DeleteFriendMutation>;
+export type DeleteFriendMutationOptions = Apollo.BaseMutationOptions<DeleteFriendMutation, DeleteFriendMutationVariables>;
 export const UpdateGroupChatNameDocument = gql`
     mutation UpdateGroupChatName($chatId: HashId!, $name: String!) {
   updateGroupChatName(chatId: $chatId, name: $name) {

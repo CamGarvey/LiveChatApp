@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { UserMenuFragment } from 'graphql/generated/graphql';
-import { useRequest } from 'hooks';
+import { useFriendship } from 'hooks';
 import {
   IconMailbox,
   IconMailForward,
@@ -33,12 +33,13 @@ const UserMenu = ({
   loading = false,
 }: Props) => {
   const {
-    cancelRequest,
-    sendRequest,
-    acceptRequest,
-    declineRequest,
+    cancelFriendRequest,
+    sendFriendRequest,
+    acceptFriendRequest,
+    declineFriendRequest,
+    deleteFriend,
     loading: loadingRequest,
-  } = useRequest();
+  } = useFriendship();
 
   const status = useMemo<StrangerStatus>(() => {
     if (user.__typename === 'Stranger' && user.friendRequest) {
@@ -79,7 +80,7 @@ const UserMenu = ({
             <Menu.Item
               color={'red'}
               icon={<IconUserMinus size={iconSize} />}
-              // onClick={() => deleteFriend(user.id)}
+              onClick={() => deleteFriend(user.id)}
             >
               UnFriend
             </Menu.Item>
@@ -93,7 +94,7 @@ const UserMenu = ({
                     color={'green'}
                     icon={<IconPlus size={iconSize} />}
                     disabled={user.friendRequest === null}
-                    onClick={() => acceptRequest(user.friendRequest!.id)}
+                    onClick={() => acceptFriendRequest(user.friendRequest!.id)}
                   >
                     Accept
                   </Menu.Item>
@@ -101,7 +102,7 @@ const UserMenu = ({
                     color={'red'}
                     icon={<IconMinus size={iconSize} />}
                     disabled={user.friendRequest === null}
-                    onClick={() => declineRequest(user.friendRequest!.id)}
+                    onClick={() => declineFriendRequest(user.friendRequest!.id)}
                   >
                     Decline
                   </Menu.Item>
@@ -110,7 +111,7 @@ const UserMenu = ({
               {status === 'REQUEST_SENT' && (
                 <Menu.Item
                   disabled={user.friendRequest === null}
-                  onClick={() => cancelRequest(user.friendRequest!.id)}
+                  onClick={() => cancelFriendRequest(user.friendRequest!.id)}
                 >
                   Cancel Friend Request
                 </Menu.Item>
@@ -118,7 +119,7 @@ const UserMenu = ({
               {status === 'NO_REQUEST' && (
                 <Menu.Item
                   icon={<IconMailForward size={iconSize} />}
-                  onClick={() => sendRequest(user.id)}
+                  onClick={() => sendFriendRequest(user.id)}
                 >
                   Send Friend Request
                 </Menu.Item>
