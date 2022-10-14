@@ -102,44 +102,6 @@ export const Stranger = objectType({
         );
       },
     });
-    t.nonNull.field('status', {
-      type: 'StrangerStatus',
-      resolve: async (parent, _, { prisma, userId }) => {
-        const user = await prisma.user.findUniqueOrThrow({
-          where: {
-            id: userId,
-          },
-          select: {
-            requests: {
-              where: {
-                type: 'FRIEND_REQUEST',
-                state: {
-                  in: ['SEEN', 'SENT'],
-                },
-              },
-            },
-            requestsSent: {
-              where: {
-                type: 'FRIEND_REQUEST',
-                state: {
-                  in: ['SEEN', 'SENT'],
-                },
-              },
-            },
-          },
-        });
-
-        if (user.requests.find((x) => x.createdById === parent.id)) {
-          return 'REQUEST_RECEIVED';
-        }
-
-        if (user.requestsSent.find((x) => x.recipientId === parent.id)) {
-          return 'REQUEST_SENT';
-        }
-
-        return 'NO_REQUEST';
-      },
-    });
     t.field('friendRequest', {
       type: 'FriendRequest',
       resolve: async (parent, _, { prisma, userId }) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Stack, Text, UnstyledButton } from '@mantine/core';
+import { Box, Stack, Sx, Text, UnstyledButton } from '@mantine/core';
 import UserAvatar from '../UserAvatar';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
@@ -11,6 +11,11 @@ type Props = {
 };
 const UserItem = ({ user, menu, onClick }: Props) => {
   const { name, username } = user;
+
+  const textStyle: Sx = {
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  };
 
   return (
     <UnstyledButton
@@ -34,11 +39,11 @@ const UserItem = ({ user, menu, onClick }: Props) => {
     >
       <UserAvatar size="sm" user={user} />
       <Stack spacing={0}>
-        <Text>
+        <Text sx={textStyle}>
           {username}
           {user.__typename === 'Me' && ' (YOU)'}
         </Text>
-        <Text size={'xs'} color={'dimmed'}>
+        <Text size={'xs'} color={'dimmed'} sx={textStyle}>
           {name}
         </Text>
       </Stack>

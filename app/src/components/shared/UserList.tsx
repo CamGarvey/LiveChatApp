@@ -12,7 +12,7 @@ import { IconSearch } from '@tabler/icons';
 import { UserListFragment } from 'graphql/generated/graphql';
 import { useRef, useState } from 'react';
 import UserItem from './UserItem';
-import UserMenu from './UserItem/UserMenu';
+import UserMenu from './UserItem/UserMenu/UserMenu';
 
 type Props = {
   users: UserListFragment[];

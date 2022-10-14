@@ -5,9 +5,10 @@ import {
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
   useDeclineFriendRequestMutation,
-  useDeleteFriendMutation,
   useSendFriendRequestMutation,
+  UseStrangerFragment,
 } from 'graphql/generated/graphql';
+import { useMemo, useReducer } from 'react';
 
 gql`
   mutation AcceptFriendRequest($requestId: HashId!) {
@@ -30,11 +31,6 @@ gql`
       ...RequestInfo
     }
   }
-  mutation DeleteFriend($friendId: HashId!) {
-    deleteFriend(friendId: $friendId) {
-      id
-    }
-  }
   fragment RequestInfo on FriendRequest {
     id
     isCreator
@@ -44,14 +40,45 @@ gql`
   }
   fragment FriendRequestStranger on Stranger {
     id
-    status
     friendRequest {
       id
     }
   }
 `;
 
-export const useFriendship = () => {
+const todosReducer = (state, action) => {
+  switch (action.type) {
+    case 'add':
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false,
+        },
+      ];
+    // ... other actions ...
+    default:
+      return state;
+  }
+};
+
+type StrangerStatus =
+  | 'NO_FRIEND_REQUEST'
+  | 'SENT_FRIEND_REQUEST'
+  | 'RECEIVED_FRIEND_REQUEST';
+
+export const useStranger = (stranger: UseStrangerFragment) => {
+  const status = useMemo<StrangerStatus>(() => {
+    if (stranger.friendRequest) {
+      if (['SENT', 'SEEN'].includes(stranger.friendRequest.state)) {
+        return stranger.friendRequest.isCreator
+          ? 'SENT_FRIEND_REQUEST'
+          : 'RECEIVED_FRIEND_REQUEST';
+      }
+    }
+    return 'NO_FRIEND_REQUEST';
+  }, [stranger]);
+
   const [
     acceptRequestMutation,
     { data: acceptRequestData, loading: loadingAccept },
@@ -66,46 +93,46 @@ export const useFriendship = () => {
   ] = useCancelFriendRequestMutation();
   const [sendRequestMutation, { data: sendRequestData, loading: loadingSend }] =
     useSendFriendRequestMutation();
-  const [
-    deleteFriendMutation,
-    { data: deleteFriendData, loading: loadingDeleteFriend },
-  ] = useDeleteFriendMutation();
 
-  const acceptFriendRequest = (requestId: string) =>
+  const acceptFriendRequest = () => {
+    if (!stranger.friendRequest?.id) throw new Error('No friend request');
     acceptRequestMutation({
       variables: {
-        requestId,
+        requestId: stranger.friendRequest.id,
       },
     });
-
-  const declineFriendRequest = (requestId: string) =>
+  };
+  const declineFriendRequest = () => {
+    if (!stranger.friendRequest?.id) throw new Error('No friend request');
     declineRequestMutation({
       variables: {
-        requestId,
+        requestId: stranger.friendRequest.id,
       },
     });
-
-  const cancelFriendRequest = (requestId: string) =>
+  };
+  const cancelFriendRequest = () => {
+    if (!stranger.friendRequest?.id) throw new Error('No friend request');
     cancelRequestMutation({
       variables: {
-        requestId,
+        requestId: stranger.friendRequest.id,
       },
     });
+  };
 
-  const sendFriendRequest = (strangerId: string) =>
+  const sendFriendRequest = () =>
     sendRequestMutation({
       variables: {
-        strangerId,
+        strangerId: stranger.id,
       },
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestStrangerFragment>(
           {
-            id: `User:${strangerId}`,
+            id: `User:${stranger.id}`,
             fragment: FriendRequestStrangerFragmentDoc,
           },
           (data) => {
             if (!data) {
-              throw new Error('No data poopy');
+              throw new Error('sendFriendRequest No data');
             }
             return {
               ...data,
@@ -117,14 +144,8 @@ export const useFriendship = () => {
       },
     });
 
-  const deleteFriend = (friendId: string) =>
-    deleteFriendMutation({
-      variables: {
-        friendId,
-      },
-    });
-
   return {
+    status,
     acceptFriendRequest,
     acceptRequestData,
     declineFriendRequest,
@@ -133,13 +154,21 @@ export const useFriendship = () => {
     cancelRequestData,
     sendFriendRequest,
     sendRequestData,
-    deleteFriend,
-    deleteFriendData,
-    loading:
-      loadingAccept ||
-      loadingCancel ||
-      loadingDecline ||
-      loadingSend ||
-      loadingDeleteFriend,
+    loading: loadingAccept || loadingCancel || loadingDecline || loadingSend,
   };
+};
+
+useStranger.fragments = {
+  user: gql`
+    fragment UseStranger on Stranger {
+      id
+      friendRequest {
+        id
+        isCreator
+        createdById
+        recipientId
+        state
+      }
+    }
+  `,
 };

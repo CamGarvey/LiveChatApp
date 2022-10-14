@@ -12,12 +12,12 @@ import {
 } from '@mantine/core';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import UserItem from 'components/shared/UserItem';
-import UserMenu from 'components/shared/UserItem/UserMenu';
 import { useGetChatForChatInfoAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
 import { IconUserPlus, IconDotsVertical, IconKarate } from '@tabler/icons';
 import { useParams } from 'react-router-dom';
 import { useUpdateGroupChat } from 'hooks';
+import UserMenu from 'components/shared/UserItem/UserMenu';
 
 gql`
   query GetChatForChatInfoAside($chatId: HashId!) {

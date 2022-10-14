@@ -28,7 +28,9 @@ gql`
       name
       username
       ... on Stranger {
-        status
+        friendRequest {
+          id
+        }
       }
     }
     ... on ChatAccessAlert {
@@ -59,7 +61,9 @@ gql`
       recipient {
         id
         ... on Stranger {
-          status
+          friendRequest {
+            id
+          }
         }
       }
     }

@@ -4,14 +4,14 @@ import { IconCircleX, IconCircleCheck } from '@tabler/icons';
 import { FriendRequestComponentFragment } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
 import { gql } from '@apollo/client';
-import { useFriendship } from 'hooks';
+import { useStranger } from 'hooks';
 
 type Props = {
   request: FriendRequestComponentFragment;
 };
 
 const FriendRequest = ({ request }: Props) => {
-  const { acceptFriendRequest, declineFriendRequest } = useFriendship();
+  const { acceptFriendRequest, declineFriendRequest } = useStranger();
 
   return (
     <Group>
