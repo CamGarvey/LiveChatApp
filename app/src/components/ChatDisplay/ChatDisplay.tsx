@@ -13,25 +13,28 @@ import { useGetChatsForChatDisplayQuery } from 'graphql/generated/graphql';
 gql`
   query GetChatsForChatDisplay {
     chats {
+      ...ChatForChatDisplay
+    }
+  }
+  fragment ChatForChatDisplay on Chat {
+    id
+    ...ChatItem
+    createdBy {
       id
-      ...ChatItem
-      createdBy {
+      username
+    }
+    ... on GroupChat {
+      members {
         id
         username
+        name
       }
-      ... on GroupChat {
-        members {
-          id
-          username
-          name
-        }
-      }
-      ... on DirectMessageChat {
-        friend {
-          id
-          username
-          name
-        }
+    }
+    ... on DirectMessageChat {
+      friend {
+        id
+        username
+        name
       }
     }
   }

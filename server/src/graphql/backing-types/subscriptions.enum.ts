@@ -15,4 +15,8 @@ export enum Subscription {
   ChatCreated = 'notification.alert.chat.created',
   ChatDeleted = 'notification.alert.chat.deleted',
   ChatUpdated = 'notification.alert.chat.updated',
+  ChatMemberAccessRevoked = 'notification.alert.chat.access.member.revoked',
+  ChatMemberAccessGranted = 'notification.alert.chat.access.member.granted',
+  ChatAdminAccessRevoked = 'notification.alert.chat.access.admin.revoked',
+  ChatAdminAccessGranted = 'notification.alert.chat.access.admin.granted',
 }

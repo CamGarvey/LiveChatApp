@@ -1,8 +1,12 @@
 import { ActionIcon, Center, Indicator, Menu } from '@mantine/core';
 import { IconBell } from '@tabler/icons';
 import { useLiveNotifications } from 'context/LiveNotificationsContext';
-import { FriendRequestNotificationFragment } from 'graphql/generated/graphql';
-import FriendRequestNotification from './FriendRequestNotification';
+import {
+  ChatAccessAlertComponentFragment,
+  FriendRequestComponentFragment,
+} from 'graphql/generated/graphql';
+import ChatAccessAlert from './ChatAccessAlert';
+import FriendRequest from './FriendRequest';
 
 type Props = {
   size?: number;
@@ -14,8 +18,21 @@ const NotificationMenu = ({ size = 16 }: Props) => {
   const friendRequests =
     (notifications?.filter(
       (x) => x.__typename === 'FriendRequest'
-    ) as FriendRequestNotificationFragment[]) ?? [];
+    ) as FriendRequestComponentFragment[]) ?? [];
 
+  const chatAccessAlerts =
+    (notifications?.filter(
+      (x) =>
+        x.__typename &&
+        [
+          'ChatAdminAccessRevokedAlert',
+          'ChatAdminAccessGrantedAlert',
+          'ChatMemberAccessRevokedAlert',
+          'ChatMemberAccessGrantedAlert',
+        ].includes(x.__typename)
+    ) as ChatAccessAlertComponentFragment[]) ?? [];
+
+  const totalNotifications = friendRequests.length + chatAccessAlerts.length;
   return (
     <Menu width={'max-content'} shadow="md">
       <Menu.Target>
@@ -30,16 +47,32 @@ const NotificationMenu = ({ size = 16 }: Props) => {
         </Indicator>
       </Menu.Target>
       <Menu.Dropdown>
-        {friendRequests.length !== 0 ? (
+        {totalNotifications !== 0 ? (
           <>
-            <Menu.Label>
-              <Center>Friend Requests</Center>
-            </Menu.Label>
-            {friendRequests.map((request) => (
-              <Menu.Item key={request.id}>
-                <FriendRequestNotification key={request.id} request={request} />
-              </Menu.Item>
-            ))}
+            {friendRequests.length !== 0 && (
+              <>
+                <Menu.Label>
+                  <Center>Friend Requests</Center>
+                </Menu.Label>
+                {friendRequests.map((request) => (
+                  <Menu.Item key={request.id}>
+                    <FriendRequest key={request.id} request={request} />
+                  </Menu.Item>
+                ))}
+              </>
+            )}
+            {chatAccessAlerts.length !== 0 && (
+              <>
+                <Menu.Label>
+                  <Center>Chat Alerts</Center>
+                </Menu.Label>
+                {chatAccessAlerts.map((alert) => (
+                  <Menu.Item key={alert.id}>
+                    <ChatAccessAlert key={alert.id} alert={alert} />
+                  </Menu.Item>
+                ))}
+              </>
+            )}
           </>
         ) : (
           <Menu.Label>

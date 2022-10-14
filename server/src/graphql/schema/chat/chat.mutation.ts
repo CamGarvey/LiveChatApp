@@ -232,6 +232,36 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
         content: event,
       });
 
+      const alert = await prisma.alert.create({
+        data: {
+          type: 'CHAT_MEMBER_ACCESS_REVOKED',
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          recipients: members
+            ? {
+                connect: members.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+      });
+
+      // Publish new chat alert
+      await pubsub.publish<NotificationPayload>(
+        Subscription.ChatMemberAccessRevoked,
+        {
+          recipients,
+          content: alert,
+        }
+      );
+
       return event;
     },
   }
@@ -316,6 +346,36 @@ export const AddMembersToGroupChatMutation = mutationField(
         recipients,
         content: event,
       });
+
+      const alert = await prisma.alert.create({
+        data: {
+          type: 'CHAT_MEMBER_ACCESS_GRANTED',
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          recipients: members
+            ? {
+                connect: members.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+      });
+
+      // Publish new chat alert
+      await pubsub.publish<NotificationPayload>(
+        Subscription.ChatMemberAccessGranted,
+        {
+          recipients,
+          content: alert,
+        }
+      );
 
       return event;
     },
@@ -402,6 +462,36 @@ export const RemoveAdminsFromGroupChatMutation = mutationField(
         content: event,
       });
 
+      const alert = await prisma.alert.create({
+        data: {
+          type: 'CHAT_ADMIN_ACCESS_REVOKED',
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          recipients: members
+            ? {
+                connect: members.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+      });
+
+      // Publish new chat alert
+      await pubsub.publish<NotificationPayload>(
+        Subscription.ChatAdminAccessRevoked,
+        {
+          recipients,
+          content: alert,
+        }
+      );
+
       return event;
     },
   }
@@ -485,6 +575,36 @@ export const AddAdminsToGroupChatMutation = mutationField(
         recipients,
         content: event,
       });
+
+      const alert = await prisma.alert.create({
+        data: {
+          type: 'CHAT_ADMIN_ACCESS_GRANTED',
+          chat: {
+            connect: {
+              id: chatId,
+            },
+          },
+          createdBy: {
+            connect: {
+              id: userId,
+            },
+          },
+          recipients: members
+            ? {
+                connect: members.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+      });
+
+      // Publish new chat alert
+      await pubsub.publish<NotificationPayload>(
+        Subscription.ChatAdminAccessGranted,
+        {
+          recipients,
+          content: alert,
+        }
+      );
 
       return event;
     },

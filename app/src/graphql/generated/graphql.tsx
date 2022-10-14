@@ -71,6 +71,41 @@ export type Chat = {
   updatedAt?: Maybe<Scalars['Date']>;
 };
 
+export type ChatAccessAlert = {
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  recipients: Array<User>;
+};
+
+export type ChatAdminAccessGrantedAlert = Alert & ChatAccessAlert & Notification & {
+  __typename?: 'ChatAdminAccessGrantedAlert';
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  recipients: Array<User>;
+};
+
+export type ChatAdminAccessRevokedAlert = Alert & ChatAccessAlert & Notification & {
+  __typename?: 'ChatAdminAccessRevokedAlert';
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  recipients: Array<User>;
+};
+
 export type ChatCreatedAlert = Alert & Notification & {
   __typename?: 'ChatCreatedAlert';
   chat: Chat;
@@ -85,6 +120,30 @@ export type ChatCreatedAlert = Alert & Notification & {
 export type ChatDeletedAlert = Alert & Notification & {
   __typename?: 'ChatDeletedAlert';
   chat: Chat;
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  recipients: Array<User>;
+};
+
+export type ChatMemberAccessGrantedAlert = Alert & ChatAccessAlert & Notification & {
+  __typename?: 'ChatMemberAccessGrantedAlert';
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  recipients: Array<User>;
+};
+
+export type ChatMemberAccessRevokedAlert = Alert & ChatAccessAlert & Notification & {
+  __typename?: 'ChatMemberAccessRevokedAlert';
+  chat: Chat;
+  chatId: Scalars['HashId'];
   createdAt: Scalars['Date'];
   createdBy: User;
   createdById: Scalars['HashId'];
@@ -980,6 +1039,14 @@ export type GetChatsForChatDisplayQueryVariables = Exact<{ [key: string]: never;
 
 export type GetChatsForChatDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }>, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
 
+type ChatForChatDisplay_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatForChatDisplay_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatForChatDisplay_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }>, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type ChatForChatDisplayFragment = ChatForChatDisplay_DeletedChat_Fragment | ChatForChatDisplay_DirectMessageChat_Fragment | ChatForChatDisplay_GroupChat_Fragment;
+
 type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
 
 type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } };
@@ -1008,7 +1075,17 @@ export type GetChatForAnimatedTitleQueryVariables = Exact<{
 
 export type GetChatForAnimatedTitleQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null, isAdmin: boolean, id: any } | null };
 
-export type FriendRequestNotificationFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+type ChatAccessAlertComponent_ChatAdminAccessGrantedAlert_Fragment = { __typename?: 'ChatAdminAccessGrantedAlert', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, chat: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat' } | { __typename?: 'GroupChat', name: string } };
+
+type ChatAccessAlertComponent_ChatAdminAccessRevokedAlert_Fragment = { __typename?: 'ChatAdminAccessRevokedAlert', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, chat: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat' } | { __typename?: 'GroupChat', name: string } };
+
+type ChatAccessAlertComponent_ChatMemberAccessGrantedAlert_Fragment = { __typename?: 'ChatMemberAccessGrantedAlert', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, chat: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat' } | { __typename?: 'GroupChat', name: string } };
+
+type ChatAccessAlertComponent_ChatMemberAccessRevokedAlert_Fragment = { __typename?: 'ChatMemberAccessRevokedAlert', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, chat: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat' } | { __typename?: 'GroupChat', name: string } };
+
+export type ChatAccessAlertComponentFragment = ChatAccessAlertComponent_ChatAdminAccessGrantedAlert_Fragment | ChatAccessAlertComponent_ChatAdminAccessRevokedAlert_Fragment | ChatAccessAlertComponent_ChatMemberAccessGrantedAlert_Fragment | ChatAccessAlertComponent_ChatMemberAccessRevokedAlert_Fragment;
+
+export type FriendRequestComponentFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
 
 export type GetFriendsForCreateGroupChatQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1060,16 +1137,24 @@ export type UserSearchModelUserFragment = UserSearchModelUser_Friend_Fragment | 
 export type GetNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNotificationsQuery = { __typename?: 'Query', notifications: Array<{ __typename?: 'ChatCreatedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', createdById: any, isCreator: boolean, state: RequestState, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } } | { __typename?: 'RequestAcceptedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'RequestDeclinedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } }> };
+export type GetNotificationsQuery = { __typename?: 'Query', notifications: Array<{ __typename?: 'ChatAdminAccessGrantedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatAdminAccessRevokedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatCreatedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatMemberAccessGrantedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatMemberAccessRevokedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', createdById: any, isCreator: boolean, state: RequestState, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } } | { __typename?: 'RequestAcceptedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'RequestDeclinedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } }> };
 
 export type NotificationsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatCreatedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', createdById: any, isCreator: boolean, state: RequestState, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } } | { __typename?: 'RequestAcceptedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'RequestDeclinedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | null };
+export type NotificationsSubscription = { __typename?: 'Subscription', notifications?: { __typename?: 'ChatAdminAccessGrantedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatAdminAccessRevokedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatCreatedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatMemberAccessGrantedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'ChatMemberAccessRevokedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'FriendRequest', createdById: any, isCreator: boolean, state: RequestState, id: any, createdAt: any, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string, friendRequest?: { __typename?: 'FriendRequest', id: any } | null }, recipient: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', status: StrangerStatus, id: any } } | { __typename?: 'RequestAcceptedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | { __typename?: 'RequestDeclinedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } } | null };
+
+type LiveNotification_ChatAdminAccessGrantedAlert_Fragment = { __typename?: 'ChatAdminAccessGrantedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
+
+type LiveNotification_ChatAdminAccessRevokedAlert_Fragment = { __typename?: 'ChatAdminAccessRevokedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
 
 type LiveNotification_ChatCreatedAlert_Fragment = { __typename?: 'ChatCreatedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
 
 type LiveNotification_ChatDeletedAlert_Fragment = { __typename?: 'ChatDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
+
+type LiveNotification_ChatMemberAccessGrantedAlert_Fragment = { __typename?: 'ChatMemberAccessGrantedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
+
+type LiveNotification_ChatMemberAccessRevokedAlert_Fragment = { __typename?: 'ChatMemberAccessRevokedAlert', id: any, createdAt: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
 
 type LiveNotification_FriendDeletedAlert_Fragment = { __typename?: 'FriendDeletedAlert', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
 
@@ -1079,7 +1164,7 @@ type LiveNotification_RequestAcceptedAlert_Fragment = { __typename?: 'RequestAcc
 
 type LiveNotification_RequestDeclinedAlert_Fragment = { __typename?: 'RequestDeclinedAlert', id: any, createdAt: any, isCreator: boolean, request: { __typename?: 'FriendRequest', id: any, state: RequestState }, createdBy: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', status: StrangerStatus, id: any, name?: string | null, username: string } };
 
-export type LiveNotificationFragment = LiveNotification_ChatCreatedAlert_Fragment | LiveNotification_ChatDeletedAlert_Fragment | LiveNotification_FriendDeletedAlert_Fragment | LiveNotification_FriendRequest_Fragment | LiveNotification_RequestAcceptedAlert_Fragment | LiveNotification_RequestDeclinedAlert_Fragment;
+export type LiveNotificationFragment = LiveNotification_ChatAdminAccessGrantedAlert_Fragment | LiveNotification_ChatAdminAccessRevokedAlert_Fragment | LiveNotification_ChatCreatedAlert_Fragment | LiveNotification_ChatDeletedAlert_Fragment | LiveNotification_ChatMemberAccessGrantedAlert_Fragment | LiveNotification_ChatMemberAccessRevokedAlert_Fragment | LiveNotification_FriendDeletedAlert_Fragment | LiveNotification_FriendRequest_Fragment | LiveNotification_RequestAcceptedAlert_Fragment | LiveNotification_RequestDeclinedAlert_Fragment;
 
 export type GetMeForUserProviderQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1465,8 +1550,49 @@ export const ChatItemFragmentDoc = gql`
 }
     ${ChatAvatarFragmentDoc}
 ${ChatItemUserFragmentDoc}`;
-export const FriendRequestNotificationFragmentDoc = gql`
-    fragment FriendRequestNotification on FriendRequest {
+export const ChatForChatDisplayFragmentDoc = gql`
+    fragment ChatForChatDisplay on Chat {
+  id
+  ...ChatItem
+  createdBy {
+    id
+    username
+  }
+  ... on GroupChat {
+    members {
+      id
+      username
+      name
+    }
+  }
+  ... on DirectMessageChat {
+    friend {
+      id
+      username
+      name
+    }
+  }
+}
+    ${ChatItemFragmentDoc}`;
+export const ChatAccessAlertComponentFragmentDoc = gql`
+    fragment ChatAccessAlertComponent on ChatAccessAlert {
+  id
+  createdAt
+  createdById
+  isCreator
+  createdBy {
+    id
+    ...UserAvatar
+  }
+  chat {
+    ... on GroupChat {
+      name
+    }
+  }
+}
+    ${UserAvatarFragmentDoc}`;
+export const FriendRequestComponentFragmentDoc = gql`
+    fragment FriendRequestComponent on FriendRequest {
   id
   createdAt
   createdById
@@ -1528,6 +1654,14 @@ export const LiveNotificationFragmentDoc = gql`
     username
     ... on Stranger {
       status
+    }
+  }
+  ... on ChatAccessAlert {
+    chat {
+      id
+      ... on GroupChat {
+        name
+      }
     }
   }
   ... on RequestResponseAlert {
@@ -1812,29 +1946,10 @@ export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMess
 export const GetChatsForChatDisplayDocument = gql`
     query GetChatsForChatDisplay {
   chats {
-    id
-    ...ChatItem
-    createdBy {
-      id
-      username
-    }
-    ... on GroupChat {
-      members {
-        id
-        username
-        name
-      }
-    }
-    ... on DirectMessageChat {
-      friend {
-        id
-        username
-        name
-      }
-    }
+    ...ChatForChatDisplay
   }
 }
-    ${ChatItemFragmentDoc}`;
+    ${ChatForChatDisplayFragmentDoc}`;
 
 /**
  * __useGetChatsForChatDisplayQuery__

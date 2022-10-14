@@ -59,7 +59,7 @@ export const ChatCreatedAlert = objectType({
   },
 });
 
-export const ChatDeleted = objectType({
+export const ChatDeletedAlert = objectType({
   name: 'ChatDeletedAlert',
   definition: (t) => {
     t.implements('Alert');
@@ -80,5 +80,33 @@ export const ChatDeleted = objectType({
         return chat;
       },
     });
+  },
+});
+
+export const ChatMemberAccessRevokedAlert = objectType({
+  name: 'ChatMemberAccessRevokedAlert',
+  definition: (t) => {
+    t.implements('ChatAccessAlert');
+  },
+});
+
+export const ChatMemberAccessGrantedAlert = objectType({
+  name: 'ChatMemberAccessGrantedAlert',
+  definition: (t) => {
+    t.implements('ChatAccessAlert');
+  },
+});
+
+export const ChatAdminAccessRevokedAlert = objectType({
+  name: 'ChatAdminAccessRevokedAlert',
+  definition: (t) => {
+    t.implements('ChatAccessAlert');
+  },
+});
+
+export const ChatAdminAccessGrantedAlert = objectType({
+  name: 'ChatAdminAccessGrantedAlert',
+  definition: (t) => {
+    t.implements('ChatAccessAlert');
   },
 });

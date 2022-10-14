@@ -17,6 +17,14 @@ export const Notification = interfaceType({
         return 'RequestDeclinedAlert';
       case 'FRIEND_REQUEST':
         return 'FriendRequest';
+      case 'CHAT_MEMBER_ACCESS_REVOKED':
+        return 'ChatMemberAccessRevokedAlert';
+      case 'CHAT_MEMBER_ACCESS_GRANTED':
+        return 'ChatMemberAccessGrantedAlert';
+      case 'CHAT_ADMIN_ACCESS_REVOKED':
+        return 'ChatAdminAccessRevokedAlert';
+      case 'CHAT_ADMIN_ACCESS_GRANTED':
+        return 'ChatAdminAccessGrantedAlert';
       default:
         return null;
     }

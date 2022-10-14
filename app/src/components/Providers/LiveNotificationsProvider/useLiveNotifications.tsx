@@ -31,6 +31,14 @@ gql`
         status
       }
     }
+    ... on ChatAccessAlert {
+      chat {
+        id
+        ... on GroupChat {
+          name
+        }
+      }
+    }
     ... on RequestResponseAlert {
       request {
         id
@@ -58,23 +66,6 @@ gql`
   }
 `;
 
-/**
- * doing this because a friend request can go back and forth between two users
- * and changing between who created the request since the cache doesn't care about who created it
- *  since there should be only a single friend request between two users
- * @param notifications
- * @returns
- */
-const filterNotifications = (
-  notifications: LiveNotificationFragment[]
-): LiveNotificationFragment[] =>
-  notifications.filter(
-    (x) =>
-      !x.isCreator &&
-      x.__typename === 'FriendRequest' &&
-      ['SEEN', 'SENT'].includes(x.state)
-  ) ?? [];
-
 type Props = {
   onNotification: (notification: LiveNotificationFragment) => void;
 };
@@ -89,7 +80,6 @@ export const useLiveNotifications = ({ onNotification }: Props) => {
   useEffect(() => {
     const unsubscribe = subscribeToMore<NotificationsSubscription>({
       document: NotificationsDocument,
-
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const notification = subscriptionData.data.notifications;
@@ -111,10 +101,8 @@ export const useLiveNotifications = ({ onNotification }: Props) => {
     return () => unsubscribe();
   }, [subscribeToMore, onNotification]);
 
-  const filteredNotifications = filterNotifications(data?.notifications ?? []);
-
   return {
-    notifications: filteredNotifications,
+    notifications: data?.notifications ?? [],
     loading,
   };
 };

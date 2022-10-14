@@ -65,3 +65,35 @@ export const RequestResponseAlert = interfaceType({
     });
   },
 });
+
+export const ChatAccessAlert = interfaceType({
+  name: 'ChatAccessAlert',
+  resolveType: (source: PrismaAlert) => {
+    switch (source.type) {
+      case 'CHAT_MEMBER_ACCESS_REVOKED':
+        return 'ChatMemberAccessRevokedAlert';
+      case 'CHAT_MEMBER_ACCESS_GRANTED':
+        return 'ChatMemberAccessGrantedAlert';
+      case 'CHAT_ADMIN_ACCESS_REVOKED':
+        return 'ChatAdminAccessRevokedAlert';
+      case 'CHAT_ADMIN_ACCESS_GRANTED':
+        return 'ChatAdminAccessGrantedAlert';
+      default:
+        return null;
+    }
+  },
+  definition: (t) => {
+    t.implements('Alert');
+    t.nonNull.hashId('chatId');
+    t.nonNull.field('chat', {
+      type: 'Chat',
+      resolve: async (parent, _, { prisma }) => {
+        return await prisma.chat.findUniqueOrThrow({
+          where: {
+            id: parent.chatId ?? undefined,
+          },
+        });
+      },
+    });
+  },
+});

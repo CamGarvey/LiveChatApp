@@ -1,16 +1,16 @@
 import { Group, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
 import moment from 'moment';
 import { IconCircleX, IconCircleCheck } from '@tabler/icons';
-import { FriendRequestNotificationFragment } from 'graphql/generated/graphql';
+import { FriendRequestComponentFragment } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
 import { gql } from '@apollo/client';
 import { useFriendship } from 'hooks';
 
 type Props = {
-  request: FriendRequestNotificationFragment;
+  request: FriendRequestComponentFragment;
 };
 
-const FriendRequestNotification = ({ request }: Props) => {
+const FriendRequest = ({ request }: Props) => {
   const { acceptFriendRequest, declineFriendRequest } = useFriendship();
 
   return (
@@ -56,9 +56,9 @@ const FriendRequestNotification = ({ request }: Props) => {
   );
 };
 
-FriendRequestNotification.fragments = {
+FriendRequest.fragments = {
   request: gql`
-    fragment FriendRequestNotification on FriendRequest {
+    fragment FriendRequestComponent on FriendRequest {
       id
       createdAt
       createdById
@@ -72,4 +72,4 @@ FriendRequestNotification.fragments = {
   `,
 };
 
-export default FriendRequestNotification;
+export default FriendRequest;
