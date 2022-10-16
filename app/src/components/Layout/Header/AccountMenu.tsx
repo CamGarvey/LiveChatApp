@@ -34,6 +34,9 @@ const AccountMenu = ({ onLogoutClick }: Props) => {
             ':active': {
               background: 'transparent',
             },
+            ':hover': {
+              background: 'transparent',
+            },
           }}
         >
           {user && (

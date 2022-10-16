@@ -99,8 +99,8 @@ const ChatDisplay = () => {
         <Tabs.Tab value="groups" icon={<IconUsers size={14} />}>
           Groups
         </Tabs.Tab>
-        <Tabs.Tab value="friends" icon={<IconUser size={14} />}>
-          Friends
+        <Tabs.Tab value="direct" icon={<IconUser size={14} />}>
+          Direct Messages
         </Tabs.Tab>
       </Tabs.List>
       <Input
@@ -133,7 +133,7 @@ const ChatDisplay = () => {
       <Tabs.Panel value="groups" pt="xs">
         <ChatList chats={filteredGroupChats} loading={loading} />
       </Tabs.Panel>
-      <Tabs.Panel value="friends" pt="xs">
+      <Tabs.Panel value="direct" pt="xs">
         <ChatList chats={filteredDmChats} loading={loading} />
       </Tabs.Panel>
     </Tabs>
