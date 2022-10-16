@@ -17,12 +17,12 @@ type Props = {
 const UserMenu = ({ user, iconSize = 14, ...others }: Props) => {
   return useMemo(() => {
     switch (user.__typename) {
-      case 'Me':
-        return <></>;
       case 'Friend':
         return <FriendMenu friend={user} iconSize={iconSize} {...others} />;
       case 'Stranger':
         return <StrangerMenu stranger={user} iconSize={iconSize} {...others} />;
+      default:
+        return <></>;
     }
   }, [user, iconSize, others]);
 };

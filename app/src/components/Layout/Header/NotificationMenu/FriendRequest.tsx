@@ -5,13 +5,14 @@ import { FriendRequestComponentFragment } from 'graphql/generated/graphql';
 import UserAvatar from 'components/shared/UserAvatar';
 import { gql } from '@apollo/client';
 import { useStranger } from 'hooks';
+import useRequest from 'hooks/useRequest';
 
 type Props = {
   request: FriendRequestComponentFragment;
 };
 
 const FriendRequest = ({ request }: Props) => {
-  const { acceptFriendRequest, declineFriendRequest } = useStranger();
+  const { acceptRequest, declineRequest } = useRequest();
 
   return (
     <Group>
@@ -31,7 +32,7 @@ const FriendRequest = ({ request }: Props) => {
               },
             }}
             onClick={() => {
-              declineFriendRequest(request.id);
+              declineRequest(request.id);
             }}
           >
             <IconCircleX />
@@ -45,7 +46,7 @@ const FriendRequest = ({ request }: Props) => {
               },
             }}
             onClick={() => {
-              acceptFriendRequest(request.id);
+              acceptRequest(request.id);
             }}
           >
             <IconCircleCheck />
@@ -68,6 +69,7 @@ FriendRequest.fragments = {
         ...UserAvatar
       }
     }
+    ${useStranger.fragments.user}
     ${UserAvatar.fragments.user}
   `,
 };

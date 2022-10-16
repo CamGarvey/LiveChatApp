@@ -838,7 +838,25 @@ export type GetChatForChatInfoAsideQueryVariables = Exact<{
 }>;
 
 
-export type GetChatForChatInfoAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } } | { __typename?: 'GroupChat', name: string, isAdmin: boolean, createdById: any, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null }> } | null };
+export type GetChatForChatInfoAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } } | { __typename?: 'GroupChat', id: any, name: string, description?: string | null, isAdmin: boolean, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null }> } | null };
+
+type ChatMemberItemChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type ChatMemberItemChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
+
+type ChatMemberItemChat_GroupChat_Fragment = { __typename?: 'GroupChat', isAdmin: boolean, id: any };
+
+export type ChatMemberItemChatFragment = ChatMemberItemChat_DeletedChat_Fragment | ChatMemberItemChat_DirectMessageChat_Fragment | ChatMemberItemChat_GroupChat_Fragment;
+
+type ChatMemberItemUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
+
+type ChatMemberItemUser_Me_Fragment = { __typename?: 'Me', id: any, username: string, name?: string | null };
+
+type ChatMemberItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+
+export type ChatMemberItemUserFragment = ChatMemberItemUser_Friend_Fragment | ChatMemberItemUser_Me_Fragment | ChatMemberItemUser_Stranger_Fragment;
+
+export type GroupChatSettingsButtonChatFragment = { __typename?: 'GroupChat', id: any, name: string, description?: string | null };
 
 export type GetEventsQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1201,7 +1219,7 @@ export type StrangerMenuStrangerFragment = { __typename?: 'Stranger', id: any, f
 
 type UserMenu_Friend_Fragment = { __typename?: 'Friend', id: any };
 
-type UserMenu_Me_Fragment = { __typename?: 'Me', id: any };
+type UserMenu_Me_Fragment = { __typename?: 'Me' };
 
 type UserMenu_Stranger_Fragment = { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
@@ -1231,46 +1249,6 @@ type UserSelect_Stranger_Fragment = { __typename?: 'Stranger', id: any, username
 
 export type UserSelectFragment = UserSelect_Friend_Fragment | UserSelect_Me_Fragment | UserSelect_Stranger_Fragment;
 
-type UseDeleteChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type UseDeleteChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
-
-type UseDeleteChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any };
-
-export type UseDeleteChatFragment = UseDeleteChat_DeletedChat_Fragment | UseDeleteChat_DirectMessageChat_Fragment | UseDeleteChat_GroupChat_Fragment;
-
-export type FriendRequestStrangerFragment = { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any } | null };
-
-export type UseFriendFragment = { __typename?: 'Friend', id: any };
-
-export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState };
-
-export type UseStrangerFragment = { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
-
-type GroupChatUpdate_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-type GroupChatUpdate_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-type GroupChatUpdate_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-type GroupChatUpdate_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-type GroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-type GroupChatUpdate_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-export type GroupChatUpdateFragment = GroupChatUpdate_AdminsAddedEvent_Fragment | GroupChatUpdate_AdminsRemovedEvent_Fragment | GroupChatUpdate_DescriptionUpdatedEvent_Fragment | GroupChatUpdate_MembersAddedEvent_Fragment | GroupChatUpdate_MembersRemovedEvent_Fragment | GroupChatUpdate_NameUpdatedEvent_Fragment;
-
-type UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-export type UserAlerationGroupChatUpdateFragment = UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment | UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment | UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment | UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment;
-
 export type CreateDirectMessageChatMutationVariables = Exact<{
   friendId: Scalars['HashId'];
 }>;
@@ -1292,6 +1270,14 @@ export type DeleteChatMutationVariables = Exact<{
 
 export type DeleteChatMutation = { __typename?: 'Mutation', deleteChat?: { __typename?: 'DeletedChat', id: any } | null };
 
+type UseDeleteChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type UseDeleteChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
+
+type UseDeleteChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any };
+
+export type UseDeleteChatFragment = UseDeleteChat_DeletedChat_Fragment | UseDeleteChat_DirectMessageChat_Fragment | UseDeleteChat_GroupChat_Fragment;
+
 export type DeleteFriendMutationVariables = Exact<{
   friendId: Scalars['HashId'];
 }>;
@@ -1299,26 +1285,32 @@ export type DeleteFriendMutationVariables = Exact<{
 
 export type DeleteFriendMutation = { __typename?: 'Mutation', deleteFriend?: { __typename?: 'Stranger', id: any } | null };
 
-export type AcceptFriendRequestMutationVariables = Exact<{
+export type FriendRequestStrangerFragment = { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any } | null };
+
+export type UseFriendFragment = { __typename?: 'Friend', id: any };
+
+export type AcceptRequestMutationVariables = Exact<{
   requestId: Scalars['HashId'];
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+export type AcceptRequestMutation = { __typename?: 'Mutation', acceptRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } } | null };
 
-export type DeclineFriendRequestMutationVariables = Exact<{
+export type DeclineRequestMutationVariables = Exact<{
   requestId: Scalars['HashId'];
 }>;
 
 
-export type DeclineFriendRequestMutation = { __typename?: 'Mutation', declineRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+export type DeclineRequestMutation = { __typename?: 'Mutation', declineRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
-export type CancelFriendRequestMutationVariables = Exact<{
+export type CancelRequestMutationVariables = Exact<{
   requestId: Scalars['HashId'];
 }>;
 
 
-export type CancelFriendRequestMutation = { __typename?: 'Mutation', cancelRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+export type CancelRequestMutation = { __typename?: 'Mutation', cancelRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+
+export type UseRequestFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState };
 
 export type SendFriendRequestMutationVariables = Exact<{
   strangerId: Scalars['HashId'];
@@ -1326,6 +1318,10 @@ export type SendFriendRequestMutationVariables = Exact<{
 
 
 export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
+
+export type RequestInfoFragment = { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState };
+
+export type UseStrangerFragment = { __typename?: 'Stranger', id: any, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
 export type UpdateGroupChatNameMutationVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1375,6 +1371,88 @@ export type RemoveAdminsFromGroupChatMutationVariables = Exact<{
 
 export type RemoveAdminsFromGroupChatMutation = { __typename?: 'Mutation', removeAdminsFromGroupChat?: { __typename?: 'AdminsRemovedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any, admins: Array<{ __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }> }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
 
+type GroupChatUpdate_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+
+type GroupChatUpdate_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+
+type GroupChatUpdate_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+
+type GroupChatUpdate_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+
+type GroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+
+type GroupChatUpdate_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+
+export type GroupChatUpdateFragment = GroupChatUpdate_AdminsAddedEvent_Fragment | GroupChatUpdate_AdminsRemovedEvent_Fragment | GroupChatUpdate_DescriptionUpdatedEvent_Fragment | GroupChatUpdate_MembersAddedEvent_Fragment | GroupChatUpdate_MembersRemovedEvent_Fragment | GroupChatUpdate_NameUpdatedEvent_Fragment;
+
+type UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+
+type UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+
+type UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+
+type UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+
+export type UserAlerationGroupChatUpdateFragment = UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment | UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment | UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment | UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment;
+
+export const ChatMemberItemChatFragmentDoc = gql`
+    fragment ChatMemberItemChat on Chat {
+  id
+  ... on GroupChat {
+    isAdmin
+  }
+}
+    `;
+export const UserItemFragmentDoc = gql`
+    fragment UserItem on User {
+  id
+  username
+  name
+}
+    `;
+export const FriendMenuFriendFragmentDoc = gql`
+    fragment FriendMenuFriend on Friend {
+  id
+}
+    `;
+export const UseStrangerFragmentDoc = gql`
+    fragment UseStranger on Stranger {
+  id
+  friendRequest {
+    id
+    isCreator
+    createdById
+    recipientId
+    state
+  }
+}
+    `;
+export const StrangerMenuStrangerFragmentDoc = gql`
+    fragment StrangerMenuStranger on Stranger {
+  ...UseStranger
+}
+    ${UseStrangerFragmentDoc}`;
+export const UserMenuFragmentDoc = gql`
+    fragment UserMenu on User {
+  ...FriendMenuFriend
+  ...StrangerMenuStranger
+}
+    ${FriendMenuFriendFragmentDoc}
+${StrangerMenuStrangerFragmentDoc}`;
+export const ChatMemberItemUserFragmentDoc = gql`
+    fragment ChatMemberItemUser on User {
+  ...UserItem
+  ...UserMenu
+}
+    ${UserItemFragmentDoc}
+${UserMenuFragmentDoc}`;
+export const GroupChatSettingsButtonChatFragmentDoc = gql`
+    fragment GroupChatSettingsButtonChat on GroupChat {
+  id
+  name
+  description
+}
+    `;
 export const EventContainerFragmentDoc = gql`
     fragment EventContainer on Event {
   id
@@ -1610,27 +1688,6 @@ export const UpdateGroupUserFragmentDoc = gql`
   username
 }
     `;
-export const UserItemFragmentDoc = gql`
-    fragment UserItem on User {
-  id
-  username
-  name
-}
-    `;
-export const UserMenuFragmentDoc = gql`
-    fragment UserMenu on User {
-  id
-  ... on Stranger {
-    friendRequest {
-      id
-      isCreator
-      createdById
-      recipientId
-      state
-    }
-  }
-}
-    `;
 export const UserListFragmentDoc = gql`
     fragment UserList on User {
   ...UserItem
@@ -1695,28 +1752,6 @@ export const LiveNotificationFragmentDoc = gql`
   }
 }
     `;
-export const FriendMenuFriendFragmentDoc = gql`
-    fragment FriendMenuFriend on Friend {
-  id
-}
-    `;
-export const UseStrangerFragmentDoc = gql`
-    fragment UseStranger on Stranger {
-  id
-  friendRequest {
-    id
-    isCreator
-    createdById
-    recipientId
-    state
-  }
-}
-    `;
-export const StrangerMenuStrangerFragmentDoc = gql`
-    fragment StrangerMenuStranger on Stranger {
-  ...UseStranger
-}
-    ${UseStrangerFragmentDoc}`;
 export const UserMultiSelectFragmentDoc = gql`
     fragment UserMultiSelect on User {
   id
@@ -1745,6 +1780,15 @@ export const FriendRequestStrangerFragmentDoc = gql`
 export const UseFriendFragmentDoc = gql`
     fragment UseFriend on Friend {
   id
+}
+    `;
+export const UseRequestFragmentDoc = gql`
+    fragment UseRequest on Request {
+  id
+  isCreator
+  createdById
+  recipientId
+  state
 }
     `;
 export const RequestInfoFragmentDoc = gql`
@@ -1778,24 +1822,21 @@ export const GetChatForChatInfoAsideDocument = gql`
     ... on DirectMessageChat {
       friend {
         id
-        ...UserItem
-        ...UserMenu
+        ...ChatMemberItemUser
       }
     }
+    ...ChatMemberItemChat
     ... on GroupChat {
-      name
-      isAdmin
-      createdById
+      ...GroupChatSettingsButtonChat
       members {
-        id
-        ...UserItem
-        ...UserMenu
+        ...ChatMemberItemUser
       }
     }
   }
 }
-    ${UserItemFragmentDoc}
-${UserMenuFragmentDoc}`;
+    ${ChatMemberItemUserFragmentDoc}
+${ChatMemberItemChatFragmentDoc}
+${GroupChatSettingsButtonChatFragmentDoc}`;
 
 /**
  * __useGetChatForChatInfoAsideQuery__
@@ -2568,105 +2609,108 @@ export function useDeleteFriendMutation(baseOptions?: Apollo.MutationHookOptions
 export type DeleteFriendMutationHookResult = ReturnType<typeof useDeleteFriendMutation>;
 export type DeleteFriendMutationResult = Apollo.MutationResult<DeleteFriendMutation>;
 export type DeleteFriendMutationOptions = Apollo.BaseMutationOptions<DeleteFriendMutation, DeleteFriendMutationVariables>;
-export const AcceptFriendRequestDocument = gql`
-    mutation AcceptFriendRequest($requestId: HashId!) {
+export const AcceptRequestDocument = gql`
+    mutation AcceptRequest($requestId: HashId!) {
   acceptRequest(requestId: $requestId) {
-    ...RequestInfo
+    ...UseRequest
+    createdBy {
+      id
+    }
   }
 }
-    ${RequestInfoFragmentDoc}`;
-export type AcceptFriendRequestMutationFn = Apollo.MutationFunction<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
+    ${UseRequestFragmentDoc}`;
+export type AcceptRequestMutationFn = Apollo.MutationFunction<AcceptRequestMutation, AcceptRequestMutationVariables>;
 
 /**
- * __useAcceptFriendRequestMutation__
+ * __useAcceptRequestMutation__
  *
- * To run a mutation, you first call `useAcceptFriendRequestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAcceptFriendRequestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAcceptRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptRequestMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [acceptFriendRequestMutation, { data, loading, error }] = useAcceptFriendRequestMutation({
+ * const [acceptRequestMutation, { data, loading, error }] = useAcceptRequestMutation({
  *   variables: {
  *      requestId: // value for 'requestId'
  *   },
  * });
  */
-export function useAcceptFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>) {
+export function useAcceptRequestMutation(baseOptions?: Apollo.MutationHookOptions<AcceptRequestMutation, AcceptRequestMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>(AcceptFriendRequestDocument, options);
+        return Apollo.useMutation<AcceptRequestMutation, AcceptRequestMutationVariables>(AcceptRequestDocument, options);
       }
-export type AcceptFriendRequestMutationHookResult = ReturnType<typeof useAcceptFriendRequestMutation>;
-export type AcceptFriendRequestMutationResult = Apollo.MutationResult<AcceptFriendRequestMutation>;
-export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
-export const DeclineFriendRequestDocument = gql`
-    mutation DeclineFriendRequest($requestId: HashId!) {
+export type AcceptRequestMutationHookResult = ReturnType<typeof useAcceptRequestMutation>;
+export type AcceptRequestMutationResult = Apollo.MutationResult<AcceptRequestMutation>;
+export type AcceptRequestMutationOptions = Apollo.BaseMutationOptions<AcceptRequestMutation, AcceptRequestMutationVariables>;
+export const DeclineRequestDocument = gql`
+    mutation DeclineRequest($requestId: HashId!) {
   declineRequest(requestId: $requestId) {
-    ...RequestInfo
+    ...UseRequest
   }
 }
-    ${RequestInfoFragmentDoc}`;
-export type DeclineFriendRequestMutationFn = Apollo.MutationFunction<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
+    ${UseRequestFragmentDoc}`;
+export type DeclineRequestMutationFn = Apollo.MutationFunction<DeclineRequestMutation, DeclineRequestMutationVariables>;
 
 /**
- * __useDeclineFriendRequestMutation__
+ * __useDeclineRequestMutation__
  *
- * To run a mutation, you first call `useDeclineFriendRequestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeclineFriendRequestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeclineRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeclineRequestMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [declineFriendRequestMutation, { data, loading, error }] = useDeclineFriendRequestMutation({
+ * const [declineRequestMutation, { data, loading, error }] = useDeclineRequestMutation({
  *   variables: {
  *      requestId: // value for 'requestId'
  *   },
  * });
  */
-export function useDeclineFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>) {
+export function useDeclineRequestMutation(baseOptions?: Apollo.MutationHookOptions<DeclineRequestMutation, DeclineRequestMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>(DeclineFriendRequestDocument, options);
+        return Apollo.useMutation<DeclineRequestMutation, DeclineRequestMutationVariables>(DeclineRequestDocument, options);
       }
-export type DeclineFriendRequestMutationHookResult = ReturnType<typeof useDeclineFriendRequestMutation>;
-export type DeclineFriendRequestMutationResult = Apollo.MutationResult<DeclineFriendRequestMutation>;
-export type DeclineFriendRequestMutationOptions = Apollo.BaseMutationOptions<DeclineFriendRequestMutation, DeclineFriendRequestMutationVariables>;
-export const CancelFriendRequestDocument = gql`
-    mutation CancelFriendRequest($requestId: HashId!) {
+export type DeclineRequestMutationHookResult = ReturnType<typeof useDeclineRequestMutation>;
+export type DeclineRequestMutationResult = Apollo.MutationResult<DeclineRequestMutation>;
+export type DeclineRequestMutationOptions = Apollo.BaseMutationOptions<DeclineRequestMutation, DeclineRequestMutationVariables>;
+export const CancelRequestDocument = gql`
+    mutation CancelRequest($requestId: HashId!) {
   cancelRequest(requestId: $requestId) {
-    ...RequestInfo
+    ...UseRequest
   }
 }
-    ${RequestInfoFragmentDoc}`;
-export type CancelFriendRequestMutationFn = Apollo.MutationFunction<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
+    ${UseRequestFragmentDoc}`;
+export type CancelRequestMutationFn = Apollo.MutationFunction<CancelRequestMutation, CancelRequestMutationVariables>;
 
 /**
- * __useCancelFriendRequestMutation__
+ * __useCancelRequestMutation__
  *
- * To run a mutation, you first call `useCancelFriendRequestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCancelFriendRequestMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useCancelRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelRequestMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [cancelFriendRequestMutation, { data, loading, error }] = useCancelFriendRequestMutation({
+ * const [cancelRequestMutation, { data, loading, error }] = useCancelRequestMutation({
  *   variables: {
  *      requestId: // value for 'requestId'
  *   },
  * });
  */
-export function useCancelFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>) {
+export function useCancelRequestMutation(baseOptions?: Apollo.MutationHookOptions<CancelRequestMutation, CancelRequestMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>(CancelFriendRequestDocument, options);
+        return Apollo.useMutation<CancelRequestMutation, CancelRequestMutationVariables>(CancelRequestDocument, options);
       }
-export type CancelFriendRequestMutationHookResult = ReturnType<typeof useCancelFriendRequestMutation>;
-export type CancelFriendRequestMutationResult = Apollo.MutationResult<CancelFriendRequestMutation>;
-export type CancelFriendRequestMutationOptions = Apollo.BaseMutationOptions<CancelFriendRequestMutation, CancelFriendRequestMutationVariables>;
+export type CancelRequestMutationHookResult = ReturnType<typeof useCancelRequestMutation>;
+export type CancelRequestMutationResult = Apollo.MutationResult<CancelRequestMutation>;
+export type CancelRequestMutationOptions = Apollo.BaseMutationOptions<CancelRequestMutation, CancelRequestMutationVariables>;
 export const SendFriendRequestDocument = gql`
     mutation SendFriendRequest($strangerId: HashId!) {
   sendFriendRequest(strangerId: $strangerId) {

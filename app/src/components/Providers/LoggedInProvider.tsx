@@ -6,7 +6,7 @@ import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import Drawer from 'components/Layout/Drawer';
 import ChatNav from 'components/Layout/Nav';
 import Header from 'components/Layout/Header/Header';
-import ChatInfoAside from 'components/Chat/ChatInfoAside';
+import ChatInfoAside from 'components/Chat/ChatInfoAside/ChatInfoAside';
 import UserProvider from './UserProvider';
 import LiveNotificationsProvider from './LiveNotificationsProvider';
 import { FriendSelectorModal } from 'components/Modals/FriendSelectorModal';

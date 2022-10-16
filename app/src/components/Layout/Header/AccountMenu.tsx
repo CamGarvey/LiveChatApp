@@ -25,7 +25,17 @@ const AccountMenu = ({ onLogoutClick }: Props) => {
   return (
     <Menu>
       <Menu.Target>
-        <ActionIcon loading={loading} variant="default" color={'transparent'}>
+        <ActionIcon
+          loading={loading}
+          variant="default"
+          sx={{
+            border: 'none',
+            background: 'transparent',
+            ':active': {
+              background: 'transparent',
+            },
+          }}
+        >
           {user && (
             <UserAvatar user={user} dropdown={{ style: { display: 'none' } }} />
           )}

@@ -9,6 +9,7 @@ import {
   IconUserPlus,
 } from '@tabler/icons';
 import { StrangerMenuStrangerFragment } from 'graphql/generated/graphql';
+import useRequest from 'hooks/useRequest';
 
 type Props = {
   stranger: StrangerMenuStrangerFragment;
@@ -29,12 +30,10 @@ const StrangerMenu = ({
 }: Props) => {
   const {
     status,
-    cancelFriendRequest,
     sendFriendRequest,
-    acceptFriendRequest,
-    declineFriendRequest,
     loading: loadingRequest,
   } = useStranger(stranger);
+  const { acceptRequest, declineRequest, cancelRequest } = useRequest();
 
   return (
     <Menu width={'max-content'}>
@@ -63,7 +62,7 @@ const StrangerMenu = ({
                   color={'green'}
                   icon={<IconPlus size={iconSize} />}
                   disabled={stranger.friendRequest === null}
-                  onClick={() => acceptFriendRequest()}
+                  onClick={() => acceptRequest(stranger.friendRequest?.id)}
                 >
                   Accept
                 </Menu.Item>
@@ -71,7 +70,7 @@ const StrangerMenu = ({
                   color={'red'}
                   icon={<IconMinus size={iconSize} />}
                   disabled={stranger.friendRequest === null}
-                  onClick={() => declineFriendRequest()}
+                  onClick={() => declineRequest(stranger.friendRequest?.id)}
                 >
                   Decline
                 </Menu.Item>
@@ -80,7 +79,7 @@ const StrangerMenu = ({
             {status === 'SENT_FRIEND_REQUEST' && (
               <Menu.Item
                 disabled={stranger.friendRequest === null}
-                onClick={() => cancelFriendRequest()}
+                onClick={() => cancelRequest(stranger.friendRequest?.id)}
               >
                 Cancel Friend Request
               </Menu.Item>
