@@ -8,6 +8,8 @@ import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
 import { ChatUpdate } from './Event/ChatUpdate';
 import DeletedEvent from './Event/DeletedEvent';
+import ChatHeader from './ChatHeader';
+import { useMediaQuery } from '@mantine/hooks';
 
 gql`
   query GetEvents($chatId: HashId!, $last: Int, $before: String) {
@@ -41,6 +43,9 @@ gql`
       ...ChatUpdateEventComponent
     }
   }
+  fragment ChatPanelChat on Chat {
+    ...ChatHeaderChat
+  }
   ${EventContainer.fragments.event}
   ${Message.fragments.message}
   ${DeletedEvent.fragments.event}
@@ -52,6 +57,7 @@ type Props = {
 };
 
 const ChatPanel = ({ chatId }: Props) => {
+  const isSmallerThanMedScreen = useMediaQuery('(max-width: 780px)');
   const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } =
     useEvents({ chatId });
   const { createMessage } = useCreateMessage({ chatId });
@@ -66,82 +72,87 @@ const ChatPanel = ({ chatId }: Props) => {
   }
 
   return (
-    <Stack
-      style={{
-        height: 'calc(100vh - 110px)',
-        position: 'relative',
-      }}
-      spacing={'sm'}
-    >
-      {error ? (
-        <Center
-          style={{
-            height: '100%',
-          }}
-        >
-          <Text>Failed to load messages</Text>
-        </Center>
-      ) : events.length === 0 && !loading ? (
-        <Center
-          style={{
-            height: '100%',
-          }}
-        >
-          <Text>No Messages</Text>
-        </Center>
-      ) : (
-        <Scroller
-          key={chatId}
-          isLoading={loading}
-          isLoadingMore={isFetchingMore}
-          topMessage={topMessage}
-          onScroll={({ percentage }) => {
-            if (percentage > 90 && hasPreviousPage && !isFetchingMore) {
-              fetchMore();
-            }
-          }}
-        >
-          {events.map((event) => (
-            <EventContainer
-              key={event.createdAt}
-              displayEventTime={event.displayEventTime}
-              eventData={event}
-              event={
-                <>
-                  {event.__typename === 'MessageEvent' && (
-                    <Message
-                      displayAvatar={event.isLastEventInGroup}
-                      message={event}
-                    />
-                  )}
-                  {event.__typename === 'DeletedEvent' && (
-                    <DeletedEvent
-                      displayAvatar={event.isLastEventInGroup}
-                      event={event}
-                    />
-                  )}
-                  {event.__typename &&
-                    [
-                      'NameUpdatedEvent',
-                      'DescriptionUpdatedEvent',
-                      'MembersAddedEvent',
-                      'MembersRemovedEvent',
-                      'AdminsAddedEvent',
-                      'AdminsRemovedEvent',
-                    ].includes(event.__typename) && (
-                      <ChatUpdate update={event as any} />
-                    )}
-                </>
+    <div>
+      {!isSmallerThanMedScreen && <ChatHeader chatId={chatId} />}
+      <Stack
+        style={{
+          height: `calc(100vh - ${isSmallerThanMedScreen ? 70 : 130}px)`,
+          position: 'relative',
+        }}
+        spacing={4}
+        p={'sm'}
+        pt={0}
+      >
+        {error ? (
+          <Center
+            style={{
+              height: '100%',
+            }}
+          >
+            <Text>Failed to load messages</Text>
+          </Center>
+        ) : events.length === 0 && !loading ? (
+          <Center
+            style={{
+              height: '100%',
+            }}
+          >
+            <Text>No Messages</Text>
+          </Center>
+        ) : (
+          <Scroller
+            key={chatId}
+            isLoading={loading}
+            isLoadingMore={isFetchingMore}
+            topMessage={topMessage}
+            onScroll={({ percentage }) => {
+              if (percentage > 90 && hasPreviousPage && !isFetchingMore) {
+                fetchMore();
               }
-            />
-          ))}
-        </Scroller>
-      )}
-      <ChatInput
-        isDisabled={!!error}
-        onSubmit={({ content }) => createMessage(content)}
-      />
-    </Stack>
+            }}
+          >
+            {events.map((event) => (
+              <EventContainer
+                key={event.createdAt}
+                displayEventTime={event.displayEventTime}
+                eventData={event}
+                event={
+                  <>
+                    {event.__typename === 'MessageEvent' && (
+                      <Message
+                        displayAvatar={event.isLastEventInGroup}
+                        message={event}
+                      />
+                    )}
+                    {event.__typename === 'DeletedEvent' && (
+                      <DeletedEvent
+                        displayAvatar={event.isLastEventInGroup}
+                        event={event}
+                      />
+                    )}
+                    {event.__typename &&
+                      [
+                        'NameUpdatedEvent',
+                        'DescriptionUpdatedEvent',
+                        'MembersAddedEvent',
+                        'MembersRemovedEvent',
+                        'AdminsAddedEvent',
+                        'AdminsRemovedEvent',
+                      ].includes(event.__typename) && (
+                        <ChatUpdate update={event as any} />
+                      )}
+                  </>
+                }
+              />
+            ))}
+          </Scroller>
+        )}
+        <ChatInput
+          isDisabled={!!error}
+          onSubmit={({ content }) => createMessage(content)}
+        />
+      </Stack>
+    </div>
   );
 };
 
