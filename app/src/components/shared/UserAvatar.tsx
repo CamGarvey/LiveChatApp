@@ -45,10 +45,8 @@ const UserAvatar = ({ user, size = 'md', style, dropdown }: Props) => (
           style={style}
         />
         <Stack spacing={1}>
-          <Text color={'grey'} size={'lg'}>
-            {user.username}
-          </Text>
-          {user.name && <Text>{user.name}</Text>}
+          <Text size={'lg'}>{user.username}</Text>
+          {user.name && <Text color={'dimmed'}>{user.name}</Text>}
         </Stack>
       </Group>
     </Popover.Dropdown>

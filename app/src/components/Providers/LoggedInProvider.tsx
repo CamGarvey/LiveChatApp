@@ -3,7 +3,7 @@ import { ModalsProvider } from '@mantine/modals';
 import { UserSearchModal } from 'components/Modals/UserSearchModal';
 import { CreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
-import Drawer from 'components/Layout/Drawer';
+import ChatDrawer from 'components/Layout/ChatDrawer';
 import ChatNav from 'components/Layout/Nav';
 import Header from 'components/Layout/Header/Header';
 import ChatInfoAside from 'components/Chat/ChatInfoAside/ChatInfoAside';
@@ -29,13 +29,12 @@ const LoggedInProvider = ({ children }: Props) => {
         >
           <AppShell
             navbarOffsetBreakpoint="sm"
-            asideOffsetBreakpoint="md"
             header={<Header />}
             navbar={<ChatNav />}
             aside={<ChatInfoAside />}
             fixed
           >
-            <Drawer />
+            <ChatDrawer />
             {children}
           </AppShell>
         </ModalsProvider>

@@ -10,7 +10,7 @@ import ChatDisplay from 'components/ChatDisplay';
 import UserAvatar from 'components/shared/UserAvatar';
 import { useDrawer } from 'store';
 
-const Drawer = () => {
+const ChatDrawer = () => {
   const { user } = useUser();
   const { isOpen, toggle } = useDrawer();
 
@@ -21,7 +21,7 @@ const Drawer = () => {
         onClose={toggle}
         zIndex={99}
         withinPortal={false}
-        size={'xl'}
+        size={'lg'}
         styles={{
           drawer: {
             marginTop: '70px',
@@ -54,4 +54,4 @@ const Drawer = () => {
   );
 };
 
-export default Drawer;
+export default ChatDrawer;

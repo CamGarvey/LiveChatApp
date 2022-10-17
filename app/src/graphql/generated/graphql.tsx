@@ -856,7 +856,23 @@ type ChatMemberItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, 
 
 export type ChatMemberItemUserFragment = ChatMemberItemUser_Friend_Fragment | ChatMemberItemUser_Me_Fragment | ChatMemberItemUser_Stranger_Fragment;
 
+type ClosedAsideChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
+
+type ClosedAsideChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } };
+
+type ClosedAsideChat_GroupChat_Fragment = { __typename?: 'GroupChat', members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }> };
+
+export type ClosedAsideChatFragment = ClosedAsideChat_DeletedChat_Fragment | ClosedAsideChat_DirectMessageChat_Fragment | ClosedAsideChat_GroupChat_Fragment;
+
 export type GroupChatSettingsButtonChatFragment = { __typename?: 'GroupChat', id: any, name: string, description?: string | null };
+
+type OpenedAsideChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type OpenedAsideChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } };
+
+type OpenedAsideChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, description?: string | null, isAdmin: boolean, members: Array<{ __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null }> };
+
+export type OpenedAsideChatFragment = OpenedAsideChat_DeletedChat_Fragment | OpenedAsideChat_DirectMessageChat_Fragment | OpenedAsideChat_GroupChat_Fragment;
 
 export type GetEventsQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1395,12 +1411,32 @@ type UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 
 
 export type UserAlerationGroupChatUpdateFragment = UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment | UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment | UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment | UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment;
 
-export const ChatMemberItemChatFragmentDoc = gql`
-    fragment ChatMemberItemChat on Chat {
+export const UserAvatarFragmentDoc = gql`
+    fragment UserAvatar on User {
   id
-  ... on GroupChat {
-    isAdmin
+  username
+  name
+}
+    `;
+export const ClosedAsideChatFragmentDoc = gql`
+    fragment ClosedAsideChat on Chat {
+  ... on DirectMessageChat {
+    friend {
+      ...UserAvatar
+    }
   }
+  ... on GroupChat {
+    members {
+      ...UserAvatar
+    }
+  }
+}
+    ${UserAvatarFragmentDoc}`;
+export const GroupChatSettingsButtonChatFragmentDoc = gql`
+    fragment GroupChatSettingsButtonChat on GroupChat {
+  id
+  name
+  description
 }
     `;
 export const UserItemFragmentDoc = gql`
@@ -1446,13 +1482,32 @@ export const ChatMemberItemUserFragmentDoc = gql`
 }
     ${UserItemFragmentDoc}
 ${UserMenuFragmentDoc}`;
-export const GroupChatSettingsButtonChatFragmentDoc = gql`
-    fragment GroupChatSettingsButtonChat on GroupChat {
+export const ChatMemberItemChatFragmentDoc = gql`
+    fragment ChatMemberItemChat on Chat {
   id
-  name
-  description
+  ... on GroupChat {
+    isAdmin
+  }
 }
     `;
+export const OpenedAsideChatFragmentDoc = gql`
+    fragment OpenedAsideChat on Chat {
+  ... on GroupChat {
+    ...GroupChatSettingsButtonChat
+    members {
+      ...ChatMemberItemUser
+    }
+  }
+  ... on DirectMessageChat {
+    friend {
+      ...ChatMemberItemUser
+    }
+  }
+  ...ChatMemberItemChat
+}
+    ${GroupChatSettingsButtonChatFragmentDoc}
+${ChatMemberItemUserFragmentDoc}
+${ChatMemberItemChatFragmentDoc}`;
 export const EventContainerFragmentDoc = gql`
     fragment EventContainer on Event {
   id
@@ -1477,13 +1532,6 @@ export const OutgoingEventFragmentDoc = gql`
   ...EventInfo
 }
     ${EventInfoFragmentDoc}`;
-export const UserAvatarFragmentDoc = gql`
-    fragment UserAvatar on User {
-  id
-  username
-  name
-}
-    `;
 export const IncomingEventFragmentDoc = gql`
     fragment IncomingEvent on Event {
   id
@@ -1819,24 +1867,12 @@ export const UserAlerationGroupChatUpdateFragmentDoc = gql`
 export const GetChatForChatInfoAsideDocument = gql`
     query GetChatForChatInfoAside($chatId: HashId!) {
   chat(chatId: $chatId) {
-    ... on DirectMessageChat {
-      friend {
-        id
-        ...ChatMemberItemUser
-      }
-    }
-    ...ChatMemberItemChat
-    ... on GroupChat {
-      ...GroupChatSettingsButtonChat
-      members {
-        ...ChatMemberItemUser
-      }
-    }
+    ...ClosedAsideChat
+    ...OpenedAsideChat
   }
 }
-    ${ChatMemberItemUserFragmentDoc}
-${ChatMemberItemChatFragmentDoc}
-${GroupChatSettingsButtonChatFragmentDoc}`;
+    ${ClosedAsideChatFragmentDoc}
+${OpenedAsideChatFragmentDoc}`;
 
 /**
  * __useGetChatForChatInfoAsideQuery__

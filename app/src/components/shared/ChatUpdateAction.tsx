@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { ActionIcon, Tooltip } from '@mantine/core';
+import { ActionIcon, MantineNumberSize, Tooltip } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import { useGetChatForChatUpdateActionLazyQuery } from 'graphql/generated/graphql';
 import { IconSettings } from '@tabler/icons';
@@ -18,6 +18,7 @@ gql`
 `;
 
 type Props = {
+  size?: MantineNumberSize;
   tooltip?: {
     position?: FloatingPosition;
   };
@@ -55,7 +56,7 @@ const ChatUpdateAction = (props: Props) => {
       position={props?.tooltip?.position ?? 'bottom'}
     >
       <ActionIcon
-        size={'xs'}
+        size={props.size ?? 'xs'}
         color={'blue'}
         loading={loading}
         disabled={disabled}
