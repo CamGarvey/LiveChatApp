@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
-import { MediaQuery, Aside, LoadingOverlay } from '@mantine/core';
+import { MediaQuery, Aside } from '@mantine/core';
 import { useGetChatForChatInfoAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ClosedAside from './ClosedAside';
-import OpenedAside from './OpenedAside';
+import OpenedAside from './OpenedAside/OpenedAside';
 
 gql`
   query GetChatForChatInfoAside($chatId: HashId!) {
@@ -33,6 +33,8 @@ const ChatInfoAside = () => {
 
   const chat = data?.chat;
 
+  if (!chatId) return <></>;
+
   return (
     <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
       <Aside
@@ -40,15 +42,19 @@ const ChatInfoAside = () => {
         hiddenBreakpoint="md"
         width={{ xs: width, sm: width, md: width, lg: width, xl: width }}
       >
-        <LoadingOverlay visible={loading} loaderProps={{ variant: 'bars' }} />
-        {chatId &&
-          chat &&
-          chat.__typename !== 'DeletedChat' &&
-          (opened ? (
-            <OpenedAside chat={chat} onClose={() => setOpened(false)} />
-          ) : (
-            <ClosedAside chat={chat} onOpen={() => setOpened(true)} />
-          ))}
+        {opened ? (
+          <OpenedAside
+            chat={chat}
+            loading={loading}
+            onClose={() => setOpened(false)}
+          />
+        ) : (
+          <ClosedAside
+            chat={chat}
+            loading={loading}
+            onOpen={() => setOpened(true)}
+          />
+        )}
       </Aside>
     </MediaQuery>
   );

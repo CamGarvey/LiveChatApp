@@ -856,6 +856,14 @@ type ChatMemberItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, 
 
 export type ChatMemberItemUserFragment = ChatMemberItemUser_Friend_Fragment | ChatMemberItemUser_Me_Fragment | ChatMemberItemUser_Stranger_Fragment;
 
+type AvatarSectionUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
+
+type AvatarSectionUser_Me_Fragment = { __typename?: 'Me', id: any, username: string, name?: string | null };
+
+type AvatarSectionUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string, name?: string | null };
+
+export type AvatarSectionUserFragment = AvatarSectionUser_Friend_Fragment | AvatarSectionUser_Me_Fragment | AvatarSectionUser_Stranger_Fragment;
+
 type ClosedAsideChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
 
 type ClosedAsideChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } };
@@ -872,16 +880,24 @@ type OpenedAsideChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: stri
 
 export type OpenedAsideChatFragment = OpenedAsideChat_DeletedChat_Fragment | OpenedAsideChat_DirectMessageChat_Fragment | OpenedAsideChat_GroupChat_Fragment;
 
+type OpenedHeaderChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
+
+type OpenedHeaderChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } };
+
+type OpenedHeaderChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string };
+
+export type OpenedHeaderChatFragment = OpenedHeaderChat_DeletedChat_Fragment | OpenedHeaderChat_DirectMessageChat_Fragment | OpenedHeaderChat_GroupChat_Fragment;
+
 export type GetChatForChatHeaderQueryVariables = Exact<{
   chatId: Scalars['HashId'];
 }>;
 
 
-export type GetChatForChatHeaderQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', name?: string | null } } | { __typename?: 'GroupChat', name: string, description?: string | null } | null };
+export type GetChatForChatHeaderQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null } | null };
 
 type ChatHeaderChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
 
-type ChatHeaderChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', name?: string | null } };
+type ChatHeaderChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } };
 
 type ChatHeaderChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, description?: string | null };
 
@@ -923,7 +939,7 @@ export type ChatPanelEventFragment = ChatPanelEvent_AdminsAddedEvent_Fragment | 
 
 type ChatPanelChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
 
-type ChatPanelChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', name?: string | null } };
+type ChatPanelChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } };
 
 type ChatPanelChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, description?: string | null };
 
@@ -1439,20 +1455,25 @@ export const UserAvatarFragmentDoc = gql`
   name
 }
     `;
+export const AvatarSectionUserFragmentDoc = gql`
+    fragment AvatarSectionUser on User {
+  ...UserAvatar
+}
+    ${UserAvatarFragmentDoc}`;
 export const ClosedAsideChatFragmentDoc = gql`
     fragment ClosedAsideChat on Chat {
   ... on DirectMessageChat {
     friend {
-      ...UserAvatar
+      ...AvatarSectionUser
     }
   }
   ... on GroupChat {
     members {
-      ...UserAvatar
+      ...AvatarSectionUser
     }
   }
 }
-    ${UserAvatarFragmentDoc}`;
+    ${AvatarSectionUserFragmentDoc}`;
 export const UserItemFragmentDoc = gql`
     fragment UserItem on User {
   id
@@ -1522,6 +1543,18 @@ export const OpenedAsideChatFragmentDoc = gql`
 }
     ${ChatMemberItemUserFragmentDoc}
 ${ChatMemberItemChatFragmentDoc}`;
+export const OpenedHeaderChatFragmentDoc = gql`
+    fragment OpenedHeaderChat on Chat {
+  ... on GroupChat {
+    name
+  }
+  ... on DirectMessageChat {
+    friend {
+      username
+    }
+  }
+}
+    `;
 export const EventContainerFragmentDoc = gql`
     fragment EventContainer on Event {
   id
@@ -1642,7 +1675,7 @@ export const ChatHeaderChatFragmentDoc = gql`
     fragment ChatHeaderChat on Chat {
   ... on DirectMessageChat {
     friend {
-      name
+      username
     }
   }
   ... on GroupChat {

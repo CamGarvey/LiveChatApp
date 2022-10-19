@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { LoadingOverlay, Stack, Text } from '@mantine/core';
+import { Skeleton, Stack, Text } from '@mantine/core';
 import { useGetChatForChatHeaderLazyQuery } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
 
@@ -12,7 +12,7 @@ gql`
   fragment ChatHeaderChat on Chat {
     ... on DirectMessageChat {
       friend {
-        name
+        username
       }
     }
     ... on GroupChat {
@@ -54,16 +54,27 @@ const ChatHeader = ({ chatId }: Props) => {
       }}
       justify={'center'}
     >
-      <LoadingOverlay visible={!data || loading} />
-      {chat?.__typename === 'GroupChat' && (
-        <Stack spacing={0}>
-          <Text>{chat.name}</Text>
-          {chat.description && (
-            <Text color={'dimmed'} size={'md'}>
-              {chat.description}
-            </Text>
-          )}
+      {loading ? (
+        <Stack spacing={2}>
+          <Skeleton height={8} mt={6} width="20%" radius="xl" />
+          <Skeleton height={8} mt={6} width="40%" radius="xl" />
         </Stack>
+      ) : (
+        <>
+          {chat?.__typename === 'GroupChat' && (
+            <Stack spacing={0}>
+              <Text>{chat.name}</Text>
+              {chat.description && (
+                <Text color={'dimmed'} size={'md'}>
+                  {chat.description}
+                </Text>
+              )}
+            </Stack>
+          )}
+          {chat?.__typename === 'DirectMessageChat' && (
+            <Text>{chat.friend.username}</Text>
+          )}
+        </>
       )}
     </Stack>
   );
