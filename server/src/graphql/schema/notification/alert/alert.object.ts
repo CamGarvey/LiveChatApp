@@ -35,30 +35,6 @@ export const FriendDeletedAlert = objectType({
   },
 });
 
-export const ChatCreatedAlert = objectType({
-  name: 'ChatCreatedAlert',
-  definition: (t) => {
-    t.implements('Alert');
-    t.nonNull.field('chat', {
-      type: 'Chat',
-      resolve: async (parent, _, { prisma }) => {
-        const chat = await prisma.alert
-          .findUniqueOrThrow({
-            where: {
-              id: parent.id ?? undefined,
-            },
-          })
-          .chat();
-
-        if (!chat) {
-          throw new Error('Failed to find chat');
-        }
-        return chat;
-      },
-    });
-  },
-});
-
 export const ChatDeletedAlert = objectType({
   name: 'ChatDeletedAlert',
   definition: (t) => {

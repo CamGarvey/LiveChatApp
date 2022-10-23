@@ -6,11 +6,7 @@ type Props = {
 };
 
 const LiveNotificationsProvider = ({ children }: Props) => {
-  const { notifications, loading } = useLiveNotifications({
-    onNotification: (noti) => {
-      console.log(noti);
-    },
-  });
+  const { notifications, loading } = useLiveNotifications();
 
   return (
     <LiveNotificationsContext.Provider

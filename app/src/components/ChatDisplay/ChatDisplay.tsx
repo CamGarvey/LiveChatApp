@@ -1,5 +1,5 @@
 import { ActionIcon, Input, Tabs, Tooltip } from '@mantine/core';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconSearch, IconUser, IconUsers, IconCirclePlus } from '@tabler/icons';
 import ChatList from './ChatList';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
@@ -8,12 +8,25 @@ import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
 import { useCreateChat } from 'hooks';
 import { gql } from '@apollo/client';
 import ChatItem from './ChatItem';
-import { useGetChatsForChatDisplayQuery } from 'graphql/generated/graphql';
+import {
+  GetChatsForChatDisplayChangesDocument,
+  GetChatsForChatDisplayChangesSubscription,
+  GetChatsForChatDisplayQuery,
+  useGetChatsForChatDisplayQuery,
+} from 'graphql/generated/graphql';
+import { useNavigate } from 'react-router-dom';
 
 gql`
   query GetChatsForChatDisplay {
     chats {
       ...ChatForChatDisplay
+    }
+  }
+  subscription GetChatsForChatDisplayChanges {
+    chatAccessAlerts {
+      chat {
+        ...ChatForChatDisplay
+      }
     }
   }
   fragment ChatForChatDisplay on Chat {
@@ -42,8 +55,9 @@ gql`
 `;
 
 const ChatDisplay = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string | null>('groups');
-  const { loading, data } = useGetChatsForChatDisplayQuery();
+  const { loading, data, subscribeToMore } = useGetChatsForChatDisplayQuery();
   const [filter, setFilter] = useState('');
   const openCreateGroupChat = useCreateGroupChatModal();
   const openFriendSelector = useFriendSelectorModal();
@@ -51,6 +65,37 @@ const ChatDisplay = () => {
     createDirectMessageChat: [createDirectMessageChat],
   } = useCreateChat();
   const drawer = useDrawer();
+
+  useEffect(() => {
+    const unsubscribe =
+      subscribeToMore<GetChatsForChatDisplayChangesSubscription>({
+        document: GetChatsForChatDisplayChangesDocument,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          const accessAlert = subscriptionData.data.chatAccessAlerts;
+
+          if (!accessAlert) {
+            throw new Error('No access alert found');
+          }
+
+          switch (accessAlert.__typename) {
+            case 'ChatMemberAccessGrantedAlert':
+              return Object.assign({}, prev, {
+                chats: [...prev.chats, accessAlert.chat],
+              } as GetChatsForChatDisplayQuery);
+            case 'ChatMemberAccessRevokedAlert':
+              navigate('/chats', { replace: true });
+              return Object.assign({}, prev, {
+                chats: prev.chats.filter((x) => x.id !== accessAlert.chat.id),
+              } as GetChatsForChatDisplayQuery);
+            default:
+              return prev;
+          }
+        },
+      });
+    return () => unsubscribe();
+  }, [subscribeToMore]);
+
   const filteredChats = useMemo(
     () =>
       data?.chats?.filter((c) => {

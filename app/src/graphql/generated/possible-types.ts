@@ -9,7 +9,6 @@
     "Alert": [
       "ChatAdminAccessGrantedAlert",
       "ChatAdminAccessRevokedAlert",
-      "ChatCreatedAlert",
       "ChatDeletedAlert",
       "ChatMemberAccessGrantedAlert",
       "ChatMemberAccessRevokedAlert",
@@ -58,7 +57,6 @@
     "Notification": [
       "ChatAdminAccessGrantedAlert",
       "ChatAdminAccessRevokedAlert",
-      "ChatCreatedAlert",
       "ChatDeletedAlert",
       "ChatMemberAccessGrantedAlert",
       "ChatMemberAccessRevokedAlert",

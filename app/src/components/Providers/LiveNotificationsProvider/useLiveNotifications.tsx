@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client';
 import {
   GetNotificationsQuery,
-  LiveNotificationFragment,
   NotificationsDocument,
   NotificationsSubscription,
   useGetNotificationsQuery,
@@ -70,15 +69,11 @@ gql`
   }
 `;
 
-type Props = {
-  onNotification: (notification: LiveNotificationFragment) => void;
-};
-
 /**
  * Live notification query - will listen to any incoming notifications
  * @returns
  */
-export const useLiveNotifications = ({ onNotification }: Props) => {
+export const useLiveNotifications = () => {
   const { data, subscribeToMore, loading } = useGetNotificationsQuery();
 
   useEffect(() => {
@@ -92,21 +87,24 @@ export const useLiveNotifications = ({ onNotification }: Props) => {
           throw new Error('No notification found');
         }
 
-        onNotification(notification);
-        const newCache = Object.assign({}, prev, {
+        const newCache = Object.assign({}, prev ?? {}, {
           notifications: [
-            ...prev.notifications.filter((x) => x.id !== notification.id),
+            ...(prev?.notifications?.filter((x) => x.id !== notification.id) ??
+              []),
             notification,
           ],
         } as GetNotificationsQuery);
+
         return newCache;
       },
     });
     return () => unsubscribe();
-  }, [subscribeToMore, onNotification]);
+  }, [subscribeToMore]);
 
   return {
-    notifications: data?.notifications ?? [],
+    notifications:
+      data?.notifications.slice().sort((a, b) => b.createdAt - a.createdAt) ??
+      [],
     loading,
   };
 };

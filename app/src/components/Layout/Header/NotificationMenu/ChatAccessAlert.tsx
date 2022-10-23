@@ -13,9 +13,32 @@ const ChatAccessAlert = ({ alert }: Props) => {
     <Group>
       <UserAvatar size="sm" user={alert.createdBy} />
       <Stack spacing={0}>
-        <Text size={'sm'}>{alert.createdBy.username}</Text>
-        <Text>added you as a member</Text>
-        <Text size={'sm'} color={'blue'}>
+        <Text
+          size={'xs'}
+          sx={{
+            lineHeight: 1.1,
+          }}
+        >
+          {alert.createdBy.username}
+        </Text>
+        <Text
+          size={'xs'}
+          sx={{
+            lineHeight: 1.1,
+          }}
+        >
+          {alert.__typename === 'ChatMemberAccessGrantedAlert' &&
+            'added you as a member'}
+          {alert.__typename === 'ChatMemberAccessRevokedAlert' &&
+            'removed you as a member'}
+        </Text>
+        <Text
+          size={'xs'}
+          color={'blue'}
+          sx={{
+            lineHeight: 1.1,
+          }}
+        >
           {moment(alert.createdAt).fromNow()}
         </Text>
       </Stack>

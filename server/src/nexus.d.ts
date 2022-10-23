@@ -99,11 +99,6 @@ export interface NexusGenObjects {
     createdById: NexusGenScalars['HashId']; // HashId!
     id: NexusGenScalars['HashId']; // HashId!
   }
-  ChatCreatedAlert: { // root type
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-  }
   ChatDeletedAlert: { // root type
     createdAt: NexusGenScalars['Date']; // Date!
     createdById: NexusGenScalars['HashId']; // HashId!
@@ -266,13 +261,13 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Alert: NexusGenRootTypes['ChatAdminAccessGrantedAlert'] | NexusGenRootTypes['ChatAdminAccessRevokedAlert'] | NexusGenRootTypes['ChatCreatedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['ChatMemberAccessGrantedAlert'] | NexusGenRootTypes['ChatMemberAccessRevokedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
+  Alert: NexusGenRootTypes['ChatAdminAccessGrantedAlert'] | NexusGenRootTypes['ChatAdminAccessRevokedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['ChatMemberAccessGrantedAlert'] | NexusGenRootTypes['ChatMemberAccessRevokedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
   Chat: NexusGenRootTypes['DeletedChat'] | NexusGenRootTypes['DirectMessageChat'] | NexusGenRootTypes['GroupChat'];
   ChatAccessAlert: NexusGenRootTypes['ChatAdminAccessGrantedAlert'] | NexusGenRootTypes['ChatAdminAccessRevokedAlert'] | NexusGenRootTypes['ChatMemberAccessGrantedAlert'] | NexusGenRootTypes['ChatMemberAccessRevokedAlert'];
   ChatUpdateEvent: NexusGenRootTypes['AdminsAddedEvent'] | NexusGenRootTypes['AdminsRemovedEvent'] | NexusGenRootTypes['DescriptionUpdatedEvent'] | NexusGenRootTypes['MembersAddedEvent'] | NexusGenRootTypes['MembersRemovedEvent'] | NexusGenRootTypes['NameUpdatedEvent'];
   Event: NexusGenRootTypes['AdminsAddedEvent'] | NexusGenRootTypes['AdminsRemovedEvent'] | NexusGenRootTypes['DeletedEvent'] | NexusGenRootTypes['DescriptionUpdatedEvent'] | NexusGenRootTypes['MembersAddedEvent'] | NexusGenRootTypes['MembersRemovedEvent'] | NexusGenRootTypes['MessageEvent'] | NexusGenRootTypes['NameUpdatedEvent'];
   KnownUser: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'];
-  Notification: NexusGenRootTypes['ChatAdminAccessGrantedAlert'] | NexusGenRootTypes['ChatAdminAccessRevokedAlert'] | NexusGenRootTypes['ChatCreatedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['ChatMemberAccessGrantedAlert'] | NexusGenRootTypes['ChatMemberAccessRevokedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['FriendRequest'] | NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
+  Notification: NexusGenRootTypes['ChatAdminAccessGrantedAlert'] | NexusGenRootTypes['ChatAdminAccessRevokedAlert'] | NexusGenRootTypes['ChatDeletedAlert'] | NexusGenRootTypes['ChatMemberAccessGrantedAlert'] | NexusGenRootTypes['ChatMemberAccessRevokedAlert'] | NexusGenRootTypes['FriendDeletedAlert'] | NexusGenRootTypes['FriendRequest'] | NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
   Request: NexusGenRootTypes['FriendRequest'];
   RequestResponseAlert: NexusGenRootTypes['RequestAcceptedAlert'] | NexusGenRootTypes['RequestDeclinedAlert'];
   User: NexusGenRootTypes['Friend'] | NexusGenRootTypes['Me'] | NexusGenRootTypes['Stranger'];
@@ -323,15 +318,6 @@ export interface NexusGenFieldTypes {
   ChatAdminAccessRevokedAlert: { // field return type
     chat: NexusGenRootTypes['Chat']; // Chat!
     chatId: NexusGenScalars['HashId']; // HashId!
-    createdAt: NexusGenScalars['Date']; // Date!
-    createdBy: NexusGenRootTypes['User']; // User!
-    createdById: NexusGenScalars['HashId']; // HashId!
-    id: NexusGenScalars['HashId']; // HashId!
-    isCreator: boolean; // Boolean!
-    recipients: NexusGenRootTypes['User'][]; // [User!]!
-  }
-  ChatCreatedAlert: { // field return type
-    chat: NexusGenRootTypes['Chat']; // Chat!
     createdAt: NexusGenScalars['Date']; // Date!
     createdBy: NexusGenRootTypes['User']; // User!
     createdById: NexusGenScalars['HashId']; // HashId!
@@ -598,6 +584,7 @@ export interface NexusGenFieldTypes {
   }
   Subscription: { // field return type
     alerts: NexusGenRootTypes['Alert'] | null; // Alert
+    chatAccessAlerts: NexusGenRootTypes['ChatAccessAlert'] | null; // ChatAccessAlert
     eventCreated: NexusGenRootTypes['Event'] | null; // Event
     eventDeleted: NexusGenRootTypes['DeletedEvent'] | null; // DeletedEvent
     eventUpdated: NexusGenRootTypes['Event'] | null; // Event
@@ -746,15 +733,6 @@ export interface NexusGenFieldTypeNames {
   ChatAdminAccessRevokedAlert: { // field return type name
     chat: 'Chat'
     chatId: 'HashId'
-    createdAt: 'Date'
-    createdBy: 'User'
-    createdById: 'HashId'
-    id: 'HashId'
-    isCreator: 'Boolean'
-    recipients: 'User'
-  }
-  ChatCreatedAlert: { // field return type name
-    chat: 'Chat'
     createdAt: 'Date'
     createdBy: 'User'
     createdById: 'HashId'
@@ -1021,6 +999,7 @@ export interface NexusGenFieldTypeNames {
   }
   Subscription: { // field return type name
     alerts: 'Alert'
+    chatAccessAlerts: 'ChatAccessAlert'
     eventCreated: 'Event'
     eventDeleted: 'DeletedEvent'
     eventUpdated: 'Event'
@@ -1308,13 +1287,13 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   ChatSubscriptionResult: "DeletedChat" | "DirectMessageChat" | "GroupChat"
-  Alert: "ChatAdminAccessGrantedAlert" | "ChatAdminAccessRevokedAlert" | "ChatCreatedAlert" | "ChatDeletedAlert" | "ChatMemberAccessGrantedAlert" | "ChatMemberAccessRevokedAlert" | "FriendDeletedAlert" | "RequestAcceptedAlert" | "RequestDeclinedAlert"
+  Alert: "ChatAdminAccessGrantedAlert" | "ChatAdminAccessRevokedAlert" | "ChatDeletedAlert" | "ChatMemberAccessGrantedAlert" | "ChatMemberAccessRevokedAlert" | "FriendDeletedAlert" | "RequestAcceptedAlert" | "RequestDeclinedAlert"
   Chat: "DeletedChat" | "DirectMessageChat" | "GroupChat"
   ChatAccessAlert: "ChatAdminAccessGrantedAlert" | "ChatAdminAccessRevokedAlert" | "ChatMemberAccessGrantedAlert" | "ChatMemberAccessRevokedAlert"
   ChatUpdateEvent: "AdminsAddedEvent" | "AdminsRemovedEvent" | "DescriptionUpdatedEvent" | "MembersAddedEvent" | "MembersRemovedEvent" | "NameUpdatedEvent"
   Event: "AdminsAddedEvent" | "AdminsRemovedEvent" | "DeletedEvent" | "DescriptionUpdatedEvent" | "MembersAddedEvent" | "MembersRemovedEvent" | "MessageEvent" | "NameUpdatedEvent"
   KnownUser: "Friend" | "Me"
-  Notification: "ChatAdminAccessGrantedAlert" | "ChatAdminAccessRevokedAlert" | "ChatCreatedAlert" | "ChatDeletedAlert" | "ChatMemberAccessGrantedAlert" | "ChatMemberAccessRevokedAlert" | "FriendDeletedAlert" | "FriendRequest" | "RequestAcceptedAlert" | "RequestDeclinedAlert"
+  Notification: "ChatAdminAccessGrantedAlert" | "ChatAdminAccessRevokedAlert" | "ChatDeletedAlert" | "ChatMemberAccessGrantedAlert" | "ChatMemberAccessRevokedAlert" | "FriendDeletedAlert" | "FriendRequest" | "RequestAcceptedAlert" | "RequestDeclinedAlert"
   Request: "FriendRequest"
   RequestResponseAlert: "RequestAcceptedAlert" | "RequestDeclinedAlert"
   User: "Friend" | "Me" | "Stranger"
@@ -1326,7 +1305,6 @@ export interface NexusGenTypeInterfaces {
   AdminsRemovedEvent: "ChatUpdateEvent" | "Event" | "UserAlterationEvent"
   ChatAdminAccessGrantedAlert: "Alert" | "ChatAccessAlert" | "Notification"
   ChatAdminAccessRevokedAlert: "Alert" | "ChatAccessAlert" | "Notification"
-  ChatCreatedAlert: "Alert" | "Notification"
   ChatDeletedAlert: "Alert" | "Notification"
   ChatMemberAccessGrantedAlert: "Alert" | "ChatAccessAlert" | "Notification"
   ChatMemberAccessRevokedAlert: "Alert" | "ChatAccessAlert" | "Notification"

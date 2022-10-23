@@ -62,7 +62,7 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     });
 
     // Publish notification to deleted friend
-    pubsub.publish<NotificationPayload>(Subscription.FriendDeleted, {
+    pubsub.publish<NotificationPayload>(Subscription.FriendDeletedAlert, {
       recipients: [friendId],
       content: alert,
     });

@@ -180,7 +180,7 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
     }
 
     // Publish alert
-    pubsub.publish<NotificationPayload>(Subscription.RequestAccepted, {
+    pubsub.publish<NotificationPayload>(Subscription.RequestAcceptedAlert, {
       recipients: [request.createdById],
       content: alert,
     });
