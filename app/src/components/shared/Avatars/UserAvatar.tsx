@@ -12,9 +12,10 @@ import {
 import { UserAvatarFragment } from 'graphql/generated/graphql';
 import { CSSProperties } from 'react';
 import { getUserAvatar } from 'utils/avatar';
+import { sizes } from './Avatar.common';
 
 type Props = {
-  user?: UserAvatarFragment;
+  user?: UserAvatarFragment | null | undefined;
   loading?: boolean;
   size?: MantineNumberSize;
   style?: CSSProperties;
@@ -23,15 +24,7 @@ type Props = {
   };
 };
 
-const sizes = {
-  xs: 16,
-  sm: 26,
-  md: 38,
-  lg: 56,
-  xl: 84,
-};
-
-const UserAvatar = ({
+export const UserAvatar = ({
   user,
   size = 'md',
   loading = false,

@@ -9,7 +9,7 @@ import {
   IconUserPlus,
 } from '@tabler/icons';
 import { StrangerMenuStrangerFragment } from 'graphql/generated/graphql';
-import useRequest from 'hooks/useRequest';
+import { useRequest } from 'hooks';
 
 type Props = {
   stranger: StrangerMenuStrangerFragment;

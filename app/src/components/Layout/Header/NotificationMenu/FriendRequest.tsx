@@ -2,10 +2,10 @@ import { Group, Tooltip, ActionIcon, Stack, Text } from '@mantine/core';
 import moment from 'moment';
 import { IconCircleX, IconCircleCheck } from '@tabler/icons';
 import { FriendRequestComponentFragment } from 'graphql/generated/graphql';
-import UserAvatar from 'components/shared/UserAvatar';
+import UserAvatar from 'components/shared/Avatars/UserAvatar';
 import { gql } from '@apollo/client';
 import { useStranger } from 'hooks';
-import useRequest from 'hooks/useRequest';
+import { useRequest } from 'hooks';
 
 type Props = {
   request: FriendRequestComponentFragment;

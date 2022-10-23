@@ -5,7 +5,7 @@ import ChatList from './ChatList';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 import { useDrawer } from 'store';
 import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
-import { useCreateDmChat } from 'hooks';
+import { useCreateChat } from 'hooks';
 import { gql } from '@apollo/client';
 import ChatItem from './ChatItem';
 import { useGetChatsForChatDisplayQuery } from 'graphql/generated/graphql';
@@ -47,7 +47,9 @@ const ChatDisplay = () => {
   const [filter, setFilter] = useState('');
   const openCreateGroupChat = useCreateGroupChatModal();
   const openFriendSelector = useFriendSelectorModal();
-  const [createDm] = useCreateDmChat();
+  const {
+    createDirectMessageChat: [createDirectMessageChat],
+  } = useCreateChat();
   const drawer = useDrawer();
   const filteredChats = useMemo(
     () =>
@@ -71,7 +73,7 @@ const ChatDisplay = () => {
     [filteredChats]
   );
 
-  const filteredDmChats = useMemo(
+  const filteredDirectMessageChats = useMemo(
     () => filteredChats.filter((c) => c.__typename === 'DirectMessageChat'),
     [filteredChats]
   );
@@ -83,7 +85,7 @@ const ChatDisplay = () => {
     } else {
       openFriendSelector({
         onSelect: (user) => {
-          createDm({
+          createDirectMessageChat({
             variables: {
               friendId: user.id,
             },
@@ -91,7 +93,13 @@ const ChatDisplay = () => {
         },
       });
     }
-  }, [drawer, activeTab, openCreateGroupChat, openFriendSelector, createDm]);
+  }, [
+    drawer,
+    activeTab,
+    openCreateGroupChat,
+    openFriendSelector,
+    createDirectMessageChat,
+  ]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -134,7 +142,7 @@ const ChatDisplay = () => {
         <ChatList chats={filteredGroupChats} loading={loading} />
       </Tabs.Panel>
       <Tabs.Panel value="direct" pt="xs">
-        <ChatList chats={filteredDmChats} loading={loading} />
+        <ChatList chats={filteredDirectMessageChats} loading={loading} />
       </Tabs.Panel>
     </Tabs>
   );

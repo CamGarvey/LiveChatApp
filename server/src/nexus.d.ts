@@ -527,6 +527,7 @@ export interface NexusGenFieldTypes {
     deleteChat: NexusGenRootTypes['DeletedChat'] | null; // DeletedChat
     deleteEvent: NexusGenRootTypes['DeletedEvent'] | null; // DeletedEvent
     deleteFriend: NexusGenRootTypes['Stranger'] | null; // Stranger
+    leaveGroupChat: NexusGenRootTypes['MembersRemovedEvent'] | null; // MembersRemovedEvent
     removeAdminsFromGroupChat: NexusGenRootTypes['AdminsRemovedEvent'] | null; // AdminsRemovedEvent
     removeMembersFromGroupChat: NexusGenRootTypes['MembersRemovedEvent'] | null; // MembersRemovedEvent
     sendFriendRequest: NexusGenRootTypes['FriendRequest'] | null; // FriendRequest
@@ -949,6 +950,7 @@ export interface NexusGenFieldTypeNames {
     deleteChat: 'DeletedChat'
     deleteEvent: 'DeletedEvent'
     deleteFriend: 'Stranger'
+    leaveGroupChat: 'MembersRemovedEvent'
     removeAdminsFromGroupChat: 'AdminsRemovedEvent'
     removeMembersFromGroupChat: 'MembersRemovedEvent'
     sendFriendRequest: 'FriendRequest'
@@ -1209,6 +1211,9 @@ export interface NexusGenArgTypes {
     }
     deleteFriend: { // args
       friendId: NexusGenScalars['HashId']; // HashId!
+    }
+    leaveGroupChat: { // args
+      chatId: NexusGenScalars['HashId']; // HashId!
     }
     removeAdminsFromGroupChat: { // args
       chatId: NexusGenScalars['HashId']; // HashId!

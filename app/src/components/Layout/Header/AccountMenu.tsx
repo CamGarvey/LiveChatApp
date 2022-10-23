@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu } from '@mantine/core';
-import UserAvatar from 'components/shared/UserAvatar';
+import { UserAvatar } from 'components/shared/Avatars';
 import { useGetMeForAccountMenuQuery } from 'graphql/generated/graphql';
 import { IconLogout, IconUserCircle } from '@tabler/icons';
 
@@ -39,9 +39,11 @@ const AccountMenu = ({ onLogoutClick }: Props) => {
             },
           }}
         >
-          {user && (
-            <UserAvatar user={user} dropdown={{ style: { display: 'none' } }} />
-          )}
+          <UserAvatar
+            user={user}
+            loading={loading}
+            dropdown={{ style: { display: 'none' } }}
+          />
         </ActionIcon>
       </Menu.Target>
       {user && (

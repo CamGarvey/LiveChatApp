@@ -4,7 +4,7 @@ import UserMultiSelect from 'components/shared/UserSelector/UserMultiSelect';
 import { Button, Center, Input, Loader, Stack } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
-import { useCreateGroupChat } from 'hooks/useCreateGroupChat';
+import { useCreateChat } from 'hooks';
 import { gql } from '@apollo/client';
 import { useGetFriendsForCreateGroupChatQuery } from 'graphql/generated/graphql';
 import { showNotification } from '@mantine/notifications';
@@ -37,8 +37,9 @@ export const CreateGroupChatModal = ({
     error: friendError,
   } = useGetFriendsForCreateGroupChatQuery({ fetchPolicy: 'network-only' });
 
-  const [createGroupChatMutation, { loading: loadingCreateChat }] =
-    useCreateGroupChat();
+  const {
+    createGroupChat: [createGroupChatMutation, { loading: loadingCreateChat }],
+  } = useCreateChat();
 
   useEffect(() => {
     inputRef?.current?.focus();

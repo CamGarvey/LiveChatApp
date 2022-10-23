@@ -56,6 +56,8 @@ const ChatInput = ({
               disabled={isDisabled || isLoading}
               variant={'filled'}
               color={'blue'}
+              radius={'xl'}
+              size={'lg'}
             >
               <IconSend />
             </ActionIcon>

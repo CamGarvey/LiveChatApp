@@ -267,6 +267,107 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
   }
 );
 
+export const LeaveGroupChatMutation = mutationField('leaveGroupChat', {
+  type: 'MembersRemovedEvent',
+  args: {
+    chatId: nonNull(hashIdArg()),
+  },
+  authorize: (_, { chatId }, { auth, userId }) =>
+    auth.canRemoveMembersFromGroupChat({
+      chatId,
+      members: [userId],
+    }),
+  resolve: async (_, { chatId }, { userId, prisma, pubsub }) => {
+    const chat = await prisma.chat.update({
+      data: {
+        members: {
+          disconnect: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        members: {
+          select: {
+            id: true,
+          },
+        },
+      },
+      where: {
+        id: chatId,
+      },
+    });
+
+    const event = await prisma.event.create({
+      data: {
+        type: 'CHAT_UPDATE',
+        chat: {
+          connect: {
+            id: chatId,
+          },
+        },
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        chatUpdate: {
+          create: {
+            type: 'MEMBERS_REMOVED',
+            users: {
+              connect: {
+                id: userId,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const recipients = chat.members
+      .map((x) => x.id)
+      .filter((x) => x !== userId);
+
+    // Publish new chat event
+    await pubsub.publish<EventPayload>(Subscription.EventCreated, {
+      recipients,
+      content: event,
+    });
+
+    const alert = await prisma.alert.create({
+      data: {
+        type: 'CHAT_MEMBER_ACCESS_REVOKED',
+        chat: {
+          connect: {
+            id: chatId,
+          },
+        },
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        recipients: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    // Publish new chat alert
+    await pubsub.publish<NotificationPayload>(
+      Subscription.ChatMemberAccessRevoked,
+      {
+        recipients,
+        content: alert,
+      }
+    );
+
+    return event;
+  },
+});
+
 export const AddMembersToGroupChatMutation = mutationField(
   'addMembersToGroupChat',
   {

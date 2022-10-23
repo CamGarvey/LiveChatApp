@@ -29,6 +29,7 @@ const NotificationMenu = ({ size = 16 }: Props) => {
           'ChatAdminAccessGrantedAlert',
           'ChatMemberAccessRevokedAlert',
           'ChatMemberAccessGrantedAlert',
+          'ChatCreatedAlert',
         ].includes(x.__typename)
     ) as ChatAccessAlertComponentFragment[]) ?? [];
 

@@ -13,7 +13,7 @@ import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteChat } from 'hooks';
 import { gql } from '@apollo/client';
-import { useUpdateGroupChat } from 'hooks/useUpdateGroupChat';
+import { useUpdateChat } from 'hooks/useUpdateChat';
 
 gql`
   query GetChatForUpdate($chatId: HashId!) {
@@ -63,7 +63,7 @@ export const UpdateGroupChatModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { deleteChat, loading: loadingDelete } = useDeleteChat();
-  const { update, loading: loadingUpdate } = useUpdateGroupChat();
+  const { update, loading: loadingUpdate } = useUpdateChat();
 
   const {
     loading: loadingFriends,

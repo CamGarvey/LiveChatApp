@@ -123,7 +123,7 @@ type UpdateProps = {
   removeAdmins?: string[] | null;
 };
 
-export const useUpdateGroupChat = () => {
+export const useUpdateChat = () => {
   const [updateNameMutation, { loading: loadingName }] =
     useUpdateGroupChatNameMutation();
   const [updateDescriptionMutation, { loading: loadingDesc }] =

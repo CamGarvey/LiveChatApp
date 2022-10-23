@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
-import { Skeleton, Stack, Text } from '@mantine/core';
+import { Group, Skeleton, Stack, Text } from '@mantine/core';
+import { ChatAvatar } from 'components/shared/Avatars';
 import { useGetChatForChatHeaderLazyQuery } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
 
@@ -19,7 +20,9 @@ gql`
       name
       description
     }
+    ...ChatAvatar
   }
+  ${ChatAvatar.fragments.chat}
 `;
 
 type Props = {
@@ -44,18 +47,24 @@ const ChatHeader = ({ chatId }: Props) => {
   if (error) return <></>;
 
   return (
-    <Stack
+    <Group
       m={0}
       py={2}
       px={'sm'}
       sx={{
         height: '60px',
         width: '100%',
+        flexWrap: 'nowrap',
       }}
-      justify={'center'}
     >
+      <ChatAvatar loading={loading} chat={chat} />
       {loading ? (
-        <Stack spacing={2}>
+        <Stack
+          spacing={2}
+          sx={{
+            width: '100%',
+          }}
+        >
           <Skeleton height={8} mt={6} width="20%" radius="xl" />
           <Skeleton height={8} mt={6} width="40%" radius="xl" />
         </Stack>
@@ -76,7 +85,7 @@ const ChatHeader = ({ chatId }: Props) => {
           )}
         </>
       )}
-    </Stack>
+    </Group>
   );
 };
 

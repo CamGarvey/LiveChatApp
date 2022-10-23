@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { Group } from '@mantine/core';
-import UserAvatar from 'components/shared/UserAvatar';
+import { UserAvatar } from 'components/shared/Avatars';
 import { motion } from 'framer-motion';
 import { IncomingEventFragment } from 'graphql/generated/graphql';
 import { useState } from 'react';

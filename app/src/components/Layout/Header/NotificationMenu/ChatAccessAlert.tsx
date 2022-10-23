@@ -1,7 +1,7 @@
 import { ChatAccessAlertComponentFragment } from 'graphql/generated/graphql';
 import { Group, Stack, Text } from '@mantine/core';
 import moment from 'moment';
-import UserAvatar from 'components/shared/UserAvatar';
+import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 
 type Props = {

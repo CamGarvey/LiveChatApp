@@ -1,5 +1,14 @@
-import { gql } from '@apollo/client';
 import {
+  ApolloCache,
+  DefaultContext,
+  gql,
+  MutationUpdaterFunction,
+} from '@apollo/client';
+import {
+  AcceptRequestMutation,
+  Exact,
+  GetNotificationsDocument,
+  GetNotificationsQuery,
   useAcceptRequestMutation,
   useCancelRequestMutation,
   useDeclineRequestMutation,
@@ -34,7 +43,7 @@ gql`
   }
 `;
 
-const useRequest = () => {
+export const useRequest = () => {
   const [accept, { loading: loadingAccept }] = useAcceptRequestMutation();
   const [decline, { loading: loadingDecline }] = useDeclineRequestMutation();
   const [cancel, { loading: loadingCancel }] = useCancelRequestMutation();
@@ -44,6 +53,7 @@ const useRequest = () => {
       variables: {
         requestId,
       },
+      update: removeRequest(requestId),
     });
 
   const declineRequest = (requestId: string) =>
@@ -51,6 +61,7 @@ const useRequest = () => {
       variables: {
         requestId,
       },
+      update: removeRequest(requestId),
     });
 
   const cancelRequest = (requestId: string) =>
@@ -68,4 +79,24 @@ const useRequest = () => {
   };
 };
 
-export default useRequest;
+const removeRequest =
+  (
+    requestId: string
+  ): MutationUpdaterFunction<
+    AcceptRequestMutation,
+    Exact<{
+      requestId: any;
+    }>,
+    DefaultContext,
+    ApolloCache<any>
+  > =>
+  (cache) =>
+    cache.updateQuery<GetNotificationsQuery>(
+      {
+        query: GetNotificationsDocument,
+      },
+      (data) => ({
+        notifications:
+          data?.notifications.filter((x) => x.id !== requestId) ?? [],
+      })
+    );

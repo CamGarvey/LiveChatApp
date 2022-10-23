@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client';
 import { Menu } from '@mantine/core';
-import { IconDotsVertical, IconKarate } from '@tabler/icons';
+import { IconDots, IconKarate } from '@tabler/icons';
 import UserItem from 'components/shared/UserItem';
 import UserMenu from 'components/shared/UserItem/UserMenu';
 import {
   ChatMemberItemChatFragment,
   ChatMemberItemUserFragment,
 } from 'graphql/generated/graphql';
-import { useUpdateGroupChat } from 'hooks';
+import { useUpdateChat } from 'hooks';
 
 type Props = {
   chat: ChatMemberItemChatFragment;
@@ -15,17 +15,17 @@ type Props = {
 };
 
 const ChatMemberItem = ({ chat, user }: Props) => {
-  const { update, loading: loadingRemove } = useUpdateGroupChat();
+  const { update, loading: loadingRemove } = useUpdateChat();
 
   return (
     <UserItem
       key={user.id}
-      user={{ ...user }}
+      user={user}
       menu={
         <UserMenu
           loading={loadingRemove}
           target={{
-            icon: <IconDotsVertical />,
+            icon: <IconDots />,
           }}
           items={
             chat.__typename === 'GroupChat' &&

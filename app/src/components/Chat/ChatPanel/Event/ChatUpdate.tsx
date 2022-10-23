@@ -30,6 +30,12 @@ export const ChatUpdate = ({ update }: Props) => {
           update.users
         )} to the group`;
       case 'MembersRemovedEvent':
+        if (
+          update.users.length === 1 &&
+          update.users[0].id === update.createdBy.id
+        ) {
+          return `${update.createdBy.username} left the group`;
+        }
         return `${update.createdBy.username} removed ${membersDesc(
           update.users
         )} from the group`;

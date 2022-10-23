@@ -1,9 +1,13 @@
 import { gql } from '@apollo/client';
-import { Aside, ScrollArea } from '@mantine/core';
-import { ClosedAsideChatFragment } from 'graphql/generated/graphql';
+import { Aside, Avatar } from '@mantine/core';
+import {
+  AvatarSectionUserFragment,
+  ClosedAsideChatFragment,
+} from 'graphql/generated/graphql';
 import { useMemo } from 'react';
+import { sortRelationship } from 'utils';
 import ArrowAvatar from '../ArrowAvatar';
-import AvatarSection from './AvatarSection';
+import { AvatarSection } from './Sections';
 
 type Props = {
   chat?: ClosedAsideChatFragment | null | undefined;
@@ -13,14 +17,18 @@ type Props = {
 
 const ClosedAside = ({ chat, loading, onOpen }: Props) => {
   const users = useMemo(() => {
+    let userArr: AvatarSectionUserFragment[];
     switch (chat?.__typename) {
       case 'DirectMessageChat':
-        return [chat.friend];
+        userArr = [chat.friend];
+        break;
       case 'GroupChat':
-        return chat.members;
+        userArr = chat.members;
+        break;
       default:
-        return [];
+        userArr = [];
     }
+    return userArr.slice().sort(sortRelationship);
   }, [chat]);
 
   return (
@@ -28,9 +36,12 @@ const ClosedAside = ({ chat, loading, onOpen }: Props) => {
       <Aside.Section>
         <ArrowAvatar dir={'left'} onClick={onOpen} />
       </Aside.Section>
-      <Aside.Section component={ScrollArea} type={'never'} grow>
-        <AvatarSection users={users} loading={loading} />
-      </Aside.Section>
+      {chat?.__typename === 'GroupChat' && (
+        <Aside.Section>
+          <Avatar radius={'xl'}>{chat.members.length}</Avatar>
+        </Aside.Section>
+      )}
+      <AvatarSection users={users} loading={loading} />
     </>
   );
 };

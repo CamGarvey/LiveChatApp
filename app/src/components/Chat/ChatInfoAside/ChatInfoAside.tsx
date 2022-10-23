@@ -41,6 +41,9 @@ const ChatInfoAside = () => {
         p="md"
         hiddenBreakpoint="md"
         width={{ xs: width, sm: width, md: width, lg: width, xl: width }}
+        sx={{
+          gap: '4px',
+        }}
       >
         {opened ? (
           <OpenedAside

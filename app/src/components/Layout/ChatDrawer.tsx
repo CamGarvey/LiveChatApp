@@ -7,7 +7,7 @@ import {
 } from '@mantine/core';
 import { useUser } from 'context/UserContext';
 import ChatDisplay from 'components/ChatDisplay';
-import UserAvatar from 'components/shared/UserAvatar';
+import { UserAvatar } from 'components/shared/Avatars';
 import { useDrawer } from 'store';
 
 const ChatDrawer = () => {

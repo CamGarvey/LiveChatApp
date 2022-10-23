@@ -1,9 +1,7 @@
 import { gql } from '@apollo/client';
-import { Aside, Group, LoadingOverlay, ScrollArea, Text } from '@mantine/core';
+import { Aside, Group, Text } from '@mantine/core';
 import { OpenedAsideChatFragment } from 'graphql/generated/graphql';
-import { useMemo } from 'react';
-import ChatMemberItem from '../ChatMemberItem';
-import OpenedHeader from './OpenedHeader';
+import { HeaderSection, MemberSection, FooterSection } from './Sections';
 
 type Props = {
   chat?: OpenedAsideChatFragment | null | undefined;
@@ -12,22 +10,9 @@ type Props = {
 };
 
 const OpenedAside = ({ chat, loading, onClose }: Props) => {
-  const users = useMemo(() => {
-    switch (chat?.__typename) {
-      case 'DirectMessageChat':
-        return [chat.friend];
-      case 'GroupChat':
-        return chat.members;
-      default:
-        return [];
-    }
-  }, [chat]);
-
   return (
     <>
-      <Aside.Section>
-        <OpenedHeader onClose={onClose} chat={chat} loading={loading} />
-      </Aside.Section>
+      <HeaderSection onClose={onClose} chat={chat} loading={loading} />
       {chat?.__typename === 'GroupChat' && (
         <Aside.Section>
           <Group>
@@ -35,26 +20,8 @@ const OpenedAside = ({ chat, loading, onClose }: Props) => {
           </Group>
         </Aside.Section>
       )}
-      <Aside.Section
-        grow
-        component={ScrollArea}
-        mx="-xs"
-        px="xs"
-        styles={{
-          viewport: {
-            paddingLeft: '5px',
-          },
-        }}
-        offsetScrollbars={true}
-      >
-        <LoadingOverlay
-          mt={10}
-          visible={loading}
-          loaderProps={{ variant: 'bars' }}
-        />
-        {chat &&
-          users.map((member) => <ChatMemberItem chat={chat} user={member} />)}
-      </Aside.Section>
+      <MemberSection chat={chat} loading={loading} />
+      <FooterSection chat={chat} loading={loading} />
     </>
   );
 };
@@ -63,21 +30,15 @@ OpenedAside.fragments = {
   chat: gql`
     fragment OpenedAsideChat on Chat {
       ... on GroupChat {
-        name
-        description
-        members {
-          ...ChatMemberItemUser
-        }
+        memberCount
       }
-      ... on DirectMessageChat {
-        friend {
-          ...ChatMemberItemUser
-        }
-      }
-      ...ChatMemberItemChat
+      ...MemberSectionChat
+      ...HeaderSectionChat
+      ...FooterSectionChat
     }
-    ${ChatMemberItem.fragments.chat}
-    ${ChatMemberItem.fragments.user}
+    ${HeaderSection.fragments.chat}
+    ${MemberSection.fragments.chat}
+    ${FooterSection.fragments.chat}
   `,
 };
 

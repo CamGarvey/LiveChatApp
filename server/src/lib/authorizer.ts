@@ -211,6 +211,15 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
+    // Don't need to be an admin to remove self unless the creator
+    if (
+      data.members.length === 1 &&
+      data.members[0] === this.userId &&
+      chat.createdById !== this.userId
+    ) {
+      return true;
+    }
+
     if (!chat.admins.find((x) => x.id === this.userId)) {
       throw new ForbiddenError('You are not an admin in this chat');
     }
@@ -236,7 +245,7 @@ export class Authorizer implements IAuthorizer {
     }
 
     if (adminSet.size !== 0) {
-      throw new ForbiddenError('You can remove other admins');
+      throw new ForbiddenError('You can not remove other admins');
     }
     return true;
   }
@@ -289,9 +298,7 @@ export class Authorizer implements IAuthorizer {
     const adminSet = new Set([...memberSet].filter((x) => adminIds.has(x)));
 
     // you can remove yourself as admin so removing userId
-    if (adminSet.has(this.userId)) {
-      adminSet.delete(this.userId);
-    }
+    adminSet.delete(this.userId);
 
     if (adminSet.size !== 0) {
       throw new ForbiddenError('You can remove other admins');

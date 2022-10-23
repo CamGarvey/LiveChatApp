@@ -1,14 +1,16 @@
 import React from 'react';
-import { Box, Stack, Sx, Text, UnstyledButton } from '@mantine/core';
-import UserAvatar from '../UserAvatar';
+import { Box, Stack, Sx, UnstyledButton } from '@mantine/core';
+import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
+import TruncatedText from '../TruncatedText';
 
 type Props = {
   user: UserItemFragment;
   menu?: React.ReactNode;
   onClick?: () => void;
 };
+
 const UserItem = ({ user, menu, onClick }: Props) => {
   const { name, username } = user;
 
@@ -39,13 +41,12 @@ const UserItem = ({ user, menu, onClick }: Props) => {
     >
       <UserAvatar size="sm" user={user} />
       <Stack spacing={0}>
-        <Text sx={textStyle}>
-          {username}
-          {user.__typename === 'Me' && ' (YOU)'}
-        </Text>
-        <Text size={'xs'} color={'dimmed'} sx={textStyle}>
+        <TruncatedText max={16} size={'sm'} sx={textStyle}>
+          {`${username} ${user.__typename === 'Me' ? '(You)' : ''}`}
+        </TruncatedText>
+        <TruncatedText max={16} size={'xs'} color={'dimmed'} sx={textStyle}>
           {name}
-        </Text>
+        </TruncatedText>
       </Stack>
       {menu && user.__typename !== 'Me' && <Box ml={'auto'}>{menu}</Box>}
     </UnstyledButton>
