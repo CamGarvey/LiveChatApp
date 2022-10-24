@@ -7,8 +7,6 @@ export const Alert = interfaceType({
     and can be sent to multiple users`,
   resolveType: (source: PrismaAlert) => {
     switch (source.type) {
-      case 'CHAT_CREATED':
-        return 'ChatCreatedAlert';
       case 'CHAT_DELETED':
         return 'ChatDeletedAlert';
       case 'FRIEND_DELETED':
@@ -17,6 +15,14 @@ export const Alert = interfaceType({
         return 'RequestAcceptedAlert';
       case 'REQUEST_DECLINED':
         return 'RequestDeclinedAlert';
+      case 'CHAT_MEMBER_ACCESS_REVOKED':
+        return 'ChatMemberAccessRevokedAlert';
+      case 'CHAT_MEMBER_ACCESS_GRANTED':
+        return 'ChatMemberAccessGrantedAlert';
+      case 'CHAT_ADMIN_ACCESS_REVOKED':
+        return 'ChatAdminAccessRevokedAlert';
+      case 'CHAT_ADMIN_ACCESS_GRANTED':
+        return 'ChatAdminAccessGrantedAlert';
       default:
         return null;
     }

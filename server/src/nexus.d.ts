@@ -57,8 +57,8 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  AlertState: "ALL" | "SEEN" | "UNSEEN"
-  RequestState: "ACCEPTED" | "CANCELLED" | "DECLINED" | "SEEN" | "SENT"
+  AlertState: "ALL" | "UNSEEN"
+  RequestState: "ACCEPTED" | "CANCELLED" | "DECLINED" | "SENT"
   Sort: "asc" | "desc"
 }
 
@@ -1222,9 +1222,6 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
-    alerts: { // args
-      state: NexusGenEnums['AlertState']; // AlertState!
-    }
     chat: { // args
       chatId: NexusGenScalars['HashId']; // HashId!
     }

@@ -580,9 +580,7 @@ export class Authorizer implements IAuthorizer {
       );
     }
 
-    const pendingStates: RequestState[] = ['SEEN', 'SENT'];
-
-    if (!pendingStates.includes(request.state)) {
+    if (request.state !== 'SENT') {
       throw new ForbiddenError('Invalid state');
     }
 
@@ -606,9 +604,7 @@ export class Authorizer implements IAuthorizer {
       );
     }
 
-    const pendingStates: RequestState[] = ['SEEN', 'SENT'];
-
-    if (!pendingStates.includes(request.state)) {
+    if (request.state !== 'SENT') {
       throw new ForbiddenError('Invalid state');
     }
 

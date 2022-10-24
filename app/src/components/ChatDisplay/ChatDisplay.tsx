@@ -81,7 +81,10 @@ const ChatDisplay = () => {
           switch (accessAlert.__typename) {
             case 'ChatMemberAccessGrantedAlert':
               return Object.assign({}, prev, {
-                chats: [...prev.chats, accessAlert.chat],
+                chats: [
+                  ...prev.chats.filter((x) => x.id !== accessAlert.chat.id),
+                  accessAlert.chat,
+                ],
               } as GetChatsForChatDisplayQuery);
             case 'ChatMemberAccessRevokedAlert':
               navigate('/chats', { replace: true });

@@ -979,7 +979,7 @@ describe('canSendFriendRequest', () => {
     );
   });
 
-  it('should throw if there is a pending (SENT or SEEN) friend request sent', async () => {
+  it('should throw if there is a SENT state friend request sent', async () => {
     const friend = {
       friends: [],
       receivedFriendRequests: [{ id: 100 }],
@@ -992,7 +992,7 @@ describe('canSendFriendRequest', () => {
     );
   });
 
-  it('should throw if there is a pending (SENT or SEEN) friend request received', async () => {
+  it('should throw if there is a SENT state friend request received', async () => {
     const friend = {
       friends: [],
       receivedFriendRequests: [],
@@ -1035,9 +1035,7 @@ describe('canSendFriendRequest', () => {
           },
           where: {
             recipientId: 1,
-            status: {
-              in: ['SEEN', 'SENT'],
-            },
+            status: 'SENT',
           },
         },
         receivedFriendRequests: {
@@ -1070,7 +1068,7 @@ describe('canCancelFriendRequest', () => {
       createdById: 100,
       status: 'SENT',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canCancelRequest(100)).rejects.toThrowError(
       'You do not have permission to cancel this friend request'
@@ -1082,24 +1080,24 @@ describe('canCancelFriendRequest', () => {
       createdById: 1,
       status: 'ACCEPTED',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canCancelRequest(100)).rejects.toThrowError(
       'Invalid state'
     );
   });
 
-  it('should return true if the friend request is created by current user and in a pending status', async () => {
+  it('should return true if the friend request is created by current user and SENT state', async () => {
     const request = {
       createdById: 1,
       status: 'SENT',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     const result = await authorizer.canCancelRequest(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.friendRequest.findUniqueOrThrow).toBeCalledWith({
+    expect(mockCtx.prisma.request.findUniqueOrThrow).toBeCalledWith({
       select: {
         createdById: true,
         status: true,
@@ -1113,9 +1111,7 @@ describe('canCancelFriendRequest', () => {
 
 describe('canDeclineFriendRequest', () => {
   it('should throw if friend request not found', async () => {
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockRejectedValue(
-      new Error()
-    );
+    mockCtx.prisma.request.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError();
   });
@@ -1125,19 +1121,19 @@ describe('canDeclineFriendRequest', () => {
       recipientId: 100,
       status: 'SENT',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError(
       'You do not have permission to decline this friend request'
     );
   });
 
-  it('should throw if friend request is not in a pending status (SEEN or SENT)', async () => {
+  it('should throw if friend request is not in SENT state', async () => {
     const request = {
       recipientId: 1,
       status: 'ACCEPTED',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError(
       'Invalid state'
@@ -1149,12 +1145,12 @@ describe('canDeclineFriendRequest', () => {
       recipientId: 1,
       status: 'SENT',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     const result = await authorizer.canDeclineRequest(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.friendRequest.findUniqueOrThrow).toBeCalledWith({
+    expect(mockCtx.prisma.request.findUniqueOrThrow).toBeCalledWith({
       select: {
         recipientId: true,
         status: true,
@@ -1187,12 +1183,12 @@ describe('canAcceptFriendRequest', () => {
     );
   });
 
-  it('should throw if friend request is not in a pending status (SEEN or SENT)', async () => {
+  it('should throw if friend request is not in SENT', async () => {
     const request = {
       recipientId: 1,
       status: 'ACCEPTED',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError(
       'Invalid state'
@@ -1204,7 +1200,7 @@ describe('canAcceptFriendRequest', () => {
       recipientId: 1,
       status: 'SENT',
     } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     const result = await authorizer.canAcceptRequest(100);
 

@@ -41,7 +41,6 @@ interface Alert implements Notification {
 
 enum AlertState {
   ALL
-  SEEN
   UNSEEN
 }
 
@@ -548,7 +547,7 @@ type PageInfo {
 }
 
 type Query {
-  alerts(state: AlertState! = UNSEEN): [Alert!]!
+  alerts: [Alert!]!
   chat(
     """Id of chat"""
     chatId: HashId!
@@ -659,7 +658,6 @@ enum RequestState {
   ACCEPTED
   CANCELLED
   DECLINED
-  SEEN
   SENT
 }
 

@@ -113,17 +113,13 @@ export const Stranger = objectType({
             requests: {
               where: {
                 type: 'FRIEND_REQUEST',
-                state: {
-                  in: ['SEEN', 'SENT'],
-                },
+                state: 'SENT',
               },
             },
             requestsSent: {
               where: {
                 type: 'FRIEND_REQUEST',
-                state: {
-                  in: ['SEEN', 'SENT'],
-                },
+                state: 'SENT',
               },
             },
           },

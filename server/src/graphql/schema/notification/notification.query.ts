@@ -8,9 +8,7 @@ export const Notifications = queryField('notifications', {
       include: {
         requests: {
           where: {
-            state: {
-              in: ['SENT', 'SEEN'],
-            },
+            state: 'SENT',
           },
         },
         alerts: true,

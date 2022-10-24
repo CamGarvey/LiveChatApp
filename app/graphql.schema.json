@@ -545,12 +545,6 @@
             "deprecationReason": null
           },
           {
-            "name": "SEEN",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "UNSEEN",
             "description": null,
             "isDeprecated": false,
@@ -5755,24 +5749,7 @@
           {
             "name": "alerts",
             "description": null,
-            "args": [
-              {
-                "name": "state",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "ENUM",
-                    "name": "AlertState",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": "UNSEEN",
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
+            "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -6845,12 +6822,6 @@
           },
           {
             "name": "DECLINED",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "SEEN",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

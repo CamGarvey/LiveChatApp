@@ -7,11 +7,18 @@ export const AcknowledgeAlertMutation = mutationField('acknowledgeAlert', {
     alertId: nonNull(hashIdArg()),
   },
   resolve: async (_, { alertId }, { prisma, userId }) => {
-    return await prisma.alert.update({
+    const alert = await prisma.alert.update({
       data: {
-        seenBy: {
-          connect: {
+        recipients: {
+          disconnect: {
             id: userId,
+          },
+        },
+      },
+      include: {
+        recipients: {
+          select: {
+            id: true,
           },
         },
       },
@@ -19,5 +26,17 @@ export const AcknowledgeAlertMutation = mutationField('acknowledgeAlert', {
         id: alertId,
       },
     });
+
+    // If there are no more recipients (everyone has acknowledged)
+    // then delete the alert
+    if (alert.recipients.length === 0) {
+      await prisma.alert.delete({
+        where: {
+          id: alertId,
+        },
+      });
+    }
+
+    return alert;
   },
 });

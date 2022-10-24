@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import NotificationMenu from 'components/Layout/Header/NotificationMenu';
 import {
   GetNotificationsQuery,
   NotificationsDocument,
@@ -66,7 +67,9 @@ gql`
         }
       }
     }
+    ...NotificationMenuRequest
   }
+  ${NotificationMenu.fragments.notification}
 `;
 
 /**
