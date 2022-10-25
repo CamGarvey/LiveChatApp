@@ -97,7 +97,7 @@ const ChatDisplay = () => {
         },
       });
     return () => unsubscribe();
-  }, [subscribeToMore]);
+  }, [subscribeToMore, navigate]);
 
   const filteredChats = useMemo(
     () =>
@@ -180,7 +180,7 @@ const ChatDisplay = () => {
             }
             position={'bottom'}
           >
-            <ActionIcon onClick={handleOpenCreate}>
+            <ActionIcon onClick={handleOpenCreate} color={'default'}>
               <IconCirclePlus />
             </ActionIcon>
           </Tooltip>

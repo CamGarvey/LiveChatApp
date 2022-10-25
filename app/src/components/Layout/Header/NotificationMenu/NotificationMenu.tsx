@@ -25,6 +25,8 @@ const NotificationMenu = ({ size = 16 }: Props) => {
           color={'red'}
           label={notifications.length}
           disabled={notifications.length === 0}
+          size={14}
+          dot
         >
           <ActionIcon variant="default">
             <IconBell size={size} />

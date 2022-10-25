@@ -95,7 +95,7 @@ export const CreateGroupChatModal = ({
         <Input.Wrapper>
           {loadingFriends ? (
             <Center>
-              <Loader variant="bars" />
+              <Loader />
             </Center>
           ) : friendError ? (
             <Center>Failed to load your friends 😥</Center>

@@ -19,6 +19,8 @@ const Alert = ({ alert }: Props) => {
   const message = useMemo(() => {
     const username = alert.createdBy.username;
 
+    console.log(alert.__typename);
+
     switch (alert.__typename) {
       case 'ChatAdminAccessGrantedAlert':
         return `${username} added you as an admin in ${
@@ -40,6 +42,8 @@ const Alert = ({ alert }: Props) => {
         return alert.request.__typename === 'FriendRequest'
           ? `${username} accepted your friend request`
           : '';
+      case 'FriendDeletedAlert':
+        return `You are no longer friends with ${username}`;
     }
   }, [alert]);
 

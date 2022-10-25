@@ -52,12 +52,7 @@ const Scroller = ({
   });
 
   if (isLoading) {
-    return (
-      <LoadingOverlay
-        visible={isLoading}
-        loaderProps={{ size: 'lg', variant: 'bars' }}
-      />
-    );
+    return <LoadingOverlay visible={isLoading} loaderProps={{ size: 'lg' }} />;
   }
 
   return (
@@ -118,7 +113,7 @@ const Scroller = ({
             <>
               {isLoadingMore && (
                 <Center>
-                  <Loader variant="bars" />
+                  <Loader />
                 </Center>
               )}
               {topMessage && (

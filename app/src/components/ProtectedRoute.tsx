@@ -8,9 +8,7 @@ type Props = {
 
 const ProtectedRoute = ({ component }: Props) => {
   const Component = withAuthenticationRequired(component, {
-    onRedirecting: () => (
-      <LoadingOverlay visible={true} loaderProps={{ variant: 'bars' }} />
-    ),
+    onRedirecting: () => <LoadingOverlay visible={true} />,
   });
   return (
     <LoggedInProvider>

@@ -13,6 +13,7 @@ import {
   useCancelRequestMutation,
   useDeclineRequestMutation,
 } from 'graphql/generated/graphql';
+import { useCallback } from 'react';
 
 gql`
   mutation AcceptRequest($requestId: HashId!) {
@@ -48,28 +49,37 @@ export const useRequest = () => {
   const [decline, { loading: loadingDecline }] = useDeclineRequestMutation();
   const [cancel, { loading: loadingCancel }] = useCancelRequestMutation();
 
-  const acceptRequest = (requestId: string) =>
-    accept({
-      variables: {
-        requestId,
-      },
-      update: removeRequest(requestId),
-    });
+  const acceptRequest = useCallback(
+    (requestId: string) =>
+      accept({
+        variables: {
+          requestId,
+        },
+        update: removeRequest(requestId),
+      }),
+    [accept]
+  );
 
-  const declineRequest = (requestId: string) =>
-    decline({
-      variables: {
-        requestId,
-      },
-      update: removeRequest(requestId),
-    });
+  const declineRequest = useCallback(
+    (requestId: string) =>
+      decline({
+        variables: {
+          requestId,
+        },
+        update: removeRequest(requestId),
+      }),
+    [decline]
+  );
 
-  const cancelRequest = (requestId: string) =>
-    cancel({
-      variables: {
-        requestId,
-      },
-    });
+  const cancelRequest = useCallback(
+    (requestId: string) =>
+      cancel({
+        variables: {
+          requestId,
+        },
+      }),
+    [cancel]
+  );
 
   return {
     declineRequest,

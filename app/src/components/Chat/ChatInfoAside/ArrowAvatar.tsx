@@ -9,11 +9,11 @@ type Props = {
 const ArrowAvatar = ({ dir, onClick }: Props) => {
   return (
     <Avatar
-      radius={'xl'}
-      color={'blue'}
       sx={{
         cursor: 'pointer',
       }}
+      radius={'xl'}
+      color={'default'}
       onClick={() => onClick?.()}
     >
       {dir === 'left' && <IconArrowLeft />}

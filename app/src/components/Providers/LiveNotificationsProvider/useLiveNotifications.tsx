@@ -106,8 +106,15 @@ export const useLiveNotifications = () => {
 
   return {
     notifications:
-      data?.notifications.slice().sort((a, b) => b.createdAt - a.createdAt) ??
-      [],
+      data?.notifications
+        .slice()
+        .filter((x) => {
+          if (x.__typename === 'FriendRequest') {
+            return x.state === 'SENT';
+          }
+          return true;
+        })
+        .sort((a, b) => b.createdAt - a.createdAt) ?? [],
     loading,
   };
 };

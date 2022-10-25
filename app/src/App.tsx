@@ -30,7 +30,11 @@ export const App = () => {
       toggleColorScheme={toggleColorScheme}
     >
       <MantineProvider
-        theme={{ colorScheme }}
+        theme={{
+          colorScheme,
+          primaryColor: 'yellow',
+          loader: 'bars',
+        }}
         withGlobalStyles
         withNormalizeCSS
       >

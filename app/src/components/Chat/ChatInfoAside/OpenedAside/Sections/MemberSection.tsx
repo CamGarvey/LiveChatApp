@@ -43,11 +43,7 @@ export const MemberSection = ({ chat, loading }: Props) => {
       }}
       offsetScrollbars={true}
     >
-      <LoadingOverlay
-        mt={10}
-        visible={loading}
-        loaderProps={{ variant: 'bars' }}
-      />
+      <LoadingOverlay mt={10} visible={loading} />
       {chat &&
         users.map((member) => (
           <ChatMemberItem key={member.id} chat={chat} user={member} />

@@ -20,7 +20,7 @@ const ChatList = ({ chats, loading = false }: Props) => {
       <Stack spacing={4} p={4}>
         {loading ? (
           <Center>
-            <Loader variant="bars" />
+            <Loader />
           </Center>
         ) : (
           chats.map(

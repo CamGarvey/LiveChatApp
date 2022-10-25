@@ -7,13 +7,13 @@ type Props = {
 
 function ColorModeSwitcher({ size = 16 }: Props) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const dark = colorScheme === 'dark';
   return (
-    <ActionIcon variant={'default'} onClick={() => toggleColorScheme()}>
-      {colorScheme === 'dark' ? (
-        <IconSun size={size} />
-      ) : (
-        <IconMoonStars size={size} />
-      )}
+    <ActionIcon
+      color={dark ? 'yellow' : 'blue'}
+      onClick={() => toggleColorScheme()}
+    >
+      {dark ? <IconSun size={size} /> : <IconMoonStars size={size} />}
     </ActionIcon>
   );
 }

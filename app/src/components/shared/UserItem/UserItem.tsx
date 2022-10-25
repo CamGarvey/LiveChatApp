@@ -41,10 +41,10 @@ const UserItem = ({ user, menu, onClick }: Props) => {
     >
       <UserAvatar size="sm" user={user} />
       <Stack spacing={0}>
-        <TruncatedText max={16} size={'sm'} sx={textStyle}>
+        <TruncatedText max={15} size={'sm'} sx={textStyle}>
           {`${username} ${user.__typename === 'Me' ? '(You)' : ''}`}
         </TruncatedText>
-        <TruncatedText max={16} size={'xs'} color={'dimmed'} sx={textStyle}>
+        <TruncatedText max={15} size={'xs'} color={'dimmed'} sx={textStyle}>
           {name}
         </TruncatedText>
       </Stack>

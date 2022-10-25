@@ -5,7 +5,7 @@ import { useGetChatForChatUpdateActionLazyQuery } from 'graphql/generated/graphq
 import { IconSettings } from '@tabler/icons';
 import { useParams } from 'react-router-dom';
 import { FloatingPosition } from '@mantine/core/lib/Floating';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 gql`
   query GetChatForChatUpdateAction($chatId: HashId!) {
@@ -42,13 +42,14 @@ const ChatUpdateAction = (props: Props) => {
 
   const chat = data?.chat;
 
-  let disabled = true;
-
-  if (chat?.__typename === 'GroupChat' && !loading) {
-    if (chat.isAdmin) {
-      disabled = false;
+  const disabled = useMemo(() => {
+    if (chat?.__typename === 'GroupChat' && !loading) {
+      if (chat.isAdmin) {
+        return false;
+      }
     }
-  }
+    return true;
+  }, [chat, loading]);
 
   return (
     <Tooltip
@@ -57,7 +58,7 @@ const ChatUpdateAction = (props: Props) => {
     >
       <ActionIcon
         size={props.size ?? 'xs'}
-        color={'blue'}
+        color={'default'}
         loading={loading}
         disabled={disabled}
         onClick={() => {
