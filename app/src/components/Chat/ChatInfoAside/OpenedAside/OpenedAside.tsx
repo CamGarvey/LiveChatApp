@@ -16,7 +16,7 @@ const OpenedAside = ({ chat, loading, onClose }: Props) => {
       {chat?.__typename === 'GroupChat' && (
         <Aside.Section>
           <Group>
-            <Text>Members ({chat.members.length})</Text>
+            <Text>Members ({chat.memberCount})</Text>
           </Group>
         </Aside.Section>
       )}

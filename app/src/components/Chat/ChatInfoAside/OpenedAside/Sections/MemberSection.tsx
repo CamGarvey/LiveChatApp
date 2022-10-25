@@ -14,14 +14,17 @@ type Props = {
 };
 
 export const MemberSection = ({ chat, loading }: Props) => {
-  const users = useMemo(() => {
+  const users = useMemo<ChatMemberItemUserFragment[]>(() => {
     let userArr: ChatMemberItemUserFragment[] = [];
     switch (chat?.__typename) {
       case 'DirectMessageChat':
         userArr = [chat.friend];
         break;
       case 'GroupChat':
-        userArr = chat.members;
+        userArr =
+          chat.members.edges
+            ?.filter((x) => !!x)
+            .map((x) => x?.node as ChatMemberItemUserFragment) ?? [];
         break;
       default:
         userArr = [];
@@ -58,9 +61,13 @@ MemberSection.fragments = {
       ...ChatMemberItemChat
       ... on GroupChat {
         ...ChatMemberItemChat
-        members {
-          id
-          ...ChatMemberItemUser
+        members(first: $firstMembers, after: $afterMember) {
+          edges {
+            node {
+              id
+              ...ChatMemberItemUser
+            }
+          }
         }
       }
       ... on DirectMessageChat {

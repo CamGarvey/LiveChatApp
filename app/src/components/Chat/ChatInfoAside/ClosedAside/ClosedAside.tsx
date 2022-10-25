@@ -16,14 +16,17 @@ type Props = {
 };
 
 const ClosedAside = ({ chat, loading, onOpen }: Props) => {
-  const users = useMemo(() => {
+  const users = useMemo<AvatarSectionUserFragment[]>(() => {
     let userArr: AvatarSectionUserFragment[];
     switch (chat?.__typename) {
       case 'DirectMessageChat':
         userArr = [chat.friend];
         break;
       case 'GroupChat':
-        userArr = chat.members;
+        userArr =
+          chat.members.edges
+            ?.filter((x) => !!x)
+            .map((x) => x!.node as AvatarSectionUserFragment) ?? [];
         break;
       default:
         userArr = [];
@@ -38,7 +41,7 @@ const ClosedAside = ({ chat, loading, onOpen }: Props) => {
       </Aside.Section>
       {chat?.__typename === 'GroupChat' && (
         <Aside.Section>
-          <Avatar radius={'xl'}>{chat.members.length}</Avatar>
+          <Avatar radius={'xl'}>{chat.memberCount}</Avatar>
         </Aside.Section>
       )}
       <AvatarSection users={users} loading={loading} />
@@ -55,8 +58,13 @@ ClosedAside.fragments = {
         }
       }
       ... on GroupChat {
-        members {
-          ...AvatarSectionUser
+        memberCount
+        members(first: $firstMembers, after: $afterMember) {
+          edges {
+            node {
+              ...AvatarSectionUser
+            }
+          }
         }
       }
     }

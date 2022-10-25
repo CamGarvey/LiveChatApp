@@ -300,7 +300,19 @@ type FriendRequest implements Notification & Request {
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements Chat {
-  admins: [User!]!
+  admins(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): UserConnection!
   createdAt: Date
   createdBy: User!
   createdById: HashId!
@@ -322,7 +334,19 @@ type GroupChat implements Chat {
   isAdmin: Boolean!
   isCreator: Boolean!
   memberCount: Int!
-  members: [User!]!
+  members(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): UserConnection!
   name: String!
   updatedAt: Date
 }

@@ -49,11 +49,6 @@ gql`
       ...UserAlerationGroupChatUpdate
       chat {
         id
-        ... on GroupChat {
-          members {
-            id
-          }
-        }
       }
     }
   }
@@ -63,11 +58,6 @@ gql`
       ...UserAlerationGroupChatUpdate
       chat {
         id
-        ... on GroupChat {
-          members {
-            id
-          }
-        }
       }
     }
   }
@@ -77,11 +67,6 @@ gql`
       ...UserAlerationGroupChatUpdate
       chat {
         id
-        ... on GroupChat {
-          admins {
-            id
-          }
-        }
       }
     }
   }
@@ -91,11 +76,6 @@ gql`
       ...UserAlerationGroupChatUpdate
       chat {
         id
-        ... on GroupChat {
-          admins {
-            id
-          }
-        }
       }
     }
   }

@@ -7,11 +7,13 @@ import ClosedAside from './ClosedAside';
 import OpenedAside from './OpenedAside/OpenedAside';
 
 gql`
-  query GetChatForChatInfoAside($chatId: HashId!) {
+  query GetChatForChatInfoAside($chatId: HashId!, $firstMembers: Int = 5, $afterMember: String) {
     chat(chatId: $chatId) {
       ...ClosedAsideChat
       ...OpenedAsideChat
     }
+    ${ClosedAside.fragments.chat}
+    ${OpenedAside.fragments.chat}
   }
 `;
 

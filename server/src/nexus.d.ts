@@ -441,7 +441,7 @@ export interface NexusGenFieldTypes {
     state: NexusGenEnums['RequestState']; // RequestState!
   }
   GroupChat: { // field return type
-    admins: NexusGenRootTypes['User'][]; // [User!]!
+    admins: NexusGenRootTypes['UserConnection']; // UserConnection!
     createdAt: NexusGenScalars['Date'] | null; // Date
     createdBy: NexusGenRootTypes['User']; // User!
     createdById: NexusGenScalars['HashId']; // HashId!
@@ -451,7 +451,7 @@ export interface NexusGenFieldTypes {
     isAdmin: boolean; // Boolean!
     isCreator: boolean; // Boolean!
     memberCount: number; // Int!
-    members: NexusGenRootTypes['User'][]; // [User!]!
+    members: NexusGenRootTypes['UserConnection']; // UserConnection!
     name: string; // String!
     updatedAt: NexusGenScalars['Date'] | null; // Date
   }
@@ -856,7 +856,7 @@ export interface NexusGenFieldTypeNames {
     state: 'RequestState'
   }
   GroupChat: { // field return type name
-    admins: 'User'
+    admins: 'UserConnection'
     createdAt: 'Date'
     createdBy: 'User'
     createdById: 'HashId'
@@ -866,7 +866,7 @@ export interface NexusGenFieldTypeNames {
     isAdmin: 'Boolean'
     isCreator: 'Boolean'
     memberCount: 'Int'
-    members: 'User'
+    members: 'UserConnection'
     name: 'String'
     updatedAt: 'Date'
   }
@@ -1130,7 +1130,19 @@ export interface NexusGenArgTypes {
     }
   }
   GroupChat: {
+    admins: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
     events: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+    members: { // args
       after?: string | null; // String
       before?: string | null; // String
       first?: number | null; // Int

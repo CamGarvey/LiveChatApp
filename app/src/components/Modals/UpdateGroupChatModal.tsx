@@ -16,7 +16,11 @@ import { gql } from '@apollo/client';
 import { useUpdateChat } from 'hooks/useUpdateChat';
 
 gql`
-  query GetChatForUpdate($chatId: HashId!) {
+  query GetChatForUpdate(
+    $chatId: HashId!
+    $firstMembers: Int = 300
+    $firstAdmins: Int = 300
+  ) {
     chat(chatId: $chatId) {
       id
       isCreator
@@ -24,11 +28,19 @@ gql`
       ... on GroupChat {
         name
         description
-        members {
-          ...UpdateGroupUser
+        members(first: $firstMembers) {
+          edges {
+            node {
+              ...UpdateGroupUser
+            }
+          }
         }
-        admins {
-          ...UpdateGroupUser
+        admins(first: $firstAdmins) {
+          edges {
+            node {
+              ...UpdateGroupUser
+            }
+          }
         }
         isAdmin
       }
@@ -71,16 +83,32 @@ export const UpdateGroupChatModal = ({
     error: friendError,
   } = useGetFriendsForUpdateGroupChatQuery();
 
+  const admins = useMemo<UpdateGroupUserFragment[]>(
+    () =>
+      chat?.__typename === 'GroupChat'
+        ? chat.admins?.edges
+            ?.filter((x) => !!x)
+            .map((x) => x as UpdateGroupUserFragment) ?? []
+        : [],
+    [chat]
+  );
+
+  const members = useMemo<UpdateGroupUserFragment[]>(
+    () =>
+      chat?.__typename === 'GroupChat'
+        ? chat.members.edges
+            ?.filter((x) => !!x)
+            .map((x) => x as UpdateGroupUserFragment) ?? []
+        : [],
+    [chat]
+  );
+
   const memberIds = useMemo<string[]>(
-    () =>
-      chat?.__typename === 'GroupChat' ? chat.members.map((x) => x.id) : [],
-    [chat]
+    () => members.map((x) => x.id),
+    [members]
   );
-  const adminIds = useMemo<string[]>(
-    () =>
-      chat?.__typename === 'GroupChat' ? chat.admins.map((x) => x.id) : [],
-    [chat]
-  );
+
+  const adminIds = useMemo<string[]>(() => admins.map((x) => x.id), [admins]);
 
   const canRemoveUser = useCallback(
     (user: UpdateGroupUserFragment) => {
@@ -105,13 +133,13 @@ export const UpdateGroupChatModal = ({
   const users = useMemo(() => {
     if (chat?.__typename !== 'GroupChat') return [];
     const users: (UpdateGroupUserFragment & { canRemove?: boolean })[] =
-      _.unionBy(chat.members, chat.admins, friendData?.friends ?? [], 'id');
+      _.unionBy(members, admins, friendData?.friends ?? [], 'id');
 
     return users.map((user) => ({
       ...user,
       canRemove: canRemoveUser(user),
     }));
-  }, [chat, friendData, canRemoveUser]);
+  }, [chat, members, admins, friendData, canRemoveUser]);
 
   if (loadingChat)
     return (
@@ -217,7 +245,7 @@ export const UpdateGroupChatModal = ({
                     <UserMultiSelect
                       label={'Members'}
                       users={users}
-                      defaultValue={chat.members}
+                      defaultValue={members}
                       onChange={(value: any) => {
                         props.setFieldValue('memberIds', value);
                       }}
@@ -225,7 +253,7 @@ export const UpdateGroupChatModal = ({
                     <UserMultiSelect
                       label={'Admins'}
                       users={users}
-                      defaultValue={chat.admins}
+                      defaultValue={admins}
                       onChange={(value: any) => {
                         props.setFieldValue('adminIds', value);
                       }}
