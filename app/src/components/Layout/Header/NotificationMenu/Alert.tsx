@@ -5,6 +5,7 @@ import { UserAvatar } from 'components/shared/Avatars';
 import { AlertComponentAlertFragment } from 'graphql/generated/graphql';
 import useAckAlert from 'hooks/useAckAlert';
 import moment from 'moment';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -14,6 +15,33 @@ type Props = {
 const Alert = ({ alert }: Props) => {
   const navigate = useNavigate();
   const [acknowledgeAlert] = useAckAlert();
+
+  const message = useMemo(() => {
+    const username = alert.createdBy.username;
+
+    switch (alert.__typename) {
+      case 'ChatAdminAccessGrantedAlert':
+        return `${username} added you as an admin in ${
+          alert.chat.__typename === 'GroupChat' && alert.chat.name
+        }`;
+      case 'ChatAdminAccessRevokedAlert':
+        return `${username} removed you as an admin in ${
+          alert.chat.__typename === 'GroupChat' && alert.chat.name
+        }`;
+      case 'ChatMemberAccessGrantedAlert':
+        return `${username} added you as a member in ${
+          alert.chat.__typename === 'GroupChat' && alert.chat.name
+        }`;
+      case 'ChatMemberAccessRevokedAlert':
+        return `${username} removed you as a member in ${
+          alert.chat.__typename === 'GroupChat' && alert.chat.name
+        }`;
+      case 'RequestAcceptedAlert':
+        return alert.request.__typename === 'FriendRequest'
+          ? `${username} accepted your friend request`
+          : '';
+    }
+  }, [alert]);
 
   const textStyle = {
     lineHeight: 1.1,
@@ -45,20 +73,7 @@ const Alert = ({ alert }: Props) => {
           <UserAvatar size="sm" user={alert.createdBy} />
           <Stack spacing={2}>
             <Text size={'xs'} sx={textStyle}>
-              {alert.__typename === 'ChatMemberAccessGrantedAlert' &&
-                alert.chat.__typename === 'DirectMessageChat' &&
-                `${alert.createdBy.username} created a direct message chat`}
-              {alert.__typename === 'ChatMemberAccessGrantedAlert' &&
-                alert.chat.__typename === 'GroupChat' &&
-                `${alert.createdBy.username} added you as a member in ${alert.chat.name}`}
-              {alert.__typename === 'ChatMemberAccessRevokedAlert' &&
-                alert.chat.__typename === 'GroupChat' &&
-                `${alert.createdBy.username}  removed you as a member in ${alert.chat.name}`}
-              {alert.__typename === 'FriendDeletedAlert' &&
-                `${alert.createdBy.username} is no longer your friend 😢`}
-              {alert.__typename === 'RequestAcceptedAlert' &&
-                alert.request.__typename === 'FriendRequest' &&
-                `${alert.createdBy.username} accepted your friend request`}
+              {message}
             </Text>
             <Text size={'xs'} color={'blue'} sx={textStyle}>
               {moment(alert.createdAt).fromNow()}
