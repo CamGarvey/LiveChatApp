@@ -7,10 +7,18 @@ import ClosedAside from './ClosedAside';
 import OpenedAside from './OpenedAside/OpenedAside';
 
 gql`
-  query GetChatForChatInfoAside($chatId: HashId!, $firstMembers: Int = 5, $afterMember: String) {
+  query GetChatForChatInfoAside($chatId: HashId!, $firstMembers: Int = 30, $afterMember: String) {
     chat(chatId: $chatId) {
       ...ClosedAsideChat
       ...OpenedAsideChat
+      ... on GroupChat {
+        members(first: $firstMembers, after: $afterMember) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
     }
     ${ClosedAside.fragments.chat}
     ${OpenedAside.fragments.chat}
@@ -20,7 +28,8 @@ gql`
 const ChatInfoAside = () => {
   const { chatId } = useParams();
   const [opened, setOpened] = useState(false);
-  const [getChat, { data, loading }] = useGetChatForChatInfoAsideLazyQuery();
+  const [getChat, { data, loading, fetchMore }] =
+    useGetChatForChatInfoAsideLazyQuery();
 
   useEffect(() => {
     if (chatId)
@@ -58,6 +67,18 @@ const ChatInfoAside = () => {
             chat={chat}
             loading={loading}
             onOpen={() => setOpened(true)}
+            onFetchMoreMembers={() => {
+              if (
+                chat?.__typename === 'GroupChat' &&
+                chat.members.pageInfo.hasNextPage
+              ) {
+                fetchMore({
+                  variables: {
+                    afterMember: chat.members.pageInfo.endCursor,
+                  },
+                });
+              }
+            }}
           />
         )}
       </Aside>

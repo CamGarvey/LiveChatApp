@@ -12,10 +12,11 @@ import { AvatarSection } from './Sections';
 type Props = {
   chat?: ClosedAsideChatFragment | null | undefined;
   loading: boolean;
+  onFetchMoreMembers: () => void;
   onOpen: () => void;
 };
 
-const ClosedAside = ({ chat, loading, onOpen }: Props) => {
+const ClosedAside = ({ chat, loading, onOpen, onFetchMoreMembers }: Props) => {
   const users = useMemo<AvatarSectionUserFragment[]>(() => {
     let userArr: AvatarSectionUserFragment[];
     switch (chat?.__typename) {
@@ -44,7 +45,11 @@ const ClosedAside = ({ chat, loading, onOpen }: Props) => {
           <Avatar radius={'xl'}>{chat.memberCount}</Avatar>
         </Aside.Section>
       )}
-      <AvatarSection users={users} loading={loading} />
+      <AvatarSection
+        users={users}
+        loading={loading}
+        onHitBottom={onFetchMoreMembers}
+      />
     </>
   );
 };

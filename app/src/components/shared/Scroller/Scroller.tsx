@@ -43,7 +43,7 @@ const Scroller = ({
   topMessage,
 }: Props) => {
   const viewport = useRef<HTMLDivElement>(null);
-  const { scrollToBottom, isScrollToBottomOpened } = useScroller({
+  const { scrollToTop, isScrollToTopOpened } = useScroller({
     viewport,
     onHitBottom,
     onHitTop,
@@ -127,7 +127,7 @@ const Scroller = ({
         </motion.div>
       </MotionContainer>
       <Popover
-        opened={isScrollToBottomOpened}
+        opened={isScrollToTopOpened}
         width={'fit-content'}
         position="top"
         styles={{
@@ -144,7 +144,7 @@ const Scroller = ({
           <ActionIcon
             size={'xl'}
             onClick={() => {
-              scrollToBottom('smooth');
+              scrollToTop('smooth');
             }}
             sx={{
               borderRadius: '50%',

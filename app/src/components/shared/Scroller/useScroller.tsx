@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type Props = {
   viewport: React.MutableRefObject<HTMLDivElement | null>;
-  minPopupHeight: number;
+  minPopupHeight?: number;
   onHitTop?: () => void;
   onHitBottom?: () => void;
   onScroll?: ({
@@ -22,21 +22,54 @@ export const useScroller = ({
   onScroll,
   onHitBottom,
   onHitTop,
-  minPopupHeight,
+  minPopupHeight = 1500,
 }: Props) => {
+  const [isScrollToTopOpened, setIsScrollToTopOpened] = useState(false);
+  const [isAutoScrollingUp, setIsAutoScrollingUp] = useState(false);
   const [isScrollToBottomOpened, setIsScrollToBottomOpened] = useState(false);
   const [isAutoScrollingDown, setIsAutoScrollingDown] = useState(false);
 
   const [scrollDir, setScrollDir] = useState<'up' | 'down'>('up');
 
-  const scrollToBottom = (behavior: 'smooth' | 'auto') => {
-    setIsScrollToBottomOpened(false);
-    setIsAutoScrollingDown(true);
-    viewport?.current?.scrollTo({
-      top: viewport?.current.scrollHeight,
-      behavior,
-    });
-  };
+  const scrollToTop = useCallback(
+    (behavior: 'smooth' | 'auto') => {
+      setIsScrollToTopOpened(false);
+      setIsAutoScrollingUp(true);
+      viewport?.current?.scrollTo({
+        top: viewport?.current.scrollHeight,
+        behavior,
+      });
+    },
+    [setIsScrollToTopOpened, setIsAutoScrollingUp, viewport]
+  );
+
+  const scrollToBottom = useCallback(
+    (behavior: 'smooth' | 'auto') => {
+      setIsScrollToBottomOpened(false);
+      setIsAutoScrollingDown(true);
+      viewport?.current?.scrollTo({
+        top: viewport?.current.scrollHeight,
+        behavior,
+      });
+    },
+    [setIsScrollToBottomOpened, setIsAutoScrollingDown, viewport]
+  );
+
+  const hasHitTop = useCallback((scrollY: number) => scrollY <= 0.5, []);
+  const hasHitBottom = useCallback(
+    (scrollY: number, height: number) => scrollY - height >= -0.5,
+    []
+  );
+  const shouldOpenScrollToBottom = useCallback(
+    (percentage: number, height: number) =>
+      percentage < 50 && !isAutoScrollingDown && height > minPopupHeight,
+    [isAutoScrollingDown, minPopupHeight]
+  );
+  const shouldOpenScrollToTop = useCallback(
+    (percentage: number, height: number) =>
+      percentage > 50 && !isAutoScrollingUp && height > minPopupHeight,
+    [isAutoScrollingUp, minPopupHeight]
+  );
 
   useEffect(() => {
     const threshold = 0;
@@ -55,7 +88,7 @@ export const useScroller = ({
         ticking = false;
         return;
       }
-      setScrollDir(scrollY < lastScrollY ? 'down' : 'up');
+      setScrollDir(scrollY > lastScrollY ? 'down' : 'up');
       lastScrollY = scrollY > 0 ? scrollY : 0;
       ticking = false;
     };
@@ -71,16 +104,23 @@ export const useScroller = ({
         percentage,
       });
 
-      if (percentage > 50 && !isAutoScrollingDown && height > minPopupHeight) {
+      if (shouldOpenScrollToBottom(percentage, height)) {
         setIsScrollToBottomOpened(true);
+        setIsScrollToTopOpened(false);
       }
-      if (scrollY <= 0.5) {
+      if (shouldOpenScrollToTop(percentage, height)) {
+        setIsScrollToTopOpened(true);
+        setIsScrollToBottomOpened(false);
+      }
+      if (hasHitTop(scrollY)) {
+        setIsScrollToTopOpened(false);
+        setIsAutoScrollingUp(false);
+        onHitTop?.();
+      }
+      if (hasHitBottom(scrollY, height)) {
         setIsScrollToBottomOpened(false);
         setIsAutoScrollingDown(false);
         onHitBottom?.();
-      }
-      if (scrollY - height >= -0.5) {
-        onHitTop?.();
       }
     }, 300);
 
@@ -101,12 +141,19 @@ export const useScroller = ({
     onScroll,
     onHitBottom,
     onHitTop,
+    isAutoScrollingUp,
     isAutoScrollingDown,
     minPopupHeight,
+    hasHitBottom,
+    hasHitTop,
+    shouldOpenScrollToBottom,
+    shouldOpenScrollToTop,
   ]);
 
   return {
+    scrollToTop,
     scrollToBottom,
+    isScrollToTopOpened,
     isScrollToBottomOpened,
   };
 };
