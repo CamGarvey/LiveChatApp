@@ -38,6 +38,7 @@ type Props = {
 const UserItem = ({ user, menu, onClick, avatar }: Props) => {
   const { name, username } = user;
   const avatarSize = avatar?.size ?? 'md';
+  const theme = useMantineTheme();
 
   const textStyle: Sx = {
     whiteSpace: 'nowrap',
@@ -50,22 +51,29 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       layout
       key={user.id}
       variants={{
-        open: {
-          borderRadius: '2%',
-          padding: '1px',
+        opened: {
+          padding: '0px',
           width: '100%',
+          borderRadius: '4px',
+          transition: {
+            type: 'just',
+          },
         },
         closed: {
           borderRadius: '50%',
           padding: '0px',
           width: `${sizes[avatarSize]}px`,
+          transition: {
+            type: 'just',
+          },
         },
       }}
-      onClick={() => onClick?.()}
       sx={(theme) => ({
         display: 'flex',
         flexWrap: 'nowrap',
         gap: '20px',
+        padding: '10px',
+        borderRadius: theme.radius.md,
         color:
           theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
         alignItems: 'center',
@@ -78,18 +86,24 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       <UserAvatar size={avatarSize} user={user} />
       <MotionGroup
         layout
-        key={user.id + 'bod'}
+        key={user.id}
         sx={{
           flexWrap: 'nowrap',
           flexGrow: 1,
         }}
         variants={{
-          open: {
+          opened: {
             opacity: 1,
+            transition: {
+              type: 'just',
+            },
           },
           closed: {
             opacity: 0,
             display: 'none',
+            transition: {
+              type: 'just',
+            },
           },
         }}
       >

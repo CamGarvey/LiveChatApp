@@ -25,9 +25,9 @@ gql`
   }
 `;
 
-enum Width {
-  Open = 300,
-  Closed = 70,
+enum AsideWidth {
+  Opened = 300,
+  Closed = 60,
 }
 
 const MotionAside = motion(Aside);
@@ -46,7 +46,10 @@ const ChatAside = () => {
       });
   }, [chatId, getChat]);
 
-  const width = useMemo(() => (closed ? Width.Closed : Width.Open), [closed]);
+  const width = useMemo(
+    () => (closed ? AsideWidth.Closed : AsideWidth.Opened),
+    [closed]
+  );
 
   const chat = data?.chat;
 
@@ -59,24 +62,24 @@ const ChatAside = () => {
           p="xs"
           layout
           hiddenBreakpoint="md"
-          animate={closed ? 'closed' : 'open'}
+          animate={closed ? 'closed' : 'opened'}
           variants={{
-            open: {
-              width: '300px',
+            opened: {
+              width: `${AsideWidth.Opened}px`,
               transition: {
-                // when: 'beforeChildren',
+                type: 'just',
               },
             },
             closed: {
-              width: '75px',
+              width: `${AsideWidth.Closed}px`,
               transition: {
-                // when: 'afterChildren',
+                type: 'just',
               },
             },
           }}
           width={{ xs: width, sm: width, md: width, lg: width, xl: width }}
           sx={{
-            gap: '4px',
+            gap: '2px',
           }}
         >
           <HeaderSection

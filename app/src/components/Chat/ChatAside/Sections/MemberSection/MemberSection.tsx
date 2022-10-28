@@ -42,7 +42,6 @@ export const MemberSection = ({ chat, loading }: Props) => {
     <Aside.Section
       grow
       component={ScrollArea}
-      my={'md'}
       styles={{
         viewport: {
           padding: 0,
