@@ -1,5 +1,11 @@
 import { gql } from '@apollo/client';
-import { Aside, LoadingOverlay, ScrollArea } from '@mantine/core';
+import {
+  Aside,
+  Center,
+  LoadingOverlay,
+  ScrollArea,
+  Stack,
+} from '@mantine/core';
 import {
   ChatMemberItemUserFragment,
   OpenedMemberSectionChatFragment,
@@ -10,10 +16,11 @@ import ChatMemberItem from './ChatMemberItem';
 
 type Props = {
   chat?: OpenedMemberSectionChatFragment | null | undefined;
+  closed: boolean;
   loading: boolean;
 };
 
-export const MemberSection = ({ chat, loading }: Props) => {
+export const MemberSection = ({ chat, closed, loading }: Props) => {
   const users = useMemo<ChatMemberItemUserFragment[]>(() => {
     let userArr: ChatMemberItemUserFragment[] = [];
     switch (chat?.__typename) {
@@ -36,21 +43,35 @@ export const MemberSection = ({ chat, loading }: Props) => {
     <Aside.Section
       grow
       component={ScrollArea}
-      mx="-xs"
-      px="xs"
       my={'md'}
       styles={{
         viewport: {
-          paddingLeft: '5px',
+          padding: 0,
         },
       }}
-      offsetScrollbars={true}
+      type="never"
     >
       <LoadingOverlay mt={10} visible={loading} />
-      {chat &&
-        users.map((member) => (
-          <ChatMemberItem key={member.id} chat={chat} user={member} />
-        ))}
+
+      <Stack
+        p={0}
+        spacing={'xs'}
+        sx={{
+          width: '100%',
+        }}
+      >
+        {chat &&
+          users.map((member) => (
+            <Center>
+              <ChatMemberItem
+                key={member.id}
+                chat={chat}
+                user={member}
+                closed={closed}
+              />
+            </Center>
+          ))}
+      </Stack>
     </Aside.Section>
   );
 };

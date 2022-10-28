@@ -4,18 +4,22 @@ import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
 import TruncatedText from '../TruncatedText';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const MotionGroup = motion(Group);
 
 type Props = {
   user: UserItemFragment;
   menu?: React.ReactNode;
+  closed?: boolean;
   onClick?: () => void;
 };
 
-const UserItem = ({ user, menu, onClick }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+/**
+ * @framerSupportedLayoutWidth auto
+ * @framerSupportedLayoutHeight fixed
+ */
+const UserItem = ({ user, menu, onClick, closed = false }: Props) => {
   const { name, username } = user;
 
   const textStyle: Sx = {
@@ -26,24 +30,23 @@ const UserItem = ({ user, menu, onClick }: Props) => {
 
   return (
     <MotionGroup
-      p={'xs'}
-      animate={isOpen ? 'open' : 'closed'}
+      animate={closed ? 'closed' : 'open'}
       variants={{
         open: {
           borderRadius: '10px',
+          padding: '1px',
         },
         closed: {
           borderRadius: '50%',
+          padding: '0px',
         },
       }}
-      onClick={() => {
-        setIsOpen((prev) => !prev);
-        onClick?.();
-      }}
+      onClick={() => onClick?.()}
       sx={(theme) => ({
         display: 'flex',
-        width: 'fit-content',
         flexWrap: 'nowrap',
+        width: closed ? 'fit-content' : '100%',
+        flexGrow: closed ? 0 : 1,
         gap: '20px',
         color:
           theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
@@ -54,19 +57,13 @@ const UserItem = ({ user, menu, onClick }: Props) => {
             : theme.colors.gray[0],
       })}
     >
-      <AnimatePresence>
-        {isOpen ? (
-          <UserAvatar size="sm" user={user} />
-        ) : (
-          <UserAvatar size="md" user={user} />
-        )}
-      </AnimatePresence>
+      <UserAvatar size={'sm'} user={user} />
       <MotionGroup
         sx={{
-          width: '100%',
           flexWrap: 'nowrap',
+          flexGrow: 1,
         }}
-        animate={isOpen ? 'open' : 'closed'}
+        animate={closed ? 'closed' : 'open'}
         variants={{
           open: {
             opacity: 1,

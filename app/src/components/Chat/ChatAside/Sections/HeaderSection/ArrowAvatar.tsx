@@ -1,5 +1,8 @@
 import { Avatar } from '@mantine/core';
-import { IconArrowLeft, IconArrowRight } from '@tabler/icons';
+import { IconArrowLeft } from '@tabler/icons';
+import { motion } from 'framer-motion';
+
+const MotionIconArrowLeft = motion(IconArrowLeft);
 
 type Props = {
   dir: 'left' | 'right';
@@ -16,8 +19,17 @@ const ArrowAvatar = ({ dir, onClick }: Props) => {
       color={'default'}
       onClick={() => onClick?.()}
     >
-      {dir === 'left' && <IconArrowLeft />}
-      {dir === 'right' && <IconArrowRight />}
+      <MotionIconArrowLeft
+        animate={dir}
+        transition={{
+          left: {
+            rotate: -100,
+          },
+          right: {
+            rotate: 0,
+          },
+        }}
+      />
     </Avatar>
   );
 };

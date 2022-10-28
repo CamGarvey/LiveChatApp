@@ -1,16 +1,18 @@
 import { gql } from '@apollo/client';
-import { MediaQuery, Aside } from '@mantine/core';
+import { MediaQuery, Aside, Group, Text, Avatar, Center } from '@mantine/core';
+import { motion } from 'framer-motion';
 import { useGetChatForChatAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import ClosedAside from './ClosedAside';
-import OpenedAside from './OpenedAside/OpenedAside';
+import { FooterSection, HeaderSection, MemberSection } from './Sections';
 
 gql`
-  query GetChatForChatAside($chatId: HashId!, $firstMembers: Int = 30, $afterMember: String) {
+  query GetChatForChatAside(
+    $chatId: HashId!
+    $firstMembers: Int = 30
+    $afterMember: String
+  ) {
     chat(chatId: $chatId) {
-      ...ClosedAsideChat
-      ...OpenedAsideChat
       ... on GroupChat {
         members(first: $firstMembers, after: $afterMember) {
           pageInfo {
@@ -20,16 +22,15 @@ gql`
         }
       }
     }
-    ${ClosedAside.fragments.chat}
-    ${OpenedAside.fragments.chat}
   }
 `;
 
+const MotionAside = motion(Aside);
+
 const ChatAside = () => {
   const { chatId } = useParams();
-  const [opened, setOpened] = useState(true);
-  const [getChat, { data, loading, fetchMore }] =
-    useGetChatForChatAsideLazyQuery();
+  const [closed, setClosed] = useState(true);
+  const [getChat, { data, loading }] = useGetChatForChatAsideLazyQuery();
 
   useEffect(() => {
     if (chatId)
@@ -40,7 +41,7 @@ const ChatAside = () => {
       });
   }, [chatId, getChat]);
 
-  const width = useMemo(() => (opened ? 300 : 75), [opened]);
+  const width = useMemo(() => (closed ? 55 : 300), [closed]);
 
   const chat = data?.chat;
 
@@ -48,20 +49,40 @@ const ChatAside = () => {
 
   return (
     <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
-      <Aside
-        p="md"
+      <MotionAside
+        p="xs"
         hiddenBreakpoint="md"
+        animate={closed ? 'closed' : 'open'}
+        variants={{
+          open: {},
+        }}
         width={{ xs: width, sm: width, md: width, lg: width, xl: width }}
         sx={{
           gap: '4px',
         }}
       >
-        <OpenedAside
+        <HeaderSection
+          onToggle={() => setClosed((prev) => !prev)}
           chat={chat}
+          closed={closed}
           loading={loading}
-          onClose={() => setOpened(false)}
         />
-      </Aside>
+        {chat?.__typename === 'GroupChat' && (
+          <Aside.Section>
+            {closed ? (
+              <Center>
+                <Avatar size="md" radius={'xl'}>
+                  {chat.memberCount}
+                </Avatar>
+              </Center>
+            ) : (
+              <Text>Members ({chat.memberCount})</Text>
+            )}
+          </Aside.Section>
+        )}
+        <MemberSection chat={chat} loading={loading} closed={closed} />
+        <FooterSection chat={chat} loading={loading} />
+      </MotionAside>
     </MediaQuery>
   );
 };

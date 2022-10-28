@@ -3,15 +3,16 @@ import { Aside, Group, Skeleton, Text } from '@mantine/core';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import { HeaderSectionChatFragment } from 'graphql/generated/graphql';
 import { useMemo } from 'react';
-import ArrowAvatar from '../../ArrowAvatar';
+import ArrowAvatar from './ArrowAvatar';
 
 type Props = {
   chat?: HeaderSectionChatFragment | null | undefined;
   loading: boolean;
-  onClose: () => void;
+  closed: boolean;
+  onToggle: () => void;
 };
 
-export const HeaderSection = ({ chat, loading, onClose }: Props) => {
+export const HeaderSection = ({ chat, loading, closed, onToggle }: Props) => {
   const name = useMemo(() => {
     switch (chat?.__typename) {
       case 'GroupChat':
@@ -30,20 +31,27 @@ export const HeaderSection = ({ chat, loading, onClose }: Props) => {
           flexFlow: 'nowrap',
         }}
       >
-        <ArrowAvatar dir={'right'} onClick={onClose} />
-        <Skeleton visible={loading}>
-          <Text
-            p={1}
-            lineClamp={1}
-            sx={{
-              lineHeight: '1',
-              width: '100%',
-            }}
-          >
-            {name}
-          </Text>
-        </Skeleton>
-        {chat?.__typename === 'GroupChat' && <ChatUpdateAction size={'md'} />}
+        <ArrowAvatar dir={'right'} onClick={onToggle} />
+        {!closed && (
+          <>
+            <Skeleton visible={loading}>
+              <Text
+                p={1}
+                lineClamp={1}
+                sx={{
+                  lineHeight: '1',
+                  width: '100%',
+                }}
+              >
+                {name}
+              </Text>
+            </Skeleton>
+
+            {chat?.__typename === 'GroupChat' && (
+              <ChatUpdateAction size={'md'} />
+            )}
+          </>
+        )}
       </Group>
     </Aside.Section>
   );
