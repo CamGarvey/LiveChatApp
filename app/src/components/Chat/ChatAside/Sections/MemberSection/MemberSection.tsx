@@ -16,11 +16,10 @@ import ChatMemberItem from './ChatMemberItem';
 
 type Props = {
   chat?: OpenedMemberSectionChatFragment | null | undefined;
-  closed: boolean;
   loading: boolean;
 };
 
-export const MemberSection = ({ chat, closed, loading }: Props) => {
+export const MemberSection = ({ chat, loading }: Props) => {
   const users = useMemo<ChatMemberItemUserFragment[]>(() => {
     let userArr: ChatMemberItemUserFragment[] = [];
     switch (chat?.__typename) {
@@ -62,14 +61,7 @@ export const MemberSection = ({ chat, closed, loading }: Props) => {
       >
         {chat &&
           users.map((member) => (
-            <Center>
-              <ChatMemberItem
-                key={member.id}
-                chat={chat}
-                user={member}
-                closed={closed}
-              />
-            </Center>
+            <ChatMemberItem key={member.id} chat={chat} user={member} />
           ))}
       </Stack>
     </Aside.Section>

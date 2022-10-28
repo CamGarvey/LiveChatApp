@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Group, Stack, Sx } from '@mantine/core';
+import {
+  Box,
+  Group,
+  Stack,
+  Sx,
+  MantineNumberSize,
+  useMantineTheme,
+} from '@mantine/core';
 import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
@@ -7,20 +14,30 @@ import TruncatedText from '../TruncatedText';
 import { motion } from 'framer-motion';
 
 const MotionGroup = motion(Group);
+const sizes = {
+  xs: 16,
+  sm: 26,
+  md: 38,
+  lg: 56,
+  xl: 84,
+};
 
 type Props = {
   user: UserItemFragment;
   menu?: React.ReactNode;
+  avatar?: {
+    size?: MantineNumberSize;
+  };
   closed?: boolean;
   onClick?: () => void;
 };
-
 /**
  * @framerSupportedLayoutWidth auto
  * @framerSupportedLayoutHeight fixed
  */
-const UserItem = ({ user, menu, onClick, closed = false }: Props) => {
+const UserItem = ({ user, menu, onClick, avatar }: Props) => {
   const { name, username } = user;
+  const avatarSize = avatar?.size ?? 'md';
 
   const textStyle: Sx = {
     whiteSpace: 'nowrap',
@@ -30,23 +47,24 @@ const UserItem = ({ user, menu, onClick, closed = false }: Props) => {
 
   return (
     <MotionGroup
-      animate={closed ? 'closed' : 'open'}
+      layout
+      key={user.id}
       variants={{
         open: {
-          borderRadius: '10px',
+          borderRadius: '2%',
           padding: '1px',
+          width: '100%',
         },
         closed: {
           borderRadius: '50%',
           padding: '0px',
+          width: `${sizes[avatarSize]}px`,
         },
       }}
       onClick={() => onClick?.()}
       sx={(theme) => ({
         display: 'flex',
         flexWrap: 'nowrap',
-        width: closed ? 'fit-content' : '100%',
-        flexGrow: closed ? 0 : 1,
         gap: '20px',
         color:
           theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
@@ -57,21 +75,20 @@ const UserItem = ({ user, menu, onClick, closed = false }: Props) => {
             : theme.colors.gray[0],
       })}
     >
-      <UserAvatar size={'sm'} user={user} />
+      <UserAvatar size={avatarSize} user={user} />
       <MotionGroup
+        layout
+        key={user.id + 'bod'}
         sx={{
           flexWrap: 'nowrap',
           flexGrow: 1,
         }}
-        animate={closed ? 'closed' : 'open'}
         variants={{
           open: {
             opacity: 1,
-            x: 0,
           },
           closed: {
             opacity: 0,
-            x: -100,
             display: 'none',
           },
         }}

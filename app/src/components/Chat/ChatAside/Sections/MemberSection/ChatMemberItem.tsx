@@ -12,17 +12,15 @@ import { useUpdateChat } from 'hooks';
 type Props = {
   chat: ChatMemberItemChatFragment;
   user: ChatMemberItemUserFragment;
-  closed: boolean;
 };
 
-const ChatMemberItem = ({ chat, user, closed }: Props) => {
+const ChatMemberItem = ({ chat, user }: Props) => {
   const { update, loading: loadingRemove } = useUpdateChat();
 
   return (
     <UserItem
       key={user.id}
       user={user}
-      closed={closed}
       menu={
         <UserMenu
           loading={loadingRemove}
