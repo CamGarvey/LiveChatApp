@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client';
 import { MediaQuery, Aside } from '@mantine/core';
-import { useGetChatForChatInfoAsideLazyQuery } from 'graphql/generated/graphql';
+import { useGetChatForChatAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ClosedAside from './ClosedAside';
 import OpenedAside from './OpenedAside/OpenedAside';
 
 gql`
-  query GetChatForChatInfoAside($chatId: HashId!, $firstMembers: Int = 30, $afterMember: String) {
+  query GetChatForChatAside($chatId: HashId!, $firstMembers: Int = 30, $afterMember: String) {
     chat(chatId: $chatId) {
       ...ClosedAsideChat
       ...OpenedAsideChat
@@ -25,11 +25,11 @@ gql`
   }
 `;
 
-const ChatInfoAside = () => {
+const ChatAside = () => {
   const { chatId } = useParams();
-  const [opened, setOpened] = useState(false);
+  const [opened, setOpened] = useState(true);
   const [getChat, { data, loading, fetchMore }] =
-    useGetChatForChatInfoAsideLazyQuery();
+    useGetChatForChatAsideLazyQuery();
 
   useEffect(() => {
     if (chatId)
@@ -56,34 +56,14 @@ const ChatInfoAside = () => {
           gap: '4px',
         }}
       >
-        {opened ? (
-          <OpenedAside
-            chat={chat}
-            loading={loading}
-            onClose={() => setOpened(false)}
-          />
-        ) : (
-          <ClosedAside
-            chat={chat}
-            loading={loading}
-            onOpen={() => setOpened(true)}
-            onFetchMoreMembers={() => {
-              if (
-                chat?.__typename === 'GroupChat' &&
-                chat.members.pageInfo.hasNextPage
-              ) {
-                fetchMore({
-                  variables: {
-                    afterMember: chat.members.pageInfo.endCursor,
-                  },
-                });
-              }
-            }}
-          />
-        )}
+        <OpenedAside
+          chat={chat}
+          loading={loading}
+          onClose={() => setOpened(false)}
+        />
       </Aside>
     </MediaQuery>
   );
 };
 
-export default ChatInfoAside;
+export default ChatAside;

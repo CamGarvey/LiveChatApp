@@ -32,7 +32,7 @@ OpenedAside.fragments = {
       ... on GroupChat {
         memberCount
       }
-      ...MemberSectionChat
+      ...OpenedMemberSectionChat
       ...HeaderSectionChat
       ...FooterSectionChat
     }

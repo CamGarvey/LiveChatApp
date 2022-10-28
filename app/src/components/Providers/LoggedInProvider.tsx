@@ -6,10 +6,10 @@ import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import ChatDrawer from 'components/Layout/ChatDrawer';
 import ChatNav from 'components/Layout/Nav';
 import Header from 'components/Layout/Header/Header';
-import ChatInfoAside from 'components/Chat/ChatInfoAside/ChatInfoAside';
 import UserProvider from './UserProvider';
 import LiveNotificationsProvider from './LiveNotificationsProvider';
 import { FriendSelectorModal } from 'components/Modals/FriendSelectorModal';
+import ChatAside from 'components/Chat/ChatAside';
 
 type Props = {
   children: any;
@@ -31,7 +31,7 @@ const LoggedInProvider = ({ children }: Props) => {
             navbarOffsetBreakpoint="sm"
             header={<Header />}
             navbar={<ChatNav />}
-            aside={<ChatInfoAside />}
+            aside={<ChatAside />}
             padding={0}
             fixed
           >

@@ -2,14 +2,14 @@ import { gql } from '@apollo/client';
 import { Aside, LoadingOverlay, ScrollArea } from '@mantine/core';
 import {
   ChatMemberItemUserFragment,
-  MemberSectionChatFragment,
+  OpenedMemberSectionChatFragment,
 } from 'graphql/generated/graphql';
 import { useMemo } from 'react';
 import { sortRelationship } from 'utils';
-import ChatMemberItem from '../../ChatMemberItem';
+import ChatMemberItem from './ChatMemberItem';
 
 type Props = {
-  chat?: MemberSectionChatFragment | null | undefined;
+  chat?: OpenedMemberSectionChatFragment | null | undefined;
   loading: boolean;
 };
 
@@ -57,7 +57,7 @@ export const MemberSection = ({ chat, loading }: Props) => {
 
 MemberSection.fragments = {
   chat: gql`
-    fragment MemberSectionChat on Chat {
+    fragment OpenedMemberSectionChat on Chat {
       ...ChatMemberItemChat
       ... on GroupChat {
         ...ChatMemberItemChat
