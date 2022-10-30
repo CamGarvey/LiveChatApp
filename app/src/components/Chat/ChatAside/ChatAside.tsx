@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { MediaQuery, Aside, Group, Text, Avatar, Center } from '@mantine/core';
-import { AnimateSharedLayout, motion } from 'framer-motion';
+import { LayoutGroup, motion } from 'framer-motion';
 import { useGetChatForChatAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -27,10 +27,11 @@ gql`
 
 enum AsideWidth {
   Opened = 300,
-  Closed = 60,
+  Closed = 58,
 }
 
 const MotionAside = motion(Aside);
+const MotionText = motion(Text);
 
 const ChatAside = () => {
   const { chatId } = useParams();
@@ -57,7 +58,7 @@ const ChatAside = () => {
 
   return (
     <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
-      <AnimateSharedLayout>
+      <LayoutGroup>
         <MotionAside
           p="xs"
           layout
@@ -68,18 +69,20 @@ const ChatAside = () => {
               width: `${AsideWidth.Opened}px`,
               transition: {
                 type: 'just',
+                when: 'beforeChildren',
               },
             },
             closed: {
               width: `${AsideWidth.Closed}px`,
               transition: {
                 type: 'just',
+                when: 'afterChildren',
               },
             },
           }}
           width={{ xs: width, sm: width, md: width, lg: width, xl: width }}
           sx={{
-            gap: '2px',
+            gap: '5px',
           }}
         >
           <HeaderSection
@@ -90,21 +93,37 @@ const ChatAside = () => {
           />
           {chat?.__typename === 'GroupChat' && (
             <Aside.Section>
-              {closed ? (
-                <Center>
-                  <Avatar size="md" radius={'xl'}>
-                    {chat.memberCount}
-                  </Avatar>
-                </Center>
-              ) : (
-                <Text>Members ({chat.memberCount})</Text>
-              )}
+              <Group
+                sx={{
+                  justifyContent: 'right',
+                  flexWrap: 'nowrap',
+                }}
+              >
+                <MotionText
+                  layout
+                  variants={{
+                    opened: {
+                      x: 0,
+                      opacity: 1,
+                    },
+                    closed: {
+                      x: 100,
+                      opacity: 0,
+                    },
+                  }}
+                >
+                  Members
+                </MotionText>
+                <Avatar size="md" radius={'xl'} color={'dimmed'}>
+                  {chat.memberCount}
+                </Avatar>
+              </Group>
             </Aside.Section>
           )}
           <MemberSection chat={chat} loading={loading} />
           <FooterSection chat={chat} loading={loading} />
         </MotionAside>
-      </AnimateSharedLayout>
+      </LayoutGroup>
     </MediaQuery>
   );
 };

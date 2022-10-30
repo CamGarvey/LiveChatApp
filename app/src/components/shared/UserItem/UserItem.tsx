@@ -1,12 +1,5 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Group,
-  Stack,
-  Sx,
-  MantineNumberSize,
-  useMantineTheme,
-} from '@mantine/core';
+import React from 'react';
+import { Box, Group, Stack, Sx, MantineNumberSize } from '@mantine/core';
 import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
@@ -38,7 +31,6 @@ type Props = {
 const UserItem = ({ user, menu, onClick, avatar }: Props) => {
   const { name, username } = user;
   const avatarSize = avatar?.size ?? 'md';
-  const theme = useMantineTheme();
 
   const textStyle: Sx = {
     whiteSpace: 'nowrap',
@@ -50,21 +42,22 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
     <MotionGroup
       layout
       key={user.id}
+      onClick={() => onClick?.()}
       variants={{
         opened: {
-          padding: '0px',
           width: '100%',
-          borderRadius: '4px',
           transition: {
-            type: 'just',
+            duration: 0.2,
+            type: 'tween',
+            when: 'beforeChildren',
           },
         },
         closed: {
-          borderRadius: '50%',
-          padding: '0px',
           width: `${sizes[avatarSize]}px`,
+          borderRadius: '50px 50px 50px 50px',
           transition: {
-            type: 'just',
+            duration: 0.2,
+            type: 'tween',
           },
         },
       }}
@@ -72,8 +65,9 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
         display: 'flex',
         flexWrap: 'nowrap',
         gap: '20px',
-        padding: '10px',
-        borderRadius: theme.radius.md,
+        width: '100%',
+        height: `${sizes[avatarSize]}px`,
+        borderRadius: '50px 0px 0px 50px',
         color:
           theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
         alignItems: 'center',
@@ -94,6 +88,7 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
         variants={{
           opened: {
             opacity: 1,
+            display: 'flex',
             transition: {
               type: 'just',
             },

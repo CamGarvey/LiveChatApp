@@ -2,7 +2,7 @@ import { Avatar } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons';
 import { motion } from 'framer-motion';
 
-const MotionIconArrowLeft = motion(IconArrowLeft);
+const MotionAvatar = motion(Avatar);
 
 type Props = {
   dir: 'left' | 'right';
@@ -11,26 +11,28 @@ type Props = {
 
 const ArrowAvatar = ({ dir, onClick }: Props) => {
   return (
-    <Avatar
+    <MotionAvatar
       sx={{
         cursor: 'pointer',
+      }}
+      animate={dir}
+      variants={{
+        left: {
+          rotate: 0,
+        },
+        right: {
+          rotate: 180,
+        },
+        transition: {
+          type: 'just',
+        },
       }}
       radius={'xl'}
       color={'default'}
       onClick={() => onClick?.()}
     >
-      <MotionIconArrowLeft
-        animate={dir}
-        transition={{
-          left: {
-            rotate: -100,
-          },
-          right: {
-            rotate: 0,
-          },
-        }}
-      />
-    </Avatar>
+      <IconArrowLeft />
+    </MotionAvatar>
   );
 };
 
