@@ -1,9 +1,12 @@
 import { gql } from '@apollo/client';
-import { Aside, Button } from '@mantine/core';
+import { ActionIcon, Aside, Avatar, Button, Center } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
 import { IconRun } from '@tabler/icons';
+import { motion } from 'framer-motion';
 import { FooterSectionChatFragment } from 'graphql/generated/graphql';
 import { useLeaveChat } from 'hooks';
+
+const MotionButton = motion(Button);
 
 type Props = {
   chat?: FooterSectionChatFragment | null | undefined;
@@ -36,16 +39,18 @@ export const FooterSection = ({ loading, chat }: Props) => {
 
   return (
     <Aside.Section>
-      <Button
+      <MotionButton
+        sx={{
+          marginLeft: 'auto',
+        }}
         color={'red'}
         rightIcon={<IconRun />}
         disabled={chat?.isCreator ?? true}
         onClick={openConfirm}
-        fullWidth
         compact
       >
         Leave Chat
-      </Button>
+      </MotionButton>
     </Aside.Section>
   );
 };

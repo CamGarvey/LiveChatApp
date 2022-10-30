@@ -59,32 +59,33 @@ const UserList = ({
       </Input.Wrapper>
       {hasInput && !loading && users.length !== 0 ? (
         <>
-          <Stack
-            pt={'10px'}
-            style={{
-              maxHeight: '490px',
+          <ScrollArea
+            styles={{
+              viewport: {
+                paddingBottom: '0px',
+              },
             }}
+            offsetScrollbars
           >
-            <ScrollArea
+            <Stack
+              pt={'10px'}
+              spacing={'xs'}
               style={{
-                height: '500px',
+                maxHeight: '490px',
               }}
-              offsetScrollbars
             >
-              <>
-                {users.map((user) => {
-                  return (
-                    <UserItem
-                      key={user.id}
-                      user={user}
-                      onClick={() => onUserClick?.(user)}
-                      menu={showUserMenu && <UserMenu user={user} />}
-                    />
-                  );
-                })}
-              </>
-            </ScrollArea>
-          </Stack>
+              {users.map((user) => {
+                return (
+                  <UserItem
+                    key={user.id}
+                    user={user}
+                    onClick={() => onUserClick?.(user)}
+                    menu={showUserMenu && <UserMenu user={user} />}
+                  />
+                );
+              })}
+            </Stack>
+          </ScrollArea>
           {hasNextPage && (
             <Button fullWidth onClick={() => onNextPageClick?.()}>
               Load More

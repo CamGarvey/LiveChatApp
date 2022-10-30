@@ -27,7 +27,7 @@ gql`
 
 enum AsideWidth {
   Opened = 300,
-  Closed = 58,
+  Closed = 59,
 }
 
 const MotionAside = motion(Aside);
@@ -64,6 +64,8 @@ const ChatAside = () => {
           layout
           hiddenBreakpoint="md"
           animate={closed ? 'closed' : 'opened'}
+          initial={closed ? 'closed' : 'opened'}
+          exit={closed ? 'closed' : 'opened'}
           variants={{
             opened: {
               width: `${AsideWidth.Opened}px`,

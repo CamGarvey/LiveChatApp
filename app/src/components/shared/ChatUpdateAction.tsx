@@ -55,6 +55,7 @@ const ChatUpdateAction = (props: Props) => {
     <Tooltip
       label={disabled ? 'Unauthorized' : 'Update'}
       position={props?.tooltip?.position ?? 'bottom'}
+      openDelay={1000}
     >
       <ActionIcon
         size={props.size ?? 'xs'}

@@ -46,6 +46,7 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       variants={{
         opened: {
           width: '100%',
+          borderRadius: '50px 0px 0px 50px',
           transition: {
             duration: 0.2,
             type: 'tween',
@@ -83,7 +84,7 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
         key={user.id}
         sx={{
           flexWrap: 'nowrap',
-          flexGrow: 1,
+          width: '100%',
         }}
         variants={{
           opened: {
