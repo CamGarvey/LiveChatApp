@@ -1,5 +1,12 @@
 import React from 'react';
-import { Box, Group, Stack, Sx, MantineNumberSize } from '@mantine/core';
+import {
+  Box,
+  Group,
+  Stack,
+  Sx,
+  MantineNumberSize,
+  useMantineTheme,
+} from '@mantine/core';
 import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
@@ -31,6 +38,7 @@ type Props = {
 const UserItem = ({ user, menu, onClick, avatar }: Props) => {
   const { name, username } = user;
   const avatarSize = avatar?.size ?? 'md';
+  const { radius } = useMantineTheme();
 
   const textStyle: Sx = {
     whiteSpace: 'nowrap',
@@ -46,7 +54,7 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       variants={{
         opened: {
           width: '100%',
-          borderRadius: '50px 0px 0px 50px',
+          borderRadius: `50px ${radius.md}px ${radius.md}px 50px`,
           transition: {
             duration: 0.2,
             type: 'tween',

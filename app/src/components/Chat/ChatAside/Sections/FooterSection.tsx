@@ -40,8 +40,19 @@ export const FooterSection = ({ loading, chat }: Props) => {
   return (
     <Aside.Section>
       <MotionButton
+        layout
         sx={{
           marginLeft: 'auto',
+          height: '38px',
+          borderRadius: '50px 50px 50px 50px',
+        }}
+        variants={{
+          opened: {
+            width: '100%',
+          },
+          closed: {
+            width: '38px',
+          },
         }}
         color={'red'}
         rightIcon={<IconRun />}
