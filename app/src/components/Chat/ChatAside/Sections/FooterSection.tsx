@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { ActionIcon, Aside, Avatar, Button, Center } from '@mantine/core';
+import { Aside, Button } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
 import { IconRun } from '@tabler/icons';
 import { motion } from 'framer-motion';

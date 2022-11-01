@@ -1,11 +1,5 @@
 import { gql } from '@apollo/client';
-import {
-  Aside,
-  Center,
-  LoadingOverlay,
-  ScrollArea,
-  Stack,
-} from '@mantine/core';
+import { Aside, LoadingOverlay, ScrollArea, Stack } from '@mantine/core';
 import {
   ChatMemberItemUserFragment,
   OpenedMemberSectionChatFragment,

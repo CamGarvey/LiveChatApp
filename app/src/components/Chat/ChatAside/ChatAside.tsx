@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
-import { MediaQuery, Aside, Group, Text, Avatar, Center } from '@mantine/core';
+import { MediaQuery, Aside, Group, Text, Avatar } from '@mantine/core';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useGetChatForChatAsideLazyQuery } from 'graphql/generated/graphql';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FooterSection, HeaderSection, MemberSection } from './Sections';
+import { HeaderSection, MemberSection } from './Sections';
 
 gql`
   query GetChatForChatAside(
@@ -123,7 +123,7 @@ const ChatAside = () => {
             </Aside.Section>
           )}
           <MemberSection chat={chat} loading={loading} />
-          <FooterSection chat={chat} loading={loading} />
+          {/* <FooterSection chat={chat} loading={loading} /> */}
         </MotionAside>
       </LayoutGroup>
     </MediaQuery>

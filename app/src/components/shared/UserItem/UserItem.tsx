@@ -67,6 +67,7 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
           transition: {
             duration: 0.2,
             type: 'tween',
+            when: 'afterChildren',
           },
         },
       }}
@@ -93,18 +94,17 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
         sx={{
           flexWrap: 'nowrap',
           width: '100%',
+          backgroundColor: 'transparent',
         }}
         variants={{
           opened: {
             opacity: 1,
-            display: 'flex',
             transition: {
               type: 'just',
             },
           },
           closed: {
             opacity: 0,
-            display: 'none',
             transition: {
               type: 'just',
             },

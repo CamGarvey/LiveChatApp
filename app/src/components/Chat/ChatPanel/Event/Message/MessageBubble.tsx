@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import { Paper, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { MessageBubbleFragment } from 'graphql/generated/graphql';
+import useDefaultColor from 'hooks/useDefaultColor';
 
 type Props = {
   message: MessageBubbleFragment;
@@ -12,6 +13,7 @@ type Props = {
 const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
   const smallScreen = useMediaQuery('(max-width: 470px)');
   const largeScreen = useMediaQuery('(min-width: 1200px)');
+  const defaultColor = useDefaultColor();
 
   return (
     <Paper
@@ -22,16 +24,8 @@ const MessageBubble = ({ message, onClick, variant = 'default' }: Props) => {
       onClick={() => onClick && onClick()}
       sx={(theme) => ({
         maxWidth: largeScreen ? '380px' : smallScreen ? '170px' : '250px',
-        backgroundColor:
-          variant === 'light'
-            ? theme.colorScheme === 'dark'
-              ? theme.colors.blue[7]
-              : theme.colors.blue[1]
-            : undefined,
-        color:
-          variant === 'light' && theme.colorScheme === 'dark'
-            ? '#fff'
-            : undefined,
+        backgroundColor: variant === 'light' ? defaultColor : undefined,
+        color: variant === 'light' ? '#fff' : undefined,
       })}
       withBorder
     >

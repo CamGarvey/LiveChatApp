@@ -3,6 +3,7 @@ import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { useFriend } from 'hooks';
 import { IconUserCircle, IconUserMinus } from '@tabler/icons';
 import { FriendMenuFriendFragment } from 'graphql/generated/graphql';
+import useDefaultColor from 'hooks/useDefaultColor';
 
 type Props = {
   friend: FriendMenuFriendFragment;
@@ -22,12 +23,18 @@ const FriendMenu = ({
   loading = false,
 }: Props) => {
   const { deleteFriend, loading: loadingMutation } = useFriend(friend);
+  const defaultColor = useDefaultColor();
 
   return (
     <Menu width={'max-content'}>
       <Menu.Target>
         <Tooltip hidden={!!friend} label={!friend && 'Failed to load user'}>
-          <ActionIcon loading={loadingMutation || loading}>
+          <ActionIcon
+            loaderProps={{
+              color: defaultColor,
+            }}
+            loading={loadingMutation || loading}
+          >
             {target?.icon ? <>{target.icon}</> : <IconUserCircle />}
           </ActionIcon>
         </Tooltip>
