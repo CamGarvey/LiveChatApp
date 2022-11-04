@@ -13,9 +13,7 @@ import {
   Text,
 } from '@mantine/core';
 import { UserAvatarFragment } from 'graphql/generated/graphql';
-import { CSSProperties } from 'react';
-import { getUserAvatar } from 'utils/avatar';
-import { sizes } from './Avatar.common';
+import { AVATAR_SIZES, getUserAvatar } from 'utils/avatar';
 
 type Props =
   | {
@@ -35,7 +33,7 @@ export const UserAvatar = ({
   ...other
 }: Props) => {
   if (loading) {
-    return <Skeleton height={sizes[size]} circle />;
+    return <Skeleton height={AVATAR_SIZES[size]} circle />;
   }
   if (!user) {
     return (

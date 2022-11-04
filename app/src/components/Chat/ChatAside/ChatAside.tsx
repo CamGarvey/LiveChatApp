@@ -1,15 +1,8 @@
 import { gql } from '@apollo/client';
-import {
-  MediaQuery,
-  Aside,
-  Group,
-  Text,
-  Avatar,
-  MantineNumberSize,
-} from '@mantine/core';
-import { LayoutGroup, motion } from 'framer-motion';
+import { Aside, Group, Text, Avatar, MantineNumberSize } from '@mantine/core';
+import { motion } from 'framer-motion';
 import { useGetChatForChatAsideLazyQuery } from 'graphql/generated/graphql';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HeaderSection, MemberSection } from './Sections';
 
@@ -51,6 +44,14 @@ enum AsideWidth {
   Closed = sizes[AVATAR.size] + 20,
 }
 
+const WIDTH = {
+  xs: AsideWidth.Closed,
+  sm: AsideWidth.Closed,
+  md: AsideWidth.Closed,
+  lg: AsideWidth.Closed,
+  xl: AsideWidth.Closed,
+};
+
 const MotionAside = motion(Aside);
 const MotionText = motion(Text);
 
@@ -68,19 +69,6 @@ const ChatAside = () => {
       });
   }, [chatId, getChat]);
 
-  const width = useMemo<
-    Partial<Record<string, string | number>> | undefined
-  >(() => {
-    const w = closed ? AsideWidth.Closed : AsideWidth.Opened;
-    return {
-      xs: w,
-      sm: w,
-      md: w,
-      lg: w,
-      xl: w,
-    };
-  }, [closed]);
-
   const chat = data?.chat;
 
   if (!chatId) return <></>;
@@ -93,20 +81,19 @@ const ChatAside = () => {
       animate={closed ? 'closed' : 'opened'}
       initial={closed ? 'closed' : 'opened'}
       exit={closed ? 'closed' : 'opened'}
-      width={width}
+      width={WIDTH}
       variants={{
         opened: {
           width: `${AsideWidth.Opened}px`,
           transition: {
-            type: 'just',
-            when: 'beforeChildren',
+            duration: 0.5,
           },
         },
         closed: {
           width: `${AsideWidth.Closed}px`,
           transition: {
-            type: 'just',
-            when: 'afterChildren',
+            duration: 0.5,
+            delay: 0.3,
           },
         },
       }}

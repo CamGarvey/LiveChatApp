@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Group,
@@ -11,18 +11,14 @@ import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
 import TruncatedText from '../TruncatedText';
-import { LayoutGroup, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { AVATAR_SIZES } from 'utils';
 
 const MotionGroup = motion(Group);
 const MotionUserAvatar = motion(UserAvatar);
 
-const sizes = {
-  xs: 16,
-  sm: 26,
-  md: 38,
-  lg: 56,
-  xl: 84,
-};
+const SLIDE_DURATION = 0.6;
+const AVATAR_DURATION = 0.7;
 
 type Props = {
   user: UserItemFragment;
@@ -40,7 +36,12 @@ type Props = {
 const UserItem = ({ user, menu, onClick, avatar }: Props) => {
   const { name, username } = user;
   const avatarSize = avatar?.size ?? 'md';
-  const { radius } = useMantineTheme();
+  const theme = useMantineTheme();
+
+  const backgroundColor = useMemo(() => {
+    const base = theme.colors.gray;
+    return theme.colorScheme === 'dark' ? base[9] : base[0];
+  }, [theme]);
 
   const textStyle: Sx = {
     whiteSpace: 'nowrap',
@@ -54,22 +55,22 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       layout
       onClick={() => onClick?.()}
       spacing={'md'}
-      sx={(theme) => ({
+      sx={{
         flexWrap: 'nowrap',
-        width: `calc(100% - ${sizes[avatarSize] / 2}px)`,
+        width: `calc(100% - ${AVATAR_SIZES[avatarSize] / 2}px)`,
         position: 'relative',
-        height: `${sizes[avatarSize]}px`,
-        borderRadius: `50px ${radius.md}px ${radius.md}px 50px`,
-      })}
+        height: `${AVATAR_SIZES[avatarSize]}px`,
+        borderRadius: `50px ${theme.radius.md}px ${theme.radius.md}px 50px`,
+      }}
       variants={{
         opened: {
           transition: {
-            staggerChildren: 0.2,
+            staggerChildren: AVATAR_DURATION,
           },
         },
         closed: {
           transition: {
-            staggerChildren: 0.8,
+            staggerChildren: SLIDE_DURATION,
             staggerDirection: -1,
           },
         },
@@ -78,21 +79,21 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       <MotionUserAvatar
         size={avatarSize}
         user={user}
-        style={{
-          backgroundColor: '#2d2c2c',
+        sx={{
+          backgroundColor,
           zIndex: 999,
         }}
         variants={{
           opened: {
-            borderRadius: `50px ${radius.md}px ${radius.md}px 50px`,
+            borderRadius: `50px ${theme.radius.md}px ${theme.radius.md}px 50px`,
             transition: {
-              duration: 0.2,
+              duration: AVATAR_DURATION,
             },
           },
           closed: {
             borderRadius: '50px 50px 50px 50px',
             transition: {
-              duration: 0.8,
+              duration: SLIDE_DURATION,
             },
           },
         }}
@@ -103,41 +104,38 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
       <MotionGroup
         layout={'position'}
         key={user.id + '_user-item__content'}
-        sx={(theme) => ({
+        sx={{
+          backgroundColor,
           borderRadius: `0px ${theme.radius.md}px ${theme.radius.md}px 0px`,
-        })}
+        }}
         pl={40}
         pr={'sm'}
         style={{
           originX: 0,
           position: 'absolute',
-          left: `${sizes[avatarSize] / 2}px`,
-          height: `${sizes[avatarSize]}px`,
+          left: `${AVATAR_SIZES[avatarSize] / 2}px`,
+          height: `${AVATAR_SIZES[avatarSize]}px`,
           width: '100%',
-          backgroundColor: '#2d2c2c',
           flexWrap: 'nowrap',
         }}
         variants={{
           opened: {
             scaleX: 1,
             transition: {
-              // type: 'just',
               when: 'beforeChildren',
-              duration: 0.8,
+              duration: SLIDE_DURATION,
             },
           },
           closed: {
             scaleX: 0,
             transition: {
-              // type: 'just',
               when: 'afterChildren',
-              duration: 0.8,
+              duration: SLIDE_DURATION,
             },
           },
         }}
       >
         <MotionGroup
-          layout={'position'}
           key={user.id + '_user-item__content_r'}
           sx={{ width: '100%', flexWrap: 'nowrap' }}
           variants={{

@@ -1,18 +1,17 @@
 import { gql } from '@apollo/client';
 import {
   Aside,
-  LoadingOverlay,
   MantineNumberSize,
   ScrollArea,
+  Skeleton,
   Stack,
 } from '@mantine/core';
-import { LayoutGroup } from 'framer-motion';
 import {
   ChatMemberItemUserFragment,
   OpenedMemberSectionChatFragment,
 } from 'graphql/generated/graphql';
 import { useMemo } from 'react';
-import { sortRelationship } from 'utils';
+import { AVATAR_SIZES, sortRelationship } from 'utils';
 import ChatMemberItem from './ChatMemberItem';
 
 type Props = {
@@ -53,8 +52,6 @@ export const MemberSection = ({ chat, loading, avatar }: Props) => {
       }}
       type="never"
     >
-      <LoadingOverlay mt={10} visible={loading} />
-
       <Stack
         p={0}
         spacing={'xs'}
@@ -62,7 +59,13 @@ export const MemberSection = ({ chat, loading, avatar }: Props) => {
           width: '100%',
         }}
       >
-        {chat &&
+        {loading ? (
+          <LoadingMembers
+            height={AVATAR_SIZES[avatar?.size ?? 'md']}
+            length={5}
+          />
+        ) : (
+          chat &&
           users.map((member) => (
             <ChatMemberItem
               key={member.id}
@@ -70,11 +73,26 @@ export const MemberSection = ({ chat, loading, avatar }: Props) => {
               user={member}
               avatar={avatar}
             />
-          ))}
+          ))
+        )}
       </Stack>
     </Aside.Section>
   );
 };
+
+const LoadingMembers = ({
+  height,
+  length,
+}: {
+  height: MantineNumberSize | undefined;
+  length: number;
+}) => (
+  <Stack>
+    {[...Array.from({ length })].map(() => (
+      <Skeleton radius={50} height={height} width={'100%'} />
+    ))}
+  </Stack>
+);
 
 MemberSection.fragments = {
   chat: gql`

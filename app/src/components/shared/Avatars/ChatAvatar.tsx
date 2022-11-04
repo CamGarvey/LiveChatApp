@@ -2,8 +2,7 @@ import { gql } from '@apollo/client';
 import { Avatar, MantineNumberSize, Skeleton } from '@mantine/core';
 import { ChatAvatarFragment } from 'graphql/generated/graphql';
 import { CSSProperties, useMemo } from 'react';
-import { getChatAvatar, getUserAvatar } from 'utils/avatar';
-import { sizes } from './Avatar.common';
+import { AVATAR_SIZES, getChatAvatar, getUserAvatar } from 'utils/avatar';
 
 type Props = {
   chat?: ChatAvatarFragment | null | undefined;
@@ -30,7 +29,7 @@ export const ChatAvatar = ({
   }, [chat]);
 
   if (loading) {
-    return <Skeleton height={sizes[size]} circle />;
+    return <Skeleton height={AVATAR_SIZES[size]} circle />;
   }
 
   if (!chat) {
