@@ -11,9 +11,11 @@ import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
 import TruncatedText from '../TruncatedText';
-import { motion } from 'framer-motion';
+import { LayoutGroup, motion } from 'framer-motion';
 
 const MotionGroup = motion(Group);
+const MotionUserAvatar = motion(UserAvatar);
+
 const sizes = {
   xs: 16,
   sm: 26,
@@ -48,78 +50,115 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
 
   return (
     <MotionGroup
+      key={user.id + '_user-item'}
       layout
-      key={user.id}
       onClick={() => onClick?.()}
+      spacing={'md'}
+      sx={(theme) => ({
+        flexWrap: 'nowrap',
+        width: `calc(100% - ${sizes[avatarSize] / 2}px)`,
+        position: 'relative',
+        height: `${sizes[avatarSize]}px`,
+        borderRadius: `50px ${radius.md}px ${radius.md}px 50px`,
+      })}
       variants={{
         opened: {
-          width: '100%',
-          borderRadius: `50px ${radius.md}px ${radius.md}px 50px`,
           transition: {
-            duration: 0.2,
-            type: 'tween',
-            when: 'beforeChildren',
+            staggerChildren: 0.2,
           },
         },
         closed: {
-          width: `${sizes[avatarSize]}px`,
-          borderRadius: '50px 50px 50px 50px',
           transition: {
-            duration: 0.2,
-            type: 'tween',
-            when: 'afterChildren',
+            staggerChildren: 0.8,
+            staggerDirection: -1,
           },
         },
       }}
-      sx={(theme) => ({
-        display: 'flex',
-        flexWrap: 'nowrap',
-        gap: '20px',
-        width: '100%',
-        height: `${sizes[avatarSize]}px`,
-        borderRadius: '50px 0px 0px 50px',
-        color:
-          theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-        alignItems: 'center',
-        backgroundColor:
-          theme.colorScheme === 'dark'
-            ? theme.colors.dark[6]
-            : theme.colors.gray[0],
-      })}
     >
-      <UserAvatar size={avatarSize} user={user} />
-      <MotionGroup
-        layout
-        key={user.id}
-        sx={{
-          flexWrap: 'nowrap',
-          width: '100%',
-          backgroundColor: 'transparent',
+      <MotionUserAvatar
+        size={avatarSize}
+        user={user}
+        style={{
+          backgroundColor: '#2d2c2c',
+          zIndex: 999,
         }}
         variants={{
           opened: {
-            opacity: 1,
+            borderRadius: `50px ${radius.md}px ${radius.md}px 50px`,
             transition: {
-              type: 'just',
+              duration: 0.2,
             },
           },
           closed: {
-            opacity: 0,
+            borderRadius: '50px 50px 50px 50px',
             transition: {
-              type: 'just',
+              duration: 0.8,
+            },
+          },
+        }}
+        hoverCard={{
+          disabled: true,
+        }}
+      />
+      <MotionGroup
+        layout={'position'}
+        key={user.id + '_user-item__content'}
+        sx={(theme) => ({
+          borderRadius: `0px ${theme.radius.md}px ${theme.radius.md}px 0px`,
+        })}
+        pl={40}
+        pr={'sm'}
+        style={{
+          originX: 0,
+          position: 'absolute',
+          left: `${sizes[avatarSize] / 2}px`,
+          height: `${sizes[avatarSize]}px`,
+          width: '100%',
+          backgroundColor: '#2d2c2c',
+          flexWrap: 'nowrap',
+        }}
+        variants={{
+          opened: {
+            scaleX: 1,
+            transition: {
+              // type: 'just',
+              when: 'beforeChildren',
+              duration: 0.8,
+            },
+          },
+          closed: {
+            scaleX: 0,
+            transition: {
+              // type: 'just',
+              when: 'afterChildren',
+              duration: 0.8,
             },
           },
         }}
       >
-        <Stack spacing={0}>
-          <TruncatedText max={15} size={'sm'} sx={textStyle}>
-            {`${username} ${user.__typename === 'Me' ? '(You)' : ''}`}
-          </TruncatedText>
-          <TruncatedText max={15} size={'xs'} color={'dimmed'} sx={textStyle}>
-            {name}
-          </TruncatedText>
-        </Stack>
-        {menu && user.__typename !== 'Me' && <Box ml={'auto'}>{menu}</Box>}
+        <MotionGroup
+          layout={'position'}
+          key={user.id + '_user-item__content_r'}
+          sx={{ width: '100%', flexWrap: 'nowrap' }}
+          variants={{
+            opened: {
+              opacity: 1,
+            },
+            closed: {
+              opacity: 0,
+            },
+          }}
+        >
+          <Stack spacing={0}>
+            <TruncatedText max={15} size={'sm'} sx={textStyle}>
+              {`${username} ${user.__typename === 'Me' ? '(You)' : ''}`}
+            </TruncatedText>
+            <TruncatedText max={15} size={'xs'} color={'dimmed'} sx={textStyle}>
+              {name}
+            </TruncatedText>
+          </Stack>
+          {menu && user.__typename !== 'Me' && <Box ml={'auto'}>{menu}</Box>}
+        </MotionGroup>
       </MotionGroup>
     </MotionGroup>
   );

@@ -1,5 +1,12 @@
 import { gql } from '@apollo/client';
-import { Aside, LoadingOverlay, ScrollArea, Stack } from '@mantine/core';
+import {
+  Aside,
+  LoadingOverlay,
+  MantineNumberSize,
+  ScrollArea,
+  Stack,
+} from '@mantine/core';
+import { LayoutGroup } from 'framer-motion';
 import {
   ChatMemberItemUserFragment,
   OpenedMemberSectionChatFragment,
@@ -10,10 +17,13 @@ import ChatMemberItem from './ChatMemberItem';
 
 type Props = {
   chat?: OpenedMemberSectionChatFragment | null | undefined;
+  avatar?: {
+    size?: MantineNumberSize | undefined;
+  };
   loading: boolean;
 };
 
-export const MemberSection = ({ chat, loading }: Props) => {
+export const MemberSection = ({ chat, loading, avatar }: Props) => {
   const users = useMemo<ChatMemberItemUserFragment[]>(() => {
     let userArr: ChatMemberItemUserFragment[] = [];
     switch (chat?.__typename) {
@@ -54,7 +64,12 @@ export const MemberSection = ({ chat, loading }: Props) => {
       >
         {chat &&
           users.map((member) => (
-            <ChatMemberItem key={member.id} chat={chat} user={member} />
+            <ChatMemberItem
+              key={member.id}
+              chat={chat}
+              user={member}
+              avatar={avatar}
+            />
           ))}
       </Stack>
     </Aside.Section>

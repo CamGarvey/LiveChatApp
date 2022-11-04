@@ -32,7 +32,7 @@ export const App = () => {
       <MantineProvider
         theme={{
           colorScheme,
-          primaryColor: 'teal',
+          primaryColor: 'blue',
           loader: 'bars',
         }}
         withGlobalStyles

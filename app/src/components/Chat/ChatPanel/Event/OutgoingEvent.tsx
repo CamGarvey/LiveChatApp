@@ -55,7 +55,9 @@ const OutgoingEvent = ({ state = 'sent', children, event, actions }: Props) => {
           <Group>{actions}</Group>
         </MotionGroup>
         {children}
-        {state === 'sending' && <Loader size={8} mt={'auto'} />}
+        {state === 'sending' && (
+          <Loader size={8} mt={'auto'} variant={'oval'} />
+        )}
       </Group>
     </MotionGroup>
   );

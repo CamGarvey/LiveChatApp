@@ -33,7 +33,6 @@ const LoggedInProvider = ({ children }: Props) => {
             navbar={<ChatNav />}
             aside={<ChatAside />}
             padding={0}
-            fixed
           >
             <ChatDrawer />
             {children}

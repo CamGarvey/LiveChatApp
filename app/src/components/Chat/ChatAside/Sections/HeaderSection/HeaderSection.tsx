@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { Aside, Group, Skeleton, Text } from '@mantine/core';
+import { Aside, Group, MantineNumberSize, Skeleton, Text } from '@mantine/core';
 import ChatUpdateAction from 'components/shared/ChatUpdateAction';
 import { AnimatePresence, motion } from 'framer-motion';
 import { HeaderSectionChatFragment } from 'graphql/generated/graphql';
@@ -13,9 +13,18 @@ type Props = {
   loading: boolean;
   closed: boolean;
   onToggle: () => void;
+  avatar?: {
+    size?: MantineNumberSize | undefined;
+  };
 };
 
-export const HeaderSection = ({ chat, loading, closed, onToggle }: Props) => {
+export const HeaderSection = ({
+  chat,
+  loading,
+  closed,
+  onToggle,
+  avatar,
+}: Props) => {
   const name = useMemo(() => {
     switch (chat?.__typename) {
       case 'GroupChat':
@@ -34,7 +43,11 @@ export const HeaderSection = ({ chat, loading, closed, onToggle }: Props) => {
           flexFlow: 'nowrap',
         }}
       >
-        <ArrowAvatar dir={closed ? 'left' : 'right'} onClick={onToggle} />
+        <ArrowAvatar
+          dir={closed ? 'left' : 'right'}
+          onClick={onToggle}
+          {...avatar}
+        />
         <AnimatePresence>
           {!closed && (
             <MotionGroup
