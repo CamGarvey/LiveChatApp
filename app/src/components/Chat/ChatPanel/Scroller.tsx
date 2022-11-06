@@ -11,7 +11,7 @@ import {
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
 import { IconArrowDownCircle } from '@tabler/icons';
-import { useScroller } from './useScroller';
+import { useScroller } from 'hooks';
 
 type Props = {
   children: JSX.Element[];

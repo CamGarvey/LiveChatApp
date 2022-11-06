@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { MantineNumberSize, Menu } from '@mantine/core';
+import { AvatarProps, MantineNumberSize, Menu } from '@mantine/core';
 import { IconDots, IconKarate } from '@tabler/icons';
 import UserItem from 'components/shared/UserItem';
 import UserMenu from 'components/shared/UserItem/UserMenu';
@@ -12,19 +12,17 @@ import { useUpdateChat } from 'hooks';
 type Props = {
   chat: ChatMemberItemChatFragment;
   user: ChatMemberItemUserFragment;
-  avatar?: {
-    size?: MantineNumberSize | undefined;
-  };
+  size?: MantineNumberSize | undefined;
 };
 
-const ChatMemberItem = ({ chat, user, avatar }: Props) => {
+const ChatMemberItem = ({ chat, user, size }: Props) => {
   const { update, loading: loadingRemove } = useUpdateChat();
 
   return (
     <UserItem
       key={user.id}
       user={user}
-      avatar={avatar}
+      size={size}
       menu={
         <UserMenu
           loading={loadingRemove}

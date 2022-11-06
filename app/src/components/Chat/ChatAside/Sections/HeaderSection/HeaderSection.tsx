@@ -13,7 +13,7 @@ type Props = {
   loading: boolean;
   closed: boolean;
   onToggle: () => void;
-  avatar?: {
+  avatarProps?: {
     size?: MantineNumberSize | undefined;
   };
 };
@@ -23,7 +23,7 @@ export const HeaderSection = ({
   loading,
   closed,
   onToggle,
-  avatar,
+  avatarProps,
 }: Props) => {
   const name = useMemo(() => {
     switch (chat?.__typename) {
@@ -46,7 +46,7 @@ export const HeaderSection = ({
         <ArrowAvatar
           dir={closed ? 'left' : 'right'}
           onClick={onToggle}
-          {...avatar}
+          {...avatarProps}
         />
         <AnimatePresence>
           {!closed && (

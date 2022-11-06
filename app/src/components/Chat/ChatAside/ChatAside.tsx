@@ -1,75 +1,93 @@
 import { gql } from '@apollo/client';
-import { Aside, Group, Text, Avatar, MantineNumberSize } from '@mantine/core';
+import { Aside, Text, MantineNumberSize } from '@mantine/core';
 import { motion } from 'framer-motion';
-import { useGetChatForChatAsideLazyQuery } from 'graphql/generated/graphql';
-import { useEffect, useState } from 'react';
+import {
+  MemberSectionUserFragment,
+  useGetChatForChatAsideLazyQuery,
+  useGetMembersForMemberSectionLazyQuery,
+} from 'graphql/generated/graphql';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { HeaderSection, MemberSection } from './Sections';
+import { AVATAR_SIZES } from 'utils';
+import { HeaderSection, MemberSection, MemberCountSection } from './Sections';
 
 gql`
-  query GetChatForChatAside(
-    $chatId: HashId!
-    $firstMembers: Int = 30
-    $afterMember: String
-  ) {
+  query GetChatForChatAside($chatId: HashId!) {
     chat(chatId: $chatId) {
+      ...HeaderSectionChat
+      ...MemberSectionChat
       ... on GroupChat {
-        members(first: $firstMembers, after: $afterMember) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
+        ...MemberCountSectionChat
+      }
+    }
+    ${MemberCountSection.fragments.chat}
+  }
+  query GetMembersForMemberSection(
+    $chatId: HashId!
+    $first: Int!
+    $after: String
+  ) {
+    members(chatId: $chatId, first: $first, after: $after) {
+      edges {
+        node {
+          ...MemberSectionUser
         }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
+  ${HeaderSection.fragments.chat}
+  ${MemberSection.fragments.chat}
+  ${MemberSection.fragments.user}
 `;
 
-const sizes = {
-  xs: 16,
-  sm: 26,
-  md: 38,
-  lg: 56,
-  xl: 84,
-};
-
-const AVATAR: {
-  size: MantineNumberSize;
-} = {
-  size: 'md',
-};
-
-enum AsideWidth {
-  Opened = 300,
-  Closed = sizes[AVATAR.size] + 20,
-}
-
-const WIDTH = {
-  xs: AsideWidth.Closed,
-  sm: AsideWidth.Closed,
-  md: AsideWidth.Closed,
-  lg: AsideWidth.Closed,
-  xl: AsideWidth.Closed,
-};
-
 const MotionAside = motion(Aside);
-const MotionText = motion(Text);
 
-const ChatAside = () => {
+type Props = {
+  size?: MantineNumberSize | undefined;
+  openedWidth?: number | undefined;
+};
+
+const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   const { chatId } = useParams();
   const [closed, setClosed] = useState(true);
-  const [getChat, { data, loading }] = useGetChatForChatAsideLazyQuery();
+  const [getChat, { data: dataChat, loading: loadingChat }] =
+    useGetChatForChatAsideLazyQuery();
+  const [
+    getMembers,
+    { data: dataMembers, loading: loadingMembers, fetchMore: fetchMoreMembers },
+  ] = useGetMembersForMemberSectionLazyQuery();
+
+  const closedWidth = useMemo(() => AVATAR_SIZES[size] + 20, [size]);
 
   useEffect(() => {
-    if (chatId)
+    if (chatId) {
       getChat({
         variables: {
           chatId,
         },
       });
-  }, [chatId, getChat]);
+      getMembers({
+        variables: {
+          chatId,
+          first: 20,
+        },
+      });
+    }
+  }, [chatId, getChat, getMembers]);
 
-  const chat = data?.chat;
+  const chat = dataChat?.chat;
+  const members = useMemo<MemberSectionUserFragment[]>(
+    () =>
+      dataMembers?.members?.edges
+        ?.filter((x) => !!x?.node)
+        .map((x) => x!.node as MemberSectionUserFragment) ?? [],
+    [dataMembers]
+  );
+  const memberPageInfo = dataMembers?.members.pageInfo;
 
   if (!chatId) return <></>;
 
@@ -81,16 +99,22 @@ const ChatAside = () => {
       animate={closed ? 'closed' : 'opened'}
       initial={closed ? 'closed' : 'opened'}
       exit={closed ? 'closed' : 'opened'}
-      width={WIDTH}
+      width={{
+        xs: closedWidth,
+        sm: closedWidth,
+        md: closedWidth,
+        lg: closedWidth,
+        xl: closedWidth,
+      }}
       variants={{
         opened: {
-          width: `${AsideWidth.Opened}px`,
+          width: `${openedWidth}px`,
           transition: {
             duration: 0.5,
           },
         },
         closed: {
-          width: `${AsideWidth.Closed}px`,
+          width: `${closedWidth}px`,
           transition: {
             duration: 0.5,
             delay: 0.3,
@@ -105,39 +129,35 @@ const ChatAside = () => {
         onToggle={() => setClosed((prev) => !prev)}
         chat={chat}
         closed={closed}
-        loading={loading}
-        avatar={AVATAR}
+        loading={loadingChat}
+        avatarProps={{
+          size,
+        }}
       />
       {chat?.__typename === 'GroupChat' && (
-        <Aside.Section>
-          <Group
-            sx={{
-              justifyContent: 'right',
-              flexWrap: 'nowrap',
-            }}
-          >
-            <MotionText
-              layout
-              variants={{
-                opened: {
-                  x: 0,
-                  opacity: 1,
-                },
-                closed: {
-                  x: 100,
-                  opacity: 0,
-                },
-              }}
-            >
-              Members
-            </MotionText>
-            <Avatar radius={'xl'} color={'dimmed'} {...AVATAR}>
-              {chat.memberCount}
-            </Avatar>
-          </Group>
-        </Aside.Section>
+        <MemberCountSection
+          chat={chat}
+          loading={loadingChat}
+          avatarProps={{
+            size,
+          }}
+        />
       )}
-      <MemberSection chat={chat} loading={loading} avatar={AVATAR} />
+      <MemberSection
+        chat={chat}
+        members={members}
+        loading={loadingMembers || loadingChat}
+        size={size}
+        onLoadMore={() => {
+          if (memberPageInfo?.hasNextPage) {
+            fetchMoreMembers({
+              variables: {
+                after: memberPageInfo.endCursor,
+              },
+            });
+          }
+        }}
+      />
       {/* <FooterSection chat={chat} loading={loading} /> */}
     </MotionAside>
   );

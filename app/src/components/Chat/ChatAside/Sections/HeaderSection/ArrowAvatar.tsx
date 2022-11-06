@@ -1,4 +1,4 @@
-import { Avatar, MantineNumberSize } from '@mantine/core';
+import { Avatar, AvatarProps, MantineNumberSize } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons';
 import { motion } from 'framer-motion';
 
@@ -6,11 +6,10 @@ const MotionAvatar = motion(Avatar);
 
 type Props = {
   dir: 'left' | 'right';
-  size?: MantineNumberSize | undefined;
-  onClick?: () => void;
-};
+  onClick: () => void;
+} & AvatarProps;
 
-const ArrowAvatar = ({ dir, onClick, size }: Props) => {
+const ArrowAvatar = ({ dir, onClick, ...other }: Props) => {
   return (
     <MotionAvatar
       sx={{
@@ -28,10 +27,10 @@ const ArrowAvatar = ({ dir, onClick, size }: Props) => {
           type: 'just',
         },
       }}
-      radius={'xl'}
-      size={size ?? 'md'}
+      radius={'100%'}
       color={'default'}
       onClick={() => onClick?.()}
+      {...other}
     >
       <IconArrowLeft />
     </MotionAvatar>

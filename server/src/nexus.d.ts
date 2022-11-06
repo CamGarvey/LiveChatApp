@@ -548,6 +548,7 @@ export interface NexusGenFieldTypes {
     events: NexusGenRootTypes['EventConnection']; // EventConnection!
     friends: NexusGenRootTypes['Friend'][]; // [Friend!]!
     me: NexusGenRootTypes['Me'] | null; // Me
+    members: NexusGenRootTypes['UserConnection']; // UserConnection!
     notifications: NexusGenRootTypes['Notification'][]; // [Notification!]!
     requests: NexusGenRootTypes['Request'][]; // [Request!]!
     user: NexusGenRootTypes['User'] | null; // User
@@ -963,6 +964,7 @@ export interface NexusGenFieldTypeNames {
     events: 'EventConnection'
     friends: 'Friend'
     me: 'Me'
+    members: 'UserConnection'
     notifications: 'Notification'
     requests: 'Request'
     user: 'User'
@@ -1241,6 +1243,13 @@ export interface NexusGenArgTypes {
       eventId: NexusGenScalars['HashId']; // HashId!
     }
     events: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      chatId: NexusGenScalars['HashId']; // HashId!
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+    members: { // args
       after?: string | null; // String
       before?: string | null; // String
       chatId: NexusGenScalars['HashId']; // HashId!

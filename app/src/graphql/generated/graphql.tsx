@@ -628,6 +628,7 @@ export type Query = {
   events: EventConnection;
   friends: Array<Friend>;
   me?: Maybe<Me>;
+  members: UserConnection;
   /** Get all notifications for current user */
   notifications: Array<Notification>;
   requests: Array<Request>;
@@ -648,6 +649,15 @@ export type QueryEventArgs = {
 
 
 export type QueryEventsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  chatId: Scalars['HashId'];
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryMembersArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
   chatId: Scalars['HashId'];
@@ -843,36 +853,19 @@ export type UserOrderBy = {
 
 export type GetChatForChatAsideQueryVariables = Exact<{
   chatId: Scalars['HashId'];
-  firstMembers?: InputMaybe<Scalars['Int']>;
-  afterMember?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type GetChatForChatAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', isCreator: boolean, id: any } | { __typename?: 'DirectMessageChat', isCreator: boolean, id: any, friend: { __typename?: 'Friend', username: string, id: any, name?: string | null } } | { __typename?: 'GroupChat', memberCount: number, name: string, isCreator: boolean, id: any, isAdmin: boolean, members: { __typename?: 'UserConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null } | null } | null> | null } } | null };
+export type GetChatForChatAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', memberCount: number, name: string, isAdmin: boolean, id: any } | null };
 
-type ClosedAsideChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
+export type GetMembersForMemberSectionQueryVariables = Exact<{
+  chatId: Scalars['HashId'];
+  first: Scalars['Int'];
+  after?: InputMaybe<Scalars['String']>;
+}>;
 
-type ClosedAsideChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } };
 
-type ClosedAsideChat_GroupChat_Fragment = { __typename?: 'GroupChat', memberCount: number, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null } };
-
-export type ClosedAsideChatFragment = ClosedAsideChat_DeletedChat_Fragment | ClosedAsideChat_DirectMessageChat_Fragment | ClosedAsideChat_GroupChat_Fragment;
-
-type AvatarSectionUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
-
-type AvatarSectionUser_Me_Fragment = { __typename?: 'Me', id: any, username: string, name?: string | null };
-
-type AvatarSectionUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string, name?: string | null };
-
-export type AvatarSectionUserFragment = AvatarSectionUser_Friend_Fragment | AvatarSectionUser_Me_Fragment | AvatarSectionUser_Stranger_Fragment;
-
-type OpenedAsideChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', isCreator: boolean, id: any };
-
-type OpenedAsideChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', isCreator: boolean, id: any, friend: { __typename?: 'Friend', username: string, id: any, name?: string | null } };
-
-type OpenedAsideChat_GroupChat_Fragment = { __typename?: 'GroupChat', memberCount: number, name: string, isCreator: boolean, id: any, isAdmin: boolean, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null } | null } | null> | null } };
-
-export type OpenedAsideChatFragment = OpenedAsideChat_DeletedChat_Fragment | OpenedAsideChat_DirectMessageChat_Fragment | OpenedAsideChat_GroupChat_Fragment;
+export type GetMembersForMemberSectionQuery = { __typename?: 'Query', members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
 
 type FooterSectionChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', isCreator: boolean, id: any };
 
@@ -890,6 +883,8 @@ type HeaderSectionChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: st
 
 export type HeaderSectionChatFragment = HeaderSectionChat_DeletedChat_Fragment | HeaderSectionChat_DirectMessageChat_Fragment | HeaderSectionChat_GroupChat_Fragment;
 
+export type MemberCountSectionChatFragment = { __typename?: 'GroupChat', memberCount: number };
+
 type ChatMemberItemChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
 
 type ChatMemberItemChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
@@ -906,13 +901,21 @@ type ChatMemberItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, 
 
 export type ChatMemberItemUserFragment = ChatMemberItemUser_Friend_Fragment | ChatMemberItemUser_Me_Fragment | ChatMemberItemUser_Stranger_Fragment;
 
-type OpenedMemberSectionChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+type MemberSectionUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
 
-type OpenedMemberSectionChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } };
+type MemberSectionUser_Me_Fragment = { __typename?: 'Me', id: any, username: string, name?: string | null };
 
-type OpenedMemberSectionChat_GroupChat_Fragment = { __typename?: 'GroupChat', isAdmin: boolean, id: any, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null } | null } | null> | null } };
+type MemberSectionUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null };
 
-export type OpenedMemberSectionChatFragment = OpenedMemberSectionChat_DeletedChat_Fragment | OpenedMemberSectionChat_DirectMessageChat_Fragment | OpenedMemberSectionChat_GroupChat_Fragment;
+export type MemberSectionUserFragment = MemberSectionUser_Friend_Fragment | MemberSectionUser_Me_Fragment | MemberSectionUser_Stranger_Fragment;
+
+type MemberSectionChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type MemberSectionChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
+
+type MemberSectionChat_GroupChat_Fragment = { __typename?: 'GroupChat', isAdmin: boolean, id: any };
+
+export type MemberSectionChatFragment = MemberSectionChat_DeletedChat_Fragment | MemberSectionChat_DirectMessageChat_Fragment | MemberSectionChat_GroupChat_Fragment;
 
 export type GetChatForChatHeaderQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1547,43 +1550,30 @@ type UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 
 
 export type UserAlerationGroupChatUpdateFragment = UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment | UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment | UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment | UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment;
 
-export const UserAvatarFragmentDoc = gql`
-    fragment UserAvatar on User {
+export const FooterSectionChatFragmentDoc = gql`
+    fragment FooterSectionChat on Chat {
+  isCreator
   id
-  username
-  name
+  ... on GroupChat {
+    name
+  }
 }
     `;
-export const AvatarSectionUserFragmentDoc = gql`
-    fragment AvatarSectionUser on User {
-  ...UserAvatar
-}
-    ${UserAvatarFragmentDoc}`;
-export const ClosedAsideChatFragmentDoc = gql`
-    fragment ClosedAsideChat on Chat {
+export const HeaderSectionChatFragmentDoc = gql`
+    fragment HeaderSectionChat on Chat {
+  ... on GroupChat {
+    name
+  }
   ... on DirectMessageChat {
     friend {
-      ...AvatarSectionUser
-    }
-  }
-  ... on GroupChat {
-    memberCount
-    members(first: $firstMembers, after: $afterMember) {
-      edges {
-        node {
-          ...AvatarSectionUser
-        }
-      }
+      username
     }
   }
 }
-    ${AvatarSectionUserFragmentDoc}`;
-export const ChatMemberItemChatFragmentDoc = gql`
-    fragment ChatMemberItemChat on Chat {
-  id
-  ... on GroupChat {
-    isAdmin
-  }
+    `;
+export const MemberCountSectionChatFragmentDoc = gql`
+    fragment MemberCountSectionChat on GroupChat {
+  memberCount
 }
     `;
 export const UserItemFragmentDoc = gql`
@@ -1629,61 +1619,25 @@ export const ChatMemberItemUserFragmentDoc = gql`
 }
     ${UserItemFragmentDoc}
 ${UserMenuFragmentDoc}`;
-export const OpenedMemberSectionChatFragmentDoc = gql`
-    fragment OpenedMemberSectionChat on Chat {
-  ...ChatMemberItemChat
-  ... on GroupChat {
-    ...ChatMemberItemChat
-    members(first: $firstMembers, after: $afterMember) {
-      edges {
-        node {
-          id
-          ...ChatMemberItemUser
-        }
-      }
-    }
-  }
-  ... on DirectMessageChat {
-    friend {
-      ...ChatMemberItemUser
-    }
-  }
+export const MemberSectionUserFragmentDoc = gql`
+    fragment MemberSectionUser on User {
+  id
+  ...ChatMemberItemUser
 }
-    ${ChatMemberItemChatFragmentDoc}
-${ChatMemberItemUserFragmentDoc}`;
-export const HeaderSectionChatFragmentDoc = gql`
-    fragment HeaderSectionChat on Chat {
-  ... on GroupChat {
-    name
-  }
-  ... on DirectMessageChat {
-    friend {
-      username
-    }
-  }
-}
-    `;
-export const FooterSectionChatFragmentDoc = gql`
-    fragment FooterSectionChat on Chat {
-  isCreator
+    ${ChatMemberItemUserFragmentDoc}`;
+export const ChatMemberItemChatFragmentDoc = gql`
+    fragment ChatMemberItemChat on Chat {
   id
   ... on GroupChat {
-    name
+    isAdmin
   }
 }
     `;
-export const OpenedAsideChatFragmentDoc = gql`
-    fragment OpenedAsideChat on Chat {
-  ... on GroupChat {
-    memberCount
-  }
-  ...OpenedMemberSectionChat
-  ...HeaderSectionChat
-  ...FooterSectionChat
+export const MemberSectionChatFragmentDoc = gql`
+    fragment MemberSectionChat on Chat {
+  ...ChatMemberItemChat
 }
-    ${OpenedMemberSectionChatFragmentDoc}
-${HeaderSectionChatFragmentDoc}
-${FooterSectionChatFragmentDoc}`;
+    ${ChatMemberItemChatFragmentDoc}`;
 export const EventContainerFragmentDoc = gql`
     fragment EventContainer on Event {
   id
@@ -1708,6 +1662,13 @@ export const OutgoingEventFragmentDoc = gql`
   ...EventInfo
 }
     ${EventInfoFragmentDoc}`;
+export const UserAvatarFragmentDoc = gql`
+    fragment UserAvatar on User {
+  id
+  username
+  name
+}
+    `;
 export const IncomingEventFragmentDoc = gql`
     fragment IncomingEvent on Event {
   id
@@ -2095,22 +2056,17 @@ export const UserAlerationGroupChatUpdateFragmentDoc = gql`
 }
     `;
 export const GetChatForChatAsideDocument = gql`
-    query GetChatForChatAside($chatId: HashId!, $firstMembers: Int = 30, $afterMember: String) {
+    query GetChatForChatAside($chatId: HashId!) {
   chat(chatId: $chatId) {
-    ...ClosedAsideChat
-    ...OpenedAsideChat
+    ...HeaderSectionChat
+    ...MemberSectionChat
     ... on GroupChat {
-      members(first: $firstMembers, after: $afterMember) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
+      memberCount
     }
   }
 }
-    ${ClosedAsideChatFragmentDoc}
-${OpenedAsideChatFragmentDoc}`;
+    ${HeaderSectionChatFragmentDoc}
+${MemberSectionChatFragmentDoc}`;
 
 /**
  * __useGetChatForChatAsideQuery__
@@ -2125,8 +2081,6 @@ ${OpenedAsideChatFragmentDoc}`;
  * const { data, loading, error } = useGetChatForChatAsideQuery({
  *   variables: {
  *      chatId: // value for 'chatId'
- *      firstMembers: // value for 'firstMembers'
- *      afterMember: // value for 'afterMember'
  *   },
  * });
  */
@@ -2141,6 +2095,51 @@ export function useGetChatForChatAsideLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetChatForChatAsideQueryHookResult = ReturnType<typeof useGetChatForChatAsideQuery>;
 export type GetChatForChatAsideLazyQueryHookResult = ReturnType<typeof useGetChatForChatAsideLazyQuery>;
 export type GetChatForChatAsideQueryResult = Apollo.QueryResult<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>;
+export const GetMembersForMemberSectionDocument = gql`
+    query GetMembersForMemberSection($chatId: HashId!, $first: Int!, $after: String) {
+  members(chatId: $chatId, first: $first, after: $after) {
+    edges {
+      node {
+        ...MemberSectionUser
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+    ${MemberSectionUserFragmentDoc}`;
+
+/**
+ * __useGetMembersForMemberSectionQuery__
+ *
+ * To run a query within a React component, call `useGetMembersForMemberSectionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMembersForMemberSectionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMembersForMemberSectionQuery({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *   },
+ * });
+ */
+export function useGetMembersForMemberSectionQuery(baseOptions: Apollo.QueryHookOptions<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>(GetMembersForMemberSectionDocument, options);
+      }
+export function useGetMembersForMemberSectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>(GetMembersForMemberSectionDocument, options);
+        }
+export type GetMembersForMemberSectionQueryHookResult = ReturnType<typeof useGetMembersForMemberSectionQuery>;
+export type GetMembersForMemberSectionLazyQueryHookResult = ReturnType<typeof useGetMembersForMemberSectionLazyQuery>;
+export type GetMembersForMemberSectionQueryResult = Apollo.QueryResult<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>;
 export const GetChatForChatHeaderDocument = gql`
     query GetChatForChatHeader($chatId: HashId!) {
   chat(chatId: $chatId) {

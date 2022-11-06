@@ -4,64 +4,60 @@ import {
   Group,
   Stack,
   Sx,
-  MantineNumberSize,
   useMantineTheme,
+  MantineNumberSize,
+  Selectors,
+  DefaultProps,
 } from '@mantine/core';
 import { UserAvatar } from 'components/shared/Avatars';
 import { gql } from '@apollo/client';
 import { UserItemFragment } from 'graphql/generated/graphql';
 import TruncatedText from '../TruncatedText';
 import { motion } from 'framer-motion';
-import { AVATAR_SIZES } from 'utils';
+import useStyles, { UserItemStylesParams } from './UserItem.styles';
+
+const SLIDE_DURATION = 0.6;
+const AVATAR_DURATION = 1;
 
 const MotionGroup = motion(Group);
 const MotionUserAvatar = motion(UserAvatar);
 
-const SLIDE_DURATION = 0.6;
-const AVATAR_DURATION = 0.7;
+type UserItemStylesNames = Selectors<typeof useStyles>;
 
-type Props = {
+interface Props
+  extends DefaultProps<UserItemStylesNames, UserItemStylesParams> {
   user: UserItemFragment;
   menu?: React.ReactNode;
-  avatar?: {
-    size?: MantineNumberSize;
-  };
+  size?: MantineNumberSize | undefined;
   closed?: boolean;
   onClick?: () => void;
-};
-/**
- * @framerSupportedLayoutWidth auto
- * @framerSupportedLayoutHeight fixed
- */
-const UserItem = ({ user, menu, onClick, avatar }: Props) => {
-  const { name, username } = user;
-  const avatarSize = avatar?.size ?? 'md';
+}
+
+const UserItem = ({
+  classNames,
+  styles,
+  unstyled,
+  className,
+  user,
+  menu,
+  onClick,
+  size = 'md',
+  ...others
+}: Props) => {
+  const { classes, cx } = useStyles(
+    { size },
+    { name: 'UserItem', classNames, styles, unstyled }
+  );
+
   const theme = useMantineTheme();
-
-  const backgroundColor = useMemo(() => {
-    const base = theme.colors.gray;
-    return theme.colorScheme === 'dark' ? base[9] : base[0];
-  }, [theme]);
-
-  const textStyle: Sx = {
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    cursor: 'default',
-  };
+  const openedAvatarRadius = theme.radius.sm;
 
   return (
     <MotionGroup
-      key={user.id + '_user-item'}
+      key={`${user.id}-user-item`}
       layout
       onClick={() => onClick?.()}
-      spacing={'md'}
-      sx={{
-        flexWrap: 'nowrap',
-        width: `calc(100% - ${AVATAR_SIZES[avatarSize] / 2}px)`,
-        position: 'relative',
-        height: `${AVATAR_SIZES[avatarSize]}px`,
-        borderRadius: `50px ${theme.radius.md}px ${theme.radius.md}px 50px`,
-      }}
+      className={cx(classes.root, className)}
       variants={{
         opened: {
           transition: {
@@ -75,17 +71,20 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
           },
         },
       }}
+      {...others}
     >
       <MotionUserAvatar
-        size={avatarSize}
+        size={size}
         user={user}
-        sx={{
-          backgroundColor,
-          zIndex: 999,
-        }}
+        className={cx(classes.avatar, className)}
+        radius={openedAvatarRadius}
         variants={{
           opened: {
-            borderRadius: `50px ${theme.radius.md}px ${theme.radius.md}px 50px`,
+            borderRadius: `
+              ${openedAvatarRadius}px 
+              ${openedAvatarRadius}px 
+              ${openedAvatarRadius}px 
+              ${openedAvatarRadius}px`,
             transition: {
               duration: AVATAR_DURATION,
             },
@@ -93,7 +92,7 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
           closed: {
             borderRadius: '50px 50px 50px 50px',
             transition: {
-              duration: SLIDE_DURATION,
+              duration: AVATAR_DURATION,
             },
           },
         }}
@@ -101,22 +100,12 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
           disabled: true,
         }}
       />
-      <MotionGroup
+      <motion.div
         layout={'position'}
-        key={user.id + '_user-item__content'}
-        sx={{
-          backgroundColor,
-          borderRadius: `0px ${theme.radius.md}px ${theme.radius.md}px 0px`,
-        }}
-        pl={40}
-        pr={'sm'}
+        key={`${user.id}-user-item__slide`}
+        className={classes.slide}
         style={{
           originX: 0,
-          position: 'absolute',
-          left: `${AVATAR_SIZES[avatarSize] / 2}px`,
-          height: `${AVATAR_SIZES[avatarSize]}px`,
-          width: '100%',
-          flexWrap: 'nowrap',
         }}
         variants={{
           opened: {
@@ -135,9 +124,9 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
           },
         }}
       >
-        <MotionGroup
-          key={user.id + '_user-item__content_r'}
-          sx={{ width: '100%', flexWrap: 'nowrap' }}
+        <motion.div
+          key={user.id + '_user-item__content'}
+          className={classes.content}
           variants={{
             opened: {
               opacity: 1,
@@ -147,17 +136,12 @@ const UserItem = ({ user, menu, onClick, avatar }: Props) => {
             },
           }}
         >
-          <Stack spacing={0}>
-            <TruncatedText max={15} size={'sm'} sx={textStyle}>
-              {`${username} ${user.__typename === 'Me' ? '(You)' : ''}`}
-            </TruncatedText>
-            <TruncatedText max={15} size={'xs'} color={'dimmed'} sx={textStyle}>
-              {name}
-            </TruncatedText>
-          </Stack>
+          <TruncatedText max={17} className={cx(classes.username)}>
+            {`${user.username} ${user.__typename === 'Me' ? '(You)' : ''}`}
+          </TruncatedText>
           {menu && user.__typename !== 'Me' && <Box ml={'auto'}>{menu}</Box>}
-        </MotionGroup>
-      </MotionGroup>
+        </motion.div>
+      </motion.div>
     </MotionGroup>
   );
 };
