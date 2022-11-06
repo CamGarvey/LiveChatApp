@@ -1,12 +1,5 @@
 import { gql } from '@apollo/client';
-import {
-  Aside,
-  Avatar,
-  AvatarProps,
-  Group,
-  Skeleton,
-  Text,
-} from '@mantine/core';
+import { Aside, Avatar, AvatarProps, Group, Text } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { MemberCountSectionChatFragment } from 'graphql/generated/graphql';
 

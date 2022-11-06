@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from './ChatInput';
-import Scroller from 'components/shared/Scroller/Scroller';
+import Scroller from './Scroller';
 import { useCreateMessage } from './useCreateMessage';
 import { useEvents } from './useEvents';
 import EventContainer from './Event/EventContainer';

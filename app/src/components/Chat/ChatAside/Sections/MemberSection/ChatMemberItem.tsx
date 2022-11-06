@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { AvatarProps, MantineNumberSize, Menu } from '@mantine/core';
+import { MantineNumberSize, Menu } from '@mantine/core';
 import { IconDots, IconKarate } from '@tabler/icons';
 import UserItem from 'components/shared/UserItem';
 import UserMenu from 'components/shared/UserItem/UserMenu';

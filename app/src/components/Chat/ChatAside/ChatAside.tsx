@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { Aside, Text, MantineNumberSize } from '@mantine/core';
+import { Aside, MantineNumberSize } from '@mantine/core';
 import { motion } from 'framer-motion';
 import {
   MemberSectionUserFragment,

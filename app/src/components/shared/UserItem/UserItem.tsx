@@ -1,9 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Box,
   Group,
-  Stack,
-  Sx,
   useMantineTheme,
   MantineNumberSize,
   Selectors,

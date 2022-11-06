@@ -1,4 +1,4 @@
-import { Avatar, AvatarProps, MantineNumberSize } from '@mantine/core';
+import { Avatar, AvatarProps } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons';
 import { motion } from 'framer-motion';
 
