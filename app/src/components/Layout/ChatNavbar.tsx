@@ -1,7 +1,7 @@
 import { MediaQuery, Navbar } from '@mantine/core';
 import ChatDisplay from 'components/ChatDisplay/ChatDisplay';
 
-const Nav = () => {
+export const ChatNavbar = () => {
   return (
     <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
       <Navbar p="xs" width={{ base: 350 }}>
@@ -19,5 +19,3 @@ const Nav = () => {
     </MediaQuery>
   );
 };
-
-export default Nav;

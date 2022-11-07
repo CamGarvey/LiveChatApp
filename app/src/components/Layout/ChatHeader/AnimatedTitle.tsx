@@ -73,7 +73,7 @@ const AnimatedTitle = () => {
   }, [chat]);
 
   return (
-    <AnimatePresence custom={drawer.isOpen} exitBeforeEnter>
+    <AnimatePresence custom={drawer.isOpen} mode={'wait'}>
       <motion.div
         key={shouldShowTitle ? 'title' : 'chat'}
         initial={{ y: -200 }}

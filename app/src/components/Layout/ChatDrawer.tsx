@@ -10,7 +10,7 @@ import ChatDisplay from 'components/ChatDisplay';
 import { UserAvatar } from 'components/shared/Avatars';
 import { useDrawer } from 'store';
 
-const ChatDrawer = () => {
+export const ChatDrawer = () => {
   const { user } = useUser();
   const { isOpen, toggle } = useDrawer();
 
@@ -53,5 +53,3 @@ const ChatDrawer = () => {
     </MediaQuery>
   );
 };
-
-export default ChatDrawer;

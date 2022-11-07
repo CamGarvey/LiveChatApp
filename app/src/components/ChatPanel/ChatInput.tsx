@@ -11,8 +11,7 @@ import { IconSend } from '@tabler/icons';
 import * as Yup from 'yup';
 
 type Props = {
-  // onSubmit returns a isSuccessful boolean which decides whether to reset the form
-  onSubmit: ({ content }: { content: string }) => void;
+  onSubmit: (data: { content: string }) => void;
   isDisabled?: boolean;
   isLoading?: boolean;
 };

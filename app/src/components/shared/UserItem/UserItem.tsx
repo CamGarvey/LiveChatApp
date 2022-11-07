@@ -14,8 +14,12 @@ import TruncatedText from '../TruncatedText';
 import { motion } from 'framer-motion';
 import useStyles, { UserItemStylesParams } from './UserItem.styles';
 
-const SLIDE_DURATION = 0.6;
-const AVATAR_DURATION = 1;
+const AnimationDurations = {
+  CloseSlide: 0.6,
+  OpenSlide: 0.6,
+  OpenAvatar: 0.4,
+  CloseAvatar: 1,
+};
 
 const MotionGroup = motion(Group);
 const MotionUserAvatar = motion(UserAvatar);
@@ -59,12 +63,12 @@ const UserItem = ({
       variants={{
         opened: {
           transition: {
-            staggerChildren: AVATAR_DURATION,
+            staggerChildren: AnimationDurations.OpenAvatar,
           },
         },
         closed: {
           transition: {
-            staggerChildren: SLIDE_DURATION,
+            staggerChildren: AnimationDurations.CloseSlide,
             staggerDirection: -1,
           },
         },
@@ -84,13 +88,13 @@ const UserItem = ({
               ${openedAvatarRadius}px 
               ${openedAvatarRadius}px`,
             transition: {
-              duration: AVATAR_DURATION,
+              duration: AnimationDurations.OpenAvatar,
             },
           },
           closed: {
             borderRadius: '50px 50px 50px 50px',
             transition: {
-              duration: AVATAR_DURATION,
+              duration: AnimationDurations.CloseAvatar,
             },
           },
         }}
@@ -110,14 +114,14 @@ const UserItem = ({
             scaleX: 1,
             transition: {
               when: 'beforeChildren',
-              duration: SLIDE_DURATION,
+              duration: AnimationDurations.OpenSlide,
             },
           },
           closed: {
             scaleX: 0,
             transition: {
               when: 'afterChildren',
-              duration: SLIDE_DURATION,
+              duration: AnimationDurations.CloseSlide,
             },
           },
         }}

@@ -1,5 +1,5 @@
 import { Center } from '@mantine/core';
-import ChatPanel from 'components/Chat/ChatPanel/ChatPanel';
+import ChatPanel from 'components/ChatPanel/ChatPanel';
 import { useParams } from 'react-router-dom';
 
 const Chat = () => {

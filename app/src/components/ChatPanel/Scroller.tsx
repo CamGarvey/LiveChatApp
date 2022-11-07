@@ -52,7 +52,13 @@ const Scroller = ({
   });
 
   if (isLoading) {
-    return <LoadingOverlay visible={isLoading} loaderProps={{ size: 'lg' }} />;
+    return (
+      <LoadingOverlay
+        zIndex={98}
+        visible={isLoading}
+        loaderProps={{ size: 'lg' }}
+      />
+    );
   }
 
   return (

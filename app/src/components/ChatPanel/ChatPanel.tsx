@@ -2,14 +2,13 @@ import { gql } from '@apollo/client';
 import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from './ChatInput';
 import Scroller from './Scroller';
-import { useCreateMessage } from './useCreateMessage';
-import { useEvents } from './useEvents';
 import EventContainer from './Event/EventContainer';
 import { Message } from './Event/Message';
 import { ChatUpdate } from './Event/ChatUpdate';
 import DeletedEvent from './Event/DeletedEvent';
 import ChatHeader from './ChatHeader';
 import { useMediaQuery } from '@mantine/hooks';
+import { useCreateMessage, useEvents } from './hooks';
 
 gql`
   query GetEvents($chatId: HashId!, $last: Int, $before: String) {

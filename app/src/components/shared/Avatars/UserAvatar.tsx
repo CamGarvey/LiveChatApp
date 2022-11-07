@@ -15,14 +15,13 @@ import {
 import { UserAvatarFragment } from 'graphql/generated/graphql';
 import { AVATAR_SIZES, getUserAvatar } from 'utils/avatar';
 
-type Props =
-  | {
-      user?: UserAvatarFragment | null | undefined;
-      loading?: boolean;
-      size?: MantineNumberSize;
-      dropdown?: HoverCardDropdownProps;
-      hoverCard?: HoverCardProps;
-    } & AvatarProps;
+type Props = {
+  user?: UserAvatarFragment | null | undefined;
+  loading?: boolean;
+  size?: MantineNumberSize;
+  dropdown?: HoverCardDropdownProps;
+  hoverCard?: HoverCardProps;
+} & AvatarProps;
 
 export const UserAvatar = ({
   user,

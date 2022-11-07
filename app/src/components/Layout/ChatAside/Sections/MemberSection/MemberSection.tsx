@@ -86,8 +86,8 @@ const LoadingMembers = ({
   length: number;
 }) => (
   <Stack spacing={3}>
-    {[...Array.from({ length })].map(() => (
-      <Skeleton radius={50} height={height} width={'100%'} />
+    {[...Array.from({ length })].map((_, idx) => (
+      <Skeleton key={idx} radius={50} height={height} width={'100%'} />
     ))}
   </Stack>
 );

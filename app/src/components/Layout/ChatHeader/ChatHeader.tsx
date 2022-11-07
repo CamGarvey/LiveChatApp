@@ -1,11 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import {
-  Group,
-  Input,
-  Header as MantineHeader,
-  MediaQuery,
-  Burger,
-} from '@mantine/core';
+import { Group, Input, Header, MediaQuery, Burger } from '@mantine/core';
 import { IconSearch } from '@tabler/icons';
 import { useDrawer } from 'store';
 import { useUserSearchModal } from 'components/Modals/UserSearchModal';
@@ -17,14 +11,14 @@ import { useUser } from 'context/UserContext';
 
 const ICON_SIZE = 16;
 
-const Header = () => {
+export const ChatHeader = () => {
   const { logout } = useAuth0();
   const { user } = useUser();
   const openUserSearchModal = useUserSearchModal();
   const drawer = useDrawer();
 
   return (
-    <MantineHeader
+    <Header
       height={70}
       p="md"
       sx={{
@@ -60,8 +54,6 @@ const Header = () => {
           )}
         </Group>
       </Group>
-    </MantineHeader>
+    </Header>
   );
 };
-
-export default Header;
