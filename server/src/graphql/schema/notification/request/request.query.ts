@@ -5,11 +5,11 @@ export const RequestsQuery = queryField('requests', {
   args: {
     state: 'RequestState',
   },
-  resolve: async (_, { state }, { prisma, userId }) => {
+  resolve: async (_, { state }, { prisma, currentUserId }) => {
     return await prisma.user
       .findUnique({
         where: {
-          id: userId,
+          id: currentUserId,
         },
       })
       .requests({

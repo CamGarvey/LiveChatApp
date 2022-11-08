@@ -41,10 +41,10 @@ export const createGraphqlServer = ({
         if (typeof token != 'string' || !token) {
           throw new ForbiddenError('No token');
         }
-        const userId = getUserIdFromToken(token);
-        auth.userId = userId;
+        const currentUserId = getUserIdFromToken(token);
+        auth.currentUserId = currentUserId;
         return {
-          userId,
+          currentUserId,
           prisma,
           pubsub,
           auth,
@@ -63,16 +63,16 @@ export const createGraphqlServer = ({
       if (!token) {
         throw new ForbiddenError('No token');
       }
-      const userId = getUserIdFromToken(token);
+      const currentUserId = getUserIdFromToken(token);
 
-      if (!userId) {
+      if (!currentUserId) {
         throw new ForbiddenError('Invalid user');
       }
 
-      auth.userId = userId;
+      auth.currentUserId = currentUserId;
 
       return {
-        userId,
+        currentUserId,
         prisma,
         pubsub,
         auth,

@@ -6,12 +6,12 @@ export const AcknowledgeAlertMutation = mutationField('acknowledgeAlert', {
   args: {
     alertId: nonNull(hashIdArg()),
   },
-  resolve: async (_, { alertId }, { prisma, userId }) => {
+  resolve: async (_, { alertId }, { prisma, currentUserId }) => {
     const alert = await prisma.alert.update({
       data: {
         recipients: {
           disconnect: {
-            id: userId,
+            id: currentUserId,
           },
         },
       },

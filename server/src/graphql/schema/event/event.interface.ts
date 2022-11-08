@@ -17,10 +17,8 @@ export const EventInterface = interfaceType({
       },
     });
     switch (update.type) {
-      case 'ADMINS_ADDED':
-        return 'AdminsAddedEvent';
-      case 'ADMINS_REMOVED':
-        return 'AdminsRemovedEvent';
+      case 'ROLE_CHANGED':
+        return 'RoleChangedEvent';
       case 'MEMBERS_ADDED':
         return 'MembersAddedEvent';
       case 'MEMBERS_REMOVED':
@@ -47,8 +45,8 @@ export const EventInterface = interfaceType({
       },
     });
     t.nonNull.boolean('isCreator', {
-      resolve: (parent, _, { userId }) => {
-        return parent.createdById === userId;
+      resolve: (parent, _, { currentUserId }) => {
+        return parent.createdById === currentUserId;
       },
     });
     t.nonNull.date('updatedAt');

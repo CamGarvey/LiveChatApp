@@ -18,12 +18,16 @@ export const CreateMessageMutation = mutationField('createMessage', {
     ),
   },
   authorize: (_, { chatId }, { auth }) => auth.canCreateEvent(chatId),
-  resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
+  resolve: async (
+    _,
+    { chatId, content },
+    { prisma, pubsub, currentUserId }
+  ) => {
     const event = await prisma.event.create({
       data: {
         type: 'MESSAGE',
         chatId,
-        createdById: userId,
+        createdById: currentUserId,
         message: {
           create: {
             content,
@@ -51,7 +55,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
     pubsub.publish<EventPayload>(Subscription.EventCreated, {
       recipients: event.chat.members
         .map((x) => x.id)
-        .filter((x) => x !== userId),
+        .filter((x) => x !== currentUserId),
       content: event,
     });
 
@@ -75,7 +79,11 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
   },
   description: 'Update a Message',
   authorize: (_, { messageId }, { auth }) => auth.canUpdateEvent(messageId),
-  resolve: async (_, { messageId, content }, { prisma, pubsub, userId }) => {
+  resolve: async (
+    _,
+    { messageId, content },
+    { prisma, pubsub, currentUserId }
+  ) => {
     // Update message
     const message = await prisma.message.update({
       data: {
@@ -104,7 +112,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
     pubsub.publish<EventPayload>(Subscription.EventUpdated, {
       recipients: message.event.chat.members
         .map((x) => x.id)
-        .filter((x) => x !== userId),
+        .filter((x) => x !== currentUserId),
       content: message.event,
     });
 

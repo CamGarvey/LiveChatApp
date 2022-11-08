@@ -18,11 +18,11 @@ export const Me = objectType({
       args: {
         state: 'RequestState',
       },
-      resolve: async (_, { state }, { prisma, userId }) => {
+      resolve: async (_, { state }, { prisma, currentUserId }) => {
         return await prisma.user
           .findUniqueOrThrow({
             where: {
-              id: userId,
+              id: currentUserId,
             },
           })
           .requestsSent({
@@ -37,11 +37,11 @@ export const Me = objectType({
       args: {
         state: 'RequestState',
       },
-      resolve: async (_, { state }, { prisma, userId }) => {
+      resolve: async (_, { state }, { prisma, currentUserId }) => {
         return await prisma.user
           .findUniqueOrThrow({
             where: {
-              id: userId,
+              id: currentUserId,
             },
           })
           .requests({
@@ -60,7 +60,7 @@ export const Stranger = objectType({
     t.implements('User');
     t.nonNull.connectionField('mutualFriends', {
       type: 'Friend',
-      resolve: async (parent, { after, first }, { prisma, userId }) => {
+      resolve: async (parent, { after, first }, { prisma, currentUserId }) => {
         const offset = after ? cursorToOffset(after) + 1 : 0;
         if (isNaN(offset)) throw new Error('cursor is invalid');
 
@@ -77,7 +77,7 @@ export const Stranger = objectType({
             {
               friends: {
                 some: {
-                  id: userId,
+                  id: currentUserId,
                 },
               },
             },
@@ -104,10 +104,10 @@ export const Stranger = objectType({
     });
     t.field('friendRequest', {
       type: 'FriendRequest',
-      resolve: async (parent, _, { prisma, userId }) => {
+      resolve: async (parent, _, { prisma, currentUserId }) => {
         const user = await prisma.user.findUniqueOrThrow({
           where: {
-            id: userId,
+            id: currentUserId,
           },
           select: {
             requests: {

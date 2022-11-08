@@ -23,8 +23,8 @@ export const ChatInterface = interfaceType({
       },
     });
     t.nonNull.boolean('isCreator', {
-      resolve: (parent, _, { userId }) => {
-        return parent.createdById == userId;
+      resolve: (parent, _, { currentUserId }) => {
+        return parent.createdById == currentUserId;
       },
     });
     t.date('createdAt');

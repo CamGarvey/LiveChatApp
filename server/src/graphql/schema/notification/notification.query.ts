@@ -3,7 +3,7 @@ import { list, nonNull, queryField } from 'nexus';
 export const Notifications = queryField('notifications', {
   type: nonNull(list(nonNull('Notification'))),
   description: 'Get all notifications for current user',
-  resolve: async (_, __, { prisma, userId }) => {
+  resolve: async (_, __, { prisma, currentUserId }) => {
     const user = await prisma.user.findUniqueOrThrow({
       include: {
         requests: {
@@ -14,7 +14,7 @@ export const Notifications = queryField('notifications', {
         alerts: true,
       },
       where: {
-        id: userId,
+        id: currentUserId,
       },
     });
     return [...user.requests, ...user.alerts];

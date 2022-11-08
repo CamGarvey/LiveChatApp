@@ -2,30 +2,6 @@
 ### Do not make changes to this file directly
 
 
-type AdminsAddedEvent implements ChatUpdateEvent & Event & UserAlterationEvent {
-  chat: Chat!
-  chatId: HashId!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  updatedAt: Date!
-  users: [User!]!
-}
-
-type AdminsRemovedEvent implements ChatUpdateEvent & Event & UserAlterationEvent {
-  chat: Chat!
-  chatId: HashId!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  updatedAt: Date!
-  users: [User!]!
-}
-
 """
 Alert is a type of notification that does not require a response
     and can be sent to multiple users
@@ -198,7 +174,7 @@ type DirectMessageChat implements Chat {
     """Returns the last n elements from the list."""
     last: Int
   ): EventConnection!
-  friend: Friend!
+  friend: Member!
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date
@@ -300,19 +276,6 @@ type FriendRequest implements Notification & Request {
 
 """A Group Chat is a chat that contains more than 2 members"""
 type GroupChat implements Chat {
-  admins(
-    """Returns the elements in the list that come after the specified cursor"""
-    after: String
-
-    """Returns the elements in the list that come before the specified cursor"""
-    before: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the last n elements from the list."""
-    last: Int
-  ): UserConnection!
   createdAt: Date
   createdBy: User!
   createdById: HashId!
@@ -331,7 +294,6 @@ type GroupChat implements Chat {
     last: Int
   ): EventConnection!
   id: HashId!
-  isAdmin: Boolean!
   isCreator: Boolean!
   memberCount: Int!
   members(
@@ -346,8 +308,9 @@ type GroupChat implements Chat {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): UserConnection!
+  ): MemberConnection!
   name: String!
+  role: Role!
   updatedAt: Date
 }
 
@@ -394,19 +357,15 @@ type Me implements KnownUser & User {
   username: String!
 }
 
-type MembersAddedEvent implements ChatUpdateEvent & Event & UserAlterationEvent {
+type Member {
   chat: Chat!
   chatId: HashId!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  updatedAt: Date!
-  users: [User!]!
+  role: Role!
+  user: User!
+  userId: HashId!
 }
 
-type MembersRemovedEvent implements ChatUpdateEvent & Event & UserAlterationEvent {
+interface MemberAlterationEvent implements ChatUpdateEvent & Event {
   chat: Chat!
   chatId: HashId!
   createdAt: Date!
@@ -414,8 +373,52 @@ type MembersRemovedEvent implements ChatUpdateEvent & Event & UserAlterationEven
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+  members: [Member!]!
   updatedAt: Date!
-  users: [User!]!
+}
+
+type MemberConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [MemberEdge]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type MemberEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: Member
+}
+
+type MembersAddedEvent implements ChatUpdateEvent & Event & MemberAlterationEvent {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  members: [Member!]!
+  updatedAt: Date!
+}
+
+type MembersRemovedEvent implements ChatUpdateEvent & Event & MemberAlterationEvent {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  members: [Member!]!
+  updatedAt: Date!
 }
 
 type MessageEvent implements Event {
@@ -436,14 +439,6 @@ type Mutation {
   acceptRequest(requestId: HashId!): Request
   acknowledgeAlert(alertId: HashId!): Alert
 
-  """Add admins to a group chat"""
-  addAdminsToGroupChat(
-    chatId: HashId!
-
-    """Ids of admins to be added to the chat"""
-    members: [HashId!]!
-  ): AdminsAddedEvent
-
   """Add members to a group chat"""
   addMembersToGroupChat(
     chatId: HashId!
@@ -454,6 +449,15 @@ type Mutation {
 
   """Cancel a sent request"""
   cancelRequest(requestId: HashId!): Request
+
+  """Remove admins from a group chat"""
+  changeMemberRoles(
+    chatId: HashId!
+
+    """Ids of admins to be removed from the chat"""
+    members: [HashId!]!
+    role: Role!
+  ): RoleChangedEvent
 
   """Create a Chat"""
   createDirectMessageChat(
@@ -489,14 +493,6 @@ type Mutation {
   """Delete a Friend"""
   deleteFriend(friendId: HashId!): Stranger
   leaveGroupChat(chatId: HashId!): MembersRemovedEvent
-
-  """Remove admins from a group chat"""
-  removeAdminsFromGroupChat(
-    chatId: HashId!
-
-    """Ids of admins to be removed from the chat"""
-    members: [HashId!]!
-  ): AdminsRemovedEvent
 
   """Remove members from a group chat"""
   removeMembersFromGroupChat(
@@ -612,7 +608,7 @@ type Query {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): UserConnection!
+  ): MemberConnection!
 
   """Get all notifications for current user"""
   notifications: [Notification!]!
@@ -699,6 +695,25 @@ enum RequestState {
   SENT
 }
 
+enum Role {
+  ADMIN
+  BASIC
+  OWNER
+}
+
+type RoleChangedEvent implements ChatUpdateEvent & Event & MemberAlterationEvent {
+  chat: Chat!
+  chatId: HashId!
+  createdAt: Date!
+  createdBy: User!
+  createdById: HashId!
+  id: HashId!
+  isCreator: Boolean!
+  members: [Member!]!
+  newRole: Role!
+  updatedAt: Date!
+}
+
 enum Sort {
   asc
   desc
@@ -758,18 +773,6 @@ interface User {
   name: String
   updatedAt: Date!
   username: String!
-}
-
-interface UserAlterationEvent implements ChatUpdateEvent & Event {
-  chat: Chat!
-  chatId: HashId!
-  createdAt: Date!
-  createdBy: User!
-  createdById: HashId!
-  id: HashId!
-  isCreator: Boolean!
-  updatedAt: Date!
-  users: [User!]!
 }
 
 type UserConnection {

@@ -54,30 +54,26 @@ export const DescriptionUpdatedEvent = objectType({
   },
 });
 
-export const AdminsAddedEvent = objectType({
-  name: 'AdminsAddedEvent',
-  definition: (t) => {
-    t.implements('UserAlterationEvent');
-  },
-});
-
-export const AdminsRemovedEvent = objectType({
-  name: 'AdminsRemovedEvent',
-  definition: (t) => {
-    t.implements('UserAlterationEvent');
-  },
-});
-
 export const MembersAddedEvent = objectType({
   name: 'MembersAddedEvent',
   definition: (t) => {
-    t.implements('UserAlterationEvent');
+    t.implements('MemberAlterationEvent');
   },
 });
 
 export const MembersRemovedEvent = objectType({
   name: 'MembersRemovedEvent',
   definition: (t) => {
-    t.implements('UserAlterationEvent');
+    t.implements('MemberAlterationEvent');
+  },
+});
+
+export const RoleChangedEvent = objectType({
+  name: 'RoleChangedEvent',
+  definition: (t) => {
+    t.implements('MemberAlterationEvent');
+    t.nonNull.field('newRole', {
+      type: 'Role',
+    });
   },
 });

@@ -5,10 +5,10 @@ import { hashIdArg } from '../shared';
 
 export const MeQuery = queryField('me', {
   type: 'Me',
-  resolve: async (_, __, { prisma, userId }) => {
+  resolve: async (_, __, { prisma, currentUserId }) => {
     return await prisma.user.findUniqueOrThrow({
       where: {
-        id: userId,
+        id: currentUserId,
       },
     });
   },
@@ -16,11 +16,11 @@ export const MeQuery = queryField('me', {
 
 export const FriendsQuery = queryField('friends', {
   type: nonNull(list(nonNull('Friend'))),
-  resolve: async (_, __, { prisma, userId }) => {
+  resolve: async (_, __, { prisma, currentUserId }) => {
     return await prisma.user
       .findUniqueOrThrow({
         where: {
-          id: userId,
+          id: currentUserId,
         },
       })
       .friends();
@@ -61,7 +61,7 @@ export const UsersQuery = queryField((t) => {
     resolve: async (
       _,
       { after, first, usernameFilter, orderBy },
-      { prisma, userId }
+      { prisma, currentUserId }
     ) => {
       const offset = after ? cursorToOffset(after) + 1 : 0;
       if (isNaN(offset)) throw new Error('cursor is invalid');
@@ -70,7 +70,7 @@ export const UsersQuery = queryField((t) => {
         AND: [
           {
             id: {
-              not: userId, // Dont include self
+              not: currentUserId, // Dont include self
             },
             OR: [
               {

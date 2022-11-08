@@ -18,11 +18,11 @@ export const EventsSubscription = subscriptionField('events', {
       (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
-            payload.content.createdById !== context.userId &&
+            payload.content.createdById !== context.currentUserId &&
             payload.content.chatId == variables.chatId
           );
         }
-        return payload.recipients.includes(context.userId);
+        return payload.recipients.includes(context.currentUserId);
       }
     )(rootValue, args, context);
   },
@@ -46,11 +46,11 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
       (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
-            payload.content.createdById !== context.userId &&
+            payload.content.createdById !== context.currentUserId &&
             payload.content.chatId == variables.chatId
           );
         }
-        return payload.recipients.includes(context.userId);
+        return payload.recipients.includes(context.currentUserId);
       }
     )(rootValue, args, context);
   },
@@ -74,11 +74,11 @@ export const EventDeletedSubscription = subscriptionField('eventDeleted', {
       (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
-            payload.content.createdById !== context.userId &&
+            payload.content.createdById !== context.currentUserId &&
             payload.content.chatId == variables.chatId
           );
         }
-        return payload.recipients.includes(context.userId);
+        return payload.recipients.includes(context.currentUserId);
       }
     )(rootValue, args, context);
   },
@@ -102,11 +102,11 @@ export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
       (payload: EventPayload, variables, context) => {
         if (variables.chatId) {
           return (
-            payload.content.createdById !== context.userId &&
+            payload.content.createdById !== context.currentUserId &&
             payload.content.chatId == variables.chatId
           );
         }
-        return payload.recipients.includes(context.userId);
+        return payload.recipients.includes(context.currentUserId);
       }
     )(rootValue, args, context);
   },

@@ -1,5 +1,5 @@
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Event, Prisma, User } from '@prisma/client';
+import { Event, Member, Prisma } from '@prisma/client';
 import { objectType } from 'nexus';
 
 export const DirectMessageChat = objectType({
@@ -8,16 +8,16 @@ export const DirectMessageChat = objectType({
   definition: (t) => {
     t.implements('Chat');
     t.nonNull.field('friend', {
-      type: 'Friend',
-      resolve: async (parent, __, { userId, prisma }) => {
-        const members: User[] = await prisma.chat
+      type: 'Member',
+      resolve: async (parent, __, { currentUserId, prisma }) => {
+        const members: Member[] = await prisma.chat
           .findUniqueOrThrow({
             where: { id: parent.id || undefined },
           })
           .members({
             where: {
-              id: {
-                not: userId,
+              userId: {
+                not: currentUserId,
               },
             },
           });
@@ -78,12 +78,29 @@ export const GroupChat = objectType({
         return chat._count.members;
       },
     });
+    t.nonNull.field('role', {
+      type: 'Role',
+      resolve: async ({ id }, _, { prisma, currentUserId }) => {
+        const { role } = await prisma.member.findUniqueOrThrow({
+          select: {
+            role: true,
+          },
+          where: {
+            userId_chatId: {
+              chatId: id,
+              userId: currentUserId,
+            },
+          },
+        });
+        return role;
+      },
+    });
     t.nonNull.connectionField('members', {
-      type: 'User',
+      type: 'Member',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
-          User,
-          Pick<Prisma.UserWhereUniqueInput, 'id'>
+          Member,
+          Pick<Prisma.MemberWhereUniqueInput, 'id'>
         >(
           (args) =>
             prisma.chat
@@ -115,62 +132,6 @@ export const GroupChat = objectType({
               JSON.parse(Buffer.from(cursor, 'base64').toString('ascii')),
           }
         );
-      },
-    });
-    t.nonNull.connectionField('admins', {
-      type: 'User',
-      resolve: async (parent, args, { prisma }) => {
-        return await findManyCursorConnection<
-          User,
-          Pick<Prisma.UserWhereUniqueInput, 'id'>
-        >(
-          (args) =>
-            prisma.chat
-              .findUniqueOrThrow({
-                ...{ where: { id: parent.id || undefined } },
-              })
-              .admins({
-                ...args,
-              }),
-          () =>
-            prisma.chat
-              .findUniqueOrThrow({
-                ...{ where: { id: parent.id || undefined } },
-                select: {
-                  _count: {
-                    select: {
-                      admins: true,
-                    },
-                  },
-                },
-              })
-              .then((x) => x._count.admins),
-          args,
-          {
-            getCursor: (record) => ({ id: record.id }),
-            encodeCursor: (cursor) =>
-              Buffer.from(JSON.stringify(cursor)).toString('base64'),
-            decodeCursor: (cursor) =>
-              JSON.parse(Buffer.from(cursor, 'base64').toString('ascii')),
-          }
-        );
-      },
-    });
-    t.nonNull.boolean('isAdmin', {
-      resolve: async (parent, _, { prisma, userId }) => {
-        const admins: User[] = await prisma.chat
-          .findUniqueOrThrow({
-            where: {
-              id: parent.id || undefined,
-            },
-          })
-          .admins({
-            where: {
-              id: userId,
-            },
-          });
-
-        return admins.length !== 0;
       },
     });
     t.nonNull.connectionField('events', {

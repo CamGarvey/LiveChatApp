@@ -3,12 +3,12 @@ import { ForbiddenError, UserInputError } from 'apollo-server-core';
 import { IAuthorizer } from './authorizer.interface';
 
 export class Authorizer implements IAuthorizer {
-  public userId: number;
+  public currentUserId: number;
 
   constructor(private _prisma: PrismaClient) {}
 
   public async canCreateDirectMessageChat(friendId: number) {
-    if (friendId == this.userId) {
+    if (friendId == this.currentUserId) {
       throw new UserInputError('friendId can not be own user');
     }
 
@@ -22,17 +22,7 @@ export class Authorizer implements IAuthorizer {
             id: true,
           },
           where: {
-            id: this.userId,
-          },
-        },
-        memberOfChats: {
-          where: {
-            type: 'DIRECT_MESSAGE',
-            members: {
-              every: {
-                id: this.userId,
-              },
-            },
+            id: this.currentUserId,
           },
         },
       },
@@ -50,15 +40,15 @@ export class Authorizer implements IAuthorizer {
     const memberIdSet: Set<number> = new Set(memberIds);
 
     // Remove self from memberIdSet
-    if (memberIdSet.has(this.userId)) {
-      memberIdSet.delete(this.userId);
+    if (memberIdSet.has(this.currentUserId)) {
+      memberIdSet.delete(this.currentUserId);
     }
 
     if (memberIdSet.size !== 0) {
       // Check that the user is friends with all of these users
       const user = await this._prisma.user.findUniqueOrThrow({
         where: {
-          id: this.userId,
+          id: this.currentUserId,
         },
         select: {
           friends: {
@@ -88,14 +78,10 @@ export class Authorizer implements IAuthorizer {
       select: {
         type: true,
         createdById: true,
-        admins: {
-          select: {
-            id: true,
-          },
-        },
         members: {
           select: {
-            id: true,
+            userId: true,
+            role: true,
           },
         },
       },
@@ -108,7 +94,15 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
-    if (!chat.admins.find((x) => x.id === this.userId)) {
+    const currentUser = chat.members.find(
+      (x) => x.userId === this.currentUserId
+    );
+
+    if (!currentUser) {
+      throw new ForbiddenError('You are not a member of this chat');
+    }
+
+    if (currentUser.role === 'BASIC') {
       throw new ForbiddenError('You are not an admin in this chat');
     }
     return true;
@@ -122,14 +116,10 @@ export class Authorizer implements IAuthorizer {
       select: {
         type: true,
         createdById: true,
-        admins: {
-          select: {
-            id: true,
-          },
-        },
         members: {
           select: {
-            id: true,
+            userId: true,
+            role: true,
           },
         },
       },
@@ -142,22 +132,30 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
-    if (!chat.admins.find((x) => x.id === this.userId)) {
+    const currentUser = chat.members.find(
+      (x) => x.userId === this.currentUserId
+    );
+
+    if (!currentUser) {
+      throw new ForbiddenError('You are not a member of this chat');
+    }
+
+    if (currentUser.role === 'BASIC') {
       throw new ForbiddenError('You are not an admin in this chat');
     }
     // Remove duplicates
     const memberIdSet: Set<number> = new Set(data.members);
 
     // Remove self from sets
-    if (memberIdSet.has(this.userId)) {
-      memberIdSet.delete(this.userId);
+    if (memberIdSet.has(this.currentUserId)) {
+      memberIdSet.delete(this.currentUserId);
     }
 
     if (memberIdSet.size != 0) {
       // Check that the user is friends with all of these users
       const user = await this._prisma.user.findUniqueOrThrow({
         where: {
-          id: this.userId,
+          id: this.currentUserId,
         },
         select: {
           friends: {
@@ -191,14 +189,10 @@ export class Authorizer implements IAuthorizer {
       select: {
         type: true,
         createdById: true,
-        admins: {
-          select: {
-            id: true,
-          },
-        },
         members: {
           select: {
-            id: true,
+            userId: true,
+            role: true,
           },
         },
       },
@@ -211,37 +205,46 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
+    const currentUser = chat.members.find(
+      (x) => x.userId === this.currentUserId
+    );
+
+    if (!currentUser) {
+      throw new ForbiddenError('You are not a member of this chat');
+    }
+
     // Don't need to be an admin to remove self unless the creator
     if (
       data.members.length === 1 &&
-      data.members[0] === this.userId &&
-      chat.createdById !== this.userId
+      data.members[0] === this.currentUserId &&
+      currentUser.role !== 'OWNER'
     ) {
       return true;
     }
 
-    if (!chat.admins.find((x) => x.id === this.userId)) {
+    if (currentUser.role === 'BASIC') {
       throw new ForbiddenError('You are not an admin in this chat');
     }
 
     // remove duplicates
     const memberSet = new Set(data.members);
 
-    if (chat.createdById === this.userId) {
-      if (memberSet.has(this.userId)) {
-        throw new ForbiddenError(
-          'You can not remove yourself as a member since you created this chat'
-        );
-      }
+    if (memberSet.has(chat.createdById)) {
+      throw new ForbiddenError('You can not remove the owner of the chat');
+    }
+
+    if (currentUser.role === 'OWNER') {
       return true;
     }
 
-    const adminIds = new Set(chat.admins.map((x) => x.id));
+    const adminIds = new Set(
+      chat.members.filter((x) => x.role === 'ADMIN').map((x) => x.userId)
+    );
     const adminSet = new Set([...memberSet].filter((x) => adminIds.has(x)));
 
     // you can remove yourself from chat so removing userId
-    if (adminSet.has(this.userId)) {
-      adminSet.delete(this.userId);
+    if (adminSet.has(this.currentUserId)) {
+      adminSet.delete(this.currentUserId);
     }
 
     if (adminSet.size !== 0) {
@@ -250,7 +253,7 @@ export class Authorizer implements IAuthorizer {
     return true;
   }
 
-  public async canRemoveAdminsFromGroupChat(data: {
+  public async canChangeMemberRoles(data: {
     chatId: number;
     members: number[];
   }) {
@@ -258,14 +261,10 @@ export class Authorizer implements IAuthorizer {
       select: {
         type: true,
         createdById: true,
-        admins: {
-          select: {
-            id: true,
-          },
-        },
         members: {
           select: {
-            id: true,
+            userId: true,
+            role: true,
           },
         },
       },
@@ -278,113 +277,35 @@ export class Authorizer implements IAuthorizer {
       throw new ForbiddenError('Can not update a direct message chat');
     }
 
-    if (!chat.admins.find((x) => x.id === this.userId)) {
-      throw new ForbiddenError('You are not an admin in this chat');
+    const currentUser = chat.members.find(
+      (x) => x.userId === this.currentUserId
+    );
+
+    if (!currentUser) {
+      throw new ForbiddenError('You are not a member of this chat');
     }
 
+    if (currentUser.role === 'BASIC') {
+      throw new ForbiddenError('You are not authorized to modify member roles');
+    }
     // remove duplicates
     const memberSet = new Set(data.members);
 
-    if (chat.createdById === this.userId) {
-      if (memberSet.has(this.userId)) {
-        throw new ForbiddenError(
-          'You can not remove yourself as the admin since you created this chat'
-        );
-      }
+    if (memberSet.has(chat.createdById)) {
+      throw new ForbiddenError('You can not modify the owners role');
+    }
+
+    if (currentUser.role === 'OWNER') {
       return true;
     }
 
-    const adminIds = new Set(chat.admins.map((x) => x.id));
-    const adminSet = new Set([...memberSet].filter((x) => adminIds.has(x)));
+    const chatAdmins = chat.members.filter((x) => x.role === 'ADMIN');
 
-    // you can remove yourself as admin so removing userId
-    adminSet.delete(this.userId);
+    const chatAdminsToRemove = new Set(
+      chatAdmins.filter((x) => !memberSet.has(x.userId))
+    );
 
-    if (adminSet.size !== 0) {
-      throw new ForbiddenError('You can remove other admins');
-    }
-    return true;
-  }
-
-  public async canAddAdminsToGroupChat(data: {
-    chatId: number;
-    members: number[];
-  }) {
-    const chat = await this._prisma.chat.findUniqueOrThrow({
-      select: {
-        type: true,
-        createdById: true,
-        admins: {
-          select: {
-            id: true,
-          },
-        },
-        members: {
-          select: {
-            id: true,
-          },
-        },
-      },
-      where: {
-        id: data.chatId,
-      },
-    });
-
-    if (chat.type === 'DIRECT_MESSAGE') {
-      throw new ForbiddenError('Can not update a direct message chat');
-    }
-
-    if (!chat.admins.find((x) => x.id === this.userId)) {
-      throw new ForbiddenError('You are not an admin in this chat');
-    }
-
-    // Remove duplicates
-    const memberSet: Set<number> = new Set(data.members);
-
-    // Remove self from sets
-    if (memberSet.has(this.userId)) {
-      memberSet.delete(this.userId);
-    }
-
-    if (memberSet.size != 0) {
-      // You dont need to be friends all of the users you want to add as admin
-      // They just need to already be in the chat
-      const memberIds = new Set(chat.members.map((x) => x.id));
-
-      const notMembersAlready = new Set(
-        [...memberSet].filter((x) => !memberIds.has(x))
-      );
-
-      const friendCheckSet = new Set([...notMembersAlready, ...memberSet]);
-
-      if (friendCheckSet.size != 0) {
-        // Check that the user is friends with all of these users
-        const user = await this._prisma.user.findUniqueOrThrow({
-          where: {
-            id: this.userId,
-          },
-          select: {
-            friends: {
-              select: {
-                id: true,
-              },
-              where: {
-                id: {
-                  in: [...friendCheckSet],
-                },
-              },
-            },
-          },
-        });
-
-        if (user.friends.length != friendCheckSet.size) {
-          throw new ForbiddenError(
-            'You are not friends with all of the users provided'
-          );
-        }
-      }
-    }
-    return true;
+    return chatAdminsToRemove.size == 0;
   }
 
   public async canDeleteChat(chatId: number) {
@@ -397,7 +318,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (chat.createdById !== this.userId) {
+    if (chat.createdById !== this.currentUserId) {
       throw new ForbiddenError(
         'You do not have permission to delete this chat'
       );
@@ -408,27 +329,16 @@ export class Authorizer implements IAuthorizer {
 
   public async canViewChat(chatId: number) {
     // check if user is a member of the chat
-    const chat = await this._prisma.chat.findUniqueOrThrow({
+    const member = this._prisma.member.findUnique({
       where: {
-        id: chatId,
-      },
-      select: {
-        members: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: this.userId,
-          },
+        userId_chatId: {
+          chatId,
+          userId: this.currentUserId,
         },
       },
     });
 
-    if (chat.members.length == 0) {
-      throw new ForbiddenError('You are not a member of this chat');
-    }
-
-    return true;
+    return !!member;
   }
 
   public async canCreateEvent(chatId: number) {
@@ -439,7 +349,7 @@ export class Authorizer implements IAuthorizer {
             id: true,
           },
           where: {
-            id: this.userId,
+            id: this.currentUserId,
           },
         },
       },
@@ -468,7 +378,7 @@ export class Authorizer implements IAuthorizer {
                 id: true,
               },
               where: {
-                id: this.userId,
+                id: this.currentUserId,
               },
             },
           },
@@ -490,7 +400,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (event.createdById !== this.userId) {
+    if (event.createdById !== this.currentUserId) {
       throw new ForbiddenError(
         'You do not have permission to update this event'
       );
@@ -510,7 +420,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (event.createdById !== this.userId) {
+    if (event.createdById !== this.currentUserId) {
       throw new ForbiddenError(
         'You do not have permission to delete this event'
       );
@@ -522,7 +432,7 @@ export class Authorizer implements IAuthorizer {
   public async canSendFriendRequest(friendId: number) {
     const user = await this._prisma.user.findUniqueOrThrow({
       where: {
-        id: this.userId,
+        id: this.currentUserId,
       },
       select: {
         friends: {
@@ -550,7 +460,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (request.createdById !== this.userId) {
+    if (request.createdById !== this.currentUserId) {
       throw new ForbiddenError(
         'You do not have permission to cancel this request'
       );
@@ -574,9 +484,9 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (request.recipientId !== this.userId) {
+    if (request.recipientId !== this.currentUserId) {
       throw new ForbiddenError(
-        'You do not have permission to decline this friend request'
+        'You do not have permission to decline this request'
       );
     }
 
@@ -598,9 +508,9 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    if (request.recipientId !== this.userId) {
+    if (request.recipientId !== this.currentUserId) {
       throw new ForbiddenError(
-        'You do not have permission to accept this friend request'
+        'You do not have permission to accept this request'
       );
     }
 
@@ -622,7 +532,7 @@ export class Authorizer implements IAuthorizer {
             id: true,
           },
           where: {
-            id: this.userId,
+            id: this.currentUserId,
           },
         },
       },

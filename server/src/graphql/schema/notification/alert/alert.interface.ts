@@ -15,14 +15,12 @@ export const Alert = interfaceType({
         return 'RequestAcceptedAlert';
       case 'REQUEST_DECLINED':
         return 'RequestDeclinedAlert';
-      case 'CHAT_MEMBER_ACCESS_REVOKED':
+      case 'CHAT_ACCESS_REVOKED':
         return 'ChatMemberAccessRevokedAlert';
-      case 'CHAT_MEMBER_ACCESS_GRANTED':
+      case 'CHAT_ACCESS_GRANTED':
         return 'ChatMemberAccessGrantedAlert';
-      case 'CHAT_ADMIN_ACCESS_REVOKED':
-        return 'ChatAdminAccessRevokedAlert';
-      case 'CHAT_ADMIN_ACCESS_GRANTED':
-        return 'ChatAdminAccessGrantedAlert';
+      case 'CHAT_ROLE_CHANGED':
+        return 'ChatRoleChanged';
       default:
         return null;
     }
