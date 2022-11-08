@@ -329,7 +329,7 @@ export class Authorizer implements IAuthorizer {
 
   public async canViewChat(chatId: number) {
     // check if user is a member of the chat
-    const member = this._prisma.member.findUnique({
+    await this._prisma.member.findUniqueOrThrow({
       where: {
         userId_chatId: {
           chatId,
@@ -338,7 +338,7 @@ export class Authorizer implements IAuthorizer {
       },
     });
 
-    return !!member;
+    return true;
   }
 
   public async canCreateEvent(chatId: number) {
