@@ -29,7 +29,6 @@ const getUserIdFromToken = (token: string) => {
   // Since user_id is a custom field in the Auth0 accesstoken Auth0 requires name of field
   // to be {API domain}/{field name}
   let [userId] = hash.decode(payload[process.env.DOMAIN + '/user_id']);
-
   return Number(userId);
 };
 

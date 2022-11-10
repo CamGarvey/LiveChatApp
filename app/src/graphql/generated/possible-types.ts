@@ -33,26 +33,29 @@
       "GroupChat"
     ],
     "ChatUpdateEvent": [
-      "AdminsAddedEvent",
-      "AdminsRemovedEvent",
       "DescriptionUpdatedEvent",
       "MembersAddedEvent",
       "MembersRemovedEvent",
-      "NameUpdatedEvent"
+      "NameUpdatedEvent",
+      "RoleChangedEvent"
     ],
     "Event": [
-      "AdminsAddedEvent",
-      "AdminsRemovedEvent",
       "DeletedEvent",
       "DescriptionUpdatedEvent",
       "MembersAddedEvent",
       "MembersRemovedEvent",
       "MessageEvent",
-      "NameUpdatedEvent"
+      "NameUpdatedEvent",
+      "RoleChangedEvent"
     ],
     "KnownUser": [
       "Friend",
       "Me"
+    ],
+    "MemberAlterationEvent": [
+      "MembersAddedEvent",
+      "MembersRemovedEvent",
+      "RoleChangedEvent"
     ],
     "Notification": [
       "ChatAdminAccessGrantedAlert",
@@ -76,12 +79,6 @@
       "Friend",
       "Me",
       "Stranger"
-    ],
-    "UserAlterationEvent": [
-      "AdminsAddedEvent",
-      "AdminsRemovedEvent",
-      "MembersAddedEvent",
-      "MembersRemovedEvent"
     ]
   }
 };

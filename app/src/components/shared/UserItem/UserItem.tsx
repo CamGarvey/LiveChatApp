@@ -139,7 +139,7 @@ const UserItem = ({
           }}
         >
           <TruncatedText max={17} className={cx(classes.username)}>
-            {`${user.username} ${user.__typename === 'Me' ? '(You)' : ''}`}
+            {user.__typename === 'Me' ? 'YOU' : user.username}
           </TruncatedText>
           {menu && user.__typename !== 'Me' && <Box ml={'auto'}>{menu}</Box>}
         </motion.div>

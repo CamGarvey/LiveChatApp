@@ -17,32 +17,6 @@ export type Scalars = {
   HashId: any;
 };
 
-export type AdminsAddedEvent = ChatUpdateEvent & Event & UserAlterationEvent & {
-  __typename?: 'AdminsAddedEvent';
-  chat: Chat;
-  chatId: Scalars['HashId'];
-  createdAt: Scalars['Date'];
-  createdBy: User;
-  createdById: Scalars['HashId'];
-  id: Scalars['HashId'];
-  isCreator: Scalars['Boolean'];
-  updatedAt: Scalars['Date'];
-  users: Array<User>;
-};
-
-export type AdminsRemovedEvent = ChatUpdateEvent & Event & UserAlterationEvent & {
-  __typename?: 'AdminsRemovedEvent';
-  chat: Chat;
-  chatId: Scalars['HashId'];
-  createdAt: Scalars['Date'];
-  createdBy: User;
-  createdById: Scalars['HashId'];
-  id: Scalars['HashId'];
-  isCreator: Scalars['Boolean'];
-  updatedAt: Scalars['Date'];
-  users: Array<User>;
-};
-
 /**
  * Alert is a type of notification that does not require a response
  *     and can be sent to multiple users
@@ -207,7 +181,7 @@ export type DirectMessageChat = Chat & {
   createdBy: User;
   createdById: Scalars['HashId'];
   events: EventConnection;
-  friend: Friend;
+  friend: User;
   id: Scalars['HashId'];
   isCreator: Scalars['Boolean'];
   updatedAt?: Maybe<Scalars['Date']>;
@@ -310,28 +284,18 @@ export type FriendRequest = Notification & Request & {
 /** A Group Chat is a chat that contains more than 2 members */
 export type GroupChat = Chat & {
   __typename?: 'GroupChat';
-  admins: UserConnection;
   createdAt?: Maybe<Scalars['Date']>;
   createdBy: User;
   createdById: Scalars['HashId'];
   description?: Maybe<Scalars['String']>;
   events: EventConnection;
   id: Scalars['HashId'];
-  isAdmin: Scalars['Boolean'];
   isCreator: Scalars['Boolean'];
   memberCount: Scalars['Int'];
-  members: UserConnection;
+  members: MemberConnection;
   name: Scalars['String'];
+  role: Role;
   updatedAt?: Maybe<Scalars['Date']>;
-};
-
-
-/** A Group Chat is a chat that contains more than 2 members */
-export type GroupChatAdminsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -396,7 +360,44 @@ export type MeSentRequestsArgs = {
   state?: InputMaybe<RequestState>;
 };
 
-export type MembersAddedEvent = ChatUpdateEvent & Event & UserAlterationEvent & {
+export type Member = {
+  __typename?: 'Member';
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  role: Role;
+  user: User;
+  userId: Scalars['HashId'];
+};
+
+export type MemberAlterationEvent = {
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  members: Array<Member>;
+  updatedAt: Scalars['Date'];
+};
+
+export type MemberConnection = {
+  __typename?: 'MemberConnection';
+  /** https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types */
+  edges?: Maybe<Array<Maybe<MemberEdge>>>;
+  /** https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo */
+  pageInfo: PageInfo;
+};
+
+export type MemberEdge = {
+  __typename?: 'MemberEdge';
+  /** https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor */
+  cursor: Scalars['String'];
+  /** https://facebook.github.io/relay/graphql/connections.htm#sec-Node */
+  node?: Maybe<Member>;
+};
+
+export type MembersAddedEvent = ChatUpdateEvent & Event & MemberAlterationEvent & {
   __typename?: 'MembersAddedEvent';
   chat: Chat;
   chatId: Scalars['HashId'];
@@ -405,11 +406,11 @@ export type MembersAddedEvent = ChatUpdateEvent & Event & UserAlterationEvent & 
   createdById: Scalars['HashId'];
   id: Scalars['HashId'];
   isCreator: Scalars['Boolean'];
+  members: Array<Member>;
   updatedAt: Scalars['Date'];
-  users: Array<User>;
 };
 
-export type MembersRemovedEvent = ChatUpdateEvent & Event & UserAlterationEvent & {
+export type MembersRemovedEvent = ChatUpdateEvent & Event & MemberAlterationEvent & {
   __typename?: 'MembersRemovedEvent';
   chat: Chat;
   chatId: Scalars['HashId'];
@@ -418,8 +419,8 @@ export type MembersRemovedEvent = ChatUpdateEvent & Event & UserAlterationEvent 
   createdById: Scalars['HashId'];
   id: Scalars['HashId'];
   isCreator: Scalars['Boolean'];
+  members: Array<Member>;
   updatedAt: Scalars['Date'];
-  users: Array<User>;
 };
 
 export type MessageEvent = Event & {
@@ -441,12 +442,12 @@ export type Mutation = {
   /** Accept a request */
   acceptRequest?: Maybe<Request>;
   acknowledgeAlert?: Maybe<Alert>;
-  /** Add admins to a group chat */
-  addAdminsToGroupChat?: Maybe<AdminsAddedEvent>;
   /** Add members to a group chat */
   addMembersToGroupChat?: Maybe<MembersAddedEvent>;
   /** Cancel a sent request */
   cancelRequest?: Maybe<Request>;
+  /** Remove admins from a group chat */
+  changeMemberRoles?: Maybe<RoleChangedEvent>;
   /** Create a Chat */
   createDirectMessageChat?: Maybe<DirectMessageChat>;
   /** Create a Chat */
@@ -461,8 +462,6 @@ export type Mutation = {
   /** Delete a Friend */
   deleteFriend?: Maybe<Stranger>;
   leaveGroupChat?: Maybe<MembersRemovedEvent>;
-  /** Remove admins from a group chat */
-  removeAdminsFromGroupChat?: Maybe<AdminsRemovedEvent>;
   /** Remove members from a group chat */
   removeMembersFromGroupChat?: Maybe<MembersRemovedEvent>;
   /** Send a friend request to a user */
@@ -486,12 +485,6 @@ export type MutationAcknowledgeAlertArgs = {
 };
 
 
-export type MutationAddAdminsToGroupChatArgs = {
-  chatId: Scalars['HashId'];
-  members: Array<Scalars['HashId']>;
-};
-
-
 export type MutationAddMembersToGroupChatArgs = {
   chatId: Scalars['HashId'];
   members: Array<Scalars['HashId']>;
@@ -500,6 +493,13 @@ export type MutationAddMembersToGroupChatArgs = {
 
 export type MutationCancelRequestArgs = {
   requestId: Scalars['HashId'];
+};
+
+
+export type MutationChangeMemberRolesArgs = {
+  chatId: Scalars['HashId'];
+  members: Array<Scalars['HashId']>;
+  role: Role;
 };
 
 
@@ -541,12 +541,6 @@ export type MutationDeleteFriendArgs = {
 
 export type MutationLeaveGroupChatArgs = {
   chatId: Scalars['HashId'];
-};
-
-
-export type MutationRemoveAdminsFromGroupChatArgs = {
-  chatId: Scalars['HashId'];
-  members: Array<Scalars['HashId']>;
 };
 
 
@@ -628,7 +622,7 @@ export type Query = {
   events: EventConnection;
   friends: Array<Friend>;
   me?: Maybe<Me>;
-  members: UserConnection;
+  members: MemberConnection;
   /** Get all notifications for current user */
   notifications: Array<Notification>;
   requests: Array<Request>;
@@ -742,6 +736,26 @@ export enum RequestState {
   Sent = 'SENT'
 }
 
+export enum Role {
+  Admin = 'ADMIN',
+  Basic = 'BASIC',
+  Owner = 'OWNER'
+}
+
+export type RoleChangedEvent = ChatUpdateEvent & Event & MemberAlterationEvent & {
+  __typename?: 'RoleChangedEvent';
+  chat: Chat;
+  chatId: Scalars['HashId'];
+  createdAt: Scalars['Date'];
+  createdBy: User;
+  createdById: Scalars['HashId'];
+  id: Scalars['HashId'];
+  isCreator: Scalars['Boolean'];
+  members: Array<Member>;
+  newRole: Role;
+  updatedAt: Scalars['Date'];
+};
+
 export enum Sort {
   Asc = 'asc',
   Desc = 'desc'
@@ -814,18 +828,6 @@ export type User = {
   username: Scalars['String'];
 };
 
-export type UserAlterationEvent = {
-  chat: Chat;
-  chatId: Scalars['HashId'];
-  createdAt: Scalars['Date'];
-  createdBy: User;
-  createdById: Scalars['HashId'];
-  id: Scalars['HashId'];
-  isCreator: Scalars['Boolean'];
-  updatedAt: Scalars['Date'];
-  users: Array<User>;
-};
-
 export type UserConnection = {
   __typename?: 'UserConnection';
   /** https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types */
@@ -851,12 +853,244 @@ export type UserOrderBy = {
   username?: InputMaybe<Sort>;
 };
 
+export type GetChatsForChatDisplayQueryVariables = Exact<{
+  firstMembers?: InputMaybe<Scalars['Int']>;
+  afterMember?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetChatsForChatDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+export type GetChatsForChatDisplayChangesSubscriptionVariables = Exact<{
+  firstMembers?: InputMaybe<Scalars['Int']>;
+  afterMember?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetChatsForChatDisplayChangesSubscription = { __typename?: 'Subscription', chatAccessAlerts?: { __typename?: 'ChatAdminAccessGrantedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | { __typename?: 'ChatAdminAccessRevokedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | { __typename?: 'ChatMemberAccessGrantedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | { __typename?: 'ChatMemberAccessRevokedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | null };
+
+type ChatForChatDisplay_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatForChatDisplay_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatForChatDisplay_GroupChat_Fragment = { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type ChatForChatDisplayFragment = ChatForChatDisplay_DeletedChat_Fragment | ChatForChatDisplay_DirectMessageChat_Fragment | ChatForChatDisplay_GroupChat_Fragment;
+
+type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatItem_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, memberCount: number, id: any, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | null } | null> | null } };
+
+export type ChatItemFragment = ChatItem_DeletedChat_Fragment | ChatItem_DirectMessageChat_Fragment | ChatItem_GroupChat_Fragment;
+
+type ChatItemUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
+
+type ChatItemUser_Me_Fragment = { __typename?: 'Me', id: any, username: string };
+
+type ChatItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
+
+export type ChatItemUserFragment = ChatItemUser_Friend_Fragment | ChatItemUser_Me_Fragment | ChatItemUser_Stranger_Fragment;
+
+export type GetChatForChatHeaderQueryVariables = Exact<{
+  chatId: Scalars['HashId'];
+}>;
+
+
+export type GetChatForChatHeaderQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string, id: any } | { __typename?: 'Me', username: string, id: any } | { __typename?: 'Stranger', username: string, id: any } } | { __typename?: 'GroupChat', name: string, description?: string | null, id: any } | null };
+
+type ChatHeaderChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type ChatHeaderChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string, id: any } | { __typename?: 'Me', username: string, id: any } | { __typename?: 'Stranger', username: string, id: any } };
+
+type ChatHeaderChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, description?: string | null, id: any };
+
+export type ChatHeaderChatFragment = ChatHeaderChat_DeletedChat_Fragment | ChatHeaderChat_DirectMessageChat_Fragment | ChatHeaderChat_GroupChat_Fragment;
+
+export type GetEventsQueryVariables = Exact<{
+  chatId: Scalars['HashId'];
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetEventsQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'EventEdge', node?: { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, descriptionAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, content: string, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, nameAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RoleChangedEvent', id: any, createdAt: any, newRole: Role, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | null } | null> | null } };
+
+export type EventsSubscriptionVariables = Exact<{
+  chatId?: InputMaybe<Scalars['HashId']>;
+}>;
+
+
+export type EventsSubscription = { __typename?: 'Subscription', events?: { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, descriptionAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, content: string, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, nameAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RoleChangedEvent', id: any, createdAt: any, newRole: Role, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | null };
+
+type ChatPanelEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type ChatPanelEvent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, descriptionAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatPanelEvent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+type ChatPanelEvent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+type ChatPanelEvent_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, content: string, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type ChatPanelEvent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, nameAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatPanelEvent_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdAt: any, newRole: Role, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+export type ChatPanelEventFragment = ChatPanelEvent_DeletedEvent_Fragment | ChatPanelEvent_DescriptionUpdatedEvent_Fragment | ChatPanelEvent_MembersAddedEvent_Fragment | ChatPanelEvent_MembersRemovedEvent_Fragment | ChatPanelEvent_MessageEvent_Fragment | ChatPanelEvent_NameUpdatedEvent_Fragment | ChatPanelEvent_RoleChangedEvent_Fragment;
+
+type ChatPanelChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
+
+type ChatPanelChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string, id: any } | { __typename?: 'Me', username: string, id: any } | { __typename?: 'Stranger', username: string, id: any } };
+
+type ChatPanelChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, description?: string | null, id: any };
+
+export type ChatPanelChatFragment = ChatPanelChat_DeletedChat_Fragment | ChatPanelChat_DirectMessageChat_Fragment | ChatPanelChat_GroupChat_Fragment;
+
+type ChatUpdateEventComponent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', descriptionAfter: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatUpdateEventComponent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+type ChatUpdateEventComponent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+type ChatUpdateEventComponent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', nameAfter: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatUpdateEventComponent_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', newRole: Role, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+export type ChatUpdateEventComponentFragment = ChatUpdateEventComponent_DescriptionUpdatedEvent_Fragment | ChatUpdateEventComponent_MembersAddedEvent_Fragment | ChatUpdateEventComponent_MembersRemovedEvent_Fragment | ChatUpdateEventComponent_NameUpdatedEvent_Fragment | ChatUpdateEventComponent_RoleChangedEvent_Fragment;
+
+type ChatUpdateMemberAlteration_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+type ChatUpdateMemberAlteration_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+type ChatUpdateMemberAlteration_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', members: Array<{ __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+export type ChatUpdateMemberAlterationFragment = ChatUpdateMemberAlteration_MembersAddedEvent_Fragment | ChatUpdateMemberAlteration_MembersRemovedEvent_Fragment | ChatUpdateMemberAlteration_RoleChangedEvent_Fragment;
+
+export type DeletedEventComponentFragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type EventAvatar_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventAvatar_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventAvatar_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventAvatar_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventAvatar_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventAvatar_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventAvatar_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type EventAvatarFragment = EventAvatar_DeletedEvent_Fragment | EventAvatar_DescriptionUpdatedEvent_Fragment | EventAvatar_MembersAddedEvent_Fragment | EventAvatar_MembersRemovedEvent_Fragment | EventAvatar_MessageEvent_Fragment | EventAvatar_NameUpdatedEvent_Fragment | EventAvatar_RoleChangedEvent_Fragment;
+
+type EventContainer_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean };
+
+type EventContainer_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean };
+
+type EventContainer_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean };
+
+type EventContainer_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean };
+
+type EventContainer_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean };
+
+type EventContainer_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean };
+
+type EventContainer_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdAt: any, isCreator: boolean };
+
+export type EventContainerFragment = EventContainer_DeletedEvent_Fragment | EventContainer_DescriptionUpdatedEvent_Fragment | EventContainer_MembersAddedEvent_Fragment | EventContainer_MembersRemovedEvent_Fragment | EventContainer_MessageEvent_Fragment | EventContainer_NameUpdatedEvent_Fragment | EventContainer_RoleChangedEvent_Fragment;
+
+type EventInfo_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventInfo_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventInfo_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventInfo_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventInfo_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventInfo_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type EventInfo_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type EventInfoFragment = EventInfo_DeletedEvent_Fragment | EventInfo_DescriptionUpdatedEvent_Fragment | EventInfo_MembersAddedEvent_Fragment | EventInfo_MembersRemovedEvent_Fragment | EventInfo_MessageEvent_Fragment | EventInfo_NameUpdatedEvent_Fragment | EventInfo_RoleChangedEvent_Fragment;
+
+type IncomingEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type IncomingEvent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type IncomingEvent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type IncomingEvent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type IncomingEvent_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type IncomingEvent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type IncomingEvent_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+export type IncomingEventFragment = IncomingEvent_DeletedEvent_Fragment | IncomingEvent_DescriptionUpdatedEvent_Fragment | IncomingEvent_MembersAddedEvent_Fragment | IncomingEvent_MembersRemovedEvent_Fragment | IncomingEvent_MessageEvent_Fragment | IncomingEvent_NameUpdatedEvent_Fragment | IncomingEvent_RoleChangedEvent_Fragment;
+
+export type DeleteMessageMutationVariables = Exact<{
+  messageId: Scalars['HashId'];
+}>;
+
+
+export type DeleteMessageMutation = { __typename?: 'Mutation', deleteEvent?: { __typename?: 'DeletedEvent', id: any } | null };
+
+export type MessageEventComponentFragment = { __typename?: 'MessageEvent', id: any, isCreator: boolean, content: string, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+
+type MessageActions_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean };
+
+type MessageActions_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, isCreator: boolean };
+
+type MessageActions_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, isCreator: boolean };
+
+type MessageActions_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, isCreator: boolean };
+
+type MessageActions_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, isCreator: boolean };
+
+type MessageActions_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, isCreator: boolean };
+
+type MessageActions_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, isCreator: boolean };
+
+export type MessageActionsFragment = MessageActions_DeletedEvent_Fragment | MessageActions_DescriptionUpdatedEvent_Fragment | MessageActions_MembersAddedEvent_Fragment | MessageActions_MembersRemovedEvent_Fragment | MessageActions_MessageEvent_Fragment | MessageActions_NameUpdatedEvent_Fragment | MessageActions_RoleChangedEvent_Fragment;
+
+export type MessageBubbleFragment = { __typename?: 'MessageEvent', id: any, content: string };
+
+type OutgoingEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type OutgoingEvent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type OutgoingEvent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type OutgoingEvent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type OutgoingEvent_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type OutgoingEvent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type OutgoingEvent_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type OutgoingEventFragment = OutgoingEvent_DeletedEvent_Fragment | OutgoingEvent_DescriptionUpdatedEvent_Fragment | OutgoingEvent_MembersAddedEvent_Fragment | OutgoingEvent_MembersRemovedEvent_Fragment | OutgoingEvent_MessageEvent_Fragment | OutgoingEvent_NameUpdatedEvent_Fragment | OutgoingEvent_RoleChangedEvent_Fragment;
+
+export type CreateMessageMutationVariables = Exact<{
+  chatId: Scalars['HashId'];
+  content: Scalars['String'];
+}>;
+
+
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'MessageEvent', id: any, createdAt: any, content: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
+
 export type GetChatForChatAsideQueryVariables = Exact<{
   chatId: Scalars['HashId'];
 }>;
 
 
-export type GetChatForChatAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string } } | { __typename?: 'GroupChat', memberCount: number, name: string, isAdmin: boolean, id: any } | null };
+export type GetChatForChatAsideQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } } | { __typename?: 'GroupChat', memberCount: number, name: string, role: Role, id: any } | null };
 
 export type GetMembersForMemberSectionQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -865,7 +1099,7 @@ export type GetMembersForMemberSectionQueryVariables = Exact<{
 }>;
 
 
-export type GetMembersForMemberSectionQuery = { __typename?: 'Query', members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
+export type GetMembersForMemberSectionQuery = { __typename?: 'Query', members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null, friendRequest?: { __typename?: 'FriendRequest', id: any, isCreator: boolean, createdById: any, recipientId: any, state: RequestState } | null } } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
 
 type FooterSectionChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', isCreator: boolean, id: any };
 
@@ -877,7 +1111,7 @@ export type FooterSectionChatFragment = FooterSectionChat_DeletedChat_Fragment |
 
 type HeaderSectionChat_DeletedChat_Fragment = { __typename?: 'DeletedChat' };
 
-type HeaderSectionChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } };
+type HeaderSectionChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', friend: { __typename?: 'Friend', username: string } | { __typename?: 'Me', username: string } | { __typename?: 'Stranger', username: string } };
 
 type HeaderSectionChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string };
 
@@ -889,7 +1123,7 @@ type ChatMemberItemChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id:
 
 type ChatMemberItemChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
 
-type ChatMemberItemChat_GroupChat_Fragment = { __typename?: 'GroupChat', isAdmin: boolean, id: any };
+type ChatMemberItemChat_GroupChat_Fragment = { __typename?: 'GroupChat', role: Role, id: any };
 
 export type ChatMemberItemChatFragment = ChatMemberItemChat_DeletedChat_Fragment | ChatMemberItemChat_DirectMessageChat_Fragment | ChatMemberItemChat_GroupChat_Fragment;
 
@@ -913,259 +1147,9 @@ type MemberSectionChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: 
 
 type MemberSectionChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any };
 
-type MemberSectionChat_GroupChat_Fragment = { __typename?: 'GroupChat', isAdmin: boolean, id: any };
+type MemberSectionChat_GroupChat_Fragment = { __typename?: 'GroupChat', role: Role, id: any };
 
 export type MemberSectionChatFragment = MemberSectionChat_DeletedChat_Fragment | MemberSectionChat_DirectMessageChat_Fragment | MemberSectionChat_GroupChat_Fragment;
-
-export type GetChatForChatHeaderQueryVariables = Exact<{
-  chatId: Scalars['HashId'];
-}>;
-
-
-export type GetChatForChatHeaderQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string, id: any } } | { __typename?: 'GroupChat', name: string, description?: string | null, id: any } | null };
-
-type ChatHeaderChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type ChatHeaderChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string, id: any } };
-
-type ChatHeaderChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, description?: string | null, id: any };
-
-export type ChatHeaderChatFragment = ChatHeaderChat_DeletedChat_Fragment | ChatHeaderChat_DirectMessageChat_Fragment | ChatHeaderChat_GroupChat_Fragment;
-
-export type GetEventsQueryVariables = Exact<{
-  chatId: Scalars['HashId'];
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type GetEventsQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'EventEdge', node?: { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, descriptionAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, content: string, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, nameAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | null } | null> | null } };
-
-export type EventsSubscriptionVariables = Exact<{
-  chatId?: InputMaybe<Scalars['HashId']>;
-}>;
-
-
-export type EventsSubscription = { __typename?: 'Subscription', events?: { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, descriptionAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, content: string, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, nameAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | null };
-
-type ChatPanelEvent_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatPanelEvent_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatPanelEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type ChatPanelEvent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, descriptionAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type ChatPanelEvent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatPanelEvent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatPanelEvent_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, content: string, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type ChatPanelEvent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, nameAfter: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type ChatPanelEventFragment = ChatPanelEvent_AdminsAddedEvent_Fragment | ChatPanelEvent_AdminsRemovedEvent_Fragment | ChatPanelEvent_DeletedEvent_Fragment | ChatPanelEvent_DescriptionUpdatedEvent_Fragment | ChatPanelEvent_MembersAddedEvent_Fragment | ChatPanelEvent_MembersRemovedEvent_Fragment | ChatPanelEvent_MessageEvent_Fragment | ChatPanelEvent_NameUpdatedEvent_Fragment;
-
-type ChatPanelChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type ChatPanelChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', username: string, id: any } };
-
-type ChatPanelChat_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, description?: string | null, id: any };
-
-export type ChatPanelChatFragment = ChatPanelChat_DeletedChat_Fragment | ChatPanelChat_DirectMessageChat_Fragment | ChatPanelChat_GroupChat_Fragment;
-
-type ChatUpdateEventComponent_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateEventComponent_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateEventComponent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', descriptionAfter: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type ChatUpdateEventComponent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateEventComponent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateEventComponent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', nameAfter: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type ChatUpdateEventComponentFragment = ChatUpdateEventComponent_AdminsAddedEvent_Fragment | ChatUpdateEventComponent_AdminsRemovedEvent_Fragment | ChatUpdateEventComponent_DescriptionUpdatedEvent_Fragment | ChatUpdateEventComponent_MembersAddedEvent_Fragment | ChatUpdateEventComponent_MembersRemovedEvent_Fragment | ChatUpdateEventComponent_NameUpdatedEvent_Fragment;
-
-type ChatUpdateUserAlteration_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateUserAlteration_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateUserAlteration_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-type ChatUpdateUserAlteration_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
-
-export type ChatUpdateUserAlterationFragment = ChatUpdateUserAlteration_AdminsAddedEvent_Fragment | ChatUpdateUserAlteration_AdminsRemovedEvent_Fragment | ChatUpdateUserAlteration_MembersAddedEvent_Fragment | ChatUpdateUserAlteration_MembersRemovedEvent_Fragment;
-
-export type DeletedEventComponentFragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type EventAvatar_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventAvatar_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type EventAvatarFragment = EventAvatar_AdminsAddedEvent_Fragment | EventAvatar_AdminsRemovedEvent_Fragment | EventAvatar_DeletedEvent_Fragment | EventAvatar_DescriptionUpdatedEvent_Fragment | EventAvatar_MembersAddedEvent_Fragment | EventAvatar_MembersRemovedEvent_Fragment | EventAvatar_MessageEvent_Fragment | EventAvatar_NameUpdatedEvent_Fragment;
-
-type EventContainer_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean };
-
-type EventContainer_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean };
-
-export type EventContainerFragment = EventContainer_AdminsAddedEvent_Fragment | EventContainer_AdminsRemovedEvent_Fragment | EventContainer_DeletedEvent_Fragment | EventContainer_DescriptionUpdatedEvent_Fragment | EventContainer_MembersAddedEvent_Fragment | EventContainer_MembersRemovedEvent_Fragment | EventContainer_MessageEvent_Fragment | EventContainer_NameUpdatedEvent_Fragment;
-
-type EventInfo_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type EventInfo_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type EventInfoFragment = EventInfo_AdminsAddedEvent_Fragment | EventInfo_AdminsRemovedEvent_Fragment | EventInfo_DeletedEvent_Fragment | EventInfo_DescriptionUpdatedEvent_Fragment | EventInfo_MembersAddedEvent_Fragment | EventInfo_MembersRemovedEvent_Fragment | EventInfo_MessageEvent_Fragment | EventInfo_NameUpdatedEvent_Fragment;
-
-type IncomingEvent_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type IncomingEvent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-export type IncomingEventFragment = IncomingEvent_AdminsAddedEvent_Fragment | IncomingEvent_AdminsRemovedEvent_Fragment | IncomingEvent_DeletedEvent_Fragment | IncomingEvent_DescriptionUpdatedEvent_Fragment | IncomingEvent_MembersAddedEvent_Fragment | IncomingEvent_MembersRemovedEvent_Fragment | IncomingEvent_MessageEvent_Fragment | IncomingEvent_NameUpdatedEvent_Fragment;
-
-export type DeleteMessageMutationVariables = Exact<{
-  messageId: Scalars['HashId'];
-}>;
-
-
-export type DeleteMessageMutation = { __typename?: 'Mutation', deleteEvent?: { __typename?: 'DeletedEvent', id: any } | null };
-
-export type MessageEventComponentFragment = { __typename?: 'MessageEvent', id: any, isCreator: boolean, content: string, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
-
-type MessageActions_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, isCreator: boolean };
-
-type MessageActions_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, isCreator: boolean };
-
-type MessageActions_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean };
-
-type MessageActions_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, isCreator: boolean };
-
-type MessageActions_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, isCreator: boolean };
-
-type MessageActions_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, isCreator: boolean };
-
-type MessageActions_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, isCreator: boolean };
-
-type MessageActions_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, isCreator: boolean };
-
-export type MessageActionsFragment = MessageActions_AdminsAddedEvent_Fragment | MessageActions_AdminsRemovedEvent_Fragment | MessageActions_DeletedEvent_Fragment | MessageActions_DescriptionUpdatedEvent_Fragment | MessageActions_MembersAddedEvent_Fragment | MessageActions_MembersRemovedEvent_Fragment | MessageActions_MessageEvent_Fragment | MessageActions_NameUpdatedEvent_Fragment;
-
-export type MessageBubbleFragment = { __typename?: 'MessageEvent', id: any, content: string };
-
-type OutgoingEvent_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_MessageEvent_Fragment = { __typename?: 'MessageEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type OutgoingEvent_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdAt: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type OutgoingEventFragment = OutgoingEvent_AdminsAddedEvent_Fragment | OutgoingEvent_AdminsRemovedEvent_Fragment | OutgoingEvent_DeletedEvent_Fragment | OutgoingEvent_DescriptionUpdatedEvent_Fragment | OutgoingEvent_MembersAddedEvent_Fragment | OutgoingEvent_MembersRemovedEvent_Fragment | OutgoingEvent_MessageEvent_Fragment | OutgoingEvent_NameUpdatedEvent_Fragment;
-
-export type CreateMessageMutationVariables = Exact<{
-  chatId: Scalars['HashId'];
-  content: Scalars['String'];
-}>;
-
-
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'MessageEvent', id: any, createdAt: any, content: string, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | null };
-
-export type GetChatsForChatDisplayQueryVariables = Exact<{
-  firstMembers?: InputMaybe<Scalars['Int']>;
-  afterMember?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type GetChatsForChatDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
-
-export type GetChatsForChatDisplayChangesSubscriptionVariables = Exact<{
-  firstMembers?: InputMaybe<Scalars['Int']>;
-  afterMember?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type GetChatsForChatDisplayChangesSubscription = { __typename?: 'Subscription', chatAccessAlerts?: { __typename?: 'ChatAdminAccessGrantedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | { __typename?: 'ChatAdminAccessRevokedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | { __typename?: 'ChatMemberAccessGrantedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | { __typename?: 'ChatMemberAccessRevokedAlert', chat: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } } | null };
-
-type ChatForChatDisplay_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type ChatForChatDisplay_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string, name?: string | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-type ChatForChatDisplay_GroupChat_Fragment = { __typename?: 'GroupChat', memberCount: number, id: any, name: string, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } | null } | null> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
-
-export type ChatForChatDisplayFragment = ChatForChatDisplay_DeletedChat_Fragment | ChatForChatDisplay_DirectMessageChat_Fragment | ChatForChatDisplay_GroupChat_Fragment;
-
-type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } };
-
-type ChatItem_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, memberCount: number, id: any, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } | null } | null> | null } };
-
-export type ChatItemFragment = ChatItem_DeletedChat_Fragment | ChatItem_DirectMessageChat_Fragment | ChatItem_GroupChat_Fragment;
-
-type ChatItemUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
-
-type ChatItemUser_Me_Fragment = { __typename?: 'Me', id: any, username: string };
-
-type ChatItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
-
-export type ChatItemUserFragment = ChatItemUser_Friend_Fragment | ChatItemUser_Me_Fragment | ChatItemUser_Stranger_Fragment;
 
 export type GetMeForAccountMenuQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1177,7 +1161,7 @@ export type GetChatForAnimatedTitleQueryVariables = Exact<{
 }>;
 
 
-export type GetChatForAnimatedTitleQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null, isAdmin: boolean, id: any } | null };
+export type GetChatForAnimatedTitleQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | { __typename?: 'GroupChat', name: string, description?: string | null, role: Role, id: any } | null };
 
 type AlertComponentAlert_ChatAdminAccessGrantedAlert_Fragment = { __typename?: 'ChatAdminAccessGrantedAlert', id: any, createdAt: any, createdById: any, isCreator: boolean, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', name: string, id: any }, createdBy: { __typename?: 'Friend', username: string, id: any, name?: string | null } | { __typename?: 'Me', username: string, id: any, name?: string | null } | { __typename?: 'Stranger', username: string, id: any, name?: string | null } };
 
@@ -1252,11 +1236,10 @@ export type GetFriendsForSelectSearchModalQuery = { __typename?: 'Query', friend
 export type GetChatForUpdateQueryVariables = Exact<{
   chatId: Scalars['HashId'];
   firstMembers?: InputMaybe<Scalars['Int']>;
-  firstAdmins?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type GetChatForUpdateQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any, isCreator: boolean, createdById: any } | { __typename?: 'DirectMessageChat', id: any, isCreator: boolean, createdById: any } | { __typename?: 'GroupChat', name: string, description?: string | null, isAdmin: boolean, id: any, isCreator: boolean, createdById: any, members: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } | null } | null> | null }, admins: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node?: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } | null } | null> | null } } | null };
+export type GetChatForUpdateQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat', id: any, isCreator: boolean, createdById: any } | { __typename?: 'DirectMessageChat', id: any, isCreator: boolean, createdById: any } | { __typename?: 'GroupChat', name: string, description?: string | null, role: Role, id: any, isCreator: boolean, createdById: any, members: { __typename?: 'MemberConnection', edges?: Array<{ __typename?: 'MemberEdge', node?: { __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | null } | null> | null } } | null };
 
 export type GetFriendsForUpdateGroupChatQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1325,7 +1308,7 @@ export type GetMeForUserProviderQuery = { __typename?: 'Query', me?: { __typenam
 
 type ChatAvatar_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
 
-type ChatAvatar_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } };
+type ChatAvatar_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, friend: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
 
 type ChatAvatar_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, id: any };
 
@@ -1344,7 +1327,7 @@ export type GetChatForChatUpdateActionQueryVariables = Exact<{
 }>;
 
 
-export type GetChatForChatUpdateActionQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat' } | { __typename?: 'GroupChat', isAdmin: boolean } | null };
+export type GetChatForChatUpdateActionQuery = { __typename?: 'Query', chat?: { __typename?: 'DeletedChat' } | { __typename?: 'DirectMessageChat' } | { __typename?: 'GroupChat', role: Role } | null };
 
 type UserItem_Friend_Fragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
 
@@ -1409,7 +1392,7 @@ export type CreateDirectMessageChatMutationVariables = Exact<{
 }>;
 
 
-export type CreateDirectMessageChatMutation = { __typename?: 'Mutation', createDirectMessageChat?: { __typename?: 'DirectMessageChat', id: any, isCreator: boolean, createdAt?: any | null, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } } | null };
+export type CreateDirectMessageChatMutation = { __typename?: 'Mutation', createDirectMessageChat?: { __typename?: 'DirectMessageChat', id: any, isCreator: boolean, createdAt?: any | null, friend: { __typename?: 'Friend', id: any, name?: string | null, username: string } | { __typename?: 'Me', id: any, name?: string | null, username: string } | { __typename?: 'Stranger', id: any, name?: string | null, username: string } } | null };
 
 export type DeleteChatMutationVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1500,7 +1483,7 @@ export type AddMembersToGroupChatMutationVariables = Exact<{
 }>;
 
 
-export type AddMembersToGroupChatMutation = { __typename?: 'Mutation', addMembersToGroupChat?: { __typename?: 'MembersAddedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
+export type AddMembersToGroupChatMutation = { __typename?: 'Mutation', addMembersToGroupChat?: { __typename?: 'MembersAddedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, members: Array<{ __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | null };
 
 export type RemoveMembersFromGroupChatMutationVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1508,27 +1491,16 @@ export type RemoveMembersFromGroupChatMutationVariables = Exact<{
 }>;
 
 
-export type RemoveMembersFromGroupChatMutation = { __typename?: 'Mutation', removeMembersFromGroupChat?: { __typename?: 'MembersRemovedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
+export type RemoveMembersFromGroupChatMutation = { __typename?: 'Mutation', removeMembersFromGroupChat?: { __typename?: 'MembersRemovedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, members: Array<{ __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | null };
 
-export type AddAdminsToGroupChatMutationVariables = Exact<{
+export type ChangeMemberRolesMutationVariables = Exact<{
   chatId: Scalars['HashId'];
   members: Array<Scalars['HashId']> | Scalars['HashId'];
+  role: Role;
 }>;
 
 
-export type AddAdminsToGroupChatMutation = { __typename?: 'Mutation', addAdminsToGroupChat?: { __typename?: 'AdminsAddedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
-
-export type RemoveAdminsFromGroupChatMutationVariables = Exact<{
-  chatId: Scalars['HashId'];
-  members: Array<Scalars['HashId']> | Scalars['HashId'];
-}>;
-
-
-export type RemoveAdminsFromGroupChatMutation = { __typename?: 'Mutation', removeAdminsFromGroupChat?: { __typename?: 'AdminsRemovedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> } | null };
-
-type GroupChatUpdate_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
-
-type GroupChatUpdate_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
+export type ChangeMemberRolesMutation = { __typename?: 'Mutation', changeMemberRoles?: { __typename?: 'RoleChangedEvent', id: any, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'GroupChat', id: any }, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, members: Array<{ __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> } | null };
 
 type GroupChatUpdate_DescriptionUpdatedEvent_Fragment = { __typename?: 'DescriptionUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
 
@@ -1538,18 +1510,251 @@ type GroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemov
 
 type GroupChatUpdate_NameUpdatedEvent_Fragment = { __typename?: 'NameUpdatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
 
-export type GroupChatUpdateFragment = GroupChatUpdate_AdminsAddedEvent_Fragment | GroupChatUpdate_AdminsRemovedEvent_Fragment | GroupChatUpdate_DescriptionUpdatedEvent_Fragment | GroupChatUpdate_MembersAddedEvent_Fragment | GroupChatUpdate_MembersRemovedEvent_Fragment | GroupChatUpdate_NameUpdatedEvent_Fragment;
+type GroupChatUpdate_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any } };
 
-type UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment = { __typename?: 'AdminsAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+export type GroupChatUpdateFragment = GroupChatUpdate_DescriptionUpdatedEvent_Fragment | GroupChatUpdate_MembersAddedEvent_Fragment | GroupChatUpdate_MembersRemovedEvent_Fragment | GroupChatUpdate_NameUpdatedEvent_Fragment | GroupChatUpdate_RoleChangedEvent_Fragment;
 
-type UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment = { __typename?: 'AdminsRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+type UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', members: Array<{ __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
 
-type UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment = { __typename?: 'MembersAddedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+type UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', members: Array<{ __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
 
-type UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment = { __typename?: 'MembersRemovedEvent', users: Array<{ __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }> };
+type UserAlerationGroupChatUpdate_RoleChangedEvent_Fragment = { __typename?: 'RoleChangedEvent', members: Array<{ __typename?: 'Member', role: Role, user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
 
-export type UserAlerationGroupChatUpdateFragment = UserAlerationGroupChatUpdate_AdminsAddedEvent_Fragment | UserAlerationGroupChatUpdate_AdminsRemovedEvent_Fragment | UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment | UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment;
+export type UserAlerationGroupChatUpdateFragment = UserAlerationGroupChatUpdate_MembersAddedEvent_Fragment | UserAlerationGroupChatUpdate_MembersRemovedEvent_Fragment | UserAlerationGroupChatUpdate_RoleChangedEvent_Fragment;
 
+export const ChatAvatarFragmentDoc = gql`
+    fragment ChatAvatar on Chat {
+  id
+  ... on GroupChat {
+    name
+  }
+  ... on DirectMessageChat {
+    friend {
+      id
+      username
+    }
+  }
+}
+    `;
+export const ChatItemUserFragmentDoc = gql`
+    fragment ChatItemUser on User {
+  id
+  username
+}
+    `;
+export const ChatItemFragmentDoc = gql`
+    fragment ChatItem on Chat {
+  id
+  ...ChatAvatar
+  ... on DirectMessageChat {
+    friend {
+      ...ChatItemUser
+    }
+  }
+  ... on GroupChat {
+    name
+    memberCount
+    members(first: $firstMembers, after: $afterMember) {
+      edges {
+        node {
+          user {
+            ...ChatItemUser
+          }
+        }
+      }
+    }
+  }
+}
+    ${ChatAvatarFragmentDoc}
+${ChatItemUserFragmentDoc}`;
+export const ChatForChatDisplayFragmentDoc = gql`
+    fragment ChatForChatDisplay on Chat {
+  id
+  ...ChatItem
+  createdBy {
+    id
+    username
+  }
+  ... on GroupChat {
+    memberCount
+    members(first: $firstMembers, after: $afterMember) {
+      edges {
+        node {
+          user {
+            id
+            username
+            name
+          }
+        }
+      }
+    }
+  }
+  ... on DirectMessageChat {
+    friend {
+      id
+      username
+      name
+    }
+  }
+}
+    ${ChatItemFragmentDoc}`;
+export const EventContainerFragmentDoc = gql`
+    fragment EventContainer on Event {
+  id
+  createdAt
+  isCreator
+}
+    `;
+export const EventInfoFragmentDoc = gql`
+    fragment EventInfo on Event {
+  id
+  createdAt
+  createdBy {
+    id
+    username
+  }
+  isCreator
+}
+    `;
+export const OutgoingEventFragmentDoc = gql`
+    fragment OutgoingEvent on Event {
+  id
+  ...EventInfo
+}
+    ${EventInfoFragmentDoc}`;
+export const UserAvatarFragmentDoc = gql`
+    fragment UserAvatar on User {
+  id
+  username
+  name
+}
+    `;
+export const IncomingEventFragmentDoc = gql`
+    fragment IncomingEvent on Event {
+  id
+  ...EventInfo
+  createdBy {
+    id
+    ...UserAvatar
+  }
+}
+    ${EventInfoFragmentDoc}
+${UserAvatarFragmentDoc}`;
+export const MessageActionsFragmentDoc = gql`
+    fragment MessageActions on Event {
+  id
+  isCreator
+}
+    `;
+export const MessageEventComponentFragmentDoc = gql`
+    fragment MessageEventComponent on MessageEvent {
+  id
+  isCreator
+  content
+  ...OutgoingEvent
+  ...IncomingEvent
+  ...MessageActions
+}
+    ${OutgoingEventFragmentDoc}
+${IncomingEventFragmentDoc}
+${MessageActionsFragmentDoc}`;
+export const DeletedEventComponentFragmentDoc = gql`
+    fragment DeletedEventComponent on DeletedEvent {
+  id
+  isCreator
+  ...OutgoingEvent
+  ...IncomingEvent
+  ...MessageActions
+}
+    ${OutgoingEventFragmentDoc}
+${IncomingEventFragmentDoc}
+${MessageActionsFragmentDoc}`;
+export const ChatUpdateMemberAlterationFragmentDoc = gql`
+    fragment ChatUpdateMemberAlteration on MemberAlterationEvent {
+  members {
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+export const ChatUpdateEventComponentFragmentDoc = gql`
+    fragment ChatUpdateEventComponent on ChatUpdateEvent {
+  createdBy {
+    id
+    username
+  }
+  ... on NameUpdatedEvent {
+    nameAfter
+  }
+  ... on DescriptionUpdatedEvent {
+    descriptionAfter
+  }
+  ... on MembersAddedEvent {
+    ...ChatUpdateMemberAlteration
+  }
+  ... on MembersRemovedEvent {
+    ...ChatUpdateMemberAlteration
+  }
+  ... on RoleChangedEvent {
+    newRole
+    ...ChatUpdateMemberAlteration
+  }
+}
+    ${ChatUpdateMemberAlterationFragmentDoc}`;
+export const ChatPanelEventFragmentDoc = gql`
+    fragment ChatPanelEvent on Event {
+  id
+  createdAt
+  createdBy {
+    id
+  }
+  ...EventContainer
+  ...MessageEventComponent
+  ...DeletedEventComponent
+  ... on ChatUpdateEvent {
+    ...ChatUpdateEventComponent
+  }
+}
+    ${EventContainerFragmentDoc}
+${MessageEventComponentFragmentDoc}
+${DeletedEventComponentFragmentDoc}
+${ChatUpdateEventComponentFragmentDoc}`;
+export const ChatHeaderChatFragmentDoc = gql`
+    fragment ChatHeaderChat on Chat {
+  ... on DirectMessageChat {
+    friend {
+      username
+    }
+  }
+  ... on GroupChat {
+    name
+    description
+  }
+  ...ChatAvatar
+}
+    ${ChatAvatarFragmentDoc}`;
+export const ChatPanelChatFragmentDoc = gql`
+    fragment ChatPanelChat on Chat {
+  ...ChatHeaderChat
+}
+    ${ChatHeaderChatFragmentDoc}`;
+export const EventAvatarFragmentDoc = gql`
+    fragment EventAvatar on Event {
+  id
+  createdBy {
+    id
+    username
+  }
+}
+    `;
+export const MessageBubbleFragmentDoc = gql`
+    fragment MessageBubble on MessageEvent {
+  id
+  content
+}
+    `;
 export const FooterSectionChatFragmentDoc = gql`
     fragment FooterSectionChat on Chat {
   isCreator
@@ -1629,7 +1834,7 @@ export const ChatMemberItemChatFragmentDoc = gql`
     fragment ChatMemberItemChat on Chat {
   id
   ... on GroupChat {
-    isAdmin
+    role
   }
 }
     `;
@@ -1638,235 +1843,6 @@ export const MemberSectionChatFragmentDoc = gql`
   ...ChatMemberItemChat
 }
     ${ChatMemberItemChatFragmentDoc}`;
-export const EventContainerFragmentDoc = gql`
-    fragment EventContainer on Event {
-  id
-  createdAt
-  isCreator
-}
-    `;
-export const EventInfoFragmentDoc = gql`
-    fragment EventInfo on Event {
-  id
-  createdAt
-  createdBy {
-    id
-    username
-  }
-  isCreator
-}
-    `;
-export const OutgoingEventFragmentDoc = gql`
-    fragment OutgoingEvent on Event {
-  id
-  ...EventInfo
-}
-    ${EventInfoFragmentDoc}`;
-export const UserAvatarFragmentDoc = gql`
-    fragment UserAvatar on User {
-  id
-  username
-  name
-}
-    `;
-export const IncomingEventFragmentDoc = gql`
-    fragment IncomingEvent on Event {
-  id
-  ...EventInfo
-  createdBy {
-    id
-    ...UserAvatar
-  }
-}
-    ${EventInfoFragmentDoc}
-${UserAvatarFragmentDoc}`;
-export const MessageActionsFragmentDoc = gql`
-    fragment MessageActions on Event {
-  id
-  isCreator
-}
-    `;
-export const MessageEventComponentFragmentDoc = gql`
-    fragment MessageEventComponent on MessageEvent {
-  id
-  isCreator
-  content
-  ...OutgoingEvent
-  ...IncomingEvent
-  ...MessageActions
-}
-    ${OutgoingEventFragmentDoc}
-${IncomingEventFragmentDoc}
-${MessageActionsFragmentDoc}`;
-export const DeletedEventComponentFragmentDoc = gql`
-    fragment DeletedEventComponent on DeletedEvent {
-  id
-  isCreator
-  ...OutgoingEvent
-  ...IncomingEvent
-  ...MessageActions
-}
-    ${OutgoingEventFragmentDoc}
-${IncomingEventFragmentDoc}
-${MessageActionsFragmentDoc}`;
-export const ChatUpdateUserAlterationFragmentDoc = gql`
-    fragment ChatUpdateUserAlteration on UserAlterationEvent {
-  users {
-    id
-    username
-  }
-}
-    `;
-export const ChatUpdateEventComponentFragmentDoc = gql`
-    fragment ChatUpdateEventComponent on ChatUpdateEvent {
-  createdBy {
-    id
-    username
-  }
-  ... on NameUpdatedEvent {
-    nameAfter
-  }
-  ... on DescriptionUpdatedEvent {
-    descriptionAfter
-  }
-  ... on MembersAddedEvent {
-    ...ChatUpdateUserAlteration
-  }
-  ... on MembersRemovedEvent {
-    ...ChatUpdateUserAlteration
-  }
-  ... on AdminsAddedEvent {
-    ...ChatUpdateUserAlteration
-  }
-  ... on AdminsRemovedEvent {
-    ...ChatUpdateUserAlteration
-  }
-}
-    ${ChatUpdateUserAlterationFragmentDoc}`;
-export const ChatPanelEventFragmentDoc = gql`
-    fragment ChatPanelEvent on Event {
-  id
-  createdAt
-  createdBy {
-    id
-  }
-  ...EventContainer
-  ...MessageEventComponent
-  ...DeletedEventComponent
-  ... on ChatUpdateEvent {
-    ...ChatUpdateEventComponent
-  }
-}
-    ${EventContainerFragmentDoc}
-${MessageEventComponentFragmentDoc}
-${DeletedEventComponentFragmentDoc}
-${ChatUpdateEventComponentFragmentDoc}`;
-export const ChatAvatarFragmentDoc = gql`
-    fragment ChatAvatar on Chat {
-  id
-  ... on GroupChat {
-    name
-  }
-  ... on DirectMessageChat {
-    friend {
-      id
-      username
-    }
-  }
-}
-    `;
-export const ChatHeaderChatFragmentDoc = gql`
-    fragment ChatHeaderChat on Chat {
-  ... on DirectMessageChat {
-    friend {
-      username
-    }
-  }
-  ... on GroupChat {
-    name
-    description
-  }
-  ...ChatAvatar
-}
-    ${ChatAvatarFragmentDoc}`;
-export const ChatPanelChatFragmentDoc = gql`
-    fragment ChatPanelChat on Chat {
-  ...ChatHeaderChat
-}
-    ${ChatHeaderChatFragmentDoc}`;
-export const EventAvatarFragmentDoc = gql`
-    fragment EventAvatar on Event {
-  id
-  createdBy {
-    id
-    username
-  }
-}
-    `;
-export const MessageBubbleFragmentDoc = gql`
-    fragment MessageBubble on MessageEvent {
-  id
-  content
-}
-    `;
-export const ChatItemUserFragmentDoc = gql`
-    fragment ChatItemUser on User {
-  id
-  username
-}
-    `;
-export const ChatItemFragmentDoc = gql`
-    fragment ChatItem on Chat {
-  id
-  ...ChatAvatar
-  ... on DirectMessageChat {
-    friend {
-      ...ChatItemUser
-    }
-  }
-  ... on GroupChat {
-    name
-    memberCount
-    members(first: $firstMembers, after: $afterMember) {
-      edges {
-        node {
-          ...ChatItemUser
-        }
-      }
-    }
-  }
-}
-    ${ChatAvatarFragmentDoc}
-${ChatItemUserFragmentDoc}`;
-export const ChatForChatDisplayFragmentDoc = gql`
-    fragment ChatForChatDisplay on Chat {
-  id
-  ...ChatItem
-  createdBy {
-    id
-    username
-  }
-  ... on GroupChat {
-    memberCount
-    members(first: $firstMembers, after: $afterMember) {
-      edges {
-        node {
-          id
-          username
-          name
-        }
-      }
-    }
-  }
-  ... on DirectMessageChat {
-    friend {
-      id
-      username
-      name
-    }
-  }
-}
-    ${ChatItemFragmentDoc}`;
 export const UpdateGroupUserFragmentDoc = gql`
     fragment UpdateGroupUser on User {
   id
@@ -2048,98 +2024,85 @@ export const GroupChatUpdateFragmentDoc = gql`
 }
     `;
 export const UserAlerationGroupChatUpdateFragmentDoc = gql`
-    fragment UserAlerationGroupChatUpdate on UserAlterationEvent {
-  users {
-    id
-    username
+    fragment UserAlerationGroupChatUpdate on MemberAlterationEvent {
+  members {
+    role
+    user {
+      id
+      username
+    }
   }
 }
     `;
-export const GetChatForChatAsideDocument = gql`
-    query GetChatForChatAside($chatId: HashId!) {
-  chat(chatId: $chatId) {
-    ...HeaderSectionChat
-    ...MemberSectionChat
-    ... on GroupChat {
-      memberCount
-    }
+export const GetChatsForChatDisplayDocument = gql`
+    query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
+  chats {
+    ...ChatForChatDisplay
   }
 }
-    ${HeaderSectionChatFragmentDoc}
-${MemberSectionChatFragmentDoc}`;
+    ${ChatForChatDisplayFragmentDoc}`;
 
 /**
- * __useGetChatForChatAsideQuery__
+ * __useGetChatsForChatDisplayQuery__
  *
- * To run a query within a React component, call `useGetChatForChatAsideQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetChatForChatAsideQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetChatsForChatDisplayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatsForChatDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetChatForChatAsideQuery({
+ * const { data, loading, error } = useGetChatsForChatDisplayQuery({
  *   variables: {
- *      chatId: // value for 'chatId'
+ *      firstMembers: // value for 'firstMembers'
+ *      afterMember: // value for 'afterMember'
  *   },
  * });
  */
-export function useGetChatForChatAsideQuery(baseOptions: Apollo.QueryHookOptions<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>) {
+export function useGetChatsForChatDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>(GetChatForChatAsideDocument, options);
+        return Apollo.useQuery<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>(GetChatsForChatDisplayDocument, options);
       }
-export function useGetChatForChatAsideLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>) {
+export function useGetChatsForChatDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>(GetChatForChatAsideDocument, options);
+          return Apollo.useLazyQuery<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>(GetChatsForChatDisplayDocument, options);
         }
-export type GetChatForChatAsideQueryHookResult = ReturnType<typeof useGetChatForChatAsideQuery>;
-export type GetChatForChatAsideLazyQueryHookResult = ReturnType<typeof useGetChatForChatAsideLazyQuery>;
-export type GetChatForChatAsideQueryResult = Apollo.QueryResult<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>;
-export const GetMembersForMemberSectionDocument = gql`
-    query GetMembersForMemberSection($chatId: HashId!, $first: Int!, $after: String) {
-  members(chatId: $chatId, first: $first, after: $after) {
-    edges {
-      node {
-        ...MemberSectionUser
-      }
-    }
-    pageInfo {
-      hasNextPage
-      endCursor
+export type GetChatsForChatDisplayQueryHookResult = ReturnType<typeof useGetChatsForChatDisplayQuery>;
+export type GetChatsForChatDisplayLazyQueryHookResult = ReturnType<typeof useGetChatsForChatDisplayLazyQuery>;
+export type GetChatsForChatDisplayQueryResult = Apollo.QueryResult<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>;
+export const GetChatsForChatDisplayChangesDocument = gql`
+    subscription GetChatsForChatDisplayChanges($firstMembers: Int = 2, $afterMember: String) {
+  chatAccessAlerts {
+    chat {
+      ...ChatForChatDisplay
     }
   }
 }
-    ${MemberSectionUserFragmentDoc}`;
+    ${ChatForChatDisplayFragmentDoc}`;
 
 /**
- * __useGetMembersForMemberSectionQuery__
+ * __useGetChatsForChatDisplayChangesSubscription__
  *
- * To run a query within a React component, call `useGetMembersForMemberSectionQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMembersForMemberSectionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetChatsForChatDisplayChangesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatsForChatDisplayChangesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetMembersForMemberSectionQuery({
+ * const { data, loading, error } = useGetChatsForChatDisplayChangesSubscription({
  *   variables: {
- *      chatId: // value for 'chatId'
- *      first: // value for 'first'
- *      after: // value for 'after'
+ *      firstMembers: // value for 'firstMembers'
+ *      afterMember: // value for 'afterMember'
  *   },
  * });
  */
-export function useGetMembersForMemberSectionQuery(baseOptions: Apollo.QueryHookOptions<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>) {
+export function useGetChatsForChatDisplayChangesSubscription(baseOptions?: Apollo.SubscriptionHookOptions<GetChatsForChatDisplayChangesSubscription, GetChatsForChatDisplayChangesSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>(GetMembersForMemberSectionDocument, options);
+        return Apollo.useSubscription<GetChatsForChatDisplayChangesSubscription, GetChatsForChatDisplayChangesSubscriptionVariables>(GetChatsForChatDisplayChangesDocument, options);
       }
-export function useGetMembersForMemberSectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>(GetMembersForMemberSectionDocument, options);
-        }
-export type GetMembersForMemberSectionQueryHookResult = ReturnType<typeof useGetMembersForMemberSectionQuery>;
-export type GetMembersForMemberSectionLazyQueryHookResult = ReturnType<typeof useGetMembersForMemberSectionLazyQuery>;
-export type GetMembersForMemberSectionQueryResult = Apollo.QueryResult<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>;
+export type GetChatsForChatDisplayChangesSubscriptionHookResult = ReturnType<typeof useGetChatsForChatDisplayChangesSubscription>;
+export type GetChatsForChatDisplayChangesSubscriptionResult = Apollo.SubscriptionResult<GetChatsForChatDisplayChangesSubscription>;
 export const GetChatForChatHeaderDocument = gql`
     query GetChatForChatHeader($chatId: HashId!) {
   chat(chatId: $chatId) {
@@ -2325,75 +2288,94 @@ export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
-export const GetChatsForChatDisplayDocument = gql`
-    query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
-  chats {
-    ...ChatForChatDisplay
+export const GetChatForChatAsideDocument = gql`
+    query GetChatForChatAside($chatId: HashId!) {
+  chat(chatId: $chatId) {
+    ...HeaderSectionChat
+    ...MemberSectionChat
+    ... on GroupChat {
+      ...MemberCountSectionChat
+    }
   }
 }
-    ${ChatForChatDisplayFragmentDoc}`;
+    ${HeaderSectionChatFragmentDoc}
+${MemberSectionChatFragmentDoc}
+${MemberCountSectionChatFragmentDoc}`;
 
 /**
- * __useGetChatsForChatDisplayQuery__
+ * __useGetChatForChatAsideQuery__
  *
- * To run a query within a React component, call `useGetChatsForChatDisplayQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetChatsForChatDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetChatForChatAsideQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatForChatAsideQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetChatsForChatDisplayQuery({
+ * const { data, loading, error } = useGetChatForChatAsideQuery({
  *   variables: {
- *      firstMembers: // value for 'firstMembers'
- *      afterMember: // value for 'afterMember'
+ *      chatId: // value for 'chatId'
  *   },
  * });
  */
-export function useGetChatsForChatDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>) {
+export function useGetChatForChatAsideQuery(baseOptions: Apollo.QueryHookOptions<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>(GetChatsForChatDisplayDocument, options);
+        return Apollo.useQuery<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>(GetChatForChatAsideDocument, options);
       }
-export function useGetChatsForChatDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>) {
+export function useGetChatForChatAsideLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>(GetChatsForChatDisplayDocument, options);
+          return Apollo.useLazyQuery<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>(GetChatForChatAsideDocument, options);
         }
-export type GetChatsForChatDisplayQueryHookResult = ReturnType<typeof useGetChatsForChatDisplayQuery>;
-export type GetChatsForChatDisplayLazyQueryHookResult = ReturnType<typeof useGetChatsForChatDisplayLazyQuery>;
-export type GetChatsForChatDisplayQueryResult = Apollo.QueryResult<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>;
-export const GetChatsForChatDisplayChangesDocument = gql`
-    subscription GetChatsForChatDisplayChanges($firstMembers: Int = 2, $afterMember: String) {
-  chatAccessAlerts {
-    chat {
-      ...ChatForChatDisplay
+export type GetChatForChatAsideQueryHookResult = ReturnType<typeof useGetChatForChatAsideQuery>;
+export type GetChatForChatAsideLazyQueryHookResult = ReturnType<typeof useGetChatForChatAsideLazyQuery>;
+export type GetChatForChatAsideQueryResult = Apollo.QueryResult<GetChatForChatAsideQuery, GetChatForChatAsideQueryVariables>;
+export const GetMembersForMemberSectionDocument = gql`
+    query GetMembersForMemberSection($chatId: HashId!, $first: Int!, $after: String) {
+  members(chatId: $chatId, first: $first, after: $after) {
+    edges {
+      node {
+        user {
+          ...MemberSectionUser
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }
-    ${ChatForChatDisplayFragmentDoc}`;
+    ${MemberSectionUserFragmentDoc}`;
 
 /**
- * __useGetChatsForChatDisplayChangesSubscription__
+ * __useGetMembersForMemberSectionQuery__
  *
- * To run a query within a React component, call `useGetChatsForChatDisplayChangesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useGetChatsForChatDisplayChangesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetMembersForMemberSectionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMembersForMemberSectionQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetChatsForChatDisplayChangesSubscription({
+ * const { data, loading, error } = useGetMembersForMemberSectionQuery({
  *   variables: {
- *      firstMembers: // value for 'firstMembers'
- *      afterMember: // value for 'afterMember'
+ *      chatId: // value for 'chatId'
+ *      first: // value for 'first'
+ *      after: // value for 'after'
  *   },
  * });
  */
-export function useGetChatsForChatDisplayChangesSubscription(baseOptions?: Apollo.SubscriptionHookOptions<GetChatsForChatDisplayChangesSubscription, GetChatsForChatDisplayChangesSubscriptionVariables>) {
+export function useGetMembersForMemberSectionQuery(baseOptions: Apollo.QueryHookOptions<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<GetChatsForChatDisplayChangesSubscription, GetChatsForChatDisplayChangesSubscriptionVariables>(GetChatsForChatDisplayChangesDocument, options);
+        return Apollo.useQuery<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>(GetMembersForMemberSectionDocument, options);
       }
-export type GetChatsForChatDisplayChangesSubscriptionHookResult = ReturnType<typeof useGetChatsForChatDisplayChangesSubscription>;
-export type GetChatsForChatDisplayChangesSubscriptionResult = Apollo.SubscriptionResult<GetChatsForChatDisplayChangesSubscription>;
+export function useGetMembersForMemberSectionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>(GetMembersForMemberSectionDocument, options);
+        }
+export type GetMembersForMemberSectionQueryHookResult = ReturnType<typeof useGetMembersForMemberSectionQuery>;
+export type GetMembersForMemberSectionLazyQueryHookResult = ReturnType<typeof useGetMembersForMemberSectionLazyQuery>;
+export type GetMembersForMemberSectionQueryResult = Apollo.QueryResult<GetMembersForMemberSectionQuery, GetMembersForMemberSectionQueryVariables>;
 export const GetMeForAccountMenuDocument = gql`
     query GetMeForAccountMenu {
   me {
@@ -2435,7 +2417,7 @@ export const GetChatForAnimatedTitleDocument = gql`
     ... on GroupChat {
       name
       description
-      isAdmin
+      role
     }
     ... on DirectMessageChat {
       friend {
@@ -2546,7 +2528,7 @@ export type GetFriendsForSelectSearchModalQueryHookResult = ReturnType<typeof us
 export type GetFriendsForSelectSearchModalLazyQueryHookResult = ReturnType<typeof useGetFriendsForSelectSearchModalLazyQuery>;
 export type GetFriendsForSelectSearchModalQueryResult = Apollo.QueryResult<GetFriendsForSelectSearchModalQuery, GetFriendsForSelectSearchModalQueryVariables>;
 export const GetChatForUpdateDocument = gql`
-    query GetChatForUpdate($chatId: HashId!, $firstMembers: Int = 300, $firstAdmins: Int = 300) {
+    query GetChatForUpdate($chatId: HashId!, $firstMembers: Int = 300) {
   chat(chatId: $chatId) {
     id
     isCreator
@@ -2557,18 +2539,14 @@ export const GetChatForUpdateDocument = gql`
       members(first: $firstMembers) {
         edges {
           node {
-            ...UpdateGroupUser
+            role
+            user {
+              ...UpdateGroupUser
+            }
           }
         }
       }
-      admins(first: $firstAdmins) {
-        edges {
-          node {
-            ...UpdateGroupUser
-          }
-        }
-      }
-      isAdmin
+      role
     }
   }
 }
@@ -2588,7 +2566,6 @@ export const GetChatForUpdateDocument = gql`
  *   variables: {
  *      chatId: // value for 'chatId'
  *      firstMembers: // value for 'firstMembers'
- *      firstAdmins: // value for 'firstAdmins'
  *   },
  * });
  */
@@ -2786,7 +2763,7 @@ export const GetChatForChatUpdateActionDocument = gql`
     query GetChatForChatUpdateAction($chatId: HashId!) {
   chat(chatId: $chatId) {
     ... on GroupChat {
-      isAdmin
+      role
     }
   }
 }
@@ -3327,9 +3304,9 @@ export function useRemoveMembersFromGroupChatMutation(baseOptions?: Apollo.Mutat
 export type RemoveMembersFromGroupChatMutationHookResult = ReturnType<typeof useRemoveMembersFromGroupChatMutation>;
 export type RemoveMembersFromGroupChatMutationResult = Apollo.MutationResult<RemoveMembersFromGroupChatMutation>;
 export type RemoveMembersFromGroupChatMutationOptions = Apollo.BaseMutationOptions<RemoveMembersFromGroupChatMutation, RemoveMembersFromGroupChatMutationVariables>;
-export const AddAdminsToGroupChatDocument = gql`
-    mutation AddAdminsToGroupChat($chatId: HashId!, $members: [HashId!]!) {
-  addAdminsToGroupChat(chatId: $chatId, members: $members) {
+export const ChangeMemberRolesDocument = gql`
+    mutation ChangeMemberRoles($chatId: HashId!, $members: [HashId!]!, $role: Role!) {
+  changeMemberRoles(chatId: $chatId, members: $members, role: $role) {
     ...GroupChatUpdate
     ...UserAlerationGroupChatUpdate
     chat {
@@ -3339,69 +3316,31 @@ export const AddAdminsToGroupChatDocument = gql`
 }
     ${GroupChatUpdateFragmentDoc}
 ${UserAlerationGroupChatUpdateFragmentDoc}`;
-export type AddAdminsToGroupChatMutationFn = Apollo.MutationFunction<AddAdminsToGroupChatMutation, AddAdminsToGroupChatMutationVariables>;
+export type ChangeMemberRolesMutationFn = Apollo.MutationFunction<ChangeMemberRolesMutation, ChangeMemberRolesMutationVariables>;
 
 /**
- * __useAddAdminsToGroupChatMutation__
+ * __useChangeMemberRolesMutation__
  *
- * To run a mutation, you first call `useAddAdminsToGroupChatMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddAdminsToGroupChatMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useChangeMemberRolesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeMemberRolesMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [addAdminsToGroupChatMutation, { data, loading, error }] = useAddAdminsToGroupChatMutation({
+ * const [changeMemberRolesMutation, { data, loading, error }] = useChangeMemberRolesMutation({
  *   variables: {
  *      chatId: // value for 'chatId'
  *      members: // value for 'members'
+ *      role: // value for 'role'
  *   },
  * });
  */
-export function useAddAdminsToGroupChatMutation(baseOptions?: Apollo.MutationHookOptions<AddAdminsToGroupChatMutation, AddAdminsToGroupChatMutationVariables>) {
+export function useChangeMemberRolesMutation(baseOptions?: Apollo.MutationHookOptions<ChangeMemberRolesMutation, ChangeMemberRolesMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddAdminsToGroupChatMutation, AddAdminsToGroupChatMutationVariables>(AddAdminsToGroupChatDocument, options);
+        return Apollo.useMutation<ChangeMemberRolesMutation, ChangeMemberRolesMutationVariables>(ChangeMemberRolesDocument, options);
       }
-export type AddAdminsToGroupChatMutationHookResult = ReturnType<typeof useAddAdminsToGroupChatMutation>;
-export type AddAdminsToGroupChatMutationResult = Apollo.MutationResult<AddAdminsToGroupChatMutation>;
-export type AddAdminsToGroupChatMutationOptions = Apollo.BaseMutationOptions<AddAdminsToGroupChatMutation, AddAdminsToGroupChatMutationVariables>;
-export const RemoveAdminsFromGroupChatDocument = gql`
-    mutation RemoveAdminsFromGroupChat($chatId: HashId!, $members: [HashId!]!) {
-  removeAdminsFromGroupChat(chatId: $chatId, members: $members) {
-    ...GroupChatUpdate
-    ...UserAlerationGroupChatUpdate
-    chat {
-      id
-    }
-  }
-}
-    ${GroupChatUpdateFragmentDoc}
-${UserAlerationGroupChatUpdateFragmentDoc}`;
-export type RemoveAdminsFromGroupChatMutationFn = Apollo.MutationFunction<RemoveAdminsFromGroupChatMutation, RemoveAdminsFromGroupChatMutationVariables>;
-
-/**
- * __useRemoveAdminsFromGroupChatMutation__
- *
- * To run a mutation, you first call `useRemoveAdminsFromGroupChatMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRemoveAdminsFromGroupChatMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [removeAdminsFromGroupChatMutation, { data, loading, error }] = useRemoveAdminsFromGroupChatMutation({
- *   variables: {
- *      chatId: // value for 'chatId'
- *      members: // value for 'members'
- *   },
- * });
- */
-export function useRemoveAdminsFromGroupChatMutation(baseOptions?: Apollo.MutationHookOptions<RemoveAdminsFromGroupChatMutation, RemoveAdminsFromGroupChatMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RemoveAdminsFromGroupChatMutation, RemoveAdminsFromGroupChatMutationVariables>(RemoveAdminsFromGroupChatDocument, options);
-      }
-export type RemoveAdminsFromGroupChatMutationHookResult = ReturnType<typeof useRemoveAdminsFromGroupChatMutation>;
-export type RemoveAdminsFromGroupChatMutationResult = Apollo.MutationResult<RemoveAdminsFromGroupChatMutation>;
-export type RemoveAdminsFromGroupChatMutationOptions = Apollo.BaseMutationOptions<RemoveAdminsFromGroupChatMutation, RemoveAdminsFromGroupChatMutationVariables>;
+export type ChangeMemberRolesMutationHookResult = ReturnType<typeof useChangeMemberRolesMutation>;
+export type ChangeMemberRolesMutationResult = Apollo.MutationResult<ChangeMemberRolesMutation>;
+export type ChangeMemberRolesMutationOptions = Apollo.BaseMutationOptions<ChangeMemberRolesMutation, ChangeMemberRolesMutationVariables>;

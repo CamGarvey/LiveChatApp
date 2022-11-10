@@ -30,7 +30,9 @@ gql`
     members(chatId: $chatId, first: $first, after: $after) {
       edges {
         node {
+          user {
           ...MemberSectionUser
+          }
         }
       }
       pageInfo {
@@ -78,7 +80,7 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
     () =>
       dataMembers?.members?.edges
         ?.filter((x) => !!x?.node)
-        .map((x) => x!.node as MemberSectionUserFragment) ?? [],
+        .map((x) => x!.node?.user as MemberSectionUserFragment) ?? [],
     [dataMembers]
   );
   const memberPageInfo = dataMembers?.members.pageInfo;

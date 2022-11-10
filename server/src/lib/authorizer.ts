@@ -328,41 +328,37 @@ export class Authorizer implements IAuthorizer {
   }
 
   public async canViewChat(chatId: number) {
-    // check if user is a member of the chat
-    await this._prisma.member.findUniqueOrThrow({
-      where: {
-        userId_chatId: {
-          chatId,
-          userId: this.currentUserId,
+    try {
+      // check if user is a member of the chat
+      await this._prisma.member.findUniqueOrThrow({
+        where: {
+          userId_chatId: {
+            chatId,
+            userId: this.currentUserId,
+          },
         },
-      },
-    });
-
-    return true;
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   public async canCreateEvent(chatId: number) {
-    const chat = await this._prisma.chat.findUniqueOrThrow({
-      select: {
-        members: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: this.currentUserId,
+    try {
+      // check if user is a member of the chat
+      await this._prisma.member.findUniqueOrThrow({
+        where: {
+          userId_chatId: {
+            chatId,
+            userId: this.currentUserId,
           },
         },
-      },
-      where: {
-        id: chatId,
-      },
-    });
-
-    if (chat.members.length == 0) {
-      throw new ForbiddenError('You are not a member of this chat');
+      });
+      return true;
+    } catch {
+      return false;
     }
-
-    return true;
   }
 
   public async canViewEvent(eventId: number) {
@@ -375,10 +371,10 @@ export class Authorizer implements IAuthorizer {
           select: {
             members: {
               select: {
-                id: true,
+                userId: true,
               },
               where: {
-                id: this.currentUserId,
+                userId: this.currentUserId,
               },
             },
           },

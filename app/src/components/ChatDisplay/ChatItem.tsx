@@ -30,12 +30,12 @@ const ChatItem = ({ chat }: Props) => {
     }
   }, [chat]);
 
-  const members = useMemo<ChatItemUserFragment[]>(() => {
+  const users = useMemo<ChatItemUserFragment[]>(() => {
     if (chat.__typename === 'GroupChat')
       return (
         chat.members.edges
-          ?.filter((x) => !!x)
-          .map((x) => x!.node as ChatItemUserFragment) ?? []
+          ?.filter((x) => !!x?.node?.user)
+          .map((x) => x!.node!.user as ChatItemUserFragment) ?? []
       );
     return [];
   }, [chat]);
@@ -54,13 +54,11 @@ const ChatItem = ({ chat }: Props) => {
       rightSection={
         chat.__typename === 'GroupChat' && (
           <Avatar.Group ml={'auto'}>
-            {members.map((member) => (
-              <UserAvatar key={member.id} user={member} />
+            {users.map((user) => (
+              <UserAvatar key={user.id} user={user} />
             ))}
             {chat.memberCount > 2 && (
-              <Avatar radius={'xl'}>
-                +{chat.memberCount - members.length}
-              </Avatar>
+              <Avatar radius={'xl'}>+{chat.memberCount - users.length}</Avatar>
             )}
           </Avatar.Group>
         )
@@ -85,7 +83,9 @@ ChatItem.fragments = {
         members(first: $firstMembers, after: $afterMember) {
           edges {
             node {
-              ...ChatItemUser
+              user {
+                ...ChatItemUser
+              }
             }
           }
         }

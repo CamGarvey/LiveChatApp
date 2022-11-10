@@ -16,11 +16,7 @@ import { gql } from '@apollo/client';
 import { useUpdateChat } from 'hooks/useUpdateChat';
 
 gql`
-  query GetChatForUpdate(
-    $chatId: HashId!
-    $firstMembers: Int = 300
-    $firstAdmins: Int = 300
-  ) {
+  query GetChatForUpdate($chatId: HashId!, $firstMembers: Int = 300) {
     chat(chatId: $chatId) {
       id
       isCreator
@@ -31,18 +27,14 @@ gql`
         members(first: $firstMembers) {
           edges {
             node {
-              ...UpdateGroupUser
+              role
+              user {
+                ...UpdateGroupUser
+              }
             }
           }
         }
-        admins(first: $firstAdmins) {
-          edges {
-            node {
-              ...UpdateGroupUser
-            }
-          }
-        }
-        isAdmin
+        role
       }
     }
   }
@@ -82,17 +74,6 @@ export const UpdateGroupChatModal = ({
     data: friendData,
     error: friendError,
   } = useGetFriendsForUpdateGroupChatQuery();
-
-  const admins = useMemo<UpdateGroupUserFragment[]>(
-    () =>
-      chat?.__typename === 'GroupChat'
-        ? chat.admins?.edges
-            ?.filter((x) => !!x)
-            .map((x) => x as UpdateGroupUserFragment) ?? []
-        : [],
-    [chat]
-  );
-
   const members = useMemo<UpdateGroupUserFragment[]>(
     () =>
       chat?.__typename === 'GroupChat'
@@ -108,8 +89,6 @@ export const UpdateGroupChatModal = ({
     [members]
   );
 
-  const adminIds = useMemo<string[]>(() => admins.map((x) => x.id), [admins]);
-
   const canRemoveUser = useCallback(
     (user: UpdateGroupUserFragment) => {
       if (!chat || chat.__typename !== 'GroupChat') {
@@ -118,12 +97,9 @@ export const UpdateGroupChatModal = ({
       if (chat.isCreator && chat.createdById !== user.id) {
         return true;
       }
-      if (!adminIds.includes(user.id)) {
-        return true;
-      }
       return false;
     },
-    [adminIds, chat]
+    [chat]
   );
 
   // Since other friends can add either friends
@@ -133,13 +109,13 @@ export const UpdateGroupChatModal = ({
   const users = useMemo(() => {
     if (chat?.__typename !== 'GroupChat') return [];
     const users: (UpdateGroupUserFragment & { canRemove?: boolean })[] =
-      _.unionBy(members, admins, friendData?.friends ?? [], 'id');
+      _.unionBy(members, friendData?.friends ?? [], 'id');
 
     return users.map((user) => ({
       ...user,
       canRemove: canRemoveUser(user),
     }));
-  }, [chat, members, admins, friendData, canRemoveUser]);
+  }, [chat, members, friendData, canRemoveUser]);
 
   if (loadingChat)
     return (
@@ -176,7 +152,6 @@ export const UpdateGroupChatModal = ({
           name: chat.name,
           description: chat.description,
           memberIds,
-          adminIds,
         }}
         validationSchema={chatSchema}
         onSubmit={(values) => {
@@ -186,12 +161,6 @@ export const UpdateGroupChatModal = ({
           const membersAdded = values.memberIds.filter(
             (x) => !memberIds.includes(x)
           );
-          const adminsRemoved = adminIds.filter(
-            (x) => !values.adminIds.includes(x)
-          );
-          const adminsAdded = values.adminIds.filter(
-            (x) => !adminIds.includes(x)
-          );
           update(chat.id, {
             name: chat.name !== values.name ? values.name : null,
             description:
@@ -200,8 +169,6 @@ export const UpdateGroupChatModal = ({
                 : null,
             addMembers: membersAdded,
             removeMembers: membersRemoved,
-            addAdmins: adminsAdded,
-            removeAdmins: adminsRemoved,
           });
           context.closeModal(id);
         }}
@@ -249,15 +216,6 @@ export const UpdateGroupChatModal = ({
                       onChange={(value: any) => {
                         props.setFieldValue('memberIds', value);
                       }}
-                    />
-                    <UserMultiSelect
-                      label={'Admins'}
-                      users={users}
-                      defaultValue={admins}
-                      onChange={(value: any) => {
-                        props.setFieldValue('adminIds', value);
-                      }}
-                      disabled={!(chat.isCreator || chat.isAdmin)}
                     />
                   </>
                 )}

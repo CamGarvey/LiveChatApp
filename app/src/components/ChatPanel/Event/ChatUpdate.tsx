@@ -7,8 +7,8 @@ type Props = {
   update: ChatUpdateEventComponentFragment;
 };
 
-const membersDesc = (members: { username: string }[]) => {
-  const usernames = members.map((x) => x.username);
+const userDesc = (users: { username: string }[]) => {
+  const usernames = users.map((x) => x.username);
   if (usernames.length <= 2) return usernames.join(' and ');
   const remaining = usernames.length - 2;
   return (
@@ -26,27 +26,23 @@ export const ChatUpdate = ({ update }: Props) => {
       case 'DescriptionUpdatedEvent':
         return `${update.createdBy.username} set the group description ${update.descriptionAfter}`;
       case 'MembersAddedEvent':
-        return `${update.createdBy.username} added ${membersDesc(
-          update.users
+        return `${update.createdBy.username} added ${userDesc(
+          update.members.map((x) => x.user)
         )} to the group`;
       case 'MembersRemovedEvent':
         if (
-          update.users.length === 1 &&
-          update.users[0].id === update.createdBy.id
+          update.members.length === 1 &&
+          update.members[0].user.id === update.createdBy.id
         ) {
           return `${update.createdBy.username} left the group`;
         }
-        return `${update.createdBy.username} removed ${membersDesc(
-          update.users
+        return `${update.createdBy.username} removed ${userDesc(
+          update.members.map((x) => x.user)
         )} from the group`;
-      case 'AdminsAddedEvent':
-        return `${update.createdBy.username} added ${membersDesc(
-          update.users
-        )} as group admin`;
-      case 'AdminsRemovedEvent':
-        return `${update.createdBy.username} removed ${membersDesc(
-          update.users
-        )} as group admin`;
+      case 'RoleChangedEvent':
+        return `${update.createdBy.username} changed ${userDesc(
+          update.members.map((x) => x.user)
+        )} role to ${update.newRole}`;
       default:
         return 'WHOOPS';
     }
@@ -83,23 +79,23 @@ ChatUpdate.fragments = {
         descriptionAfter
       }
       ... on MembersAddedEvent {
-        ...ChatUpdateUserAlteration
+        ...ChatUpdateMemberAlteration
       }
       ... on MembersRemovedEvent {
-        ...ChatUpdateUserAlteration
+        ...ChatUpdateMemberAlteration
       }
-      ... on AdminsAddedEvent {
-        ...ChatUpdateUserAlteration
-      }
-      ... on AdminsRemovedEvent {
-        ...ChatUpdateUserAlteration
+      ... on RoleChangedEvent {
+        newRole
+        ...ChatUpdateMemberAlteration
       }
     }
 
-    fragment ChatUpdateUserAlteration on UserAlterationEvent {
-      users {
-        id
-        username
+    fragment ChatUpdateMemberAlteration on MemberAlterationEvent {
+      members {
+        user {
+          id
+          username
+        }
       }
     }
   `,

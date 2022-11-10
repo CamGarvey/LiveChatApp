@@ -196,6 +196,11 @@ export const RemoveMembersFromGroupChatMutation = mutationField(
             select: {
               userId: true,
             },
+            where: {
+              deletedAt: {
+                not: null,
+              },
+            },
           },
         },
         where: {
@@ -291,10 +296,15 @@ export const LeaveGroupChatMutation = mutationField('leaveGroupChat', {
     const chat = await prisma.chat.update({
       data: {
         members: {
-          delete: {
-            userId_chatId: {
-              chatId,
-              userId: currentUserId,
+          update: {
+            data: {
+              deletedAt: new Date().toISOString(),
+            },
+            where: {
+              userId_chatId: {
+                chatId,
+                userId: currentUserId,
+              },
             },
           },
         },
@@ -329,7 +339,10 @@ export const LeaveGroupChatMutation = mutationField('leaveGroupChat', {
             type: 'MEMBERS_REMOVED',
             members: {
               connect: {
-                id: currentUserId,
+                userId_chatId: {
+                  chatId,
+                  userId: currentUserId,
+                },
               },
             },
           },

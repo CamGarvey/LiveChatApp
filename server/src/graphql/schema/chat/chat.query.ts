@@ -1,5 +1,3 @@
-import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
-import { Member, Prisma, User } from '@prisma/client';
 import { ForbiddenError } from 'apollo-server-core';
 import { list, nonNull, queryField } from 'nexus';
 import { hashIdArg } from '../shared';
@@ -13,24 +11,13 @@ export const ChatQuery = queryField('chat', {
       })
     ),
   },
-  resolve: async (_, { chatId }, { prisma, currentUserId }) => {
+  authorize: (_, { chatId }, { auth }) => auth.canViewChat(chatId),
+  resolve: async (_, { chatId }, { prisma }) => {
     const chat = await prisma.chat.findUniqueOrThrow({
       where: {
         id: chatId,
       },
-      include: {
-        members: {
-          where: {
-            id: currentUserId,
-          },
-        },
-      },
     });
-
-    if (!chat.members.length) {
-      throw new ForbiddenError('You do not have permission to this chat');
-    }
-
     return chat;
   },
 });

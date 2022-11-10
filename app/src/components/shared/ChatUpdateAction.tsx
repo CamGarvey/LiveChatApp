@@ -11,7 +11,7 @@ gql`
   query GetChatForChatUpdateAction($chatId: HashId!) {
     chat(chatId: $chatId) {
       ... on GroupChat {
-        isAdmin
+        role
       }
     }
   }
@@ -44,7 +44,7 @@ const ChatUpdateAction = (props: Props) => {
 
   const disabled = useMemo(() => {
     if (chat?.__typename === 'GroupChat' && !loading) {
-      if (chat.isAdmin) {
+      if (chat.role === 'ADMIN') {
         return false;
       }
     }

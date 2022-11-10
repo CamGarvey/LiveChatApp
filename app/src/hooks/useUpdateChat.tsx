@@ -1,16 +1,12 @@
 import { ApolloCache, FetchResult, gql } from '@apollo/client';
 import {
-  AddAdminsToGroupChatMutation,
   AddMembersToGroupChatMutation,
   GetEventsDocument,
   GetEventsQuery,
-  RemoveAdminsFromGroupChatMutation,
   RemoveMembersFromGroupChatMutation,
   UpdateGroupChatDescriptionMutation,
   UpdateGroupChatNameMutation,
-  useAddAdminsToGroupChatMutation,
   useAddMembersToGroupChatMutation,
-  useRemoveAdminsFromGroupChatMutation,
   useRemoveMembersFromGroupChatMutation,
   useUpdateGroupChatDescriptionMutation,
   useUpdateGroupChatNameMutation,
@@ -61,17 +57,12 @@ gql`
       }
     }
   }
-  mutation AddAdminsToGroupChat($chatId: HashId!, $members: [HashId!]!) {
-    addAdminsToGroupChat(chatId: $chatId, members: $members) {
-      ...GroupChatUpdate
-      ...UserAlerationGroupChatUpdate
-      chat {
-        id
-      }
-    }
-  }
-  mutation RemoveAdminsFromGroupChat($chatId: HashId!, $members: [HashId!]!) {
-    removeAdminsFromGroupChat(chatId: $chatId, members: $members) {
+  mutation ChangeMemberRoles(
+    $chatId: HashId!
+    $members: [HashId!]!
+    $role: Role!
+  ) {
+    changeMemberRoles(chatId: $chatId, members: $members, role: $role) {
       ...GroupChatUpdate
       ...UserAlerationGroupChatUpdate
       chat {
@@ -86,10 +77,13 @@ gql`
       id
     }
   }
-  fragment UserAlerationGroupChatUpdate on UserAlterationEvent {
-    users {
-      id
-      username
+  fragment UserAlerationGroupChatUpdate on MemberAlterationEvent {
+    members {
+      role
+      user {
+        id
+        username
+      }
     }
   }
 `;
@@ -99,8 +93,6 @@ type UpdateProps = {
   description?: string | null;
   addMembers?: string[] | null;
   removeMembers?: string[] | null;
-  addAdmins?: string[] | null;
-  removeAdmins?: string[] | null;
 };
 
 export const useUpdateChat = () => {
@@ -112,29 +104,13 @@ export const useUpdateChat = () => {
     useAddMembersToGroupChatMutation();
   const [removeMembersMutation, { loading: loadingRemoveMembers }] =
     useRemoveMembersFromGroupChatMutation();
-  const [addAdminsMutation, { loading: loadingAddAdmins }] =
-    useAddAdminsToGroupChatMutation();
-  const [removeAdminsMutation, { loading: loadingRemoveAdmins }] =
-    useRemoveAdminsFromGroupChatMutation();
 
   const loading =
-    loadingName ||
-    loadingDesc ||
-    loadingAddMembers ||
-    loadingRemoveMembers ||
-    loadingAddAdmins ||
-    loadingRemoveAdmins;
+    loadingName || loadingDesc || loadingAddMembers || loadingRemoveMembers;
 
   const update = (
     chatId: string,
-    {
-      name,
-      description,
-      addMembers,
-      removeMembers,
-      addAdmins,
-      removeAdmins,
-    }: UpdateProps
+    { name, description, addMembers, removeMembers }: UpdateProps
   ) => {
     if (name && name.length > 2) {
       updateNameMutation({
@@ -174,26 +150,6 @@ export const useUpdateChat = () => {
         update: addEvent(chatId),
       });
     }
-
-    if (addAdmins?.length) {
-      addAdminsMutation({
-        variables: {
-          chatId,
-          members: addAdmins,
-        },
-        update: addEvent(chatId),
-      });
-    }
-
-    if (removeAdmins?.length) {
-      removeAdminsMutation({
-        variables: {
-          chatId,
-          members: removeAdmins,
-        },
-        update: addEvent(chatId),
-      });
-    }
   };
 
   return {
@@ -212,9 +168,7 @@ const addEvent = (chatId: string) => {
         | UpdateGroupChatNameMutation
         | UpdateGroupChatDescriptionMutation
         | AddMembersToGroupChatMutation
-        | RemoveMembersFromGroupChatMutation
-        | AddAdminsToGroupChatMutation
-        | RemoveAdminsFromGroupChatMutation,
+        | RemoveMembersFromGroupChatMutation,
         Record<string, any>,
         Record<string, any>
       >,
@@ -245,10 +199,6 @@ const addEvent = (chatId: string) => {
       node = data['addMembersToGroupChat'];
     } else if ('removeMembersFromGroupChat' in data) {
       node = data['removeMembersFromGroupChat'];
-    } else if ('addAdminsToGroupChat' in data) {
-      node = data['addAdminsToGroupChat'];
-    } else if ('removeAdminsFromGroupChat' in data) {
-      node = data['removeAdminsFromGroupChat'];
     }
 
     if (!node) {

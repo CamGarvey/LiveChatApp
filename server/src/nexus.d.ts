@@ -377,7 +377,7 @@ export interface NexusGenFieldTypes {
     createdBy: NexusGenRootTypes['User']; // User!
     createdById: NexusGenScalars['HashId']; // HashId!
     events: NexusGenRootTypes['EventConnection']; // EventConnection!
-    friend: NexusGenRootTypes['Member']; // Member!
+    friend: NexusGenRootTypes['User']; // User!
     id: NexusGenScalars['HashId']; // HashId!
     isCreator: boolean; // Boolean!
     updatedAt: NexusGenScalars['Date'] | null; // Date
@@ -796,7 +796,7 @@ export interface NexusGenFieldTypeNames {
     createdBy: 'User'
     createdById: 'HashId'
     events: 'EventConnection'
-    friend: 'Member'
+    friend: 'User'
     id: 'HashId'
     isCreator: 'Boolean'
     updatedAt: 'Date'

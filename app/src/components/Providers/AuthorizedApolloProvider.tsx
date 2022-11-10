@@ -98,10 +98,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         MembersRemovedEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
-        AdminsAddedEvent: {
-          keyFields: (object) => `Event:${object.id}`,
-        },
-        AdminsRemovedEvent: {
+        RoleChangedEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
         Friend: {

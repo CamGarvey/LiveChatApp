@@ -31,7 +31,7 @@ const ChatMemberItem = ({ chat, user, size }: Props) => {
           }}
           items={
             chat.__typename === 'GroupChat' &&
-            chat.isAdmin && (
+            (chat.role === 'ADMIN' || chat.role === 'OWNER') && (
               <Menu.Item
                 onClick={() => {
                   update(chat.id, {
@@ -57,7 +57,7 @@ ChatMemberItem.fragments = {
     fragment ChatMemberItemChat on Chat {
       id
       ... on GroupChat {
-        isAdmin
+        role
       }
     }
   `,

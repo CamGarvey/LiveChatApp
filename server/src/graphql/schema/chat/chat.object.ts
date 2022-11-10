@@ -8,22 +8,25 @@ export const DirectMessageChat = objectType({
   definition: (t) => {
     t.implements('Chat');
     t.nonNull.field('friend', {
-      type: 'Member',
+      type: 'User',
       resolve: async (parent, __, { currentUserId, prisma }) => {
-        const members: Member[] = await prisma.chat
-          .findUniqueOrThrow({
-            where: { id: parent.id || undefined },
-          })
-          .members({
+        return await prisma.member
+          .findFirstOrThrow({
             where: {
-              userId: {
-                not: currentUserId,
-              },
+              chatId: parent.id,
+              AND: [
+                {
+                  chatId: parent.id,
+                },
+                {
+                  userId: {
+                    not: currentUserId,
+                  },
+                },
+              ],
             },
-          });
-
-        // There can only be 2 members in a Direct Message Chat so just grab other user
-        return members[0];
+          })
+          .user();
       },
     });
     t.nonNull.connectionField('events', {

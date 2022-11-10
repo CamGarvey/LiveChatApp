@@ -174,7 +174,7 @@ type DirectMessageChat implements Chat {
     """Returns the last n elements from the list."""
     last: Int
   ): EventConnection!
-  friend: Member!
+  friend: User!
   id: HashId!
   isCreator: Boolean!
   updatedAt: Date

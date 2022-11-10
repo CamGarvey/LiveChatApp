@@ -10,7 +10,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   },
   authorize: (_, { strangerId }, { auth }) =>
     auth.canSendFriendRequest(strangerId),
-  resolve: async (_, { strangerId }, { prisma, userId, pubsub }) => {
+  resolve: async (_, { strangerId }, { prisma, currentUserId, pubsub }) => {
     // Create friend request
     // If there is already a friend request in the database then return that one
     const request = await prisma.request.upsert({
@@ -23,7 +23,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
         },
         createdBy: {
           connect: {
-            id: userId,
+            id: currentUserId,
           },
         },
       },
@@ -34,7 +34,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
       where: {
         recipientId_createdById_type: {
           type: 'FRIEND_REQUEST',
-          createdById: userId,
+          createdById: currentUserId,
           recipientId: strangerId,
         },
       },

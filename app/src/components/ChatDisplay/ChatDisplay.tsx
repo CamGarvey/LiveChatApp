@@ -44,9 +44,11 @@ gql`
       members(first: $firstMembers, after: $afterMember) {
         edges {
           node {
-            id
-            username
-            name
+            user {
+              id
+              username
+              name
+            }
           }
         }
       }

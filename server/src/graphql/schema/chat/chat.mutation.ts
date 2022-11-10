@@ -196,7 +196,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
       include: {
         members: {
           select: {
-            id: true,
+            userId: true,
           },
         },
       },
@@ -229,7 +229,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
     });
 
     const recipients = chatAfterUpdate.members
-      .map((x) => x.id)
+      .map((x) => x.userId)
       .filter((x) => x !== currentUserId);
 
     // Publish new chat event
@@ -278,7 +278,7 @@ export const UpdateGroupChatDescription = mutationField(
           description: true,
           members: {
             select: {
-              id: true,
+              userId: true,
             },
           },
         },
@@ -311,7 +311,7 @@ export const UpdateGroupChatDescription = mutationField(
       });
 
       const recipients = chatAfterUpdate.members
-        .map((x) => x.id)
+        .map((x) => x.userId)
         .filter((x) => x !== currentUserId);
 
       // Publish new chat event
@@ -349,7 +349,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
       include: {
         members: {
           select: {
-            id: true,
+            userId: true,
           },
         },
       },
@@ -374,7 +374,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
     // Publish the created chat to every member apart from the user who created it (userId)
     await pubsub.publish<NotificationPayload>(Subscription.ChatDeletedAlert, {
       recipients: chat.members
-        .map((x) => x.id)
+        .map((x) => x.userId)
         .filter((x) => x !== currentUserId),
       content: alert,
     });

@@ -16,7 +16,7 @@ gql`
       ... on GroupChat {
         name
         description
-        isAdmin
+        role
       }
       ... on DirectMessageChat {
         friend {
