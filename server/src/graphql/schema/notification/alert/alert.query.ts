@@ -1,4 +1,4 @@
-import { arg, list, nonNull, queryField } from 'nexus';
+import { list, nonNull, queryField } from 'nexus';
 
 export const AlertsQuery = queryField('alerts', {
   type: nonNull(list(nonNull('Alert'))),

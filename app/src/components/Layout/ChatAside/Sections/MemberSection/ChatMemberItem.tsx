@@ -7,7 +7,7 @@ import {
   ChatMemberItemChatFragment,
   ChatMemberItemUserFragment,
 } from 'graphql/generated/graphql';
-import { useUpdateChat } from 'hooks';
+import { useChatMembers } from 'hooks';
 
 type Props = {
   chat: ChatMemberItemChatFragment;
@@ -16,7 +16,7 @@ type Props = {
 };
 
 const ChatMemberItem = ({ chat, user, size }: Props) => {
-  const { update, loading: loadingRemove } = useUpdateChat();
+  const { removeMembers, updating } = useChatMembers();
 
   return (
     <UserItem
@@ -25,7 +25,7 @@ const ChatMemberItem = ({ chat, user, size }: Props) => {
       size={size}
       menu={
         <UserMenu
-          loading={loadingRemove}
+          loading={updating}
           target={{
             icon: <IconDots />,
           }}
@@ -34,9 +34,7 @@ const ChatMemberItem = ({ chat, user, size }: Props) => {
             (chat.role === 'ADMIN' || chat.role === 'OWNER') && (
               <Menu.Item
                 onClick={() => {
-                  update(chat.id, {
-                    removeMembers: [user.id],
-                  });
+                  removeMembers(chat.id, [user.id]);
                 }}
                 color={'red'}
                 icon={<IconKarate size={14} />}

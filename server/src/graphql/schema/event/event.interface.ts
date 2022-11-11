@@ -3,6 +3,7 @@ import { interfaceType } from 'nexus';
 
 export const EventInterface = interfaceType({
   name: 'Event',
+  description: 'A chat event',
   resolveType: async (source: Event, { prisma }) => {
     if (source.deletedAt) {
       return 'DeletedEvent';
@@ -32,10 +33,15 @@ export const EventInterface = interfaceType({
     }
   },
   definition: (t) => {
-    t.nonNull.hashId('id');
-    t.nonNull.hashId('createdById');
+    t.nonNull.hashId('id', {
+      description: 'Id of chat',
+    });
+    t.nonNull.hashId('createdById', {
+      description: 'Id of user that created the chat',
+    });
     t.nonNull.field('createdBy', {
       type: 'User',
+      description: 'User that created the chat',
       resolve: async (parent, __, { prisma }) => {
         return await prisma.user.findUniqueOrThrow({
           where: {
@@ -45,15 +51,23 @@ export const EventInterface = interfaceType({
       },
     });
     t.nonNull.boolean('isCreator', {
+      description: 'Are you the creator of the chat?',
       resolve: (parent, _, { currentUserId }) => {
         return parent.createdById === currentUserId;
       },
     });
-    t.nonNull.date('updatedAt');
-    t.nonNull.date('createdAt');
-    t.nonNull.hashId('chatId');
+    t.nonNull.date('updatedAt', {
+      description: 'Time of last update',
+    });
+    t.nonNull.date('createdAt', {
+      description: 'Time of creation',
+    });
+    t.nonNull.hashId('chatId', {
+      description: 'Id of chat associated with event',
+    });
     t.nonNull.field('chat', {
       type: 'Chat',
+      description: 'Chat associated with event',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUniqueOrThrow({
           where: {

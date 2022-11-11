@@ -79,7 +79,7 @@ export const HeaderSection = ({
               </Skeleton>
 
               {chat?.__typename === 'GroupChat' && (
-                <ChatUpdateAction size={'md'} />
+                <ChatUpdateAction chat={chat} size={'md'} />
               )}
             </MotionGroup>
           )}
@@ -94,6 +94,7 @@ HeaderSection.fragments = {
     fragment HeaderSectionChat on Chat {
       ... on GroupChat {
         name
+        ...ChatUpdateActionGroupChat
       }
       ... on DirectMessageChat {
         friend {
@@ -101,5 +102,6 @@ HeaderSection.fragments = {
         }
       }
     }
+    ${ChatUpdateAction.fragments.chat}
   `,
 };

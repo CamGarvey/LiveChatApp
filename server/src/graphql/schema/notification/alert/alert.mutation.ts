@@ -3,6 +3,9 @@ import { hashIdArg } from '../../shared';
 
 export const AcknowledgeAlertMutation = mutationField('acknowledgeAlert', {
   type: 'Alert',
+  description: `
+    By acknowledging an alert, you'll be removed from the recipients.
+    The alert will be deleted if all recipients have acknowledged it`,
   args: {
     alertId: nonNull(hashIdArg()),
   },

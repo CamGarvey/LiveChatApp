@@ -2,6 +2,7 @@ import { objectType } from 'nexus';
 
 export const NameUpdatedEvent = objectType({
   name: 'NameUpdatedEvent',
+  description: 'Chat name updated event',
   definition: (t) => {
     t.implements('ChatUpdateEvent');
     t.nonNull.string('nameBefore', {
@@ -29,6 +30,7 @@ export const NameUpdatedEvent = objectType({
 
 export const DescriptionUpdatedEvent = objectType({
   name: 'DescriptionUpdatedEvent',
+  description: 'Chat description updated event',
   definition: (t) => {
     t.implements('ChatUpdateEvent');
     t.nonNull.string('descriptionBefore', {
@@ -56,6 +58,7 @@ export const DescriptionUpdatedEvent = objectType({
 
 export const MembersAddedEvent = objectType({
   name: 'MembersAddedEvent',
+  description: 'Members added to chat event',
   definition: (t) => {
     t.implements('MemberAlterationEvent');
   },
@@ -63,6 +66,7 @@ export const MembersAddedEvent = objectType({
 
 export const MembersRemovedEvent = objectType({
   name: 'MembersRemovedEvent',
+  description: 'Members removed from chat event',
   definition: (t) => {
     t.implements('MemberAlterationEvent');
   },
@@ -70,6 +74,7 @@ export const MembersRemovedEvent = objectType({
 
 export const RoleChangedEvent = objectType({
   name: 'RoleChangedEvent',
+  description: 'Roles of members updated event',
   definition: (t) => {
     t.implements('MemberAlterationEvent');
     t.nonNull.field('newRole', {

@@ -1,5 +1,5 @@
 import { ForbiddenError } from 'apollo-server-core';
-import { list, mutationField, nonNull, stringArg } from 'nexus';
+import { mutationField, nonNull, stringArg } from 'nexus';
 import {
   EventPayload,
   NotificationPayload,
@@ -10,8 +10,8 @@ import { CreateGroupChatInput } from './chat.input';
 
 export const CreateGroupChatMutation = mutationField('createGroupChat', {
   type: 'GroupChat',
+  description: 'Create a group chat',
   args: { data: nonNull(CreateGroupChatInput) },
-  description: 'Create a Chat',
   authorize: (_, { data: { memberIds } }, { auth }) =>
     auth.canCreateGroupChat(memberIds ?? []),
   resolve: async (
@@ -83,6 +83,7 @@ export const CreateDirectMessageChatMutation = mutationField(
   'createDirectMessageChat',
   {
     type: 'DirectMessageChat',
+    description: 'Create a direct message chat',
     args: {
       friendId: nonNull(
         hashIdArg({
@@ -90,7 +91,6 @@ export const CreateDirectMessageChatMutation = mutationField(
         })
       ),
     },
-    description: 'Create a Chat',
     authorize: (_, { friendId }, { auth }) =>
       auth.canCreateDirectMessageChat(friendId),
     resolve: async (_, { friendId }, { prisma, currentUserId, pubsub }) => {
@@ -169,9 +169,18 @@ export const CreateDirectMessageChatMutation = mutationField(
 
 export const UpdateGroupChatName = mutationField('updateGroupChatName', {
   type: 'NameUpdatedEvent',
+  description: 'Update the name of group chat',
   args: {
-    chatId: nonNull(hashIdArg()),
-    name: nonNull(stringArg()),
+    chatId: nonNull(
+      hashIdArg({
+        description: 'Id of chat to update',
+      })
+    ),
+    name: nonNull(
+      stringArg({
+        description: 'New name',
+      })
+    ),
   },
   authorize: (_, { chatId }, { auth }) =>
     auth.canUpdateGroupChatBasic({ chatId }),
@@ -246,9 +255,18 @@ export const UpdateGroupChatDescription = mutationField(
   'updateGroupChatDescription',
   {
     type: 'DescriptionUpdatedEvent',
+    description: 'Update the description of a group chat',
     args: {
-      chatId: nonNull(hashIdArg()),
-      description: nonNull(stringArg()),
+      chatId: nonNull(
+        hashIdArg({
+          description: 'Id of chat to update',
+        })
+      ),
+      description: nonNull(
+        stringArg({
+          description: 'New description',
+        })
+      ),
     },
     authorize: (_, { chatId }, { auth }) =>
       auth.canUpdateGroupChatBasic({ chatId }),
@@ -327,14 +345,14 @@ export const UpdateGroupChatDescription = mutationField(
 
 export const DeleteChatMutation = mutationField('deleteChat', {
   type: 'DeletedChat',
+  description: 'Delete a chat',
   args: {
     chatId: nonNull(
       hashIdArg({
-        description: 'Id of Chat to be deleted',
+        description: 'Id of chat to be deleted',
       })
     ),
   },
-  description: 'Delete a Chat',
   authorize: async (_, { chatId }, { auth }) =>
     await auth.canDeleteChat(chatId),
   resolve: async (_, { chatId }, { prisma, pubsub, currentUserId }) => {

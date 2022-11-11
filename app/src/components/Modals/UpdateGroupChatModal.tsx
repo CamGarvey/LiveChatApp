@@ -11,9 +11,13 @@ import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteChat } from 'hooks';
+import {
+  useChatDescription,
+  useChatMembers,
+  useChatName,
+  useDeleteChat,
+} from 'hooks';
 import { gql } from '@apollo/client';
-import { useUpdateChat } from 'hooks/useUpdateChat';
 
 gql`
   query GetChatForUpdate($chatId: HashId!, $firstMembers: Int = 300) {
@@ -67,7 +71,13 @@ export const UpdateGroupChatModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { deleteChat, loading: loadingDelete } = useDeleteChat();
-  const { update, loading: loadingUpdate } = useUpdateChat();
+  const { update: updateName, updating: updatingName } = useChatName();
+  const { update: updateDesc, updating: updatingDesc } = useChatDescription();
+  const {
+    addMembers,
+    removeMembers,
+    updating: updatingMembers,
+  } = useChatMembers();
 
   const {
     loading: loadingFriends,
@@ -155,21 +165,29 @@ export const UpdateGroupChatModal = ({
         }}
         validationSchema={chatSchema}
         onSubmit={(values) => {
-          const membersRemoved = memberIds.filter(
-            (x) => !values.memberIds.includes(x)
-          );
-          const membersAdded = values.memberIds.filter(
+          const membersToAdd = values.memberIds.filter(
             (x) => !memberIds.includes(x)
           );
-          update(chat.id, {
-            name: chat.name !== values.name ? values.name : null,
-            description:
-              chat.description !== values.description
-                ? values.description
-                : null,
-            addMembers: membersAdded,
-            removeMembers: membersRemoved,
-          });
+          const membersToRemove = memberIds.filter(
+            (x) => !values.memberIds.includes(x)
+          );
+
+          if (chat.name !== values.name && values.name.length > 2) {
+            updateName(chat.id, values.name);
+          }
+
+          if (chat.description !== values.description) {
+            updateDesc(chat.id, values.description ?? '');
+          }
+
+          if (membersToAdd.length > 0) {
+            addMembers(chat.id, membersToAdd);
+          }
+
+          if (membersToRemove.length > 0) {
+            removeMembers(chat.id, membersToRemove);
+          }
+
           context.closeModal(id);
         }}
       >
@@ -222,7 +240,7 @@ export const UpdateGroupChatModal = ({
               </Input.Wrapper>
               <Button
                 type="submit"
-                loading={loadingUpdate}
+                loading={updatingName || updatingDesc || updatingMembers}
                 disabled={loadingFriends || !props.dirty}
               >
                 Update

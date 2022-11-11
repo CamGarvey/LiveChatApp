@@ -2,6 +2,7 @@ import { interfaceType } from 'nexus';
 
 export const ChatUpdateEvent = interfaceType({
   name: 'ChatUpdateEvent',
+  description: 'Event involving an update within chat',
   resolveType: async (source, { prisma }) => {
     const update = await prisma.chatUpdate.findUniqueOrThrow({
       where: {
@@ -30,6 +31,7 @@ export const ChatUpdateEvent = interfaceType({
 
 export const MemberAlterationEvent = interfaceType({
   name: 'MemberAlterationEvent',
+  description: 'Event involving alterations of member/s in chat',
   resolveType: async (source, { prisma }) => {
     const update = await prisma.chatUpdate.findUniqueOrThrow({
       where: {

@@ -26,8 +26,9 @@ model User {
   requests           Request[] @relation("RequestsReceived")
   requestsSent       Request[] @relation("RequestsSent")
   eventsCreated      Event[]   @relation("EventsCreated")
-  memberOfChats      Member[]
+  memberOfChats      Member[]  @relation()
   membersAddedToChat Member[]  @relation("AddedBy")
+  membersRemoved     Member[]  @relation("RemovedMembers")
 
   @@index([username])
   @@index([email])
@@ -101,7 +102,10 @@ model Member {
   addedBy     User         @relation("AddedBy", fields: [addedById], references: [id])
   addedById   Int
   createdAt   DateTime     @default(now())
-  deletedAt   DateTime?
+
+  removedAt   DateTime?
+  removedBy   User?     @relation("RemovedMembers", fields: [removedById], references: [id])
+  removedById Int?
 
   @@unique([userId, chatId])
   @@index([userId, chatId])

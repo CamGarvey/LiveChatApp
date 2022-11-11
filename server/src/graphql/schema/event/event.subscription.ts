@@ -1,6 +1,5 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { Event } from '@prisma/client';
 import { hashIdArg } from '../shared';
 import { Subscription, EventPayload } from '../../backing-types';
 
@@ -8,7 +7,9 @@ export const EventsSubscription = subscriptionField('events', {
   type: 'Event',
   description: 'Subscribe to any created/updated/deleted events',
   args: {
-    chatId: hashIdArg(),
+    chatId: hashIdArg({
+      description: 'Id of chat to subscribe to',
+    }),
   },
   authorize: (_, { chatId }, { auth }) =>
     chatId ? auth.canViewChat(chatId) : true,
@@ -33,7 +34,9 @@ export const EventCreatedSubscription = subscriptionField('eventCreated', {
   type: 'Event',
   description: 'Subscribe to created events in chat',
   args: {
-    chatId: hashIdArg(),
+    chatId: hashIdArg({
+      description: 'Id of chat to subscribe to',
+    }),
   },
   authorize: (_, { chatId }, { auth }) =>
     chatId ? auth.canViewChat(chatId) : true,
@@ -61,7 +64,9 @@ export const EventDeletedSubscription = subscriptionField('eventDeleted', {
   type: 'DeletedEvent',
   description: 'Subscribe to deleted events in chat',
   args: {
-    chatId: hashIdArg(),
+    chatId: hashIdArg({
+      description: 'Id of chat to subscribe to',
+    }),
   },
   authorize: (_, { chatId }, { auth }) =>
     chatId ? auth.canViewChat(chatId) : true,
@@ -89,7 +94,9 @@ export const EventUpdatedSubscription = subscriptionField('eventUpdated', {
   type: 'Event',
   description: 'Subscribe to updated events in chat',
   args: {
-    chatId: hashIdArg(),
+    chatId: hashIdArg({
+      description: 'Id of chat to subscribe to',
+    }),
   },
   authorize: (_, { chatId }, { auth }) =>
     chatId ? auth.canViewChat(chatId) : true,

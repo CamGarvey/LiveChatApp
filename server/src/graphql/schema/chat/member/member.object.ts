@@ -1,32 +1,36 @@
 import { objectType } from 'nexus';
 
-export const Member = objectType({
-  name: 'Member',
+export const ChatMember = objectType({
+  name: 'ChatMember',
+  description: 'A chat member',
   definition: (t) => {
-    t.nonNull.hashId('userId');
-    t.nonNull.field('user', {
+    t.implements('Member');
+  },
+});
+
+export const DeletedMember = objectType({
+  name: 'DeletedMember',
+  description: 'A member that as been deleted',
+  definition: (t) => {
+    t.implements('Member');
+    t.nonNull.hashId('deletedById', {
+      description: 'Id of user that deleted this member from the chat',
+    });
+    t.nonNull.field('deletedBy', {
       type: 'User',
+      description: 'User that deleted this member from the chat',
       resolve: async (parent, _, { prisma }) => {
-        return await prisma.user.findFirstOrThrow({
-          where: {
-            id: parent.userId ?? undefined,
-          },
-        });
+        return await prisma.member
+          .findUniqueOrThrow({
+            where: {
+              userId_chatId: {
+                chatId: parent.chatId,
+                userId: parent.userId,
+              },
+            },
+          })
+          .deletedBy();
       },
-    });
-    t.nonNull.hashId('chatId');
-    t.nonNull.field('chat', {
-      type: 'Chat',
-      resolve: async (parent, _, { prisma }) => {
-        return await prisma.chat.findFirstOrThrow({
-          where: {
-            id: parent.chatId ?? undefined,
-          },
-        });
-      },
-    });
-    t.nonNull.field('role', {
-      type: 'Role',
     });
   },
 });

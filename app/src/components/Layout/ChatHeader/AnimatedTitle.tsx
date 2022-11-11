@@ -17,6 +17,7 @@ gql`
         name
         description
         role
+        ...ChatUpdateActionGroupChat
       }
       ... on DirectMessageChat {
         friend {
@@ -27,6 +28,7 @@ gql`
       }
     }
   }
+  ${ChatUpdateAction.fragments.chat}
 `;
 
 const AnimatedTitle = () => {
@@ -90,7 +92,9 @@ const AnimatedTitle = () => {
               <Group spacing={2}>
                 {!!chat ? (
                   <>
-                    {chat.__typename === 'GroupChat' && <ChatUpdateAction />}
+                    {chat.__typename === 'GroupChat' && (
+                      <ChatUpdateAction chat={chat} />
+                    )}
                     <Stack spacing={0}>
                       <Text p={0} size={'lg'}>
                         {title}

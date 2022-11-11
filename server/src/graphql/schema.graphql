@@ -12,6 +12,8 @@ interface Alert implements Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
@@ -20,45 +22,73 @@ enum AlertState {
   UNSEEN
 }
 
+"""Chat interface"""
 interface Chat {
+  """Time of creation"""
   createdAt: Date
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date
 }
 
+"""An alert about chat access changes"""
 interface ChatAccessAlert implements Alert & Notification {
+  """Chat associated with alert"""
   chat: Chat!
+
+  """Id of chat associated with alert"""
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
 type ChatAdminAccessGrantedAlert implements Alert & ChatAccessAlert & Notification {
+  """Chat associated with alert"""
   chat: Chat!
+
+  """Id of chat associated with alert"""
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
 type ChatAdminAccessRevokedAlert implements Alert & ChatAccessAlert & Notification {
+  """Chat associated with alert"""
   chat: Chat!
+
+  """Id of chat associated with alert"""
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
@@ -69,41 +99,93 @@ type ChatDeletedAlert implements Alert & Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
-type ChatMemberAccessGrantedAlert implements Alert & ChatAccessAlert & Notification {
+"""A chat member"""
+type ChatMember implements Member {
+  """User that added this member into the chat"""
+  addedBy: User!
+
+  """Id of user that added this member into the chat"""
+  addedById: HashId!
+
+  """Chat associated with member"""
   chat: Chat!
+
+  """Id of chat assiociated with member"""
+  chatId: HashId!
+
+  """Role of member in chat"""
+  role: Role!
+
+  """User associated with member"""
+  user: User!
+
+  """Id of user assiociated with member"""
+  userId: HashId!
+}
+
+type ChatMemberAccessGrantedAlert implements Alert & ChatAccessAlert & Notification {
+  """Chat associated with alert"""
+  chat: Chat!
+
+  """Id of chat associated with alert"""
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
 type ChatMemberAccessRevokedAlert implements Alert & ChatAccessAlert & Notification {
+  """Chat associated with alert"""
   chat: Chat!
+
+  """Id of chat associated with alert"""
   chatId: HashId!
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
 }
 
 union ChatSubscriptionResult = DeletedChat | DirectMessageChat | GroupChat
 
+"""Event involving an update within chat"""
 interface ChatUpdateEvent implements Event {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
@@ -121,46 +203,129 @@ input CreateGroupChatInput {
 """Date custom scalar type"""
 scalar Date
 
+"""A chat that has been deleted"""
 type DeletedChat implements Chat {
+  """Time of creation"""
   createdAt: Date
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
   deletedAt: Date!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date
 }
 
+"""A deleted event"""
 type DeletedEvent implements Event {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Time event was deleted"""
   deletedAt: Date!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
-type DescriptionUpdatedEvent implements ChatUpdateEvent & Event {
+"""A member that as been deleted"""
+type DeletedMember implements Member {
+  """User that added this member into the chat"""
+  addedBy: User!
+
+  """Id of user that added this member into the chat"""
+  addedById: HashId!
+
+  """Chat associated with member"""
   chat: Chat!
+
+  """Id of chat assiociated with member"""
   chatId: HashId!
+
+  """User that deleted this member from the chat"""
+  deletedBy: User!
+
+  """Id of user that deleted this member from the chat"""
+  deletedById: HashId!
+
+  """Role of member in chat"""
+  role: Role!
+
+  """User associated with member"""
+  user: User!
+
+  """Id of user assiociated with member"""
+  userId: HashId!
+}
+
+"""Chat description updated event"""
+type DescriptionUpdatedEvent implements ChatUpdateEvent & Event {
+  """Chat associated with event"""
+  chat: Chat!
+
+  """Id of chat associated with event"""
+  chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
   descriptionAfter: String!
   descriptionBefore: String!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
-"""A Direct Message Chat is a conversation between 2 members"""
+"""A direct message chat is a conversation between 2 members"""
 type DirectMessageChat implements Chat {
+  """Time of creation"""
   createdAt: Date
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Events in chat"""
   events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -174,20 +339,44 @@ type DirectMessageChat implements Chat {
     """Returns the last n elements from the list."""
     last: Int
   ): EventConnection!
+
+  """Other user involved in direct message conversation"""
   friend: User!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date
 }
 
+"""A chat event"""
 interface Event {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
@@ -251,6 +440,8 @@ type FriendDeletedAlert implements Alert & Notification {
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
   user: Stranger!
 }
@@ -274,12 +465,21 @@ type FriendRequest implements Notification & Request {
   state: RequestState!
 }
 
-"""A Group Chat is a chat that contains more than 2 members"""
+"\n    A group chat can involve two or more members, can have a name, a description and members can be given roles."
 type GroupChat implements Chat {
+  """Time of creation"""
   createdAt: Date
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Group chat description"""
   description: String
+
+  """Events in chat"""
   events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -293,9 +493,17 @@ type GroupChat implements Chat {
     """Returns the last n elements from the list."""
     last: Int
   ): EventConnection!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator?"""
   isCreator: Boolean!
+
+  """Number of members in the chat"""
   memberCount: Int!
+
+  """Members in chat"""
   members(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -309,8 +517,14 @@ type GroupChat implements Chat {
     """Returns the last n elements from the list."""
     last: Int
   ): MemberConnection!
+
+  """Group chat name"""
   name: String!
+
+  """Your role in the chat"""
   role: Role!
+
+  """Time of last update"""
   updatedAt: Date
 }
 
@@ -357,23 +571,55 @@ type Me implements KnownUser & User {
   username: String!
 }
 
-type Member {
+"""Member of chat"""
+interface Member {
+  """User that added this member into the chat"""
+  addedBy: User!
+
+  """Id of user that added this member into the chat"""
+  addedById: HashId!
+
+  """Chat associated with member"""
   chat: Chat!
+
+  """Id of chat assiociated with member"""
   chatId: HashId!
+
+  """Role of member in chat"""
   role: Role!
+
+  """User associated with member"""
   user: User!
+
+  """Id of user assiociated with member"""
   userId: HashId!
 }
 
+"""Event involving alterations of member/s in chat"""
 interface MemberAlterationEvent implements ChatUpdateEvent & Event {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
   members: [Member!]!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
@@ -397,50 +643,105 @@ type MemberEdge {
   node: Member
 }
 
+"""Members added to chat event"""
 type MembersAddedEvent implements ChatUpdateEvent & Event & MemberAlterationEvent {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
   members: [Member!]!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
+"""Members removed from chat event"""
 type MembersRemovedEvent implements ChatUpdateEvent & Event & MemberAlterationEvent {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
   members: [Member!]!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
+"""Message event"""
 type MessageEvent implements Event {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Content of message"""
   content: String!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
+
+  """Users that liked this message"""
   likedBy: [User!]!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
 type Mutation {
   """Accept a request"""
   acceptRequest(requestId: HashId!): Request
+
+  "\n    By acknowledging an alert, you'll be removed from the recipients.\n    The alert will be deleted if all recipients have acknowledged it"
   acknowledgeAlert(alertId: HashId!): Alert
 
   """Add members to a group chat"""
-  addMembersToGroupChat(
+  addMembers(
+    """Id of the chat"""
     chatId: HashId!
 
     """Ids of members to be added into the chat"""
@@ -450,41 +751,46 @@ type Mutation {
   """Cancel a sent request"""
   cancelRequest(requestId: HashId!): Request
 
-  """Remove admins from a group chat"""
-  changeMemberRoles(
+  """Change the role of a list of members"""
+  changeRole(
+    """Id of the chat"""
     chatId: HashId!
 
-    """Ids of admins to be removed from the chat"""
+    """Ids of the affected members"""
     members: [HashId!]!
+
+    """New role for members"""
     role: Role!
   ): RoleChangedEvent
 
-  """Create a Chat"""
+  """Create a direct message chat"""
   createDirectMessageChat(
     """Id of friend to create a Direct Message Chat with"""
     friendId: HashId!
   ): DirectMessageChat
 
-  """Create a Chat"""
+  """Create a group chat"""
   createGroupChat(data: CreateGroupChatInput!): GroupChat
 
-  """Create a Message in a Chat"""
+  """Create a message in a chat"""
   createMessage(
-    """Id of Chat to create Message in"""
+    """Id of chat to create message in"""
     chatId: HashId!
 
-    """Content of Message"""
+    """Content of message"""
     content: String!
   ): MessageEvent
 
   """Decline a received request"""
   declineRequest(requestId: HashId!): Request
 
-  """Delete a Chat"""
+  """Delete a chat"""
   deleteChat(
-    """Id of Chat to be deleted"""
+    """Id of chat to be deleted"""
     chatId: HashId!
   ): DeletedChat
+
+  """A deleted event"""
   deleteEvent(
     """Id of event"""
     eventId: HashId
@@ -492,10 +798,16 @@ type Mutation {
 
   """Delete a Friend"""
   deleteFriend(friendId: HashId!): Stranger
-  leaveGroupChat(chatId: HashId!): MembersRemovedEvent
+
+  """Leave a group chat"""
+  leaveGroupChat(
+    """Id of the chat to leave"""
+    chatId: HashId!
+  ): MembersRemovedEvent
 
   """Remove members from a group chat"""
-  removeMembersFromGroupChat(
+  removeMembers(
+    """Id of the chat"""
     chatId: HashId!
 
     """Ids of members to be removed from the chat"""
@@ -504,15 +816,31 @@ type Mutation {
 
   """Send a friend request to a user"""
   sendFriendRequest(strangerId: HashId!): FriendRequest
-  updateGroupChatDescription(chatId: HashId!, description: String!): DescriptionUpdatedEvent
-  updateGroupChatName(chatId: HashId!, name: String!): NameUpdatedEvent
 
-  """Update a Message"""
+  """Update the description of a group chat"""
+  updateGroupChatDescription(
+    """Id of chat to update"""
+    chatId: HashId!
+
+    """New description"""
+    description: String!
+  ): DescriptionUpdatedEvent
+
+  """Update the name of group chat"""
+  updateGroupChatName(
+    """Id of chat to update"""
+    chatId: HashId!
+
+    """New name"""
+    name: String!
+  ): NameUpdatedEvent
+
+  """Update a message"""
   updateMessage(
-    """New content for Message"""
+    """New content for message"""
     content: String!
 
-    """Id of Message to edit"""
+    """Id of message to edit"""
     messageId: HashId!
   ): MessageEvent
 
@@ -520,16 +848,32 @@ type Mutation {
   updateUser(name: String!): Me
 }
 
+"""Chat name updated event"""
 type NameUpdatedEvent implements ChatUpdateEvent & Event {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
   nameAfter: String!
   nameBefore: String!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
@@ -568,23 +912,31 @@ type PageInfo {
 
 type Query {
   alerts: [Alert!]!
+
+  """Get a chat by id"""
   chat(
     """Id of chat"""
     chatId: HashId!
   ): Chat
+
+  """Get all chats you are a member in"""
   chats: [Chat!]!
 
   """Get a event by id"""
   event(
-    """id of event"""
+    """Id of event"""
     eventId: HashId!
   ): Event
+
+  """Get events based on chat id"""
   events(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
     """Returns the elements in the list that come before the specified cursor"""
     before: String
+
+    """Id of chat"""
     chatId: HashId!
 
     """Returns the first n elements from the list."""
@@ -595,12 +947,16 @@ type Query {
   ): EventConnection!
   friends: [Friend!]!
   me: Me
+
+  """Get Members based on chat id"""
   members(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
     """Returns the elements in the list that come before the specified cursor"""
     before: String
+
+    """Id of the chat"""
     chatId: HashId!
 
     """Returns the first n elements from the list."""
@@ -661,8 +1017,14 @@ type RequestAcceptedAlert implements Alert & Notification & RequestResponseAlert
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
+
+  """Request associated with alert"""
   request: Request!
+
+  """Id of request associated with alert"""
   requestId: HashId!
 }
 
@@ -672,19 +1034,32 @@ type RequestDeclinedAlert implements Alert & Notification & RequestResponseAlert
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
+
+  """Request associated with alert"""
   request: Request!
+
+  """Id of request associated with alert"""
   requestId: HashId!
 }
 
+"""A response alert for requests"""
 interface RequestResponseAlert implements Alert & Notification {
   createdAt: Date!
   createdBy: User!
   createdById: HashId!
   id: HashId!
   isCreator: Boolean!
+
+  """Users that recieved alert"""
   recipients: [User!]!
+
+  """Request associated with alert"""
   request: Request!
+
+  """Id of request associated with alert"""
   requestId: HashId!
 }
 
@@ -695,22 +1070,39 @@ enum RequestState {
   SENT
 }
 
+"""Role of member in the chat"""
 enum Role {
   ADMIN
   BASIC
   OWNER
 }
 
+"""Roles of members updated event"""
 type RoleChangedEvent implements ChatUpdateEvent & Event & MemberAlterationEvent {
+  """Chat associated with event"""
   chat: Chat!
+
+  """Id of chat associated with event"""
   chatId: HashId!
+
+  """Time of creation"""
   createdAt: Date!
+
+  """User that created the chat"""
   createdBy: User!
+
+  """Id of user that created the chat"""
   createdById: HashId!
+
+  """Id of chat"""
   id: HashId!
+
+  """Are you the creator of the chat?"""
   isCreator: Boolean!
   members: [Member!]!
   newRole: Role!
+
+  """Time of last update"""
   updatedAt: Date!
 }
 
@@ -749,16 +1141,28 @@ type Subscription {
   chatAccessAlerts: ChatAccessAlert
 
   """Subscribe to created events in chat"""
-  eventCreated(chatId: HashId): Event
+  eventCreated(
+    """Id of chat to subscribe to"""
+    chatId: HashId
+  ): Event
 
   """Subscribe to deleted events in chat"""
-  eventDeleted(chatId: HashId): DeletedEvent
+  eventDeleted(
+    """Id of chat to subscribe to"""
+    chatId: HashId
+  ): DeletedEvent
 
   """Subscribe to updated events in chat"""
-  eventUpdated(chatId: HashId): Event
+  eventUpdated(
+    """Id of chat to subscribe to"""
+    chatId: HashId
+  ): Event
 
   """Subscribe to any created/updated/deleted events"""
-  events(chatId: HashId): Event
+  events(
+    """Id of chat to subscribe to"""
+    chatId: HashId
+  ): Event
 
   """Subscribe to all types of notifications"""
   notifications: Notification

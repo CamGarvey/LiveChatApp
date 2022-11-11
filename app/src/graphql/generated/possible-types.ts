@@ -52,6 +52,10 @@
       "Friend",
       "Me"
     ],
+    "Member": [
+      "ChatMember",
+      "DeletedMember"
+    ],
     "MemberAlterationEvent": [
       "MembersAddedEvent",
       "MembersRemovedEvent",

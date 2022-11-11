@@ -4,11 +4,12 @@ import { objectType } from 'nexus';
 
 export const DirectMessageChat = objectType({
   name: 'DirectMessageChat',
-  description: 'A Direct Message Chat is a conversation between 2 members',
+  description: 'A direct message chat is a conversation between 2 members',
   definition: (t) => {
     t.implements('Chat');
     t.nonNull.field('friend', {
       type: 'User',
+      description: 'Other user involved in direct message conversation',
       resolve: async (parent, __, { currentUserId, prisma }) => {
         return await prisma.member
           .findFirstOrThrow({
@@ -31,6 +32,7 @@ export const DirectMessageChat = objectType({
     });
     t.nonNull.connectionField('events', {
       type: 'Event',
+      description: 'Events in chat',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
           Event,
@@ -61,12 +63,18 @@ export const DirectMessageChat = objectType({
 
 export const GroupChat = objectType({
   name: 'GroupChat',
-  description: 'A Group Chat is a chat that contains more than 2 members',
+  description: `
+    A group chat can involve two or more members, can have a name, a description and members can be given roles.`,
   definition: (t) => {
     t.implements('Chat');
-    t.nonNull.string('name');
-    t.string('description');
+    t.nonNull.string('name', {
+      description: 'Group chat name',
+    });
+    t.string('description', {
+      description: 'Group chat description',
+    });
     t.nonNull.int('memberCount', {
+      description: 'Number of members in the chat',
       resolve: async (parent, _, { prisma }) => {
         const chat = await prisma.chat.findUniqueOrThrow({
           where: { id: parent.id || undefined },
@@ -83,6 +91,7 @@ export const GroupChat = objectType({
     });
     t.nonNull.field('role', {
       type: 'Role',
+      description: 'Your role in the chat',
       resolve: async ({ id }, _, { prisma, currentUserId }) => {
         const { role } = await prisma.member.findUniqueOrThrow({
           select: {
@@ -100,6 +109,7 @@ export const GroupChat = objectType({
     });
     t.nonNull.connectionField('members', {
       type: 'Member',
+      description: 'Members in chat',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
           Member,
@@ -139,6 +149,7 @@ export const GroupChat = objectType({
     });
     t.nonNull.connectionField('events', {
       type: 'Event',
+      description: 'Events in chat',
       resolve: async (parent, args, { prisma }) => {
         return await findManyCursorConnection<
           Event,
@@ -169,6 +180,7 @@ export const GroupChat = objectType({
 
 export const DeletedChat = objectType({
   name: 'DeletedChat',
+  description: 'A chat that has been deleted',
   definition: (t) => {
     t.implements('Chat');
     t.nonNull.date('deletedAt');

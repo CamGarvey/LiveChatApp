@@ -6,8 +6,13 @@ import { hashIdArg } from '../../shared';
 export const MembersQuery = queryField((t) => {
   t.nonNull.connectionField('members', {
     type: 'Member',
+    description: 'Get Members based on chat id',
     additionalArgs: {
-      chatId: nonNull(hashIdArg()),
+      chatId: nonNull(
+        hashIdArg({
+          description: 'Id of the chat',
+        })
+      ),
     },
     authorize: async (_, { chatId }, { auth }) =>
       await auth.canViewChat(chatId),

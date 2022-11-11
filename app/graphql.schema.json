@@ -97,7 +97,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -208,11 +208,11 @@
       {
         "kind": "INTERFACE",
         "name": "Chat",
-        "description": null,
+        "description": "Chat interface",
         "fields": [
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -224,7 +224,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -240,7 +240,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -256,7 +256,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -272,7 +272,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -288,7 +288,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -323,11 +323,11 @@
       {
         "kind": "INTERFACE",
         "name": "ChatAccessAlert",
-        "description": null,
+        "description": "An alert about chat access changes",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -343,7 +343,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -439,7 +439,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -506,7 +506,7 @@
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -522,7 +522,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -618,7 +618,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -669,7 +669,7 @@
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -685,7 +685,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -781,7 +781,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -928,7 +928,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -969,12 +969,44 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ChatMemberAccessGrantedAlert",
-        "description": null,
+        "name": "ChatMember",
+        "description": "A chat member",
         "fields": [
           {
+            "name": "addedBy",
+            "description": "User that added this member into the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "addedById",
+            "description": "Id of user that added this member into the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with member",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -990,7 +1022,104 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat assiociated with member",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "role",
+            "description": "Role of member in chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "Role",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": "User associated with member",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userId",
+            "description": "Id of user assiociated with member",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Member",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ChatMemberAccessGrantedAlert",
+        "description": null,
+        "fields": [
+          {
+            "name": "chat",
+            "description": "Chat associated with alert",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Chat",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chatId",
+            "description": "Id of chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1086,7 +1215,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1137,7 +1266,7 @@
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1153,7 +1282,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1249,7 +1378,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1322,11 +1451,11 @@
       {
         "kind": "INTERFACE",
         "name": "ChatUpdateEvent",
-        "description": null,
+        "description": "Event involving an update within chat",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1342,7 +1471,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1358,7 +1487,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1374,7 +1503,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1390,7 +1519,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1406,7 +1535,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1422,7 +1551,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1438,7 +1567,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1562,11 +1691,11 @@
       {
         "kind": "OBJECT",
         "name": "DeletedChat",
-        "description": null,
+        "description": "A chat that has been deleted",
         "fields": [
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -1578,7 +1707,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1594,7 +1723,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1626,7 +1755,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1642,7 +1771,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1658,7 +1787,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -1683,11 +1812,11 @@
       {
         "kind": "OBJECT",
         "name": "DeletedEvent",
-        "description": null,
+        "description": "A deleted event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1703,7 +1832,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1719,7 +1848,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1735,7 +1864,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1751,7 +1880,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1767,7 +1896,7 @@
           },
           {
             "name": "deletedAt",
-            "description": null,
+            "description": "Time event was deleted",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1783,7 +1912,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1799,7 +1928,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1815,7 +1944,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1843,12 +1972,44 @@
       },
       {
         "kind": "OBJECT",
-        "name": "DescriptionUpdatedEvent",
-        "description": null,
+        "name": "DeletedMember",
+        "description": "A member that as been deleted",
         "fields": [
           {
+            "name": "addedBy",
+            "description": "User that added this member into the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "addedById",
+            "description": "Id of user that added this member into the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with member",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1864,7 +2025,136 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat assiociated with member",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deletedBy",
+            "description": "User that deleted this member from the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deletedById",
+            "description": "Id of user that deleted this member from the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "role",
+            "description": "Role of member in chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "Role",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": "User associated with member",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userId",
+            "description": "Id of user assiociated with member",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Member",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "DescriptionUpdatedEvent",
+        "description": "Chat description updated event",
+        "fields": [
+          {
+            "name": "chat",
+            "description": "Chat associated with event",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Chat",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "chatId",
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1880,7 +2170,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1896,7 +2186,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1912,7 +2202,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1960,7 +2250,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1976,7 +2266,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1992,7 +2282,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2026,11 +2316,11 @@
       {
         "kind": "OBJECT",
         "name": "DirectMessageChat",
-        "description": "A Direct Message Chat is a conversation between 2 members",
+        "description": "A direct message chat is a conversation between 2 members",
         "fields": [
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -2042,7 +2332,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2058,7 +2348,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2074,7 +2364,7 @@
           },
           {
             "name": "events",
-            "description": null,
+            "description": "Events in chat",
             "args": [
               {
                 "name": "after",
@@ -2139,7 +2429,7 @@
           },
           {
             "name": "friend",
-            "description": null,
+            "description": "Other user involved in direct message conversation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2155,7 +2445,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2171,7 +2461,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2187,7 +2477,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -2212,11 +2502,11 @@
       {
         "kind": "INTERFACE",
         "name": "Event",
-        "description": null,
+        "description": "A chat event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2232,7 +2522,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2248,7 +2538,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2264,7 +2554,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2280,7 +2570,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2296,7 +2586,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2312,7 +2602,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2328,7 +2618,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2783,7 +3073,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3030,11 +3320,11 @@
       {
         "kind": "OBJECT",
         "name": "GroupChat",
-        "description": "A Group Chat is a chat that contains more than 2 members",
+        "description": "\n    A group chat can involve two or more members, can have a name, a description and members can be given roles.",
         "fields": [
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -3046,7 +3336,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3062,7 +3352,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3078,7 +3368,7 @@
           },
           {
             "name": "description",
-            "description": null,
+            "description": "Group chat description",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -3090,7 +3380,7 @@
           },
           {
             "name": "events",
-            "description": null,
+            "description": "Events in chat",
             "args": [
               {
                 "name": "after",
@@ -3155,7 +3445,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3171,7 +3461,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3187,7 +3477,7 @@
           },
           {
             "name": "memberCount",
-            "description": null,
+            "description": "Number of members in the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3203,7 +3493,7 @@
           },
           {
             "name": "members",
-            "description": null,
+            "description": "Members in chat",
             "args": [
               {
                 "name": "after",
@@ -3268,7 +3558,7 @@
           },
           {
             "name": "name",
-            "description": null,
+            "description": "Group chat name",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3284,7 +3574,7 @@
           },
           {
             "name": "role",
-            "description": null,
+            "description": "Your role in the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3300,7 +3590,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -3715,13 +4005,45 @@
         "possibleTypes": null
       },
       {
-        "kind": "OBJECT",
+        "kind": "INTERFACE",
         "name": "Member",
-        "description": null,
+        "description": "Member of chat",
         "fields": [
           {
+            "name": "addedBy",
+            "description": "User that added this member into the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "addedById",
+            "description": "Id of user that added this member into the chat",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "HashId",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with member",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3737,7 +4059,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat assiociated with member",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3753,7 +4075,7 @@
           },
           {
             "name": "role",
-            "description": null,
+            "description": "Role of member in chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3769,7 +4091,7 @@
           },
           {
             "name": "user",
-            "description": null,
+            "description": "User associated with member",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3785,7 +4107,7 @@
           },
           {
             "name": "userId",
-            "description": null,
+            "description": "Id of user assiociated with member",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3803,16 +4125,27 @@
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
-        "possibleTypes": null
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "ChatMember",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "DeletedMember",
+            "ofType": null
+          }
+        ]
       },
       {
         "kind": "INTERFACE",
         "name": "MemberAlterationEvent",
-        "description": null,
+        "description": "Event involving alterations of member/s in chat",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3828,7 +4161,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3844,7 +4177,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3860,7 +4193,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3876,7 +4209,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3892,7 +4225,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3908,7 +4241,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -3936,7 +4269,7 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-                    "kind": "OBJECT",
+                    "kind": "INTERFACE",
                     "name": "Member",
                     "ofType": null
                   }
@@ -3948,7 +4281,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4064,7 +4397,7 @@
             "description": "https://facebook.github.io/relay/graphql/connections.htm#sec-Node",
             "args": [],
             "type": {
-              "kind": "OBJECT",
+              "kind": "INTERFACE",
               "name": "Member",
               "ofType": null
             },
@@ -4080,11 +4413,11 @@
       {
         "kind": "OBJECT",
         "name": "MembersAddedEvent",
-        "description": null,
+        "description": "Members added to chat event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4100,7 +4433,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4116,7 +4449,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4132,7 +4465,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4148,7 +4481,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4164,7 +4497,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4180,7 +4513,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4208,7 +4541,7 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-                    "kind": "OBJECT",
+                    "kind": "INTERFACE",
                     "name": "Member",
                     "ofType": null
                   }
@@ -4220,7 +4553,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4259,11 +4592,11 @@
       {
         "kind": "OBJECT",
         "name": "MembersRemovedEvent",
-        "description": null,
+        "description": "Members removed from chat event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4279,7 +4612,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4295,7 +4628,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4311,7 +4644,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4327,7 +4660,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4343,7 +4676,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4359,7 +4692,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4387,7 +4720,7 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-                    "kind": "OBJECT",
+                    "kind": "INTERFACE",
                     "name": "Member",
                     "ofType": null
                   }
@@ -4399,7 +4732,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4438,11 +4771,11 @@
       {
         "kind": "OBJECT",
         "name": "MessageEvent",
-        "description": null,
+        "description": "Message event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4458,7 +4791,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4474,7 +4807,7 @@
           },
           {
             "name": "content",
-            "description": null,
+            "description": "Content of message",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4490,7 +4823,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4506,7 +4839,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4522,7 +4855,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4538,7 +4871,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4554,7 +4887,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4570,7 +4903,7 @@
           },
           {
             "name": "likedBy",
-            "description": null,
+            "description": "Users that liked this message",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4594,7 +4927,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4656,7 +4989,7 @@
           },
           {
             "name": "acknowledgeAlert",
-            "description": null,
+            "description": "\n    By acknowledging an alert, you'll be removed from the recipients.\n    The alert will be deleted if all recipients have acknowledged it",
             "args": [
               {
                 "name": "alertId",
@@ -4684,12 +5017,12 @@
             "deprecationReason": null
           },
           {
-            "name": "addMembersToGroupChat",
+            "name": "addMembers",
             "description": "Add members to a group chat",
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of the chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4766,12 +5099,12 @@
             "deprecationReason": null
           },
           {
-            "name": "changeMemberRoles",
-            "description": "Remove admins from a group chat",
+            "name": "changeRole",
+            "description": "Change the role of a list of members",
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of the chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4787,7 +5120,7 @@
               },
               {
                 "name": "members",
-                "description": "Ids of admins to be removed from the chat",
+                "description": "Ids of the affected members",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4811,7 +5144,7 @@
               },
               {
                 "name": "role",
-                "description": null,
+                "description": "New role for members",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4836,7 +5169,7 @@
           },
           {
             "name": "createDirectMessageChat",
-            "description": "Create a Chat",
+            "description": "Create a direct message chat",
             "args": [
               {
                 "name": "friendId",
@@ -4865,7 +5198,7 @@
           },
           {
             "name": "createGroupChat",
-            "description": "Create a Chat",
+            "description": "Create a group chat",
             "args": [
               {
                 "name": "data",
@@ -4894,11 +5227,11 @@
           },
           {
             "name": "createMessage",
-            "description": "Create a Message in a Chat",
+            "description": "Create a message in a chat",
             "args": [
               {
                 "name": "chatId",
-                "description": "Id of Chat to create Message in",
+                "description": "Id of chat to create message in",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4914,7 +5247,7 @@
               },
               {
                 "name": "content",
-                "description": "Content of Message",
+                "description": "Content of message",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4968,11 +5301,11 @@
           },
           {
             "name": "deleteChat",
-            "description": "Delete a Chat",
+            "description": "Delete a chat",
             "args": [
               {
                 "name": "chatId",
-                "description": "Id of Chat to be deleted",
+                "description": "Id of chat to be deleted",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -4997,7 +5330,7 @@
           },
           {
             "name": "deleteEvent",
-            "description": null,
+            "description": "A deleted event",
             "args": [
               {
                 "name": "eventId",
@@ -5051,11 +5384,11 @@
           },
           {
             "name": "leaveGroupChat",
-            "description": null,
+            "description": "Leave a group chat",
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of the chat to leave",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5079,12 +5412,12 @@
             "deprecationReason": null
           },
           {
-            "name": "removeMembersFromGroupChat",
+            "name": "removeMembers",
             "description": "Remove members from a group chat",
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of the chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5162,11 +5495,11 @@
           },
           {
             "name": "updateGroupChatDescription",
-            "description": null,
+            "description": "Update the description of a group chat",
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat to update",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5182,7 +5515,7 @@
               },
               {
                 "name": "description",
-                "description": null,
+                "description": "New description",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5207,11 +5540,11 @@
           },
           {
             "name": "updateGroupChatName",
-            "description": null,
+            "description": "Update the name of group chat",
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat to update",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5227,7 +5560,7 @@
               },
               {
                 "name": "name",
-                "description": null,
+                "description": "New name",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5252,11 +5585,11 @@
           },
           {
             "name": "updateMessage",
-            "description": "Update a Message",
+            "description": "Update a message",
             "args": [
               {
                 "name": "content",
-                "description": "New content for Message",
+                "description": "New content for message",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5272,7 +5605,7 @@
               },
               {
                 "name": "messageId",
-                "description": "Id of Message to edit",
+                "description": "Id of message to edit",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5333,11 +5666,11 @@
       {
         "kind": "OBJECT",
         "name": "NameUpdatedEvent",
-        "description": null,
+        "description": "Chat name updated event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5353,7 +5686,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5369,7 +5702,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5385,7 +5718,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5401,7 +5734,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5417,7 +5750,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5433,7 +5766,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5481,7 +5814,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5747,7 +6080,7 @@
           },
           {
             "name": "chat",
-            "description": null,
+            "description": "Get a chat by id",
             "args": [
               {
                 "name": "chatId",
@@ -5776,7 +6109,7 @@
           },
           {
             "name": "chats",
-            "description": null,
+            "description": "Get all chats you are a member in",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5804,7 +6137,7 @@
             "args": [
               {
                 "name": "eventId",
-                "description": "id of event",
+                "description": "Id of event",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5829,7 +6162,7 @@
           },
           {
             "name": "events",
-            "description": null,
+            "description": "Get events based on chat id",
             "args": [
               {
                 "name": "after",
@@ -5857,7 +6190,7 @@
               },
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -5946,7 +6279,7 @@
           },
           {
             "name": "members",
-            "description": null,
+            "description": "Get Members based on chat id",
             "args": [
               {
                 "name": "after",
@@ -5974,7 +6307,7 @@
               },
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of the chat",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -6448,7 +6781,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6472,7 +6805,7 @@
           },
           {
             "name": "request",
-            "description": null,
+            "description": "Request associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6488,7 +6821,7 @@
           },
           {
             "name": "requestId",
-            "description": null,
+            "description": "Id of request associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6611,7 +6944,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6635,7 +6968,7 @@
           },
           {
             "name": "request",
-            "description": null,
+            "description": "Request associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6651,7 +6984,7 @@
           },
           {
             "name": "requestId",
-            "description": null,
+            "description": "Id of request associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6690,7 +7023,7 @@
       {
         "kind": "INTERFACE",
         "name": "RequestResponseAlert",
-        "description": null,
+        "description": "A response alert for requests",
         "fields": [
           {
             "name": "createdAt",
@@ -6774,7 +7107,7 @@
           },
           {
             "name": "recipients",
-            "description": null,
+            "description": "Users that recieved alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6798,7 +7131,7 @@
           },
           {
             "name": "request",
-            "description": null,
+            "description": "Request associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6814,7 +7147,7 @@
           },
           {
             "name": "requestId",
-            "description": null,
+            "description": "Id of request associated with alert",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6894,7 +7227,7 @@
       {
         "kind": "ENUM",
         "name": "Role",
-        "description": null,
+        "description": "Role of member in the chat",
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -6923,11 +7256,11 @@
       {
         "kind": "OBJECT",
         "name": "RoleChangedEvent",
-        "description": null,
+        "description": "Roles of members updated event",
         "fields": [
           {
             "name": "chat",
-            "description": null,
+            "description": "Chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6943,7 +7276,7 @@
           },
           {
             "name": "chatId",
-            "description": null,
+            "description": "Id of chat associated with event",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6959,7 +7292,7 @@
           },
           {
             "name": "createdAt",
-            "description": null,
+            "description": "Time of creation",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6975,7 +7308,7 @@
           },
           {
             "name": "createdBy",
-            "description": null,
+            "description": "User that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -6991,7 +7324,7 @@
           },
           {
             "name": "createdById",
-            "description": null,
+            "description": "Id of user that created the chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -7007,7 +7340,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Id of chat",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -7023,7 +7356,7 @@
           },
           {
             "name": "isCreator",
-            "description": null,
+            "description": "Are you the creator of the chat?",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -7051,7 +7384,7 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-                    "kind": "OBJECT",
+                    "kind": "INTERFACE",
                     "name": "Member",
                     "ofType": null
                   }
@@ -7079,7 +7412,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Time of last update",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -7353,7 +7686,7 @@
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat to subscribe to",
                 "type": {
                   "kind": "SCALAR",
                   "name": "HashId",
@@ -7378,7 +7711,7 @@
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat to subscribe to",
                 "type": {
                   "kind": "SCALAR",
                   "name": "HashId",
@@ -7403,7 +7736,7 @@
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat to subscribe to",
                 "type": {
                   "kind": "SCALAR",
                   "name": "HashId",
@@ -7428,7 +7761,7 @@
             "args": [
               {
                 "name": "chatId",
-                "description": null,
+                "description": "Id of chat to subscribe to",
                 "type": {
                   "kind": "SCALAR",
                   "name": "HashId",

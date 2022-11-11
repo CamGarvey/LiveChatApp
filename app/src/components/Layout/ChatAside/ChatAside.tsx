@@ -68,7 +68,7 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   } = useGetMembersForMemberSectionQuery({
     variables: {
       chatId,
-      first: 20,
+      first: 50,
     },
     fetchPolicy: 'cache-and-network',
   });

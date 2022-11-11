@@ -4,6 +4,7 @@ import { hashIdArg } from '../shared';
 
 export const DeleteEventMutation = mutationField('deleteEvent', {
   type: 'DeletedEvent',
+  description: 'A deleted event',
   args: {
     eventId: hashIdArg({
       description: 'Id of event',

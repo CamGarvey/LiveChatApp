@@ -29,6 +29,7 @@ export const Alert = interfaceType({
     t.implements('Notification');
     t.nonNull.list.nonNull.field('recipients', {
       type: 'User',
+      description: 'Users that recieved alert',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.alert
           .findUniqueOrThrow({
@@ -44,6 +45,7 @@ export const Alert = interfaceType({
 
 export const RequestResponseAlert = interfaceType({
   name: 'RequestResponseAlert',
+  description: 'A response alert for requests',
   resolveType: (source: PrismaAlert) => {
     switch (source.type) {
       case 'REQUEST_ACCEPTED':
@@ -56,9 +58,12 @@ export const RequestResponseAlert = interfaceType({
   },
   definition: (t) => {
     t.implements('Alert');
-    t.nonNull.hashId('requestId');
+    t.nonNull.hashId('requestId', {
+      description: 'Id of request associated with alert',
+    });
     t.nonNull.field('request', {
       type: 'Request',
+      description: 'Request associated with alert',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.request.findUniqueOrThrow({
           where: {
@@ -72,6 +77,7 @@ export const RequestResponseAlert = interfaceType({
 
 export const ChatAccessAlert = interfaceType({
   name: 'ChatAccessAlert',
+  description: 'An alert about chat access changes',
   resolveType: (source: PrismaAlert) => {
     switch (source.type) {
       case 'CHAT_ACCESS_REVOKED':
@@ -86,9 +92,12 @@ export const ChatAccessAlert = interfaceType({
   },
   definition: (t) => {
     t.implements('Alert');
-    t.nonNull.hashId('chatId');
+    t.nonNull.hashId('chatId', {
+      description: 'Id of chat associated with alert',
+    });
     t.nonNull.field('chat', {
       type: 'Chat',
+      description: 'Chat associated with alert',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chat.findUniqueOrThrow({
           where: {
