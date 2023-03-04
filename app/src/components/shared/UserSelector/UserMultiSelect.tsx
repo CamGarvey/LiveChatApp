@@ -37,6 +37,7 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
       () =>
         users.map((u) => ({
           ...u,
+          key: u.id,
           canRemove: u.canRemove ?? true,
           value: u.id,
           label: u.username,
@@ -44,6 +45,8 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
         })),
       [users]
     );
+
+    console.log({ usersConverted });
 
     return (
       <Stack>

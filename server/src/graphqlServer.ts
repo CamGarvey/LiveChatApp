@@ -63,16 +63,16 @@ export const createGraphqlServer = ({
       if (!token) {
         throw new ForbiddenError('No token');
       }
-      const currentUserId = getUserIdFromToken(token);
+      const userId = getUserIdFromToken(token);
 
-      if (!currentUserId) {
+      if (!userId) {
         throw new ForbiddenError('Invalid user');
       }
 
-      auth.currentUserId = currentUserId;
+      auth.currentUserId = userId;
 
       return {
-        currentUserId,
+        currentUserId: userId,
         prisma,
         pubsub,
         auth,
