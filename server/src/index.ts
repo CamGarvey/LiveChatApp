@@ -6,12 +6,15 @@ import { createServer } from 'http';
 import Redis, { RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
 import { WebSocketServer } from 'ws';
+import { createGraphqlServer } from './graphqlServer';
+import { json } from 'body-parser';
+import { expressMiddleware } from '@apollo/server/express4';
 
 import hashids from 'hashids';
 import { Authorizer } from './lib/authorizer';
 import prisma from './lib/clients/prisma';
 import authRouter from './routes/auth';
-import { createGraphqlServer } from './graphqlServer';
+import { GraphQLError } from 'graphql';
 
 const hash = new hashids(
   process.env.HASH_SALT,
@@ -36,25 +39,6 @@ const getUserIdFromToken = (token: string) => {
 const main = async () => {
   // Create Express app
   const app = express();
-
-  app
-    .use(express.json())
-    .use('/auth', authRouter)
-    .use(
-      cors({
-        origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend & apollo studio
-        credentials: true,
-      })
-    )
-    .use(
-      '/grahpql/*',
-      auth({
-        audience: process.env.AUTH0_AUDIENCE,
-        jwksUri: process.env.AUTH0_JWKS_URI,
-        tokenSigningAlg: process.env.AUTH0_SIGNING_ALG,
-        issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-      })
-    );
 
   const redisOptions: RedisOptions = {
     host: process.env.REDIS_HOST,
@@ -91,18 +75,54 @@ const main = async () => {
 
   await server.start();
 
-  server.applyMiddleware({
-    app,
-    cors: true,
-  });
+  app
+    .use(express.json())
+    .use('/auth', authRouter)
+    .use(
+      cors({
+        origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend & apollo studio
+        credentials: true,
+      })
+    )
+    .use(
+      '/graphql',
+      cors<cors.CorsRequest>(),
+      json(),
+      expressMiddleware(server, {
+        context: async ({ req }) => {
+          // Get access token from request
+          const token = req.headers.authorization;
+          if (!token) {
+            throw new GraphQLError('No token');
+          }
+          const userId = getUserIdFromToken(token);
+
+          if (!userId) {
+            throw new GraphQLError('No token');
+          }
+
+          authorizer.currentUserId = userId;
+
+          return {
+            currentUserId: userId,
+            prisma,
+            pubsub,
+            auth: authorizer,
+          };
+        },
+      }),
+      auth({
+        audience: process.env.AUTH0_AUDIENCE,
+        jwksUri: process.env.AUTH0_JWKS_URI,
+        tokenSigningAlg: process.env.AUTH0_SIGNING_ALG,
+        issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+      })
+    );
 
   const port = parseInt(process.env.PORT);
 
-  httpServer.listen(port, '0.0.0.0', () => {
-    console.log(
-      `Server is now running on http://localhost:${port}${server.graphqlPath}`
-    );
-  });
+  await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
+  console.log(`🚀 Server ready at http://localhost:${port}/graphql`);
 };
 
 main().catch(console.error);

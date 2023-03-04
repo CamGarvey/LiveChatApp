@@ -1,8 +1,5 @@
-import {
-  ApolloServerPluginDrainHttpServer,
-  ForbiddenError,
-} from 'apollo-server-core';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer } from '@apollo/server';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { WebSocketServer } from 'ws';
 import { Server } from 'http';
@@ -12,6 +9,7 @@ import { schema } from './graphql';
 import prisma from './lib/clients/prisma';
 import { IContext } from './graphql/context.interface';
 import { IAuthorizer } from './lib/authorizer.interface';
+import { GraphQLError } from 'graphql';
 
 interface Options {
   pubsub: RedisPubSub;
@@ -35,11 +33,11 @@ export const createGraphqlServer = ({
       schema,
       context: (req): IContext => {
         if (!req?.connectionParams) {
-          throw new Error('Bad Request');
+          throw new GraphQLError('Bad Request');
         }
         const token = req.connectionParams.Authorization;
         if (typeof token != 'string' || !token) {
-          throw new ForbiddenError('No token');
+          throw new GraphQLError('No token');
         }
         const currentUserId = getUserIdFromToken(token);
         auth.currentUserId = currentUserId;
@@ -54,30 +52,10 @@ export const createGraphqlServer = ({
     wsServer
   );
 
-  return new ApolloServer({
+  return new ApolloServer<IContext>({
     schema,
     csrfPrevention: true,
-    context: ({ req }): IContext => {
-      // Get access token from request
-      const token = req.headers.authorization;
-      if (!token) {
-        throw new ForbiddenError('No token');
-      }
-      const userId = getUserIdFromToken(token);
-
-      if (!userId) {
-        throw new ForbiddenError('Invalid user');
-      }
-
-      auth.currentUserId = userId;
-
-      return {
-        currentUserId: userId,
-        prisma,
-        pubsub,
-        auth,
-      };
-    },
+    introspection: true,
     plugins: [
       // Proper shutdown for the HTTP server.
       ApolloServerPluginDrainHttpServer({ httpServer }),

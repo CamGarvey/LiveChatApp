@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server-core';
+import { GraphQLError } from 'graphql';
 import { arg, list, mutationField, nonNull } from 'nexus';
 import {
   EventPayload,
@@ -47,7 +47,7 @@ export const ChangeRole = mutationField('changeRole', {
     memberIdSet.delete(currentUserId);
 
     if (members.length === 0)
-      throw new ForbiddenError('Member list must not be empty');
+      throw new GraphQLError('Member list must not be empty');
 
     const chat = await prisma.chat.update({
       data: {
@@ -437,7 +437,7 @@ export const AddMembersMutation = mutationField('addMembers', {
     memberIdSet.delete(currentUserId);
 
     if (members.length === 0)
-      throw new ForbiddenError('Member list must not be empty');
+      throw new GraphQLError('Member list must not be empty');
 
     const chat = await prisma.chat.update({
       data: {

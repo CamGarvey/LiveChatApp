@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ForbiddenError, UserInputError } from 'apollo-server-core';
+import { GraphQLError } from 'graphql';
 import { IAuthorizer } from './authorizer.interface';
 
 export class Authorizer implements IAuthorizer {
@@ -9,7 +9,11 @@ export class Authorizer implements IAuthorizer {
 
   public async canCreateDirectMessageChat(friendId: number) {
     if (friendId == this.currentUserId) {
-      throw new UserInputError('friendId can not be own user');
+      throw new GraphQLError('friendId can not be own user', {
+        extensions: {
+          code: 'BAD_USER_INPUT',
+        },
+      });
     }
 
     const friend = await this._prisma.user.findUniqueOrThrow({
@@ -29,7 +33,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (friend.friends.length == 0) {
-      throw new ForbiddenError('You are not friends with this user');
+      throw new GraphQLError('You are not friends with this user', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -65,8 +73,13 @@ export class Authorizer implements IAuthorizer {
       });
 
       if (user.friends.length != memberIdSet.size) {
-        throw new ForbiddenError(
-          'You are not friends with all of the users provided'
+        throw new GraphQLError(
+          'You are not friends with all of the users provided',
+          {
+            extensions: {
+              code: 'FORBIDDEN',
+            },
+          }
         );
       }
     }
@@ -91,7 +104,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (chat.type === 'DIRECT_MESSAGE') {
-      throw new ForbiddenError('Can not update a direct message chat');
+      throw new GraphQLError('Can not update a direct message chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     const currentUser = chat.members.find(
@@ -99,11 +116,19 @@ export class Authorizer implements IAuthorizer {
     );
 
     if (!currentUser) {
-      throw new ForbiddenError('You are not a member of this chat');
+      throw new GraphQLError('You are not a member of this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     if (currentUser.role === 'BASIC') {
-      throw new ForbiddenError('You are not an admin in this chat');
+      throw new GraphQLError('You are not an admin in this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
     return true;
   }
@@ -129,7 +154,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (chat.type === 'DIRECT_MESSAGE') {
-      throw new ForbiddenError('Can not update a direct message chat');
+      throw new GraphQLError('Can not update a direct message chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     const currentUser = chat.members.find(
@@ -137,11 +166,19 @@ export class Authorizer implements IAuthorizer {
     );
 
     if (!currentUser) {
-      throw new ForbiddenError('You are not a member of this chat');
+      throw new GraphQLError('You are not a member of this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     if (currentUser.role === 'BASIC') {
-      throw new ForbiddenError('You are not an admin in this chat');
+      throw new GraphQLError('You are not an admin in this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
     // Remove duplicates
     const memberIdSet: Set<number> = new Set(data.members);
@@ -172,8 +209,13 @@ export class Authorizer implements IAuthorizer {
       });
 
       if (user.friends.length != memberIdSet.size) {
-        throw new ForbiddenError(
-          'You are not friends with all of the users provided'
+        throw new GraphQLError(
+          'You are not friends with all of the users provided',
+          {
+            extensions: {
+              code: 'FORBIDDEN',
+            },
+          }
         );
       }
     }
@@ -202,7 +244,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (chat.type === 'DIRECT_MESSAGE') {
-      throw new ForbiddenError('Can not update a direct message chat');
+      throw new GraphQLError('Can not update a direct message chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     const currentUser = chat.members.find(
@@ -210,7 +256,11 @@ export class Authorizer implements IAuthorizer {
     );
 
     if (!currentUser) {
-      throw new ForbiddenError('You are not a member of this chat');
+      throw new GraphQLError('You are not a member of this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     // Don't need to be an admin to remove self unless the creator
@@ -223,14 +273,22 @@ export class Authorizer implements IAuthorizer {
     }
 
     if (currentUser.role === 'BASIC') {
-      throw new ForbiddenError('You are not an admin in this chat');
+      throw new GraphQLError('You are not an admin in this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     // remove duplicates
     const memberSet = new Set(data.members);
 
     if (memberSet.has(chat.createdById)) {
-      throw new ForbiddenError('You can not remove the owner of the chat');
+      throw new GraphQLError('You can not remove the owner of the chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     if (currentUser.role === 'OWNER') {
@@ -248,7 +306,11 @@ export class Authorizer implements IAuthorizer {
     }
 
     if (adminSet.size !== 0) {
-      throw new ForbiddenError('You can not remove other admins');
+      throw new GraphQLError('You can not remove other admins', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
     return true;
   }
@@ -274,7 +336,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (chat.type === 'DIRECT_MESSAGE') {
-      throw new ForbiddenError('Can not update a direct message chat');
+      throw new GraphQLError('Can not update a direct message chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     const currentUser = chat.members.find(
@@ -282,17 +348,29 @@ export class Authorizer implements IAuthorizer {
     );
 
     if (!currentUser) {
-      throw new ForbiddenError('You are not a member of this chat');
+      throw new GraphQLError('You are not a member of this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     if (currentUser.role === 'BASIC') {
-      throw new ForbiddenError('You are not authorized to modify member roles');
+      throw new GraphQLError('You are not authorized to modify member roles', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
     // remove duplicates
     const memberSet = new Set(data.members);
 
     if (memberSet.has(chat.createdById)) {
-      throw new ForbiddenError('You can not modify the owners role');
+      throw new GraphQLError('You can not modify the owners role', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     if (currentUser.role === 'OWNER') {
@@ -319,9 +397,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (chat.createdById !== this.currentUserId) {
-      throw new ForbiddenError(
-        'You do not have permission to delete this chat'
-      );
+      throw new GraphQLError('You do not have permission to delete this chat', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -383,7 +463,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (event.chat.members.length === 0) {
-      throw new ForbiddenError('You do not have permission to view this event');
+      throw new GraphQLError('You do not have permission to view this event', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -397,13 +481,22 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (event.createdById !== this.currentUserId) {
-      throw new ForbiddenError(
-        'You do not have permission to update this event'
+      throw new GraphQLError(
+        'You do not have permission to update this event',
+        {
+          extensions: {
+            code: 'FORBIDDEN',
+          },
+        }
       );
     }
 
     if (event.deletedAt) {
-      throw new ForbiddenError('Event is deleted');
+      throw new GraphQLError('Event is deleted', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -417,8 +510,13 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (event.createdById !== this.currentUserId) {
-      throw new ForbiddenError(
-        'You do not have permission to delete this event'
+      throw new GraphQLError(
+        'You do not have permission to delete this event',
+        {
+          extensions: {
+            code: 'FORBIDDEN',
+          },
+        }
       );
     }
 
@@ -443,7 +541,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (user.friends.length !== 0) {
-      throw new ForbiddenError('Already friends with this user');
+      throw new GraphQLError('Already friends with this user', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -457,13 +559,17 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (request.createdById !== this.currentUserId) {
-      throw new ForbiddenError(
+      throw new GraphQLError(
         'You do not have permission to cancel this request'
       );
     }
 
     if (['ACCEPTED', 'DECLINED'].includes(request?.state ?? '')) {
-      throw new ForbiddenError('Invalid state');
+      throw new GraphQLError('Invalid state', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -481,13 +587,22 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (request.recipientId !== this.currentUserId) {
-      throw new ForbiddenError(
-        'You do not have permission to decline this request'
+      throw new GraphQLError(
+        'You do not have permission to decline this request',
+        {
+          extensions: {
+            code: 'FORBIDDEN',
+          },
+        }
       );
     }
 
     if (request.state !== 'SENT') {
-      throw new ForbiddenError('Invalid state');
+      throw new GraphQLError('Invalid state', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -505,13 +620,17 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (request.recipientId !== this.currentUserId) {
-      throw new ForbiddenError(
+      throw new GraphQLError(
         'You do not have permission to accept this request'
       );
     }
 
     if (request.state !== 'SENT') {
-      throw new ForbiddenError('Invalid state');
+      throw new GraphQLError('Invalid state', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;
@@ -535,7 +654,11 @@ export class Authorizer implements IAuthorizer {
     });
 
     if (user.friends.length == 0) {
-      throw new ForbiddenError('You are not friends with this user');
+      throw new GraphQLError('You are not friends with this user', {
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      });
     }
 
     return true;

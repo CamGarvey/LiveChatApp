@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server-core';
+import { GraphQLError } from 'graphql';
 import { mutationField, nonNull, stringArg } from 'nexus';
 import {
   EventPayload,
@@ -195,7 +195,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
     });
 
     if (name === chatBeforeUpdate.name) {
-      throw new ForbiddenError('Name has not changed');
+      throw new GraphQLError('Name has not changed');
     }
 
     const chatAfterUpdate = await prisma.chat.update({
@@ -285,7 +285,7 @@ export const UpdateGroupChatDescription = mutationField(
       });
 
       if (description === chatBeforeUpdate.description) {
-        throw new ForbiddenError('Description has not changed');
+        throw new GraphQLError('Description has not changed');
       }
 
       const chatAfterUpdate = await prisma.chat.update({
