@@ -46,7 +46,9 @@ export const MemberCountSection = ({ chat, loading, avatarProps }: Props) => {
 MemberCountSection.fragments = {
   chat: gql`
     fragment MemberCountSectionChat on GroupChat {
-      memberCount
+      members {
+        totalCount
+      }
     }
   `,
 };

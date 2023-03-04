@@ -44,7 +44,11 @@ gql`
   }
   query GetFriendsForUpdateGroupChat {
     friends {
-      ...UpdateGroupUser
+      edges {
+        node {
+          ...UpdateGroupUser
+        }
+      }
     }
   }
   fragment UpdateGroupUser on User {

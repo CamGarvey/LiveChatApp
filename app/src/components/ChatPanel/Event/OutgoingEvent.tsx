@@ -46,9 +46,9 @@ const OutgoingEvent = ({ state = 'sent', children, event, actions }: Props) => {
         }}
       >
         <MotionGroup
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: isHovered ? 1 : 0, y: 0 }}
-          exit={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          exit={{ opacity: 0 }}
           spacing={2}
         >
           <EventInfo event={event} align={'self-end'} />

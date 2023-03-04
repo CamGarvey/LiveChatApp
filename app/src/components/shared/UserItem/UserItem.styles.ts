@@ -51,7 +51,7 @@ export default createStyles((theme, { size }: UserItemStylesParams) => ({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     cursor: 'default',
-    fontSize: Math.min(theme.fontSizes[size], theme.fontSizes.lg),
+    fontSize: theme.fontSizes[size],
     lineHeight: 1.2,
   },
 }));

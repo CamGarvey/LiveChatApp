@@ -40,8 +40,8 @@ gql`
       username
     }
     ... on GroupChat {
-      memberCount
       members(first: $firstMembers, after: $afterMember) {
+        totalCount
         edges {
           node {
             user {

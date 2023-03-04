@@ -32,7 +32,7 @@ const MessageBubble = ({
         backgroundColor: variant === 'light' ? defaultColor : undefined,
         color: variant === 'light' ? '#fff' : undefined,
       })}
-      withBorder
+      withBorder={variant === 'default'}
       {...other}
     >
       <Text

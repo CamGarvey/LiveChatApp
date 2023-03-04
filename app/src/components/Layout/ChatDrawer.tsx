@@ -23,7 +23,7 @@ export const ChatDrawer = () => {
         withinPortal={false}
         size={'lg'}
         styles={{
-          drawer: {
+          content: {
             marginTop: '70px',
           },
           root: {
@@ -31,7 +31,9 @@ export const ChatDrawer = () => {
           },
         }}
         padding={10}
-        overlayOpacity={0}
+        overlayProps={{
+          opacity: 0,
+        }}
         closeOnClickOutside={false}
         withCloseButton={false}
       >
