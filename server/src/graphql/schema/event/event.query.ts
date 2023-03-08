@@ -9,7 +9,7 @@ export const EventQuery = queryField('event', {
   args: {
     eventId: nonNull(
       hashIdArg({
-        description: 'id of event',
+        description: 'Id of event',
       })
     ),
   },
@@ -27,8 +27,13 @@ export const EventQuery = queryField('event', {
 export const EventsQuery = queryField((t) => {
   t.nonNull.connectionField('events', {
     type: 'Event',
+    description: 'Get events based on chat id',
     additionalArgs: {
-      chatId: nonNull(hashIdArg()),
+      chatId: nonNull(
+        hashIdArg({
+          description: 'Id of chat',
+        })
+      ),
     },
     authorize: async (_, { chatId }, { auth }) =>
       await auth.canViewChat(chatId),

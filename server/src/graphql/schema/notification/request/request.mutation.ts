@@ -10,7 +10,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
   },
   authorize: (_, { strangerId }, { auth }) =>
     auth.canSendFriendRequest(strangerId),
-  resolve: async (_, { strangerId }, { prisma, userId, pubsub }) => {
+  resolve: async (_, { strangerId }, { prisma, currentUserId, pubsub }) => {
     // Create friend request
     // If there is already a friend request in the database then return that one
     const request = await prisma.request.upsert({
@@ -23,7 +23,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
         },
         createdBy: {
           connect: {
-            id: userId,
+            id: currentUserId,
           },
         },
       },
@@ -34,7 +34,7 @@ export const SendFriendRequestMutation = mutationField('sendFriendRequest', {
       where: {
         recipientId_createdById_type: {
           type: 'FRIEND_REQUEST',
-          createdById: userId,
+          createdById: currentUserId,
           recipientId: strangerId,
         },
       },
@@ -84,7 +84,7 @@ export const DeclineRequestMutation = mutationField('declineRequest', {
     requestId: nonNull(hashIdArg()),
   },
   authorize: (_, { requestId }, { auth }) => auth.canDeclineRequest(requestId),
-  resolve: async (_, { requestId }, { prisma, pubsub, userId }) => {
+  resolve: async (_, { requestId }, { prisma, pubsub, currentUserId }) => {
     // Decline request
     const request = await prisma.request.update({
       data: {
@@ -98,7 +98,7 @@ export const DeclineRequestMutation = mutationField('declineRequest', {
     const alert = await prisma.alert.upsert({
       create: {
         type: 'REQUEST_DECLINED',
-        createdById: userId,
+        createdById: currentUserId,
         recipients: {
           connect: {
             id: request.createdById,
@@ -130,7 +130,7 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
   },
   authorize: async (_, { requestId }, { auth }) =>
     await auth.canAcceptRequest(requestId),
-  resolve: async (_, { requestId }, { prisma, pubsub, userId }) => {
+  resolve: async (_, { requestId }, { prisma, pubsub, currentUserId }) => {
     // Get the request
     const request = await prisma.request.update({
       data: {
@@ -144,7 +144,7 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
     const alert = await prisma.alert.upsert({
       create: {
         type: 'REQUEST_ACCEPTED',
-        createdById: userId,
+        createdById: currentUserId,
         recipients: {
           connect: {
             id: request.createdById,
@@ -162,7 +162,7 @@ export const AcceptRequestMutation = mutationField('acceptRequest', {
       // Add as friend
       await prisma.user.update({
         where: {
-          id: userId,
+          id: currentUserId,
         },
         data: {
           friends: {

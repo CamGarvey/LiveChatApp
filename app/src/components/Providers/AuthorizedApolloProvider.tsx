@@ -74,6 +74,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
           fields: {
             users: relayStylePagination(['usernameFilter']),
             events: relayStylePagination(['chatId']),
+            members: relayStylePagination(['chatId']),
           },
         },
         MessageEvent: {
@@ -97,10 +98,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
         MembersRemovedEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
-        AdminsAddedEvent: {
-          keyFields: (object) => `Event:${object.id}`,
-        },
-        AdminsRemovedEvent: {
+        RoleChangedEvent: {
           keyFields: (object) => `Event:${object.id}`,
         },
         Friend: {

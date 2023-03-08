@@ -10,7 +10,7 @@ import ChatDisplay from 'components/ChatDisplay';
 import { UserAvatar } from 'components/shared/Avatars';
 import { useDrawer } from 'store';
 
-const ChatDrawer = () => {
+export const ChatDrawer = () => {
   const { user } = useUser();
   const { isOpen, toggle } = useDrawer();
 
@@ -23,7 +23,7 @@ const ChatDrawer = () => {
         withinPortal={false}
         size={'lg'}
         styles={{
-          drawer: {
+          content: {
             marginTop: '70px',
           },
           root: {
@@ -31,7 +31,9 @@ const ChatDrawer = () => {
           },
         }}
         padding={10}
-        overlayOpacity={0}
+        overlayProps={{
+          opacity: 0,
+        }}
         closeOnClickOutside={false}
         withCloseButton={false}
       >
@@ -53,5 +55,3 @@ const ChatDrawer = () => {
     </MediaQuery>
   );
 };
-
-export default ChatDrawer;

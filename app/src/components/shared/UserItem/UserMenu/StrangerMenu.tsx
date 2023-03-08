@@ -10,6 +10,7 @@ import {
 } from '@tabler/icons';
 import { StrangerMenuStrangerFragment } from 'graphql/generated/graphql';
 import { useRequest } from 'hooks';
+import useDefaultColor from 'hooks/useDefaultColor';
 
 type Props = {
   stranger: StrangerMenuStrangerFragment;
@@ -34,12 +35,18 @@ const StrangerMenu = ({
     loading: loadingRequest,
   } = useStranger(stranger);
   const { acceptRequest, declineRequest, cancelRequest } = useRequest();
+  const defaultColor = useDefaultColor();
 
   return (
     <Menu width={'max-content'}>
       <Menu.Target>
         <Tooltip hidden={!!stranger} label={!stranger && 'Failed to load user'}>
-          <ActionIcon loading={loadingRequest || loading}>
+          <ActionIcon
+            loaderProps={{
+              color: defaultColor,
+            }}
+            loading={loadingRequest || loading}
+          >
             {target?.icon ? (
               <>{target.icon}</>
             ) : (

@@ -12,7 +12,7 @@ export const NotificationSubscription = subscriptionField('notifications', {
           pattern: true,
         }),
       (payload: NotificationPayload) => {
-        return payload.recipients.includes(context.userId);
+        return payload.recipients.includes(context.currentUserId);
       }
     )(rootValue, args, context);
   },

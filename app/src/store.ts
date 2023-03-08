@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 type Store = {
   isDrawerOpen: boolean;
@@ -20,4 +20,3 @@ export const useDrawer = () => ({
   open: useStore((state) => state.openDrawer),
   close: useStore((state) => state.closeDrawer),
 });
-

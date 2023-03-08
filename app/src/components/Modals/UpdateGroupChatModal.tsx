@@ -11,12 +11,16 @@ import { ContextModalProps, useModals } from '@mantine/modals';
 import { chatSchema } from 'models/validation-schemas';
 import _ from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteChat } from 'hooks';
+import {
+  useChatDescription,
+  useChatMembers,
+  useChatName,
+  useDeleteChat,
+} from 'hooks';
 import { gql } from '@apollo/client';
-import { useUpdateChat } from 'hooks/useUpdateChat';
 
 gql`
-  query GetChatForUpdate($chatId: HashId!) {
+  query GetChatForUpdate($chatId: HashId!, $firstMembers: Int = 300) {
     chat(chatId: $chatId) {
       id
       isCreator
@@ -24,19 +28,27 @@ gql`
       ... on GroupChat {
         name
         description
-        members {
-          ...UpdateGroupUser
+        members(first: $firstMembers) {
+          edges {
+            node {
+              role
+              user {
+                ...UpdateGroupUser
+              }
+            }
+          }
         }
-        admins {
-          ...UpdateGroupUser
-        }
-        isAdmin
+        role
       }
     }
   }
   query GetFriendsForUpdateGroupChat {
     friends {
-      ...UpdateGroupUser
+      edges {
+        node {
+          ...UpdateGroupUser
+        }
+      }
     }
   }
   fragment UpdateGroupUser on User {
@@ -63,23 +75,32 @@ export const UpdateGroupChatModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { deleteChat, loading: loadingDelete } = useDeleteChat();
-  const { update, loading: loadingUpdate } = useUpdateChat();
+  const { update: updateName, updating: updatingName } = useChatName();
+  const { update: updateDesc, updating: updatingDesc } = useChatDescription();
+  const {
+    addMembers,
+    removeMembers,
+    updating: updatingMembers,
+  } = useChatMembers();
 
   const {
     loading: loadingFriends,
     data: friendData,
     error: friendError,
   } = useGetFriendsForUpdateGroupChatQuery();
-
-  const memberIds = useMemo<string[]>(
+  const members = useMemo<UpdateGroupUserFragment[]>(
     () =>
-      chat?.__typename === 'GroupChat' ? chat.members.map((x) => x.id) : [],
+      chat?.__typename === 'GroupChat'
+        ? chat.members.edges
+            ?.filter((x) => !!x)
+            .map((x) => x as UpdateGroupUserFragment) ?? []
+        : [],
     [chat]
   );
-  const adminIds = useMemo<string[]>(
-    () =>
-      chat?.__typename === 'GroupChat' ? chat.admins.map((x) => x.id) : [],
-    [chat]
+
+  const memberIds = useMemo<string[]>(
+    () => members.map((x) => x.id),
+    [members]
   );
 
   const canRemoveUser = useCallback(
@@ -90,12 +111,9 @@ export const UpdateGroupChatModal = ({
       if (chat.isCreator && chat.createdById !== user.id) {
         return true;
       }
-      if (!adminIds.includes(user.id)) {
-        return true;
-      }
       return false;
     },
-    [adminIds, chat]
+    [chat]
   );
 
   // Since other friends can add either friends
@@ -105,13 +123,13 @@ export const UpdateGroupChatModal = ({
   const users = useMemo(() => {
     if (chat?.__typename !== 'GroupChat') return [];
     const users: (UpdateGroupUserFragment & { canRemove?: boolean })[] =
-      _.unionBy(chat.members, chat.admins, friendData?.friends ?? [], 'id');
+      _.unionBy(members, friendData?.friends ?? [], 'id');
 
     return users.map((user) => ({
       ...user,
       canRemove: canRemoveUser(user),
     }));
-  }, [chat, friendData, canRemoveUser]);
+  }, [chat, members, friendData, canRemoveUser]);
 
   if (loadingChat)
     return (
@@ -148,33 +166,32 @@ export const UpdateGroupChatModal = ({
           name: chat.name,
           description: chat.description,
           memberIds,
-          adminIds,
         }}
         validationSchema={chatSchema}
         onSubmit={(values) => {
-          const membersRemoved = memberIds.filter(
-            (x) => !values.memberIds.includes(x)
-          );
-          const membersAdded = values.memberIds.filter(
+          const membersToAdd = values.memberIds.filter(
             (x) => !memberIds.includes(x)
           );
-          const adminsRemoved = adminIds.filter(
-            (x) => !values.adminIds.includes(x)
+          const membersToRemove = memberIds.filter(
+            (x) => !values.memberIds.includes(x)
           );
-          const adminsAdded = values.adminIds.filter(
-            (x) => !adminIds.includes(x)
-          );
-          update(chat.id, {
-            name: chat.name !== values.name ? values.name : null,
-            description:
-              chat.description !== values.description
-                ? values.description
-                : null,
-            addMembers: membersAdded,
-            removeMembers: membersRemoved,
-            addAdmins: adminsAdded,
-            removeAdmins: adminsRemoved,
-          });
+
+          if (chat.name !== values.name && values.name.length > 2) {
+            updateName(chat.id, values.name);
+          }
+
+          if (chat.description !== values.description) {
+            updateDesc(chat.id, values.description ?? '');
+          }
+
+          if (membersToAdd.length > 0) {
+            addMembers(chat.id, membersToAdd);
+          }
+
+          if (membersToRemove.length > 0) {
+            removeMembers(chat.id, membersToRemove);
+          }
+
           context.closeModal(id);
         }}
       >
@@ -217,26 +234,17 @@ export const UpdateGroupChatModal = ({
                     <UserMultiSelect
                       label={'Members'}
                       users={users}
-                      defaultValue={chat.members}
+                      defaultValue={members}
                       onChange={(value: any) => {
                         props.setFieldValue('memberIds', value);
                       }}
-                    />
-                    <UserMultiSelect
-                      label={'Admins'}
-                      users={users}
-                      defaultValue={chat.admins}
-                      onChange={(value: any) => {
-                        props.setFieldValue('adminIds', value);
-                      }}
-                      disabled={!(chat.isCreator || chat.isAdmin)}
                     />
                   </>
                 )}
               </Input.Wrapper>
               <Button
                 type="submit"
-                loading={loadingUpdate}
+                loading={updatingName || updatingDesc || updatingMembers}
                 disabled={loadingFriends || !props.dirty}
               >
                 Update

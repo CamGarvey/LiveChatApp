@@ -1,3 +1,4 @@
+export * from './member';
 export * from './chat.interface';
 export * from './chat.object';
 export * from './chat.input';

@@ -56,10 +56,13 @@ const loadChats = async (
         ],
       },
       members: {
-        connect: [
-          ...otherUsers.map(({ id }) => ({ id })),
-          { id: masterUser.id },
-        ],
+        createMany: {
+          data: [...otherUsers, masterUser].map((x) => ({
+            userId: x.id,
+            role: x.id === masterUser.id ? 'OWNER' : 'BASIC',
+            addedById: masterUser.id,
+          })),
+        },
       },
     },
   });
@@ -73,10 +76,13 @@ const loadChats = async (
         },
       },
       members: {
-        connect: [
-          ...otherUsers.map(({ id }) => ({ id })),
-          { id: masterUser.id },
-        ],
+        createMany: {
+          data: [...otherUsers, masterUser].map((x) => ({
+            userId: x.id,
+            role: x.id === masterUser.id ? 'OWNER' : 'BASIC',
+            addedById: masterUser.id,
+          })),
+        },
       },
       event: {
         create: [

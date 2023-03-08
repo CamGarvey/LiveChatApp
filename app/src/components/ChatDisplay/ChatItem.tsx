@@ -1,6 +1,9 @@
 import { gql } from '@apollo/client';
 import { Avatar, NavLink } from '@mantine/core';
-import { ChatItemFragment } from 'graphql/generated/graphql';
+import {
+  ChatItemFragment,
+  ChatItemUserFragment,
+} from 'graphql/generated/graphql';
 import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDrawer } from 'store';
@@ -27,6 +30,16 @@ const ChatItem = ({ chat }: Props) => {
     }
   }, [chat]);
 
+  const users = useMemo<ChatItemUserFragment[]>(() => {
+    if (chat.__typename === 'GroupChat')
+      return (
+        chat.members.edges
+          ?.filter((x) => !!x?.node?.user)
+          .map((x) => x!.node!.user as ChatItemUserFragment) ?? []
+      );
+    return [];
+  }, [chat]);
+
   return (
     <NavLink
       component={Link}
@@ -41,11 +54,11 @@ const ChatItem = ({ chat }: Props) => {
       rightSection={
         chat.__typename === 'GroupChat' && (
           <Avatar.Group ml={'auto'}>
-            {chat.members.slice(0, 2).map((member) => (
-              <UserAvatar key={member.id} user={member} />
+            {users.map((user) => (
+              <UserAvatar key={user.id} user={user} />
             ))}
-            {chat.members.length > 2 && (
-              <Avatar radius={'xl'}>+{chat.members.length - 2}</Avatar>
+            {chat.memberCount > 2 && (
+              <Avatar radius={'xl'}>+{chat.memberCount - users.length}</Avatar>
             )}
           </Avatar.Group>
         )
@@ -66,8 +79,15 @@ ChatItem.fragments = {
       }
       ... on GroupChat {
         name
-        members {
-          ...ChatItemUser
+        members(first: $firstMembers, after: $afterMember) {
+          totalCount
+          edges {
+            node {
+              user {
+                ...ChatItemUser
+              }
+            }
+          }
         }
       }
     }

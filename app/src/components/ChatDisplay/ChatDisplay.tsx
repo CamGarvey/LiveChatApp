@@ -17,12 +17,15 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 gql`
-  query GetChatsForChatDisplay {
+  query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
     chats {
       ...ChatForChatDisplay
     }
   }
-  subscription GetChatsForChatDisplayChanges {
+  subscription GetChatsForChatDisplayChanges(
+    $firstMembers: Int = 2
+    $afterMember: String
+  ) {
     chatAccessAlerts {
       chat {
         ...ChatForChatDisplay
@@ -37,10 +40,17 @@ gql`
       username
     }
     ... on GroupChat {
-      members {
-        id
-        username
-        name
+      members(first: $firstMembers, after: $afterMember) {
+        totalCount
+        edges {
+          node {
+            user {
+              id
+              username
+              name
+            }
+          }
+        }
       }
     }
     ... on DirectMessageChat {

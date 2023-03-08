@@ -5,8 +5,6 @@ export const Notification = interfaceType({
   name: 'Notification',
   resolveType: (source: Alert | Request) => {
     switch (source.type) {
-      case 'CHAT_CREATED':
-        return 'ChatCreatedAlert';
       case 'CHAT_DELETED':
         return 'ChatDeletedAlert';
       case 'FRIEND_DELETED':
@@ -17,14 +15,12 @@ export const Notification = interfaceType({
         return 'RequestDeclinedAlert';
       case 'FRIEND_REQUEST':
         return 'FriendRequest';
-      case 'CHAT_MEMBER_ACCESS_REVOKED':
+      case 'CHAT_ACCESS_REVOKED':
         return 'ChatMemberAccessRevokedAlert';
-      case 'CHAT_MEMBER_ACCESS_GRANTED':
+      case 'CHAT_ACCESS_GRANTED':
         return 'ChatMemberAccessGrantedAlert';
-      case 'CHAT_ADMIN_ACCESS_REVOKED':
-        return 'ChatAdminAccessRevokedAlert';
-      case 'CHAT_ADMIN_ACCESS_GRANTED':
-        return 'ChatAdminAccessGrantedAlert';
+      case 'CHAT_ROLE_CHANGED':
+        return 'ChatRoleChangedAlert';
       default:
         return null;
     }
@@ -42,7 +38,8 @@ export const Notification = interfaceType({
       },
     });
     t.nonNull.boolean('isCreator', {
-      resolve: async (parent, _, { userId }) => parent.createdById == userId,
+      resolve: async (parent, _, { currentUserId }) =>
+        parent.createdById == currentUserId,
     });
     t.nonNull.hashId('createdById');
     t.nonNull.date('createdAt');

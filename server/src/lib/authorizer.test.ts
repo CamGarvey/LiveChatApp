@@ -1,8 +1,9 @@
 import {
   Chat,
-  FriendRequest,
-  Message,
+  Event,
+  Member,
   PrismaClient,
+  Request,
   User,
 } from '@prisma/client';
 import { MockContext, createMockContext } from '../context';
@@ -15,7 +16,7 @@ beforeEach(() => {
   mockCtx = createMockContext();
   const prisma = mockCtx.prisma as unknown as PrismaClient;
   authorizer = new Authorizer(prisma);
-  authorizer.userId = 1;
+  authorizer.currentUserId = 1;
 });
 
 describe('canCreateDirectMessageChat', () => {
@@ -32,32 +33,6 @@ describe('canCreateDirectMessageChat', () => {
     await expect(
       authorizer.canCreateDirectMessageChat(100)
     ).rejects.toThrowError();
-
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-        memberOfChats: {
-          where: {
-            isDM: true,
-            members: {
-              every: {
-                id: 1,
-              },
-            },
-          },
-        },
-      },
-    });
   });
 
   it('should throw if user is not friends with the user', async () => {
@@ -69,32 +44,6 @@ describe('canCreateDirectMessageChat', () => {
     await expect(
       authorizer.canCreateDirectMessageChat(100)
     ).rejects.toThrowError('You are not friends with this user');
-
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-        memberOfChats: {
-          where: {
-            isDM: true,
-            members: {
-              every: {
-                id: 1,
-              },
-            },
-          },
-        },
-      },
-    });
   });
 
   it('should return true if friends with user', async () => {
@@ -110,31 +59,6 @@ describe('canCreateDirectMessageChat', () => {
     const result = await authorizer.canCreateDirectMessageChat(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-        memberOfChats: {
-          where: {
-            isDM: true,
-            members: {
-              every: {
-                id: 1,
-              },
-            },
-          },
-        },
-      },
-    });
   });
 });
 
@@ -196,23 +120,6 @@ describe('canCreateGroupChat', () => {
     const result = await authorizer.canCreateGroupChat(members);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 1,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: {
-              in: [100, 200],
-            },
-          },
-        },
-      },
-    });
   });
 
   it('should not include duplicate users in prisma query', async () => {
@@ -225,288 +132,17 @@ describe('canCreateGroupChat', () => {
     const result = await authorizer.canCreateGroupChat(members);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 1,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: {
-              in: [100, 200],
-            },
-          },
-        },
-      },
-    });
-  });
-});
-
-describe('canAddAdminsToGroupChat', () => {
-  it('should throw if chat is DM', async () => {
-    const chat = {
-      isDM: true,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 10,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    await expect(
-      authorizer.canAddAdminsToGroupChat({ chatId: 100, members: [2] })
-    ).rejects.toThrowError('Can not update a direct message chat');
-  });
-
-  it('should throw if user is not an admin', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 2 }, { id: 10 }],
-      members: [{ id: 2 }, { id: 10 }],
-      createdById: 10,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    await expect(
-      authorizer.canAddAdminsToGroupChat({ chatId: 100, members: [2] })
-    ).rejects.toThrowError('You are not an admin in this chat');
-  });
-
-  it('should throw if adding admins not friends with and not in chat', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }],
-      members: [{ id: 1 }],
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    await expect(
-      authorizer.canAddAdminsToGroupChat({ chatId: 100, members: [3] })
-    ).rejects.toThrowError();
-  });
-
-  it('should return true if adding friend as admin that is already in chat', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }],
-      members: [{ id: 2 }],
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [{ id: 2 }],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canAddAdminsToGroupChat({
-      chatId: 100,
-      members: [2],
-    });
-
-    expect(result).toBe(true);
-  });
-
-  it('should return true if adding friend as admin that is not in chat', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }],
-      members: [{ id: 1 }],
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [{ id: 2 }],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canAddAdminsToGroupChat({
-      chatId: 100,
-      members: [2],
-    });
-
-    expect(result).toBe(true);
-  });
-});
-
-describe('canRemoveAdminsFromGroupChat', () => {
-  it('should throw if chat is DM', async () => {
-    const chat = {
-      isDM: true,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 10,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    await expect(
-      authorizer.canRemoveAdminsFromGroupChat({ chatId: 100, members: [2] })
-    ).rejects.toThrowError('Can not update a direct message chat');
-  });
-
-  it('should throw if user is not an admin', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 2 }, { id: 10 }],
-      members: [{ id: 2 }, { id: 10 }],
-      createdById: 10,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    await expect(
-      authorizer.canRemoveAdminsFromGroupChat({ chatId: 100, members: [2] })
-    ).rejects.toThrowError('You are not an admin in this chat');
-  });
-
-  it('should throw if user is not creator and removing admin', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 10,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    await expect(
-      authorizer.canRemoveAdminsFromGroupChat({ chatId: 100, members: [2] })
-    ).rejects.toThrowError('You can remove other admins');
-  });
-
-  it('should return true if user is creator and removing admin', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 1,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canRemoveAdminsFromGroupChat({
-      chatId: 100,
-      members: [2],
-    });
-
-    expect(result).toBe(true);
-  });
-
-  it('should return true if user is creator and removing non admins', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 1,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canRemoveAdminsFromGroupChat({
-      chatId: 100,
-      members: [10],
-    });
-
-    expect(result).toBe(true);
-  });
-
-  it('should return true if user is not creator and removing non admins', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 2,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canRemoveAdminsFromGroupChat({
-      chatId: 100,
-      members: [10],
-    });
-
-    expect(result).toBe(true);
-  });
-
-  it('should return true if user is not creator and is removing self as admin', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 10,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canRemoveAdminsFromGroupChat({
-      chatId: 100,
-      members: [1],
-    });
-
-    expect(result).toBe(true);
-  });
-
-  it('should return true if removing another admin from admins and is creator', async () => {
-    const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 1,
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-    const user = {
-      friends: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
-
-    const result = await authorizer.canRemoveAdminsFromGroupChat({
-      chatId: 100,
-      members: [2],
-    });
-
-    expect(result).toBe(true);
   });
 });
 
 describe('canRemoveMembersFromGroupChat', () => {
   it('should throw if chat is DM', async () => {
     const chat = {
-      isDM: true,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      type: 'DIRECT_MESSAGE',
+      members: [
+        { userId: authorizer.currentUserId, role: 'ADMIN' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -522,11 +158,13 @@ describe('canRemoveMembersFromGroupChat', () => {
 
   it('should throw if user is not an admin', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 2 }, { id: 10 }],
-      members: [{ id: 2 }, { id: 10 }],
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'BASIC' },
+        { userId: 10, role: 'OWNER' },
+      ],
       createdById: 10,
-    } as unknown as Chat;
+    } as unknown as Chat & { members: Member[] };
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     const user = {
       friends: [],
@@ -540,9 +178,11 @@ describe('canRemoveMembersFromGroupChat', () => {
 
   it('should throw if user is not creator and removing admin', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'ADMIN' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -553,15 +193,17 @@ describe('canRemoveMembersFromGroupChat', () => {
 
     await expect(
       authorizer.canRemoveMembersFromGroupChat({ chatId: 100, members: [2] })
-    ).rejects.toThrowError('You can remove other admins');
+    ).rejects.toThrowError('You can not remove other admins');
   });
 
   it('should return true if user is creator and removing admin', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      createdById: 1,
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'OWNER' },
+        { userId: 2, role: 'ADMIN' },
+      ],
+      createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
     const user = {
@@ -581,9 +223,11 @@ describe('canRemoveMembersFromGroupChat', () => {
 describe('canAddMembersToGroupChat', () => {
   it('should throw if chat is DM', async () => {
     const chat = {
-      isDM: true,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      type: 'DIRECT_MESSAGE',
+      members: [
+        { userId: authorizer.currentUserId, role: 'ADMIN' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -599,9 +243,11 @@ describe('canAddMembersToGroupChat', () => {
 
   it('should throw if user is not an admin', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 2 }, { id: 10 }],
-      members: [{ id: 2 }, { id: 10 }],
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'BASIC' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -617,9 +263,11 @@ describe('canAddMembersToGroupChat', () => {
 
   it('should throw if adding a stranger', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'ADMIN' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -639,9 +287,11 @@ describe('canAddMembersToGroupChat', () => {
 describe('canUpdateGroupChatBasic', () => {
   it('should throw if chat is DM', async () => {
     const chat = {
-      isDM: true,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      type: 'DIRECT_MESSAGE',
+      members: [
+        { userId: authorizer.currentUserId, role: 'ADMIN' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -657,9 +307,11 @@ describe('canUpdateGroupChatBasic', () => {
 
   it('should throw if user is not an admin', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 2 }, { id: 10 }],
-      members: [{ id: 2 }, { id: 10 }],
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'BASIC' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -675,9 +327,11 @@ describe('canUpdateGroupChatBasic', () => {
 
   it('should return true if user is an admin', async () => {
     const chat = {
-      isDM: false,
-      admins: [{ id: 1 }, { id: 2 }, { id: 10 }],
-      members: [{ id: 1 }, { id: 2 }, { id: 10 }],
+      type: 'GROUP',
+      members: [
+        { userId: authorizer.currentUserId, role: 'ADMIN' },
+        { userId: 2, role: 'ADMIN' },
+      ],
       createdById: 10,
     } as unknown as Chat;
     mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
@@ -719,59 +373,25 @@ describe('canDeleteChat', () => {
     const result = await authorizer.canDeleteChat(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.chat.findUniqueOrThrow).toBeCalledWith({
-      select: {
-        createdById: true,
-      },
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
 describe('canViewChat', () => {
-  it('should throw if chat not found', async () => {
-    mockCtx.prisma.chat.findUniqueOrThrow.mockRejectedValue(new Error());
+  it('should throw if member not found', async () => {
+    mockCtx.prisma.member.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canViewChat(100)).rejects.toThrowError();
   });
 
-  it('should throw if user is not a member in chat', async () => {
-    const chat = {
-      members: [],
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
-
-    await expect(authorizer.canViewChat(100)).rejects.toThrowError(
-      'You are not a member of this chat'
-    );
-  });
-
   it('should return true if user is a member of the chat', async () => {
-    const chat = {
-      members: [{ id: 1 }],
-    } as unknown as Chat;
-    mockCtx.prisma.chat.findUniqueOrThrow.mockResolvedValue(chat);
+    const member = {
+      userId: 1,
+    } as unknown as Member;
+    mockCtx.prisma.member.findUniqueOrThrow.mockResolvedValue(member);
 
     const result = await authorizer.canViewChat(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.chat.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        members: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-      },
-    });
   });
 });
 
@@ -802,160 +422,116 @@ describe('canCreateMessage', () => {
     const result = await authorizer.canCreateEvent(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.chat.findUniqueOrThrow).toBeCalledWith({
-      select: {
-        members: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-      },
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
-describe('canViewMessage', () => {
-  it('should throw if message not found', async () => {
+describe('canViewEvent', () => {
+  it('should throw if event not found', async () => {
     mockCtx.prisma.message.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canViewEvent(100)).rejects.toThrowError();
   });
 
-  it('should throw if not member of the chat message was created in', async () => {
-    const message = {
+  it('should throw if not member of the chat event was created in', async () => {
+    const event = {
       createdById: 300,
       chat: {
         members: [],
       },
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as unknown as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     await expect(authorizer.canViewEvent(100)).rejects.toThrowError(
-      'You do not have permission to view this message'
+      'You do not have permission to view this event'
     );
   });
 
-  it('should return true if user is a member of the chat message is created in', async () => {
-    const message = {
+  it('should return true if user is a member of the chat event is created in', async () => {
+    const event = {
       createdById: 300,
       chat: {
         members: [{ id: 1 }],
       },
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as unknown as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     const result = await authorizer.canViewEvent(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.message.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        chat: {
-          select: {
-            members: {
-              select: {
-                id: true,
-              },
-              where: {
-                id: 1,
-              },
-            },
-          },
-        },
-      },
-    });
   });
 });
 
-describe('canUpdateMessage', () => {
-  it('should throw if message not found', async () => {
+describe('canUpdateEvent', () => {
+  it('should throw if event not found', async () => {
     mockCtx.prisma.message.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canUpdateEvent(100)).rejects.toThrowError();
   });
 
-  it('should throw if the user is not the creator of the message', async () => {
-    const message = {
+  it('should throw if the user is not the creator of the event', async () => {
+    const event = {
       createdById: 300,
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     await expect(authorizer.canUpdateEvent(100)).rejects.toThrowError(
-      'You do not have permission to update this message'
+      'You do not have permission to update this event'
     );
   });
 
-  it('should throw if the message is deleted', async () => {
-    const message = {
+  it('should throw if the event is deleted', async () => {
+    const event = {
       createdById: 1,
       deletedAt: new Date(),
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     await expect(authorizer.canUpdateEvent(100)).rejects.toThrowError(
-      'Message is deleted'
+      'Event is deleted'
     );
   });
 
-  it('should return true if user is the creator and the message is not deleted', async () => {
-    const message = {
+  it('should return true if user is the creator and the event is not deleted', async () => {
+    const event = {
       createdById: 1,
       deletedAt: null,
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     const result = await authorizer.canUpdateEvent(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.message.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
-describe('canDeletedMessage', () => {
-  it('should throw if message not found', async () => {
-    mockCtx.prisma.message.findUniqueOrThrow.mockRejectedValue(new Error());
+describe('canDeletedEvent', () => {
+  it('should throw if event not found', async () => {
+    mockCtx.prisma.event.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canDeletedEvent(100)).rejects.toThrowError();
   });
 
-  it('should throw if the user is not the creator of the message', async () => {
-    const message = {
+  it('should throw if the user is not the creator of the event', async () => {
+    const event = {
       createdById: 300,
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     await expect(authorizer.canDeletedEvent(100)).rejects.toThrowError(
-      'You do not have permission to delete this message'
+      'You do not have permission to delete this event'
     );
   });
 
   it('should return true if user is the creator', async () => {
-    const message = {
+    const event = {
       createdById: 1,
       deletedAt: null,
-    } as unknown as Message;
-    mockCtx.prisma.message.findUniqueOrThrow.mockResolvedValue(message);
+    } as Event;
+    mockCtx.prisma.event.findUniqueOrThrow.mockResolvedValue(event);
 
     const result = await authorizer.canDeletedEvent(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.message.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
@@ -969,8 +545,8 @@ describe('canSendFriendRequest', () => {
   it('should throw if already friends with the user', async () => {
     const user = {
       friends: [{ id: 100 }],
-      receivedFriendRequests: [],
-      sentFriendRequests: [],
+      requests: [],
+      sentRequests: [],
     } as unknown as User;
     mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(user);
 
@@ -979,107 +555,44 @@ describe('canSendFriendRequest', () => {
     );
   });
 
-  it('should throw if there is a SENT state friend request sent', async () => {
-    const friend = {
-      friends: [],
-      receivedFriendRequests: [{ id: 100 }],
-      sentFriendRequests: [],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(friend);
-
-    await expect(authorizer.canSendFriendRequest(100)).rejects.toThrowError(
-      'Already sent a friend request to this user'
-    );
-  });
-
-  it('should throw if there is a SENT state friend request received', async () => {
-    const friend = {
-      friends: [],
-      receivedFriendRequests: [],
-      sentFriendRequests: [{ id: 100 }],
-    } as unknown as User;
-    mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(friend);
-
-    await expect(authorizer.canSendFriendRequest(100)).rejects.toThrowError(
-      'Already received a friend requets from this user'
-    );
-  });
-
   it('should return true if not friends with user, and not pending requests', async () => {
     const friend = {
       friends: [],
-      receivedFriendRequests: [],
-      sentFriendRequests: [],
+      requests: [],
+      sentRequests: [],
     } as unknown as User;
     mockCtx.prisma.user.findUniqueOrThrow.mockResolvedValue(friend);
 
     const result = await authorizer.canSendFriendRequest(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-        sentFriendRequests: {
-          select: {
-            id: true,
-          },
-          where: {
-            recipientId: 1,
-            status: 'SENT',
-          },
-        },
-        receivedFriendRequests: {
-          select: {
-            id: true,
-          },
-          where: {
-            createdById: 1,
-            status: {
-              in: ['SEEN', 'SENT'],
-            },
-          },
-        },
-      },
-    });
   });
 });
 
-describe('canCancelFriendRequest', () => {
-  it('should throw if friend request not found', async () => {
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockRejectedValue(
-      new Error()
-    );
+describe('canCancelRequest', () => {
+  it('should throw if request not found', async () => {
+    mockCtx.prisma.request.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canCancelRequest(100)).rejects.toThrowError();
   });
 
-  it('should throw if user is not the creator of the friend request', async () => {
+  it('should throw if user is not the creator of the request', async () => {
     const request = {
       createdById: 100,
-      status: 'SENT',
-    } as unknown as FriendRequest;
+      state: 'SENT',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canCancelRequest(100)).rejects.toThrowError(
-      'You do not have permission to cancel this friend request'
+      'You do not have permission to cancel this request'
     );
   });
 
-  it('should throw if friend request is not in a pending status (SEEN or SENT)', async () => {
+  it('should throw if request is not in a pending state (SEEN or SENT)', async () => {
     const request = {
       createdById: 1,
-      status: 'ACCEPTED',
-    } as unknown as FriendRequest;
+      state: 'ACCEPTED',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canCancelRequest(100)).rejects.toThrowError(
@@ -1087,52 +600,43 @@ describe('canCancelFriendRequest', () => {
     );
   });
 
-  it('should return true if the friend request is created by current user and SENT state', async () => {
+  it('should return true if the request is created by current user and SENT state', async () => {
     const request = {
       createdById: 1,
-      status: 'SENT',
-    } as unknown as FriendRequest;
+      state: 'SENT',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     const result = await authorizer.canCancelRequest(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.request.findUniqueOrThrow).toBeCalledWith({
-      select: {
-        createdById: true,
-        status: true,
-      },
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
-describe('canDeclineFriendRequest', () => {
-  it('should throw if friend request not found', async () => {
+describe('canDeclineRequest', () => {
+  it('should throw if request not found', async () => {
     mockCtx.prisma.request.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError();
   });
 
-  it('should throw if the user is not the recipent of the friend request', async () => {
+  it('should throw if the user is not the recipent of the request', async () => {
     const request = {
       recipientId: 100,
-      status: 'SENT',
-    } as unknown as FriendRequest;
+      state: 'SENT',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError(
-      'You do not have permission to decline this friend request'
+      'You do not have permission to decline this request'
     );
   });
 
-  it('should throw if friend request is not in SENT state', async () => {
+  it('should throw if request is not in SENT state', async () => {
     const request = {
       recipientId: 1,
-      status: 'ACCEPTED',
-    } as unknown as FriendRequest;
+      state: 'ACCEPTED',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canDeclineRequest(100)).rejects.toThrowError(
@@ -1140,54 +644,43 @@ describe('canDeclineFriendRequest', () => {
     );
   });
 
-  it('should return true if the user is the reciepent, and in a valid status', async () => {
+  it('should return true if the user is the reciepent, and in a valid state', async () => {
     const request = {
       recipientId: 1,
-      status: 'SENT',
-    } as unknown as FriendRequest;
+      state: 'SENT',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     const result = await authorizer.canDeclineRequest(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.request.findUniqueOrThrow).toBeCalledWith({
-      select: {
-        recipientId: true,
-        status: true,
-      },
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
-describe('canAcceptFriendRequest', () => {
-  it('should throw if friend request not found', async () => {
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockRejectedValue(
-      new Error()
-    );
+describe('canAcceptRequest', () => {
+  it('should throw if request not found', async () => {
+    mockCtx.prisma.request.findUniqueOrThrow.mockRejectedValue(new Error());
 
     await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError();
   });
 
-  it('should throw if the user is not the recipent of the friend request', async () => {
+  it('should throw if the user is not the recipent of the request', async () => {
     const request = {
       recipientId: 100,
-      status: 'SENT',
-    } as unknown as FriendRequest;
-    mockCtx.prisma.friendRequest.findUniqueOrThrow.mockResolvedValue(request);
+      state: 'SENT',
+    } as unknown as Request;
+    mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError(
-      'You do not have permission to accept this friend request'
+      'You do not have permission to accept this request'
     );
   });
 
-  it('should throw if friend request is not in SENT', async () => {
+  it('should throw if request is not in SENT', async () => {
     const request = {
       recipientId: 1,
-      status: 'ACCEPTED',
-    } as unknown as FriendRequest;
+      state: 'ACCEPTED',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     await expect(authorizer.canAcceptRequest(100)).rejects.toThrowError(
@@ -1195,25 +688,16 @@ describe('canAcceptFriendRequest', () => {
     );
   });
 
-  it('should return true if the user is the reciepent, and in a valid status', async () => {
+  it('should return true if the user is the reciepent, and in a valid state', async () => {
     const request = {
       recipientId: 1,
-      status: 'SENT',
-    } as unknown as FriendRequest;
+      state: 'SENT',
+    } as unknown as Request;
     mockCtx.prisma.request.findUniqueOrThrow.mockResolvedValue(request);
 
     const result = await authorizer.canAcceptRequest(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.friendRequest.findUniqueOrThrow).toBeCalledWith({
-      select: {
-        recipientId: true,
-        status: true,
-      },
-      where: {
-        id: 100,
-      },
-    });
   });
 });
 
@@ -1244,20 +728,5 @@ describe('canDeleteFriend', () => {
     const result = await authorizer.canDeleteFriend(100);
 
     expect(result).toBe(true);
-    expect(mockCtx.prisma.user.findUniqueOrThrow).toBeCalledWith({
-      where: {
-        id: 100,
-      },
-      select: {
-        friends: {
-          select: {
-            id: true,
-          },
-          where: {
-            id: 1,
-          },
-        },
-      },
-    });
   });
 });

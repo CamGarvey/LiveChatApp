@@ -3,8 +3,8 @@ import { interfaceType } from 'nexus';
 
 export const UserInterface = interfaceType({
   name: 'User',
-  resolveType: async (source: any, { userId, prisma }) => {
-    if (source.id == userId) {
+  resolveType: async (source: any, { currentUserId, prisma }) => {
+    if (source.id == currentUserId) {
       // is current user
       return 'Me';
     }
@@ -12,7 +12,7 @@ export const UserInterface = interfaceType({
     const friends = await prisma.user
       .findUniqueOrThrow({
         where: {
-          id: userId,
+          id: currentUserId,
         },
       })
       .friends();
@@ -29,14 +29,14 @@ export const UserInterface = interfaceType({
 
 export const KnownUserInterface = interfaceType({
   name: 'KnownUser',
-  resolveType: (source, { userId }) => {
-    return userId == source.id ? 'Me' : 'Friend';
+  resolveType: (source, { currentUserId }) => {
+    return currentUserId == source.id ? 'Me' : 'Friend';
   },
   definition: (t) => {
     t.nonNull.list.nonNull.field('chats', {
       type: 'Chat',
-      resolve: async (parent, _, { prisma, userId }) => {
-        if (parent.id == userId) {
+      resolve: async (parent, _, { prisma, currentUserId }) => {
+        if (parent.id == currentUserId) {
           // Is current user, return all
           return await prisma.user
             .findUnique({
@@ -51,7 +51,7 @@ export const KnownUserInterface = interfaceType({
               {
                 members: {
                   every: {
-                    id: userId,
+                    id: currentUserId,
                   },
                 },
               },

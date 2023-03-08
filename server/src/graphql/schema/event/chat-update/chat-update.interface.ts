@@ -2,6 +2,7 @@ import { interfaceType } from 'nexus';
 
 export const ChatUpdateEvent = interfaceType({
   name: 'ChatUpdateEvent',
+  description: 'Event involving an update within chat',
   resolveType: async (source, { prisma }) => {
     const update = await prisma.chatUpdate.findUniqueOrThrow({
       where: {
@@ -9,10 +10,8 @@ export const ChatUpdateEvent = interfaceType({
       },
     });
     switch (update.type) {
-      case 'ADMINS_ADDED':
-        return 'AdminsAddedEvent';
-      case 'ADMINS_REMOVED':
-        return 'AdminsRemovedEvent';
+      case 'ROLE_CHANGED':
+        return 'RoleChangedEvent';
       case 'MEMBERS_ADDED':
         return 'MembersAddedEvent';
       case 'MEMBERS_REMOVED':
@@ -30,8 +29,9 @@ export const ChatUpdateEvent = interfaceType({
   },
 });
 
-export const UserAlterationEvent = interfaceType({
-  name: 'UserAlterationEvent',
+export const MemberAlterationEvent = interfaceType({
+  name: 'MemberAlterationEvent',
+  description: 'Event involving alterations of member/s in chat',
   resolveType: async (source, { prisma }) => {
     const update = await prisma.chatUpdate.findUniqueOrThrow({
       where: {
@@ -39,10 +39,8 @@ export const UserAlterationEvent = interfaceType({
       },
     });
     switch (update.type) {
-      case 'ADMINS_ADDED':
-        return 'AdminsAddedEvent';
-      case 'ADMINS_REMOVED':
-        return 'AdminsRemovedEvent';
+      case 'ROLE_CHANGED':
+        return 'RoleChangedEvent';
       case 'MEMBERS_ADDED':
         return 'MembersAddedEvent';
       case 'MEMBERS_REMOVED':
@@ -53,8 +51,8 @@ export const UserAlterationEvent = interfaceType({
   },
   definition: (t) => {
     t.implements('ChatUpdateEvent');
-    t.nonNull.list.nonNull.field('users', {
-      type: 'User',
+    t.nonNull.list.nonNull.field('members', {
+      type: 'Member',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.chatUpdate
           .findUniqueOrThrow({
@@ -62,7 +60,7 @@ export const UserAlterationEvent = interfaceType({
               eventId: parent.id,
             },
           })
-          .users();
+          .members();
       },
     });
   },

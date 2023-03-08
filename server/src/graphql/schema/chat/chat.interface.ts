@@ -3,6 +3,7 @@ import { interfaceType } from 'nexus';
 
 export const ChatInterface = interfaceType({
   name: 'Chat',
+  description: 'Chat interface',
   resolveType: (chat: Chat) =>
     chat.deletedAt
       ? 'DeletedChat'
@@ -10,10 +11,15 @@ export const ChatInterface = interfaceType({
       ? 'DirectMessageChat'
       : 'GroupChat',
   definition: (t) => {
-    t.nonNull.hashId('id');
-    t.nonNull.hashId('createdById');
+    t.nonNull.hashId('id', {
+      description: 'Id of chat',
+    });
+    t.nonNull.hashId('createdById', {
+      description: 'Id of user that created the chat',
+    });
     t.nonNull.field('createdBy', {
       type: 'User',
+      description: 'User that created the chat',
       resolve: async (parent, _, { prisma }) => {
         return await prisma.user.findUniqueOrThrow({
           where: {
@@ -23,11 +29,16 @@ export const ChatInterface = interfaceType({
       },
     });
     t.nonNull.boolean('isCreator', {
-      resolve: (parent, _, { userId }) => {
-        return parent.createdById == userId;
+      description: 'Are you the creator?',
+      resolve: (parent, _, { currentUserId }) => {
+        return parent.createdById == currentUserId;
       },
     });
-    t.date('createdAt');
-    t.date('updatedAt');
+    t.date('createdAt', {
+      description: 'Time of creation',
+    });
+    t.date('updatedAt', {
+      description: 'Time of last update',
+    });
   },
 });

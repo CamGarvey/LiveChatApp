@@ -2,16 +2,23 @@ import cors from 'cors';
 import express from 'express';
 import { auth } from 'express-oauth2-jwt-bearer';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-import { createServer } from 'http';
+import { createServer, Server } from 'http';
 import Redis, { RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
-import { WebSocketServer } from 'ws';
-
 import hashids from 'hashids';
+import { WebSocketServer } from 'ws';
+import bodyParser from 'body-parser';
+import { expressMiddleware } from '@apollo/server/express4';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { GraphQLError } from 'graphql';
+import { ApolloServer } from '@apollo/server';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+
+import { IContext } from './graphql/context.interface';
 import { Authorizer } from './lib/authorizer';
 import prisma from './lib/clients/prisma';
 import authRouter from './routes/auth';
-import { createGraphqlServer } from './graphqlServer';
+import { schema } from './graphql';
 
 const hash = new hashids(
   process.env.HASH_SALT,
@@ -33,38 +40,44 @@ const getUserIdFromToken = (token: string) => {
   return Number(userId);
 };
 
-const main = async () => {
-  // Create Express app
-  const app = express();
+const createWebSocket = ({
+  server,
+  createContext,
+}: {
+  server: Server;
+  createContext: (token: string) => IContext;
+}) => {
+  // Set up WebSocketServer on graphql endpoint
+  const wsServer = new WebSocketServer({
+    server,
+    path: '/graphql',
+  });
 
-  app
-    .use(express.json())
-    .use('/auth', authRouter)
-    .use(
-      cors({
-        origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend & apollo studio
-        credentials: true,
-      })
-    )
-    .use(
-      '/grahpql/*',
-      auth({
-        audience: process.env.AUTH0_AUDIENCE,
-        jwksUri: process.env.AUTH0_JWKS_URI,
-        tokenSigningAlg: process.env.AUTH0_SIGNING_ALG,
-        issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-      })
-    );
-
-  const redisOptions: RedisOptions = {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT),
-    retryStrategy: (times: any) => {
-      // reconnect after
-      return Math.min(times * 50, 2000);
+  return useServer(
+    {
+      schema,
+      context: (req) => {
+        const token = req?.connectionParams?.Authorization;
+        if (typeof token != 'string' || !token) {
+          throw new GraphQLError('No token');
+        }
+        return createContext(token);
+      },
     },
-  };
+    wsServer
+  );
+};
 
+const redisOptions: RedisOptions = {
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT),
+  retryStrategy: (times: any) => {
+    // reconnect after
+    return Math.min(times * 50, 2000);
+  },
+};
+
+const main = async () => {
   // Set up the pubsub server
   const pubsub = new RedisPubSub({
     publisher: new Redis(redisOptions),
@@ -73,36 +86,84 @@ const main = async () => {
 
   const authorizer = new Authorizer(prisma);
 
-  const httpServer = createServer(app);
+  const createContext = (token: string) => {
+    const currentUserId = getUserIdFromToken(token);
+    if (!currentUserId) {
+      throw new GraphQLError('No user');
+    }
+    authorizer.currentUserId = currentUserId;
+    return {
+      currentUserId,
+      prisma,
+      pubsub,
+      auth: authorizer,
+    };
+  };
 
-  // Set up WebSocketServer on graphql endpoint
-  const wsServer = new WebSocketServer({
+  const app = express();
+  const httpServer = createServer(app);
+  const wsServerCleanUp = createWebSocket({
     server: httpServer,
-    path: '/graphql',
+    createContext,
   });
 
-  const server = createGraphqlServer({
-    pubsub,
-    auth: authorizer,
-    getUserIdFromToken,
-    wsServer,
-    httpServer,
+  const server = new ApolloServer<IContext>({
+    schema,
+    csrfPrevention: true,
+    introspection: true,
+    plugins: [
+      // Proper shutdown for the HTTP server.
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+
+      // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await wsServerCleanUp.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
 
   await server.start();
 
-  server.applyMiddleware({
-    app,
-    cors: true,
-  });
+  app
+    .use(express.json())
+    .use('/auth', authRouter)
+    .use(
+      cors({
+        origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
+        credentials: true,
+      })
+    )
+    .use(
+      '/graphql',
+      cors<cors.CorsRequest>(),
+      bodyParser.json(),
+      expressMiddleware(server, {
+        context: async ({ req }) => {
+          const token = req.headers.authorization;
+          if (!token) {
+            throw new GraphQLError('No token');
+          }
+          return createContext(token);
+        },
+      }),
+      auth({
+        audience: process.env.AUTH0_AUDIENCE,
+        jwksUri: process.env.AUTH0_JWKS_URI,
+        tokenSigningAlg: process.env.AUTH0_SIGNING_ALG,
+        issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+      })
+    );
 
   const port = parseInt(process.env.PORT);
 
-  httpServer.listen(port, '0.0.0.0', () => {
-    console.log(
-      `Server is now running on http://localhost:${port}${server.graphqlPath}`
-    );
-  });
+  await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
+  console.log(`🚀 Server ready at http://localhost:${port}/graphql`);
 };
 
 main().catch(console.error);

@@ -9,8 +9,8 @@ import { gql } from '@apollo/client';
 import UserList from 'components/shared/UserList';
 
 gql`
-  query GetUserSearch($usernameFilter: String, $first: Int, $after: String) {
-    users(usernameFilter: $usernameFilter, first: $first, after: $after) {
+  query GetUserSearch($filter: String, $first: Int, $after: String) {
+    users(filter: $filter, first: $first, after: $after) {
       pageInfo {
         hasNextPage
         endCursor

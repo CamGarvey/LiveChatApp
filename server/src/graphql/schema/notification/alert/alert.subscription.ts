@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
 import { subscriptionField } from 'nexus';
-import { NotificationPayload, Subscription } from '../../../backing-types';
+import { NotificationPayload } from '../../../backing-types';
 
 export const AlertSubscription = subscriptionField('alerts', {
   type: 'Alert',
@@ -12,7 +12,7 @@ export const AlertSubscription = subscriptionField('alerts', {
           pattern: true,
         }),
       (payload: NotificationPayload) => {
-        return payload.recipients.includes(context.userId);
+        return payload.recipients.includes(context.currentUserId);
       }
     )(rootValue, args, context);
   },
@@ -33,7 +33,7 @@ export const ChatAccessAlertSubscription = subscriptionField(
             pattern: true,
           }),
         (payload: NotificationPayload) => {
-          return payload.recipients.includes(context.userId);
+          return payload.recipients.includes(context.currentUserId);
         }
       )(rootValue, args, context);
     },

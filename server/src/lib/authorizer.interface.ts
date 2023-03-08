@@ -1,5 +1,5 @@
 export interface IAuthorizer {
-  userId: number;
+  currentUserId: number;
   canCreateDirectMessageChat: (friendId: number) => Promise<boolean>;
   canCreateGroupChat: (memberIds: number[]) => Promise<boolean>;
   canViewChat: (chatId: number) => Promise<boolean>;
@@ -13,11 +13,7 @@ export interface IAuthorizer {
     chatId: number;
     members: number[];
   }) => Promise<boolean>;
-  canRemoveAdminsFromGroupChat: (data: {
-    chatId: number;
-    members: number[];
-  }) => Promise<boolean>;
-  canAddAdminsToGroupChat: (data: {
+  canChangeMemberRoles: (data: {
     chatId: number;
     members: number[];
   }) => Promise<boolean>;

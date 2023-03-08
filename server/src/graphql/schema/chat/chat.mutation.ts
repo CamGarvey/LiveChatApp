@@ -1,5 +1,5 @@
-import { ForbiddenError } from 'apollo-server-core';
-import { list, mutationField, nonNull, stringArg } from 'nexus';
+import { GraphQLError } from 'graphql';
+import { mutationField, nonNull, stringArg } from 'nexus';
 import {
   EventPayload,
   NotificationPayload,
@@ -10,18 +10,18 @@ import { CreateGroupChatInput } from './chat.input';
 
 export const CreateGroupChatMutation = mutationField('createGroupChat', {
   type: 'GroupChat',
+  description: 'Create a group chat',
   args: { data: nonNull(CreateGroupChatInput) },
-  description: 'Create a Chat',
   authorize: (_, { data: { memberIds } }, { auth }) =>
     auth.canCreateGroupChat(memberIds ?? []),
   resolve: async (
     _,
     { data: { name, description, memberIds } },
-    { prisma, userId, pubsub }
+    { prisma, currentUserId, pubsub }
   ) => {
     // Remove duplicates & creator as members
     const memberIdSet: Set<number> = new Set(memberIds);
-    memberIdSet.add(userId);
+    memberIdSet.add(currentUserId);
 
     // Create the chat
     const chat = await prisma.chat.create({
@@ -29,20 +29,16 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
         type: 'GROUP',
         name,
         description,
-        createdById: userId,
+        createdById: currentUserId,
         members: {
-          connect: [...memberIdSet].map((id) => ({ id })),
-        },
-        // Add creator (current user) as admin
-        admins: {
-          connect: { id: userId },
-        },
-      },
-      // Including member ids for pubsub
-      include: {
-        members: {
-          select: {
-            id: true,
+          createMany: {
+            // Creating members
+            // Creator has an ADMIN role, all other users have a STANDARD role
+            data: [...memberIdSet].map((id) => ({
+              userId: id,
+              role: id == currentUserId ? 'OWNER' : 'BASIC',
+              addedById: currentUserId,
+            })),
           },
         },
       },
@@ -51,18 +47,20 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
     // Create an alert for members
     const alert = await prisma.alert.create({
       data: {
-        type: 'CHAT_MEMBER_ACCESS_GRANTED',
+        type: 'CHAT_ACCESS_GRANTED',
         chat: {
           connect: {
             id: chat.id,
           },
         },
         recipients: {
-          connect: chat.members,
+          connect: [...memberIdSet]
+            .filter((id) => id !== currentUserId)
+            .map((id) => ({ id })),
         },
         createdBy: {
           connect: {
-            id: userId,
+            id: currentUserId,
           },
         },
       },
@@ -72,7 +70,7 @@ export const CreateGroupChatMutation = mutationField('createGroupChat', {
     await pubsub.publish<NotificationPayload>(
       Subscription.ChatMemberAccessGrantedAlert,
       {
-        recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+        recipients: [...memberIdSet].filter((id) => id !== currentUserId),
         content: alert,
       }
     );
@@ -85,6 +83,7 @@ export const CreateDirectMessageChatMutation = mutationField(
   'createDirectMessageChat',
   {
     type: 'DirectMessageChat',
+    description: 'Create a direct message chat',
     args: {
       friendId: nonNull(
         hashIdArg({
@@ -92,17 +91,16 @@ export const CreateDirectMessageChatMutation = mutationField(
         })
       ),
     },
-    description: 'Create a Chat',
     authorize: (_, { friendId }, { auth }) =>
       auth.canCreateDirectMessageChat(friendId),
-    resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
+    resolve: async (_, { friendId }, { prisma, currentUserId, pubsub }) => {
       const existingChat = await prisma.chat.findFirst({
         where: {
           type: 'DIRECT_MESSAGE',
           members: {
             every: {
-              id: {
-                in: [friendId, userId],
+              userId: {
+                in: [friendId, currentUserId],
               },
             },
           },
@@ -118,10 +116,18 @@ export const CreateDirectMessageChatMutation = mutationField(
       const chat = await prisma.chat.create({
         data: {
           type: 'DIRECT_MESSAGE',
-          name: `${userId}.${friendId}`,
-          createdById: userId,
+          name: `${currentUserId}.${friendId}`,
+          createdById: currentUserId,
           members: {
-            connect: [userId, friendId].map((id) => ({ id })),
+            createMany: {
+              // Creating members
+              // Both users have ADMIN roles
+              data: [currentUserId, friendId].map((id) => ({
+                userId: id,
+                role: 'ADMIN',
+                addedById: currentUserId,
+              })),
+            },
           },
         },
       });
@@ -129,7 +135,7 @@ export const CreateDirectMessageChatMutation = mutationField(
       // Create an alert for members
       const alert = await prisma.alert.create({
         data: {
-          type: 'CHAT_MEMBER_ACCESS_GRANTED',
+          type: 'CHAT_ACCESS_GRANTED',
           chat: {
             connect: {
               id: chat.id,
@@ -137,12 +143,12 @@ export const CreateDirectMessageChatMutation = mutationField(
           },
           recipients: {
             connect: {
-              id: userId,
+              id: friendId,
             },
           },
           createdBy: {
             connect: {
-              id: userId,
+              id: currentUserId,
             },
           },
         },
@@ -151,7 +157,7 @@ export const CreateDirectMessageChatMutation = mutationField(
       await pubsub.publish<NotificationPayload>(
         Subscription.ChatMemberAccessGrantedAlert,
         {
-          recipients: [userId],
+          recipients: [currentUserId],
           content: alert,
         }
       );
@@ -161,568 +167,24 @@ export const CreateDirectMessageChatMutation = mutationField(
   }
 );
 
-export const RemoveMembersFromGroupChatMutation = mutationField(
-  'removeMembersFromGroupChat',
-  {
-    type: 'MembersRemovedEvent',
-    args: {
-      chatId: nonNull(hashIdArg()),
-      members: nonNull(
-        list(
-          nonNull(
-            hashIdArg({
-              description: 'Ids of members to be removed from the chat',
-            })
-          )
-        )
-      ),
-    },
-    description: 'Remove members from a group chat',
-    authorize: (_, { chatId, members }, { auth }) =>
-      auth.canRemoveMembersFromGroupChat({
-        chatId,
-        members,
-      }),
-    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
-      const chat = await prisma.chat.update({
-        data: {
-          members: {
-            disconnect: members?.map((id) => ({ id })) ?? undefined,
-          },
-        },
-        include: {
-          members: {
-            select: {
-              id: true,
-            },
-          },
-        },
-        where: {
-          id: chatId,
-        },
-      });
-
-      const event = await prisma.event.create({
-        data: {
-          type: 'CHAT_UPDATE',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          chatUpdate: {
-            create: {
-              type: 'MEMBERS_REMOVED',
-              users: members
-                ? {
-                    connect: members.map((id) => ({ id })),
-                  }
-                : undefined,
-            },
-          },
-        },
-      });
-
-      // Publish new chat event
-      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
-        recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
-        content: event,
-      });
-
-      const alert = await prisma.alert.create({
-        data: {
-          type: 'CHAT_MEMBER_ACCESS_REVOKED',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          recipients: members
-            ? {
-                connect: members.map((id) => ({ id })),
-              }
-            : undefined,
-        },
-      });
-
-      // Publish new chat alert
-      await pubsub.publish<NotificationPayload>(
-        Subscription.ChatMemberAccessRevokedAlert,
-        {
-          recipients: members,
-          content: alert,
-        }
-      );
-
-      return event;
-    },
-  }
-);
-
-export const LeaveGroupChatMutation = mutationField('leaveGroupChat', {
-  type: 'MembersRemovedEvent',
-  args: {
-    chatId: nonNull(hashIdArg()),
-  },
-  authorize: (_, { chatId }, { auth, userId }) =>
-    auth.canRemoveMembersFromGroupChat({
-      chatId,
-      members: [userId],
-    }),
-  resolve: async (_, { chatId }, { userId, prisma, pubsub }) => {
-    const chat = await prisma.chat.update({
-      data: {
-        members: {
-          disconnect: {
-            id: userId,
-          },
-        },
-      },
-      include: {
-        members: {
-          select: {
-            id: true,
-          },
-        },
-      },
-      where: {
-        id: chatId,
-      },
-    });
-
-    const event = await prisma.event.create({
-      data: {
-        type: 'CHAT_UPDATE',
-        chat: {
-          connect: {
-            id: chatId,
-          },
-        },
-        createdBy: {
-          connect: {
-            id: userId,
-          },
-        },
-        chatUpdate: {
-          create: {
-            type: 'MEMBERS_REMOVED',
-            users: {
-              connect: {
-                id: userId,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    const recipients = chat.members
-      .map((x) => x.id)
-      .filter((x) => x !== userId);
-
-    // Publish new chat event
-    await pubsub.publish<EventPayload>(Subscription.EventCreated, {
-      recipients,
-      content: event,
-    });
-
-    const alert = await prisma.alert.create({
-      data: {
-        type: 'CHAT_MEMBER_ACCESS_REVOKED',
-        chat: {
-          connect: {
-            id: chatId,
-          },
-        },
-        createdBy: {
-          connect: {
-            id: userId,
-          },
-        },
-        recipients: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
-
-    // Publish new chat alert
-    await pubsub.publish<NotificationPayload>(
-      Subscription.ChatMemberAccessRevokedAlert,
-      {
-        recipients,
-        content: alert,
-      }
-    );
-
-    return event;
-  },
-});
-
-export const AddMembersToGroupChatMutation = mutationField(
-  'addMembersToGroupChat',
-  {
-    type: 'MembersAddedEvent',
-    args: {
-      chatId: nonNull(hashIdArg()),
-      members: nonNull(
-        list(
-          nonNull(
-            hashIdArg({
-              description: 'Ids of members to be added into the chat',
-            })
-          )
-        )
-      ),
-    },
-    description: 'Add members to a group chat',
-    authorize: (_, { chatId, members }, { auth }) =>
-      auth.canAddMembersToGroupChat({
-        chatId,
-        members,
-      }),
-    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
-      if (members.length === 0)
-        throw new ForbiddenError('Member list must not be empty');
-
-      const chat = await prisma.chat.update({
-        data: {
-          members: {
-            connect: members.map((id) => ({ id })) ?? undefined,
-          },
-        },
-        include: {
-          members: {
-            select: {
-              id: true,
-            },
-          },
-        },
-        where: {
-          id: chatId,
-        },
-      });
-
-      const event = await prisma.event.create({
-        data: {
-          type: 'CHAT_UPDATE',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          chatUpdate: {
-            create: {
-              type: 'MEMBERS_ADDED',
-              users: members
-                ? {
-                    connect: members.map((id) => ({ id })),
-                  }
-                : undefined,
-            },
-          },
-        },
-      });
-
-      const recipients = chat.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId);
-
-      // Publish new chat event
-      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
-        recipients,
-        content: event,
-      });
-
-      const alert = await prisma.alert.create({
-        data: {
-          type: 'CHAT_MEMBER_ACCESS_GRANTED',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          recipients: members
-            ? {
-                connect: members.map((id) => ({ id })),
-              }
-            : undefined,
-        },
-      });
-
-      // Publish new chat alert
-      await pubsub.publish<NotificationPayload>(
-        Subscription.ChatMemberAccessGrantedAlert,
-        {
-          recipients,
-          content: alert,
-        }
-      );
-
-      return event;
-    },
-  }
-);
-
-export const RemoveAdminsFromGroupChatMutation = mutationField(
-  'removeAdminsFromGroupChat',
-  {
-    type: 'AdminsRemovedEvent',
-    args: {
-      chatId: nonNull(hashIdArg()),
-      members: nonNull(
-        list(
-          nonNull(
-            hashIdArg({
-              description: 'Ids of admins to be removed from the chat',
-            })
-          )
-        )
-      ),
-    },
-    description: 'Remove admins from a group chat',
-    authorize: (_, { chatId, members }, { auth }) =>
-      auth.canRemoveAdminsFromGroupChat({
-        chatId,
-        members,
-      }),
-    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
-      if (members.length === 0)
-        throw new ForbiddenError('Member list must not be empty');
-
-      const chat = await prisma.chat.update({
-        data: {
-          admins: {
-            disconnect: members.map((id) => ({ id })) ?? undefined,
-          },
-        },
-        include: {
-          members: {
-            select: {
-              id: true,
-            },
-          },
-        },
-        where: {
-          id: chatId,
-        },
-      });
-
-      const event = await prisma.event.create({
-        data: {
-          type: 'CHAT_UPDATE',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          chatUpdate: {
-            create: {
-              type: 'ADMINS_REMOVED',
-              users: members
-                ? {
-                    connect: members.map((id) => ({ id })),
-                  }
-                : undefined,
-            },
-          },
-        },
-      });
-
-      const recipients = chat.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId);
-
-      // Publish new chat event
-      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
-        recipients,
-        content: event,
-      });
-
-      const alert = await prisma.alert.create({
-        data: {
-          type: 'CHAT_ADMIN_ACCESS_REVOKED',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          recipients: members
-            ? {
-                connect: members.map((id) => ({ id })),
-              }
-            : undefined,
-        },
-      });
-
-      // Publish new chat alert
-      await pubsub.publish<NotificationPayload>(
-        Subscription.ChatAdminAccessRevokedAlert,
-        {
-          recipients,
-          content: alert,
-        }
-      );
-
-      return event;
-    },
-  }
-);
-
-export const AddAdminsToGroupChatMutation = mutationField(
-  'addAdminsToGroupChat',
-  {
-    type: 'AdminsAddedEvent',
-    args: {
-      chatId: nonNull(hashIdArg()),
-      members: nonNull(
-        list(
-          nonNull(
-            hashIdArg({
-              description: 'Ids of admins to be added to the chat',
-            })
-          )
-        )
-      ),
-    },
-    description: 'Add admins to a group chat',
-    authorize: (_, { chatId, members }, { auth }) =>
-      auth.canAddAdminsToGroupChat({
-        chatId,
-        members,
-      }),
-    resolve: async (_, { chatId, members }, { userId, prisma, pubsub }) => {
-      if (members.length === 0)
-        throw new ForbiddenError('Member list must not be empty');
-      const chat = await prisma.chat.update({
-        data: {
-          admins: {
-            connect: members.map((id) => ({ id })) ?? undefined,
-          },
-        },
-        include: {
-          members: {
-            select: {
-              id: true,
-            },
-          },
-        },
-        where: {
-          id: chatId,
-        },
-      });
-
-      const event = await prisma.event.create({
-        data: {
-          type: 'CHAT_UPDATE',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          chatUpdate: {
-            create: {
-              type: 'ADMINS_ADDED',
-              users: members
-                ? {
-                    connect: members.map((id) => ({ id })),
-                  }
-                : undefined,
-            },
-          },
-        },
-      });
-
-      const recipients = chat.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId);
-
-      // Publish new chat event
-      await pubsub.publish<EventPayload>(Subscription.EventCreated, {
-        recipients,
-        content: event,
-      });
-
-      const alert = await prisma.alert.create({
-        data: {
-          type: 'CHAT_ADMIN_ACCESS_GRANTED',
-          chat: {
-            connect: {
-              id: chatId,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: userId,
-            },
-          },
-          recipients: members
-            ? {
-                connect: members.map((id) => ({ id })),
-              }
-            : undefined,
-        },
-      });
-
-      // Publish new chat alert
-      await pubsub.publish<NotificationPayload>(
-        Subscription.ChatAdminAccessGrantedAlert,
-        {
-          recipients,
-          content: alert,
-        }
-      );
-
-      return event;
-    },
-  }
-);
-
 export const UpdateGroupChatName = mutationField('updateGroupChatName', {
   type: 'NameUpdatedEvent',
+  description: 'Update the name of group chat',
   args: {
-    chatId: nonNull(hashIdArg()),
-    name: nonNull(stringArg()),
+    chatId: nonNull(
+      hashIdArg({
+        description: 'Id of chat to update',
+      })
+    ),
+    name: nonNull(
+      stringArg({
+        description: 'New name',
+      })
+    ),
   },
   authorize: (_, { chatId }, { auth }) =>
     auth.canUpdateGroupChatBasic({ chatId }),
-  resolve: async (_, { chatId, name }, { userId, prisma, pubsub }) => {
+  resolve: async (_, { chatId, name }, { currentUserId, prisma, pubsub }) => {
     const chatBeforeUpdate = await prisma.chat.findUniqueOrThrow({
       where: {
         id: chatId,
@@ -733,7 +195,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
     });
 
     if (name === chatBeforeUpdate.name) {
-      throw new ForbiddenError('Name has not changed');
+      throw new GraphQLError('Name has not changed');
     }
 
     const chatAfterUpdate = await prisma.chat.update({
@@ -743,7 +205,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
       include: {
         members: {
           select: {
-            id: true,
+            userId: true,
           },
         },
       },
@@ -762,7 +224,7 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
         },
         createdBy: {
           connect: {
-            id: userId,
+            id: currentUserId,
           },
         },
         chatUpdate: {
@@ -776,8 +238,8 @@ export const UpdateGroupChatName = mutationField('updateGroupChatName', {
     });
 
     const recipients = chatAfterUpdate.members
-      .map((x) => x.id)
-      .filter((x) => x !== userId);
+      .map((x) => x.userId)
+      .filter((x) => x !== currentUserId);
 
     // Publish new chat event
     await pubsub.publish<EventPayload>(Subscription.EventCreated, {
@@ -793,13 +255,26 @@ export const UpdateGroupChatDescription = mutationField(
   'updateGroupChatDescription',
   {
     type: 'DescriptionUpdatedEvent',
+    description: 'Update the description of a group chat',
     args: {
-      chatId: nonNull(hashIdArg()),
-      description: nonNull(stringArg()),
+      chatId: nonNull(
+        hashIdArg({
+          description: 'Id of chat to update',
+        })
+      ),
+      description: nonNull(
+        stringArg({
+          description: 'New description',
+        })
+      ),
     },
     authorize: (_, { chatId }, { auth }) =>
       auth.canUpdateGroupChatBasic({ chatId }),
-    resolve: async (_, { chatId, description }, { userId, prisma, pubsub }) => {
+    resolve: async (
+      _,
+      { chatId, description },
+      { currentUserId, prisma, pubsub }
+    ) => {
       const chatBeforeUpdate = await prisma.chat.findUniqueOrThrow({
         where: {
           id: chatId,
@@ -810,7 +285,7 @@ export const UpdateGroupChatDescription = mutationField(
       });
 
       if (description === chatBeforeUpdate.description) {
-        throw new ForbiddenError('Description has not changed');
+        throw new GraphQLError('Description has not changed');
       }
 
       const chatAfterUpdate = await prisma.chat.update({
@@ -821,7 +296,7 @@ export const UpdateGroupChatDescription = mutationField(
           description: true,
           members: {
             select: {
-              id: true,
+              userId: true,
             },
           },
         },
@@ -840,7 +315,7 @@ export const UpdateGroupChatDescription = mutationField(
           },
           createdBy: {
             connect: {
-              id: userId,
+              id: currentUserId,
             },
           },
           chatUpdate: {
@@ -854,8 +329,8 @@ export const UpdateGroupChatDescription = mutationField(
       });
 
       const recipients = chatAfterUpdate.members
-        .map((x) => x.id)
-        .filter((x) => x !== userId);
+        .map((x) => x.userId)
+        .filter((x) => x !== currentUserId);
 
       // Publish new chat event
       await pubsub.publish<EventPayload>(Subscription.EventCreated, {
@@ -870,17 +345,17 @@ export const UpdateGroupChatDescription = mutationField(
 
 export const DeleteChatMutation = mutationField('deleteChat', {
   type: 'DeletedChat',
+  description: 'Delete a chat',
   args: {
     chatId: nonNull(
       hashIdArg({
-        description: 'Id of Chat to be deleted',
+        description: 'Id of chat to be deleted',
       })
     ),
   },
-  description: 'Delete a Chat',
   authorize: async (_, { chatId }, { auth }) =>
     await auth.canDeleteChat(chatId),
-  resolve: async (_, { chatId }, { prisma, pubsub, userId }) => {
+  resolve: async (_, { chatId }, { prisma, pubsub, currentUserId }) => {
     const chat = await prisma.chat.update({
       where: {
         id: chatId,
@@ -892,7 +367,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
       include: {
         members: {
           select: {
-            id: true,
+            userId: true,
           },
         },
       },
@@ -908,7 +383,7 @@ export const DeleteChatMutation = mutationField('deleteChat', {
         },
         createdBy: {
           connect: {
-            id: userId,
+            id: currentUserId,
           },
         },
       },
@@ -916,7 +391,9 @@ export const DeleteChatMutation = mutationField('deleteChat', {
 
     // Publish the created chat to every member apart from the user who created it (userId)
     await pubsub.publish<NotificationPayload>(Subscription.ChatDeletedAlert, {
-      recipients: chat.members.map((x) => x.id).filter((x) => x !== userId),
+      recipients: chat.members
+        .map((x) => x.userId)
+        .filter((x) => x !== currentUserId),
       content: alert,
     });
 

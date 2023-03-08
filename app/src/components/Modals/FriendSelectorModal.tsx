@@ -10,7 +10,11 @@ import { useState } from 'react';
 gql`
   query GetFriendsForSelectSearchModal {
     friends {
-      ...UserList
+      edges {
+        node {
+          ...UserList
+        }
+      }
     }
   }
   ${UserList.fragments.user}

@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import NotificationMenu from 'components/Layout/Header/NotificationMenu';
+import NotificationMenu from 'components/Layout/ChatHeader/NotificationMenu';
 import {
   GetNotificationsQuery,
   NotificationsDocument,

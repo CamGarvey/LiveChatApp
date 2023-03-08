@@ -4,7 +4,7 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { NotificationsProvider } from '@mantine/notifications';
+import { Notifications } from '@mantine/notifications';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from 'routes/Home';
 import ProtectedRoute from 'components/ProtectedRoute';
@@ -32,31 +32,30 @@ export const App = () => {
       <MantineProvider
         theme={{
           colorScheme,
-          primaryColor: 'yellow',
+          primaryColor: 'blue',
           loader: 'bars',
         }}
         withGlobalStyles
         withNormalizeCSS
       >
-        <NotificationsProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route index element={<Home />} />
-              <Route
-                path="/chats"
-                element={<ProtectedRoute component={Chats} />}
-              />
-              <Route
-                path="/chats/:chatId"
-                element={<ProtectedRoute component={Chat} />}
-              />
-              <Route
-                path="/users"
-                element={<ProtectedRoute component={Users} />}
-              />
-            </Routes>
-          </BrowserRouter>
-        </NotificationsProvider>
+        <Notifications />
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<Home />} />
+            <Route
+              path="/chats"
+              element={<ProtectedRoute component={Chats} />}
+            />
+            <Route
+              path="/chats/:chatId"
+              element={<ProtectedRoute component={Chat} />}
+            />
+            <Route
+              path="/users"
+              element={<ProtectedRoute component={Users} />}
+            />
+          </Routes>
+        </BrowserRouter>
       </MantineProvider>
     </ColorSchemeProvider>
   );

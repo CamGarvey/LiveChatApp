@@ -9,13 +9,13 @@ export const UpdateUserMutation = mutationField('updateUser', {
   args: {
     name: nonNull(stringArg()),
   },
-  resolve(_, { name }, { userId, prisma }) {
+  resolve(_, { name }, { currentUserId, prisma }) {
     return prisma.user.update({
       data: {
         name,
       },
       where: {
-        id: userId,
+        id: currentUserId,
       },
     });
   },
@@ -28,7 +28,7 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
     friendId: nonNull(hashIdArg()),
   },
   authorize: (_, { friendId }, { auth }) => auth.canDeleteFriend(friendId),
-  resolve: async (_, { friendId }, { prisma, userId, pubsub }) => {
+  resolve: async (_, { friendId }, { prisma, currentUserId, pubsub }) => {
     // Delete friend
     const friend = await prisma.user.update({
       where: {
@@ -37,12 +37,12 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
       data: {
         friends: {
           disconnect: {
-            id: userId,
+            id: currentUserId,
           },
         },
         friendsOf: {
           disconnect: {
-            id: userId,
+            id: currentUserId,
           },
         },
       },
@@ -57,7 +57,7 @@ export const DeleteFriendMutation = mutationField('deleteFriend', {
             id: friendId,
           },
         },
-        createdById: userId,
+        createdById: currentUserId,
       },
     });
 

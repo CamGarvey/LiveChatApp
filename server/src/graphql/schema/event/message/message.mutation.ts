@@ -4,26 +4,30 @@ import { hashIdArg } from '../../shared';
 
 export const CreateMessageMutation = mutationField('createMessage', {
   type: 'MessageEvent',
-  description: 'Create a Message in a Chat',
+  description: 'Create a message in a chat',
   args: {
     chatId: nonNull(
       hashIdArg({
-        description: 'Id of Chat to create Message in',
+        description: 'Id of chat to create message in',
       })
     ),
     content: nonNull(
       stringArg({
-        description: 'Content of Message',
+        description: 'Content of message',
       })
     ),
   },
   authorize: (_, { chatId }, { auth }) => auth.canCreateEvent(chatId),
-  resolve: async (_, { chatId, content }, { prisma, pubsub, userId }) => {
+  resolve: async (
+    _,
+    { chatId, content },
+    { prisma, pubsub, currentUserId }
+  ) => {
     const event = await prisma.event.create({
       data: {
         type: 'MESSAGE',
         chatId,
-        createdById: userId,
+        createdById: currentUserId,
         message: {
           create: {
             content,
@@ -51,7 +55,7 @@ export const CreateMessageMutation = mutationField('createMessage', {
     pubsub.publish<EventPayload>(Subscription.EventCreated, {
       recipients: event.chat.members
         .map((x) => x.id)
-        .filter((x) => x !== userId),
+        .filter((x) => x !== currentUserId),
       content: event,
     });
 
@@ -61,21 +65,25 @@ export const CreateMessageMutation = mutationField('createMessage', {
 
 export const UpdateMessageMutation = mutationField('updateMessage', {
   type: 'MessageEvent',
+  description: 'Update a message',
   args: {
     messageId: nonNull(
       hashIdArg({
-        description: 'Id of Message to edit',
+        description: 'Id of message to edit',
       })
     ),
     content: nonNull(
       stringArg({
-        description: 'New content for Message',
+        description: 'New content for message',
       })
     ),
   },
-  description: 'Update a Message',
   authorize: (_, { messageId }, { auth }) => auth.canUpdateEvent(messageId),
-  resolve: async (_, { messageId, content }, { prisma, pubsub, userId }) => {
+  resolve: async (
+    _,
+    { messageId, content },
+    { prisma, pubsub, currentUserId }
+  ) => {
     // Update message
     const message = await prisma.message.update({
       data: {
@@ -104,7 +112,7 @@ export const UpdateMessageMutation = mutationField('updateMessage', {
     pubsub.publish<EventPayload>(Subscription.EventUpdated, {
       recipients: message.event.chat.members
         .map((x) => x.id)
-        .filter((x) => x !== userId),
+        .filter((x) => x !== currentUserId),
       content: message.event,
     });
 

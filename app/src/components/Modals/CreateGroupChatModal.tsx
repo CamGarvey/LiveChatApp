@@ -12,9 +12,13 @@ import { showNotification } from '@mantine/notifications';
 gql`
   query GetFriendsForCreateGroupChat {
     friends {
-      id
-      name
-      username
+      edges {
+        node {
+          id
+          name
+          username
+        }
+      }
     }
   }
 `;

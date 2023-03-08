@@ -1,8 +1,11 @@
 import { gql } from '@apollo/client';
 import {
   Avatar,
+  AvatarProps,
   Group,
   HoverCard,
+  HoverCardDropdownProps,
+  HoverCardProps,
   MantineNumberSize,
   Popover,
   Skeleton,
@@ -10,33 +13,30 @@ import {
   Text,
 } from '@mantine/core';
 import { UserAvatarFragment } from 'graphql/generated/graphql';
-import { CSSProperties } from 'react';
-import { getUserAvatar } from 'utils/avatar';
-import { sizes } from './Avatar.common';
+import { AVATAR_SIZES, getUserAvatar } from 'utils/avatar';
 
 type Props = {
   user?: UserAvatarFragment | null | undefined;
   loading?: boolean;
   size?: MantineNumberSize;
-  style?: CSSProperties;
-  dropdown?: {
-    style?: CSSProperties;
-  };
-};
+  dropdown?: HoverCardDropdownProps;
+  hoverCard?: HoverCardProps;
+} & AvatarProps;
 
 export const UserAvatar = ({
   user,
   size = 'md',
   loading = false,
-  style,
   dropdown,
+  hoverCard,
+  ...other
 }: Props) => {
   if (loading) {
-    return <Skeleton height={sizes[size]} circle />;
+    return <Skeleton height={AVATAR_SIZES[size]} circle />;
   }
   if (!user) {
     return (
-      <Avatar size={size} radius={'xl'}>
+      <Avatar size={size} radius={'xl'} {...other}>
         ?
       </Avatar>
     );
@@ -47,27 +47,28 @@ export const UserAvatar = ({
       width={'max-content'}
       position={'left'}
       withArrow
+      {...hoverCard}
     >
       <HoverCard.Target>
         <Avatar
           size={size}
           radius={'xl'}
           src={getUserAvatar(user.username)}
-          style={style}
+          {...other}
         />
       </HoverCard.Target>
       <Popover.Dropdown
         style={{
           minWidth: '200px',
-          ...dropdown?.style,
         }}
+        {...dropdown}
       >
         <Group>
           <Avatar
             size={'lg'}
             radius={'xl'}
             src={getUserAvatar(user.username)}
-            style={style}
+            {...other}
           />
           <Stack spacing={1}>
             <Text size={'lg'}>{user.username}</Text>
