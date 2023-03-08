@@ -465,7 +465,9 @@ type FriendRequest implements Notification & Request {
   state: RequestState!
 }
 
-"\n    A group chat can involve two or more members, can have a name, a description and members can be given roles."
+"""
+A group chat can have a name, a description and members can be given roles
+"""
 type GroupChat implements Chat {
   """Time of creation"""
   createdAt: Date

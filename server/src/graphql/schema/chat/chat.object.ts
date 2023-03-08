@@ -63,8 +63,7 @@ export const DirectMessageChat = objectType({
 
 export const GroupChat = objectType({
   name: 'GroupChat',
-  description: `
-    A group chat can involve two or more members, can have a name, a description and members can be given roles.`,
+  description: `A group chat can have a name, a description and members can be given roles`,
   definition: (t) => {
     t.implements('Chat');
     t.nonNull.string('name', {

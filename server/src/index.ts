@@ -2,19 +2,23 @@ import cors from 'cors';
 import express from 'express';
 import { auth } from 'express-oauth2-jwt-bearer';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-import { createServer } from 'http';
+import { createServer, Server } from 'http';
 import Redis, { RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
-import { WebSocketServer } from 'ws';
-import { createGraphqlServer } from './graphqlServer';
-import { json } from 'body-parser';
-import { expressMiddleware } from '@apollo/server/express4';
-
 import hashids from 'hashids';
+import { WebSocketServer } from 'ws';
+import bodyParser from 'body-parser';
+import { expressMiddleware } from '@apollo/server/express4';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { GraphQLError } from 'graphql';
+import { ApolloServer } from '@apollo/server';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+
+import { IContext } from './graphql/context.interface';
 import { Authorizer } from './lib/authorizer';
 import prisma from './lib/clients/prisma';
 import authRouter from './routes/auth';
-import { GraphQLError } from 'graphql';
+import { schema } from './graphql';
 
 const hash = new hashids(
   process.env.HASH_SALT,
@@ -36,19 +40,44 @@ const getUserIdFromToken = (token: string) => {
   return Number(userId);
 };
 
-const main = async () => {
-  // Create Express app
-  const app = express();
+const createWebSocket = ({
+  server,
+  createContext,
+}: {
+  server: Server;
+  createContext: (token: string) => IContext;
+}) => {
+  // Set up WebSocketServer on graphql endpoint
+  const wsServer = new WebSocketServer({
+    server,
+    path: '/graphql',
+  });
 
-  const redisOptions: RedisOptions = {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT),
-    retryStrategy: (times: any) => {
-      // reconnect after
-      return Math.min(times * 50, 2000);
+  return useServer(
+    {
+      schema,
+      context: (req) => {
+        const token = req?.connectionParams?.Authorization;
+        if (typeof token != 'string' || !token) {
+          throw new GraphQLError('No token');
+        }
+        return createContext(token);
+      },
     },
-  };
+    wsServer
+  );
+};
 
+const redisOptions: RedisOptions = {
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT),
+  retryStrategy: (times: any) => {
+    // reconnect after
+    return Math.min(times * 50, 2000);
+  },
+};
+
+const main = async () => {
   // Set up the pubsub server
   const pubsub = new RedisPubSub({
     publisher: new Redis(redisOptions),
@@ -57,20 +86,46 @@ const main = async () => {
 
   const authorizer = new Authorizer(prisma);
 
-  const httpServer = createServer(app);
+  const createContext = (token: string) => {
+    const currentUserId = getUserIdFromToken(token);
+    if (!currentUserId) {
+      throw new GraphQLError('No user');
+    }
+    authorizer.currentUserId = currentUserId;
+    return {
+      currentUserId,
+      prisma,
+      pubsub,
+      auth: authorizer,
+    };
+  };
 
-  // Set up WebSocketServer on graphql endpoint
-  const wsServer = new WebSocketServer({
+  const app = express();
+  const httpServer = createServer(app);
+  const wsServerCleanUp = createWebSocket({
     server: httpServer,
-    path: '/graphql',
+    createContext,
   });
 
-  const server = createGraphqlServer({
-    pubsub,
-    auth: authorizer,
-    getUserIdFromToken,
-    wsServer,
-    httpServer,
+  const server = new ApolloServer<IContext>({
+    schema,
+    csrfPrevention: true,
+    introspection: true,
+    plugins: [
+      // Proper shutdown for the HTTP server.
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+
+      // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await wsServerCleanUp.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
 
   await server.start();
@@ -80,35 +135,21 @@ const main = async () => {
     .use('/auth', authRouter)
     .use(
       cors({
-        origin: ['http://localhost:3000', 'https://studio.apollographql.com'], // <-- allow frontend & apollo studio
+        origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
         credentials: true,
       })
     )
     .use(
       '/graphql',
       cors<cors.CorsRequest>(),
-      json(),
+      bodyParser.json(),
       expressMiddleware(server, {
         context: async ({ req }) => {
-          // Get access token from request
           const token = req.headers.authorization;
           if (!token) {
             throw new GraphQLError('No token');
           }
-          const userId = getUserIdFromToken(token);
-
-          if (!userId) {
-            throw new GraphQLError('No token');
-          }
-
-          authorizer.currentUserId = userId;
-
-          return {
-            currentUserId: userId,
-            prisma,
-            pubsub,
-            auth: authorizer,
-          };
+          return createContext(token);
         },
       }),
       auth({
