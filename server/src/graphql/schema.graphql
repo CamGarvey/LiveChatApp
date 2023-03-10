@@ -197,7 +197,7 @@ input CreateGroupChatInput {
   memberIds: [HashId!]
 
   """Name of the chat"""
-  name: String!
+  name: String
 }
 
 """Date custom scalar type"""

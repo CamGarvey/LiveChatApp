@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { Select, Stack } from '@mantine/core';
+import { Select } from '@mantine/core';
 import { UserSelectFragment } from 'graphql/generated/graphql';
 import { forwardRef, useMemo } from 'react';
 import { getUserAvatar } from 'utils/avatar';
@@ -39,28 +39,22 @@ const UserSelect = forwardRef<HTMLInputElement, Props>(
     );
 
     return (
-      <Stack>
-        <Select
-          ref={ref}
-          {...others}
-          itemComponent={UserSelectItem}
-          data={usersConverted}
-          searchable
-          nothingFound={nothingFound}
-          maxDropdownHeight={400}
-          filter={(value, item) => {
-            return (
-              (item.username
-                .toLowerCase()
-                .includes(value.toLowerCase().trim()) ||
-                item.name
-                  ?.toLowerCase()
-                  .includes(value.toLowerCase().trim())) ??
-              false
-            );
-          }}
-        />
-      </Stack>
+      <Select
+        ref={ref}
+        {...others}
+        itemComponent={UserSelectItem}
+        data={usersConverted}
+        searchable
+        nothingFound={nothingFound}
+        maxDropdownHeight={400}
+        filter={(value, item) => {
+          return (
+            (item.username.toLowerCase().includes(value.toLowerCase().trim()) ||
+              item.name?.toLowerCase().includes(value.toLowerCase().trim())) ??
+            false
+          );
+        }}
+      />
     );
   }
 );

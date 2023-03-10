@@ -3,8 +3,8 @@ import { forwardRef } from 'react';
 import UserProps from './UserProps';
 
 const UserSelectItem = forwardRef<HTMLDivElement, UserProps>(
-  ({ image, username, name, ...others }: UserProps, ref) => (
-    <div ref={ref} {...others}>
+  ({ image, id, username, name, ...others }: UserProps, ref) => (
+    <div key={id} ref={ref} {...others}>
       <Group noWrap>
         <Avatar size={'sm'} src={image} />
         <div>

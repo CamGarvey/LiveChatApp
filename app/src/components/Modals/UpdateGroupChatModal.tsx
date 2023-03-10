@@ -235,6 +235,9 @@ export const UpdateGroupChatModal = ({
                       label={'Members'}
                       users={users}
                       defaultValue={members}
+                      multiSelectProps={{
+                        dropdownPosition: 'top',
+                      }}
                       onChange={(value: any) => {
                         props.setFieldValue('memberIds', value);
                       }}

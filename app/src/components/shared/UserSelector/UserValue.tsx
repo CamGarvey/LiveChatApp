@@ -14,7 +14,7 @@ const UserValue = ({
   canRemove: boolean;
 }) => {
   return (
-    <div {...others}>
+    <div key={value} {...others}>
       <Box
         sx={(theme) => ({
           display: 'flex',

@@ -44,7 +44,7 @@ export interface NexusGenInputs {
   CreateGroupChatInput: { // input type
     description?: string | null; // String
     memberIds?: NexusGenScalars['HashId'][] | null; // [HashId!]
-    name: string; // String!
+    name?: string | null; // String
   }
   UserOrderBy: { // input type
     createdAt?: NexusGenEnums['Sort'] | null; // Sort

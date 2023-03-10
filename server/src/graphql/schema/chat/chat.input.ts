@@ -3,7 +3,7 @@ import { inputObjectType } from 'nexus';
 export const CreateGroupChatInput = inputObjectType({
   name: 'CreateGroupChatInput',
   definition: (t) => {
-    t.nonNull.string('name', {
+    t.string('name', {
       description: 'Name of the chat',
     });
     t.string('description', {

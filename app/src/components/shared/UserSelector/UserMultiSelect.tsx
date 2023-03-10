@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { MultiSelect, Stack } from '@mantine/core';
+import { MultiSelect, MultiSelectProps } from '@mantine/core';
 import { UserSelectFragment } from 'graphql/generated/graphql';
 import { forwardRef, useMemo } from 'react';
 import { getUserAvatar } from 'utils/avatar';
@@ -14,6 +14,7 @@ type Props = {
   readOnly?: boolean;
   users: ({ canRemove?: boolean } & UserSelectFragment)[];
   defaultValue?: UserSelectFragment[];
+  multiSelectProps?: Partial<MultiSelectProps>;
   onChange: (ids: string[]) => void;
 };
 
@@ -24,6 +25,7 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
       onChange,
       nothingFound = 'Nobody Here',
       defaultValue = [],
+      multiSelectProps,
       ...others
     }: Props,
     ref
@@ -36,46 +38,41 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(
     let usersConverted = useMemo(
       () =>
         users.map((u) => ({
-          ...u,
           key: u.id,
           canRemove: u.canRemove ?? true,
           value: u.id,
           label: u.username,
           image: getUserAvatar(u.username),
+          ...u,
         })),
       [users]
     );
 
-    console.log({ usersConverted });
-
     return (
-      <Stack>
-        <MultiSelect
-          ref={ref}
-          {...others}
-          itemComponent={UserSelectItem}
-          valueComponent={UserValue}
-          data={usersConverted}
-          defaultValue={defaultMappedIds}
-          onChange={onChange}
-          searchable
-          nothingFound={nothingFound}
-          maxDropdownHeight={400}
-          styles={{}}
-          filter={(value, selected, item) => {
-            return (
-              !selected &&
-              ((item.username
-                .toLowerCase()
-                .includes(value.toLowerCase().trim()) ||
-                item.name
-                  ?.toLowerCase()
-                  .includes(value.toLowerCase().trim())) ??
-                false)
-            );
-          }}
-        />
-      </Stack>
+      <MultiSelect
+        ref={ref}
+        {...others}
+        itemComponent={UserSelectItem}
+        valueComponent={UserValue}
+        data={usersConverted}
+        defaultValue={defaultMappedIds}
+        onChange={onChange}
+        searchable
+        nothingFound={nothingFound}
+        maxDropdownHeight={200}
+        limit={20}
+        filter={(value, selected, item) => {
+          return (
+            !selected &&
+            ((item.username
+              .toLowerCase()
+              .includes(value?.toLowerCase().trim()) ||
+              item.name?.toLowerCase().includes(value?.toLowerCase().trim())) ??
+              false)
+          );
+        }}
+        {...multiSelectProps}
+      />
     );
   }
 );
