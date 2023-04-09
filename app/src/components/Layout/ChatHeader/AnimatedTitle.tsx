@@ -20,10 +20,12 @@ gql`
         ...ChatUpdateActionGroupChat
       }
       ... on DirectMessageChat {
-        friend {
-          id
-          name
-          username
+        receipent {
+          user {
+            id
+            name
+            username
+          }
         }
       }
     }

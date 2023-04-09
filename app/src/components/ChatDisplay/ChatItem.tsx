@@ -57,8 +57,10 @@ const ChatItem = ({ chat }: Props) => {
             {users.map((user) => (
               <UserAvatar key={user.id} user={user} />
             ))}
-            {chat.memberCount > 2 && (
-              <Avatar radius={'xl'}>+{chat.memberCount - users.length}</Avatar>
+            {chat.members.totalCount > 2 && (
+              <Avatar radius={'xl'}>
+                +{chat.members.totalCount - users.length}
+              </Avatar>
             )}
           </Avatar.Group>
         )
@@ -73,8 +75,10 @@ ChatItem.fragments = {
       id
       ...ChatAvatar
       ... on DirectMessageChat {
-        friend {
-          ...ChatItemUser
+        receipent {
+          user {
+            ...ChatItemUser
+          }
         }
       }
       ... on GroupChat {

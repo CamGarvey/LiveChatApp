@@ -3,12 +3,11 @@ import { Center, Stack, Text } from '@mantine/core';
 import ChatInput from './ChatInput';
 import Scroller from './Scroller';
 import EventContainer from './Event/EventContainer';
-import { Message } from './Event/Message';
-import { ChatUpdate } from './Event/ChatUpdate';
 import DeletedEvent from './Event/DeletedEvent';
 import ChatHeader from './ChatHeader';
 import { useMediaQuery } from '@mantine/hooks';
 import { useCreateMessage, useEvents } from './hooks';
+import { CreatedEvent } from './Event/CreatedEvent/CreatedEvent';
 
 gql`
   query GetEvents($chatId: HashId!, $last: Int, $before: String) {
@@ -24,8 +23,8 @@ gql`
       }
     }
   }
-  subscription Events($chatId: HashId) {
-    events(chatId: $chatId) {
+  subscription Events {
+    events {
       ...ChatPanelEvent
     }
   }
@@ -35,20 +34,16 @@ gql`
     createdBy {
       id
     }
+    ...CreatedEventComponent
     ...EventContainer
-    ...MessageEventComponent
     ...DeletedEventComponent
-    ... on ChatUpdateEvent {
-      ...ChatUpdateEventComponent
-    }
   }
   fragment ChatPanelChat on Chat {
     ...ChatHeaderChat
   }
   ${EventContainer.fragments.event}
-  ${Message.fragments.message}
+  ${CreatedEvent.fragments.event}
   ${DeletedEvent.fragments.event}
-  ${ChatUpdate.fragments.event}
 `;
 
 type Props = {
@@ -117,10 +112,10 @@ const ChatPanel = ({ chatId }: Props) => {
                 eventData={event}
                 event={
                   <>
-                    {event.__typename === 'MessageEvent' && (
-                      <Message
+                    {event.__typename === 'CreatedEvent' && (
+                      <CreatedEvent
                         displayAvatar={event.isLastEventInGroup}
-                        message={event}
+                        event={event}
                       />
                     )}
                     {event.__typename === 'DeletedEvent' && (
@@ -129,16 +124,6 @@ const ChatPanel = ({ chatId }: Props) => {
                         event={event}
                       />
                     )}
-                    {event.__typename &&
-                      [
-                        'NameUpdatedEvent',
-                        'DescriptionUpdatedEvent',
-                        'MembersAddedEvent',
-                        'MembersRemovedEvent',
-                        'RoleChangedEvent',
-                      ].includes(event.__typename) && (
-                        <ChatUpdate update={event as any} />
-                      )}
                   </>
                 }
               />

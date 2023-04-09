@@ -8,41 +8,30 @@ import {
 import useCache from './useCache';
 
 gql`
-  mutation AddMembers($chatId: HashId!, $members: [HashId!]!) {
-    addMembers(chatId: $chatId, members: $members) {
+  mutation AddMembers($chatId: HashId!, $userIds: [HashId!]!) {
+    addMembers(chatId: $chatId, userIds: $userIds) {
       ...GroupChatUpdate
       ...UserAlerationGroupChatUpdate
-      chat {
-        id
+      event {
+        chat {
+          id
+        }
       }
     }
   }
-  mutation RemoveMembers($chatId: HashId!, $members: [HashId!]!) {
-    removeMembers(chatId: $chatId, members: $members) {
+  mutation RemoveMembers($chatId: HashId!, $userIds: [HashId!]!) {
+    removeMembers(chatId: $chatId, userIds: $userIds) {
       ...GroupChatUpdate
       ...UserAlerationGroupChatUpdate
-      chat {
-        id
-      }
-    }
-  }
-  mutation ChangeRole($chatId: HashId!, $members: [HashId!]!, $role: Role!) {
-    changeRole(chatId: $chatId, members: $members, role: $role) {
-      ...GroupChatUpdate
-      ...UserAlerationGroupChatUpdate
-      chat {
-        id
+      event {
+        chat {
+          id
+        }
       }
     }
   }
 
-  fragment GroupChatUpdate on ChatUpdateEvent {
-    id
-    createdBy {
-      id
-    }
-  }
-  fragment UserAlerationGroupChatUpdate on MemberAlterationEvent {
+  fragment UserAlerationGroupChatUpdate on ChatMemberAlteration {
     members {
       role
       user {

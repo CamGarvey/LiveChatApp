@@ -1,49 +1,51 @@
 import { gql } from '@apollo/client';
 import {
-  MessageEventComponentFragment,
+  MessageComponentFragment,
   useDeleteMessageMutation,
 } from 'graphql/generated/graphql';
-import IncomingEvent from '../IncomingEvent';
-import OutgoingEvent from '../OutgoingEvent';
+import IncomingEvent from '../../../IncomingEvent';
+import OutgoingEvent from '../../../OutgoingEvent';
 import MessageActions from './MessageActions';
 import MessageBubble from './MessageBubble';
 
 gql`
-  mutation DeleteMessage($messageId: HashId!) {
-    deleteEvent(eventId: $messageId) {
+  mutation DeleteMessage($eventId: HashId!) {
+    deleteEvent(eventId: $eventId) {
       id
     }
   }
 `;
 
 type Props = {
-  message: { __typename?: 'MessageEvent' } & MessageEventComponentFragment;
+  message: MessageComponentFragment;
   displayAvatar: boolean;
 };
 
 export const Message = ({ message, displayAvatar }: Props) => {
   const [deleteMessage] = useDeleteMessageMutation();
 
-  if (message.isCreator) {
+  if (message.event.isCreator) {
     return (
       <OutgoingEvent
-        event={message}
+        event={message.event}
         state={
-          (message.id as string).startsWith('temp-id') ? 'sending' : 'sent'
+          (message.event.id as string).startsWith('temp-id')
+            ? 'sending'
+            : 'sent'
         }
         children={
           <MessageBubble
             message={message}
-            variant={message.isCreator ? 'light' : 'default'}
+            variant={message.event.isCreator ? 'light' : 'default'}
           />
         }
         actions={
           <MessageActions
-            message={message}
+            message={message.event}
             onDelete={() => {
               deleteMessage({
                 variables: {
-                  messageId: message.id,
+                  eventId: message.event.id,
                 },
               });
             }}
@@ -55,12 +57,12 @@ export const Message = ({ message, displayAvatar }: Props) => {
 
   return (
     <IncomingEvent
-      event={message}
+      event={message.event}
       displayAvatar={displayAvatar}
       children={
         <MessageBubble
           message={message}
-          variant={message.isCreator ? 'light' : 'default'}
+          variant={message.event.isCreator ? 'light' : 'default'}
         />
       }
     />
@@ -69,13 +71,15 @@ export const Message = ({ message, displayAvatar }: Props) => {
 
 Message.fragments = {
   message: gql`
-    fragment MessageEventComponent on MessageEvent {
-      id
-      isCreator
+    fragment MessageComponent on Message {
+      event {
+        id
+        isCreator
+        ...OutgoingEvent
+        ...IncomingEvent
+        ...MessageActions
+      }
       content
-      ...OutgoingEvent
-      ...IncomingEvent
-      ...MessageActions
     }
     ${OutgoingEvent.fragments.event}
     ${IncomingEvent.fragments.event}

@@ -8,8 +8,8 @@ import {
 import { useMemo } from 'react';
 
 gql`
-  mutation SendFriendRequest($strangerId: HashId!) {
-    sendFriendRequest(strangerId: $strangerId) {
+  mutation SendFriendRequest($userId: HashId!) {
+    sendFriendRequest(userId: $userId) {
       ...RequestInfo
     }
   }

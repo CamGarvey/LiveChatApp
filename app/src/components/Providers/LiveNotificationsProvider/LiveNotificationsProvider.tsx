@@ -6,12 +6,12 @@ type Props = {
 };
 
 const LiveNotificationsProvider = ({ children }: Props) => {
-  const { notifications, loading } = useLiveNotifications();
+  const { requests, loading } = useLiveNotifications();
 
   return (
     <LiveNotificationsContext.Provider
       value={{
-        notifications,
+        requests,
         loading,
       }}
     >

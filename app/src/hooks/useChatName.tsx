@@ -5,21 +5,23 @@ import useCache from './useCache';
 gql`
   mutation UpdateGroupChatName($chatId: HashId!, $name: String!) {
     updateGroupChatName(chatId: $chatId, name: $name) {
-      ...GroupChatUpdate
-      nameBefore
-      nameAfter
-      chat {
+      eventId
+      event {
         id
-        ... on GroupChat {
-          name
+        createdBy {
+          id
         }
       }
-    }
-  }
-  fragment GroupChatUpdate on ChatUpdateEvent {
-    id
-    createdBy {
-      id
+      nameBefore
+      nameAfter
+      event {
+        chat {
+          id
+          ... on GroupChat {
+            name
+          }
+        }
+      }
     }
   }
 `;

@@ -9,22 +9,22 @@ import {
 } from '@mantine/core';
 import { IconBell } from '@tabler/icons';
 import { useLiveNotifications } from 'context/LiveNotificationsContext';
-import Notification from './Notification';
+import { Request } from './Request';
 
 type Props = {
   size?: number;
 };
 
 const NotificationMenu = ({ size = 16 }: Props) => {
-  const { notifications } = useLiveNotifications();
+  const { requests } = useLiveNotifications();
 
   return (
     <Menu width={'max-content'} shadow="md">
       <Menu.Target>
         <Indicator
           color={'red'}
-          label={notifications.length}
-          disabled={notifications.length === 0}
+          label={requests.length}
+          disabled={requests.length === 0}
           size={14}
         >
           <ActionIcon variant="default">
@@ -33,10 +33,10 @@ const NotificationMenu = ({ size = 16 }: Props) => {
         </Indicator>
       </Menu.Target>
       <Menu.Dropdown>
-        {notifications.length !== 0 ? (
+        {requests.length !== 0 ? (
           <>
             <Menu.Label>
-              <Center>Notifications</Center>
+              <Center>Requests</Center>
             </Menu.Label>
             <ScrollArea
               sx={{
@@ -49,11 +49,8 @@ const NotificationMenu = ({ size = 16 }: Props) => {
                   maxHeight: '300px',
                 }}
               >
-                {notifications.map((notification) => (
-                  <Notification
-                    key={notification.id}
-                    notification={notification}
-                  />
+                {requests.map((request) => (
+                  <Request key={request.id} request={request} />
                 ))}
               </Stack>
             </ScrollArea>
@@ -69,11 +66,11 @@ const NotificationMenu = ({ size = 16 }: Props) => {
 };
 
 NotificationMenu.fragments = {
-  notification: gql`
-    fragment NotificationMenuRequest on Notification {
-      ...NotificationComponentNotification
+  request: gql`
+    fragment NotificationMenuRequest on Request {
+      ...RequestComponentRequest
     }
-    ${Notification.fragments.notification}
+    ${Request.fragments.request}
   `,
 };
 

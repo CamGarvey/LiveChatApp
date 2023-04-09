@@ -8,18 +8,22 @@ gql`
       ...GroupChatUpdate
       descriptionBefore
       descriptionAfter
-      chat {
-        id
-        ... on GroupChat {
-          description
+      event {
+        chat {
+          id
+          ... on GroupChat {
+            description
+          }
         }
       }
     }
   }
-  fragment GroupChatUpdate on ChatUpdateEvent {
-    id
-    createdBy {
-      id
+  fragment GroupChatUpdate on ChatUpdate {
+    eventId
+    event {
+      createdBy {
+        id
+      }
     }
   }
 `;

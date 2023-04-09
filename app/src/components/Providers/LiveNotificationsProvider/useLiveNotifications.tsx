@@ -9,67 +9,20 @@ import {
 import { useEffect } from 'react';
 
 gql`
-  query GetNotifications {
-    notifications {
-      ...LiveNotification
+  query GetRequests {
+    requests {
+      ...LiveRequest
     }
   }
-  subscription Notifications {
-    notifications {
-      ...LiveNotification
+  subscription Requests {
+    requests {
+      ...LiveRequest
     }
   }
-  fragment LiveNotification on Notification {
-    id
-    createdAt
-    isCreator
-    createdBy {
-      id
-      name
-      username
-      ... on Stranger {
-        friendRequest {
-          id
-        }
-      }
-    }
-    ... on ChatAccessAlert {
-      chat {
-        id
-        ... on GroupChat {
-          name
-        }
-      }
-    }
-    ... on RequestResponseAlert {
-      request {
-        id
-        state
-      }
-    }
-    ... on Request {
-      createdById
-      isCreator
-      state
-      createdBy {
-        ... on Stranger {
-          friendRequest {
-            id
-          }
-        }
-      }
-      recipient {
-        id
-        ... on Stranger {
-          friendRequest {
-            id
-          }
-        }
-      }
-    }
+  fragment LiveRequest on Request {
     ...NotificationMenuRequest
   }
-  ${NotificationMenu.fragments.notification}
+  ${NotificationMenu.fragments.request}
 `;
 
 /**
@@ -77,7 +30,7 @@ gql`
  * @returns
  */
 export const useLiveNotifications = () => {
-  const { data, subscribeToMore, loading } = useGetNotificationsQuery();
+  const { data, subscribeToMore, loading } = useGe();
 
   useEffect(() => {
     const unsubscribe = subscribeToMore<NotificationsSubscription>({
@@ -105,8 +58,8 @@ export const useLiveNotifications = () => {
   }, [subscribeToMore]);
 
   return {
-    notifications:
-      data?.notifications
+    requests:
+      data?.requests
         .slice()
         .filter((x) => {
           if (x.__typename === 'FriendRequest') {

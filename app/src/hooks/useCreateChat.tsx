@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 gql`
   mutation CreateGroupChat($data: CreateGroupChatInput!) {
-    createGroupChat(data: $data) {
+    createGroupChat(createGroupChatData: $data) {
       id
       name
       createdBy {
@@ -21,15 +21,17 @@ gql`
       }
     }
   }
-  mutation CreateDirectMessageChat($friendId: HashId!) {
-    createDirectMessageChat(friendId: $friendId) {
+  mutation CreateDirectMessageChat($receipentUserId: HashId!) {
+    createDirectMessageChat(receipentUserId: $receipentUserId) {
       id
       isCreator
       createdAt
-      friend {
+      receipent {
         id
-        name
-        username
+        user {
+          name
+          username
+        }
       }
     }
   }

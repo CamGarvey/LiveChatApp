@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { MessageActionsFragment } from 'graphql/generated/graphql';
-import DeleteEventAction from '../DeleteEventAction';
+import DeleteEventAction from '../../../DeleteEventAction';
 
 type Props = {
   message: MessageActionsFragment;

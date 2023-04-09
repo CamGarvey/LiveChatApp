@@ -16,53 +16,50 @@ import {
 } from 'graphql/generated/graphql';
 import { useNavigate } from 'react-router-dom';
 
-gql`
-  query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
-    chats {
-      ...ChatForChatDisplay
-    }
-  }
-  subscription GetChatsForChatDisplayChanges(
-    $firstMembers: Int = 2
-    $afterMember: String
-  ) {
-    chatAccessAlerts {
-      chat {
-        ...ChatForChatDisplay
-      }
-    }
-  }
-  fragment ChatForChatDisplay on Chat {
-    id
-    ...ChatItem
-    createdBy {
-      id
-      username
-    }
-    ... on GroupChat {
-      members(first: $firstMembers, after: $afterMember) {
-        totalCount
-        edges {
-          node {
-            user {
-              id
-              username
-              name
-            }
-          }
-        }
-      }
-    }
-    ... on DirectMessageChat {
-      friend {
-        id
-        username
-        name
-      }
-    }
-  }
-  ${ChatItem.fragments.chat}
-`;
+// gql`
+//   query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
+//     chats {
+//      ...ChatDisplayChat
+//     }
+//   }
+//   subscription ChatsForChatDisplay {
+//     chats {
+//     ChatDisplayChat}
+//   }
+
+//   fragment ChatDisplayChat on Chat {
+//     id
+//     ...ChatItem
+//     createdBy {
+//       id
+//       username
+//     }
+//     ... on GroupChat {
+//       members(first: $firstMembers, after: $afterMember) {
+//         totalCount
+//         edges {
+//           node {
+//             user {
+//               id
+//               username
+//               name
+//             }
+//           }
+//         }
+//       }
+//     }
+//     ... on DirectMessageChat {
+//       receipent {
+//         user {
+//           id
+//           username
+//           name
+//         }
+//       }
+//     }
+//   }
+//   ${ChatItem.fragments.chat}
+// `;
 
 const ChatDisplay = () => {
   const navigate = useNavigate();

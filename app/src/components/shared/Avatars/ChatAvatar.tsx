@@ -51,9 +51,11 @@ ChatAvatar.fragments = {
         name
       }
       ... on DirectMessageChat {
-        friend {
-          id
-          username
+        receipent {
+          user {
+            id
+            username
+          }
         }
       }
     }

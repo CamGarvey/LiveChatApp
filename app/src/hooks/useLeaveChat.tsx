@@ -7,13 +7,13 @@ import {
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-gql`
-  mutation LeaveChat($chatId: HashId!) {
-    leaveGroupChat(chatId: $chatId) {
-      id
-    }
-  }
-`;
+// gql`
+//   mutation LeaveChat($chatId: HashId!) {
+//     leaveGroupChat(chatId: $chatId) {
+//       id
+//     }
+//   }
+// `;
 
 export const useLeaveChat = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export const useLeaveChat = () => {
         variables: {
           chatId,
         },
-        update: (cache, { data }) => {
+        update: (cache) => {
           cache.updateQuery<GetChatsForChatDisplayQuery>(
             {
               query: GetChatsForChatDisplayDocument,

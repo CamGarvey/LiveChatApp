@@ -49,8 +49,10 @@ const MessageBubble = ({
 
 MessageBubble.fragments = {
   message: gql`
-    fragment MessageBubble on MessageEvent {
-      id
+    fragment MessageBubble on Message {
+      event {
+        id
+      }
       content
     }
   `,

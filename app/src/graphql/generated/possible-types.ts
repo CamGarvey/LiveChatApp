@@ -7,14 +7,9 @@
       const result: PossibleTypesResultData = {
   "possibleTypes": {
     "Alert": [
-      "ChatAdminAccessGrantedAlert",
-      "ChatAdminAccessRevokedAlert",
       "ChatDeletedAlert",
       "ChatMemberAccessGrantedAlert",
-      "ChatMemberAccessRevokedAlert",
-      "FriendDeletedAlert",
-      "RequestAcceptedAlert",
-      "RequestDeclinedAlert"
+      "FriendDeletedAlert"
     ],
     "Chat": [
       "DeletedChat",
@@ -22,62 +17,38 @@
       "GroupChat"
     ],
     "ChatAccessAlert": [
-      "ChatAdminAccessGrantedAlert",
-      "ChatAdminAccessRevokedAlert",
-      "ChatMemberAccessGrantedAlert",
-      "ChatMemberAccessRevokedAlert"
+      "ChatMemberAccessGrantedAlert"
     ],
-    "ChatSubscriptionResult": [
-      "DeletedChat",
-      "DirectMessageChat",
-      "GroupChat"
+    "ChatAlert": [
+      "ChatMemberAccessGrantedAlert"
     ],
-    "ChatUpdateEvent": [
-      "DescriptionUpdatedEvent",
-      "MembersAddedEvent",
-      "MembersRemovedEvent",
-      "NameUpdatedEvent",
-      "RoleChangedEvent"
+    "ChatMemberAlteration": [
+      "ChatMembersAddedUpdate",
+      "ChatMembersRemovedUpdate"
+    ],
+    "ChatUpdate": [
+      "ChatDescriptionUpdate",
+      "ChatMembersAddedUpdate",
+      "ChatMembersRemovedUpdate",
+      "ChatNameUpdate"
     ],
     "Event": [
-      "DeletedEvent",
-      "DescriptionUpdatedEvent",
-      "MembersAddedEvent",
-      "MembersRemovedEvent",
-      "MessageEvent",
-      "NameUpdatedEvent",
-      "RoleChangedEvent"
-    ],
-    "KnownUser": [
-      "Friend",
-      "Me"
+      "CreatedEvent",
+      "DeletedEvent"
     ],
     "Member": [
       "ChatMember",
-      "DeletedMember"
+      "RemovedMember"
     ],
-    "MemberAlterationEvent": [
-      "MembersAddedEvent",
-      "MembersRemovedEvent",
-      "RoleChangedEvent"
-    ],
-    "Notification": [
-      "ChatAdminAccessGrantedAlert",
-      "ChatAdminAccessRevokedAlert",
-      "ChatDeletedAlert",
-      "ChatMemberAccessGrantedAlert",
-      "ChatMemberAccessRevokedAlert",
-      "FriendDeletedAlert",
-      "FriendRequest",
-      "RequestAcceptedAlert",
-      "RequestDeclinedAlert"
+    "PayloadUnion": [
+      "ChatDescriptionUpdate",
+      "ChatMembersAddedUpdate",
+      "ChatMembersRemovedUpdate",
+      "ChatNameUpdate",
+      "Message"
     ],
     "Request": [
       "FriendRequest"
-    ],
-    "RequestResponseAlert": [
-      "RequestAcceptedAlert",
-      "RequestDeclinedAlert"
     ],
     "User": [
       "Friend",

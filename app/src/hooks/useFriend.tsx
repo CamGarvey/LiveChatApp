@@ -5,8 +5,8 @@ import {
 } from 'graphql/generated/graphql';
 
 gql`
-  mutation DeleteFriend($friendId: HashId!) {
-    deleteFriend(friendId: $friendId) {
+  mutation DeleteFriend($userId: HashId!) {
+    deleteFriend(userId: $userId) {
       id
     }
   }

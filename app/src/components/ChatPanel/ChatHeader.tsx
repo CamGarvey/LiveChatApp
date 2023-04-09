@@ -12,8 +12,10 @@ gql`
   }
   fragment ChatHeaderChat on Chat {
     ... on DirectMessageChat {
-      friend {
-        username
+      receipent {
+        user {
+          username
+        }
       }
     }
     ... on GroupChat {
@@ -81,7 +83,7 @@ const ChatHeader = ({ chatId }: Props) => {
             </Stack>
           )}
           {chat?.__typename === 'DirectMessageChat' && (
-            <Text>{chat.friend.username}</Text>
+            <Text>{chat.receipent.user.username}</Text>
           )}
         </>
       )}

@@ -97,8 +97,10 @@ HeaderSection.fragments = {
         ...ChatUpdateActionGroupChat
       }
       ... on DirectMessageChat {
-        friend {
-          username
+        receipent {
+          user {
+            username
+          }
         }
       }
     }

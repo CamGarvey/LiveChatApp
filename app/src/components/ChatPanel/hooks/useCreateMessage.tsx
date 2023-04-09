@@ -9,15 +9,17 @@ import {
 gql`
   mutation CreateMessage($chatId: HashId!, $content: String!) {
     createMessage(chatId: $chatId, content: $content) {
-      id
-      createdAt
-      content
-      isCreator
-      createdBy {
+      event {
         id
-        username
-        name
+        createdAt
+        isCreator
+        createdBy {
+          id
+          username
+          name
+        }
       }
+      content
     }
   }
 `;
@@ -84,13 +86,15 @@ export const useCreateMessage = ({ chatId }: Props) => {
                 ...edges,
                 {
                   node: {
-                    __typename: 'MessageEvent',
+                    __typename: 'CreatedEvent',
                     createdBy: {
                       __typename: 'Me',
                       ...user,
                     },
-                    content,
-                    ...data.createMessage,
+                    payload: {
+                      content,
+                      ...data.createMessage,
+                    },
                     createdAt,
                   },
                 },

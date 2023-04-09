@@ -6,8 +6,9 @@ import {
 
 gql`
   mutation DeleteChat($chatId: HashId!) {
-    deleteChat(chatId: $chatId) {
+    deletedChat(chatId: $chatId) {
       id
+      deletedAt
     }
   }
   fragment UseDeleteChat on Chat {
