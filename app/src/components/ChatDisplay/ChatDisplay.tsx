@@ -8,58 +8,61 @@ import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
 import { useCreateChat } from 'hooks';
 import { gql } from '@apollo/client';
 import ChatItem from './ChatItem';
+import { useNavigate } from 'react-router-dom';
 import {
-  GetChatsForChatDisplayChangesDocument,
-  GetChatsForChatDisplayChangesSubscription,
-  GetChatsForChatDisplayQuery,
+  ChatsForChatDisplayDocument,
+  ChatsForChatDisplaySubscription,
   useGetChatsForChatDisplayQuery,
 } from 'graphql/generated/graphql';
-import { useNavigate } from 'react-router-dom';
 
-// gql`
-//   query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
-//     chats {
-//      ...ChatDisplayChat
-//     }
-//   }
-//   subscription ChatsForChatDisplay {
-//     chats {
-//     ChatDisplayChat}
-//   }
+gql`
+  query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
+    chats {
+      ...ChatDisplayChat
+    }
+  }
+  subscription ChatsForChatDisplay(
+    $firstMembers: Int = 2
+    $afterMember: String
+  ) {
+    chats {
+      ...ChatDisplayChat
+    }
+  }
 
-//   fragment ChatDisplayChat on Chat {
-//     id
-//     ...ChatItem
-//     createdBy {
-//       id
-//       username
-//     }
-//     ... on GroupChat {
-//       members(first: $firstMembers, after: $afterMember) {
-//         totalCount
-//         edges {
-//           node {
-//             user {
-//               id
-//               username
-//               name
-//             }
-//           }
-//         }
-//       }
-//     }
-//     ... on DirectMessageChat {
-//       receipent {
-//         user {
-//           id
-//           username
-//           name
-//         }
-//       }
-//     }
-//   }
-//   ${ChatItem.fragments.chat}
-// `;
+  fragment ChatDisplayChat on Chat {
+    id
+    ...ChatItem
+    createdBy {
+      id
+      username
+    }
+    ... on GroupChat {
+      members(first: $firstMembers, after: $afterMember) {
+        totalCount
+        edges {
+          node {
+            user {
+              id
+              username
+              name
+            }
+          }
+        }
+      }
+    }
+    ... on DirectMessageChat {
+      receipent {
+        user {
+          id
+          username
+          name
+        }
+      }
+    }
+  }
+  ${ChatItem.fragments.chat}
+`;
 
 const ChatDisplay = () => {
   const navigate = useNavigate();
@@ -74,35 +77,34 @@ const ChatDisplay = () => {
   const drawer = useDrawer();
 
   useEffect(() => {
-    const unsubscribe =
-      subscribeToMore<GetChatsForChatDisplayChangesSubscription>({
-        document: GetChatsForChatDisplayChangesDocument,
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data) return prev;
-          const accessAlert = subscriptionData.data.chatAccessAlerts;
+    const unsubscribe = subscribeToMore<ChatsForChatDisplaySubscription>({
+      document: ChatsForChatDisplayDocument,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        const chat = subscriptionData.data.chats;
 
-          if (!accessAlert) {
-            throw new Error('No access alert found');
-          }
+        if (!chat) {
+          throw new Error('No chat found');
+        }
 
-          switch (accessAlert.__typename) {
-            case 'ChatMemberAccessGrantedAlert':
-              return Object.assign({}, prev, {
-                chats: [
-                  ...prev.chats.filter((x) => x.id !== accessAlert.chat.id),
-                  accessAlert.chat,
-                ],
-              } as GetChatsForChatDisplayQuery);
-            case 'ChatMemberAccessRevokedAlert':
-              navigate('/chats', { replace: true });
-              return Object.assign({}, prev, {
-                chats: prev.chats.filter((x) => x.id !== accessAlert.chat.id),
-              } as GetChatsForChatDisplayQuery);
-            default:
-              return prev;
-          }
-        },
-      });
+        switch (chat.__typename) {
+          case 'ChatMemberAccessGrantedAlert':
+            return Object.assign({}, prev, {
+              chats: [
+                ...prev.chats.filter((x) => x.id !== accessAlert.chat.id),
+                accessAlert.chat,
+              ],
+            } as GetChatsForChatDisplayQuery);
+          case 'ChatMemberAccessRevokedAlert':
+            navigate('/chats', { replace: true });
+            return Object.assign({}, prev, {
+              chats: prev.chats.filter((x) => x.id !== accessAlert.chat.id),
+            } as GetChatsForChatDisplayQuery);
+          default:
+            return prev;
+        }
+      },
+    });
     return () => unsubscribe();
   }, [subscribeToMore, navigate]);
 

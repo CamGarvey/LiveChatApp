@@ -627,6 +627,30 @@ export type UserEdge = {
   node: User;
 };
 
+export type GetChatsForChatDisplayQueryVariables = Exact<{
+  firstMembers?: InputMaybe<Scalars['Int']>;
+  afterMember?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetChatsForChatDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } }> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+
+export type ChatsForChatDisplaySubscriptionVariables = Exact<{
+  firstMembers?: InputMaybe<Scalars['Int']>;
+  afterMember?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type ChatsForChatDisplaySubscription = { __typename?: 'Subscription', chats: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } }> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } };
+
+type ChatDisplayChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatDisplayChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+type ChatDisplayChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } }> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+
+export type ChatDisplayChatFragment = ChatDisplayChat_DeletedChat_Fragment | ChatDisplayChat_DirectMessageChat_Fragment | ChatDisplayChat_GroupChat_Fragment;
+
 type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
 
 type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } };
@@ -835,7 +859,7 @@ export type FriendRequestComponentRequestFragment = { __typename?: 'FriendReques
 
 export type NotificationMenuRequestFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
 
-export type RequestComponentRequestFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+export type RequestComponentFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
 
 export type GetFriendsForCreateGroupChatQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -888,14 +912,14 @@ export type UserSearchModelUserFragment = UserSearchModelUser_Friend_Fragment | 
 export type GetRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRequestsQuery = { __typename?: 'Query', requests: Array<{ __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }> };
+export type GetRequestsQuery = { __typename?: 'Query', requests: Array<{ __typename?: 'FriendRequest', state: RequestState, createdAt: any, id: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }> };
 
 export type RequestsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RequestsSubscription = { __typename?: 'Subscription', requests: { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } };
+export type RequestsSubscription = { __typename?: 'Subscription', requests: { __typename?: 'FriendRequest', state: RequestState, createdAt: any, id: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } };
 
-export type LiveRequestFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
+export type LiveRequestFragment = { __typename?: 'FriendRequest', state: RequestState, createdAt: any, id: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
 
 export type GetMeForUserProviderQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1142,6 +1166,39 @@ export const ChatItemFragmentDoc = gql`
 }
     ${ChatAvatarFragmentDoc}
 ${ChatItemUserFragmentDoc}`;
+export const ChatDisplayChatFragmentDoc = gql`
+    fragment ChatDisplayChat on Chat {
+  id
+  ...ChatItem
+  createdBy {
+    id
+    username
+  }
+  ... on GroupChat {
+    members(first: $firstMembers, after: $afterMember) {
+      totalCount
+      edges {
+        node {
+          user {
+            id
+            username
+            name
+          }
+        }
+      }
+    }
+  }
+  ... on DirectMessageChat {
+    receipent {
+      user {
+        id
+        username
+        name
+      }
+    }
+  }
+}
+    ${ChatItemFragmentDoc}`;
 export const EventInfoFragmentDoc = gql`
     fragment EventInfo on Event {
   id
@@ -1477,8 +1534,8 @@ export const UserSearchModelUserFragmentDoc = gql`
   ...UserList
 }
     ${UserListFragmentDoc}`;
-export const RequestComponentRequestFragmentDoc = gql`
-    fragment RequestComponentRequest on Request {
+export const RequestComponentFragmentDoc = gql`
+    fragment RequestComponent on Request {
   id
   createdAt
   createdById
@@ -1491,12 +1548,14 @@ export const RequestComponentRequestFragmentDoc = gql`
     ${UserAvatarFragmentDoc}`;
 export const NotificationMenuRequestFragmentDoc = gql`
     fragment NotificationMenuRequest on Request {
-  ...RequestComponentRequest
+  ...RequestComponent
 }
-    ${RequestComponentRequestFragmentDoc}`;
+    ${RequestComponentFragmentDoc}`;
 export const LiveRequestFragmentDoc = gql`
     fragment LiveRequest on Request {
   ...NotificationMenuRequest
+  state
+  createdAt
 }
     ${NotificationMenuRequestFragmentDoc}`;
 export const UserMultiSelectFragmentDoc = gql`
@@ -1568,6 +1627,73 @@ export const RequestInfoFragmentDoc = gql`
   state
 }
     `;
+export const GetChatsForChatDisplayDocument = gql`
+    query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
+  chats {
+    ...ChatDisplayChat
+  }
+}
+    ${ChatDisplayChatFragmentDoc}`;
+
+/**
+ * __useGetChatsForChatDisplayQuery__
+ *
+ * To run a query within a React component, call `useGetChatsForChatDisplayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatsForChatDisplayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatsForChatDisplayQuery({
+ *   variables: {
+ *      firstMembers: // value for 'firstMembers'
+ *      afterMember: // value for 'afterMember'
+ *   },
+ * });
+ */
+export function useGetChatsForChatDisplayQuery(baseOptions?: Apollo.QueryHookOptions<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>(GetChatsForChatDisplayDocument, options);
+      }
+export function useGetChatsForChatDisplayLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>(GetChatsForChatDisplayDocument, options);
+        }
+export type GetChatsForChatDisplayQueryHookResult = ReturnType<typeof useGetChatsForChatDisplayQuery>;
+export type GetChatsForChatDisplayLazyQueryHookResult = ReturnType<typeof useGetChatsForChatDisplayLazyQuery>;
+export type GetChatsForChatDisplayQueryResult = Apollo.QueryResult<GetChatsForChatDisplayQuery, GetChatsForChatDisplayQueryVariables>;
+export const ChatsForChatDisplayDocument = gql`
+    subscription ChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
+  chats {
+    ...ChatDisplayChat
+  }
+}
+    ${ChatDisplayChatFragmentDoc}`;
+
+/**
+ * __useChatsForChatDisplaySubscription__
+ *
+ * To run a query within a React component, call `useChatsForChatDisplaySubscription` and pass it any options that fit your needs.
+ * When your component renders, `useChatsForChatDisplaySubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChatsForChatDisplaySubscription({
+ *   variables: {
+ *      firstMembers: // value for 'firstMembers'
+ *      afterMember: // value for 'afterMember'
+ *   },
+ * });
+ */
+export function useChatsForChatDisplaySubscription(baseOptions?: Apollo.SubscriptionHookOptions<ChatsForChatDisplaySubscription, ChatsForChatDisplaySubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ChatsForChatDisplaySubscription, ChatsForChatDisplaySubscriptionVariables>(ChatsForChatDisplayDocument, options);
+      }
+export type ChatsForChatDisplaySubscriptionHookResult = ReturnType<typeof useChatsForChatDisplaySubscription>;
+export type ChatsForChatDisplaySubscriptionResult = Apollo.SubscriptionResult<ChatsForChatDisplaySubscription>;
 export const GetChatForChatHeaderDocument = gql`
     query GetChatForChatHeader($chatId: HashId!) {
   chat(chatId: $chatId) {

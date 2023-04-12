@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 import NotificationMenu from 'components/Layout/ChatHeader/NotificationMenu';
 import {
-  GetNotificationsQuery,
-  NotificationsDocument,
-  NotificationsSubscription,
-  useGetNotificationsQuery,
+  GetRequestsQuery,
+  RequestsDocument,
+  RequestsSubscription,
+  useGetRequestsQuery,
 } from 'graphql/generated/graphql';
 import { useEffect } from 'react';
 
@@ -21,6 +21,8 @@ gql`
   }
   fragment LiveRequest on Request {
     ...NotificationMenuRequest
+    state
+    createdAt
   }
   ${NotificationMenu.fragments.request}
 `;
@@ -30,26 +32,25 @@ gql`
  * @returns
  */
 export const useLiveNotifications = () => {
-  const { data, subscribeToMore, loading } = useGe();
+  const { data, subscribeToMore, loading } = useGetRequestsQuery();
 
   useEffect(() => {
-    const unsubscribe = subscribeToMore<NotificationsSubscription>({
-      document: NotificationsDocument,
+    const unsubscribe = subscribeToMore<RequestsSubscription>({
+      document: RequestsDocument,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        const notification = subscriptionData.data.notifications;
+        const request = subscriptionData.data.requests;
 
-        if (!notification) {
-          throw new Error('No notification found');
+        if (!request) {
+          throw new Error('No request found');
         }
 
         const newCache = Object.assign({}, prev ?? {}, {
-          notifications: [
-            ...(prev?.notifications?.filter((x) => x.id !== notification.id) ??
-              []),
-            notification,
+          requests: [
+            ...(prev?.requests?.filter((x) => x.id !== request.id) ?? []),
+            request,
           ],
-        } as GetNotificationsQuery);
+        } as GetRequestsQuery);
 
         return newCache;
       },
@@ -61,12 +62,7 @@ export const useLiveNotifications = () => {
     requests:
       data?.requests
         .slice()
-        .filter((x) => {
-          if (x.__typename === 'FriendRequest') {
-            return x.state === 'SENT';
-          }
-          return true;
-        })
+        .filter((x) => x.state === 'SENT')
         .sort((a, b) => b.createdAt - a.createdAt) ?? [],
     loading,
   };

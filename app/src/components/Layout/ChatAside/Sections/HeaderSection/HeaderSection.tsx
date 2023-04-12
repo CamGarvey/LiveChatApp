@@ -30,7 +30,7 @@ export const HeaderSection = ({
       case 'GroupChat':
         return chat.name;
       case 'DirectMessageChat':
-        return chat.friend.username;
+        return chat.receipent.user.username;
       default:
         return 'Error';
     }

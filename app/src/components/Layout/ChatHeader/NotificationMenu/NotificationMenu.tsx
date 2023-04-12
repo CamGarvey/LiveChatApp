@@ -68,7 +68,7 @@ const NotificationMenu = ({ size = 16 }: Props) => {
 NotificationMenu.fragments = {
   request: gql`
     fragment NotificationMenuRequest on Request {
-      ...RequestComponentRequest
+      ...RequestComponent
     }
     ${Request.fragments.request}
   `,

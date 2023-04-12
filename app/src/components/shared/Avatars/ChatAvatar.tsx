@@ -20,7 +20,7 @@ export const ChatAvatar = ({
   const src = useMemo(() => {
     switch (chat?.__typename) {
       case 'DirectMessageChat':
-        return getUserAvatar(chat.friend.username);
+        return getUserAvatar(chat.receipent.user.username);
       case 'GroupChat':
         return getChatAvatar(chat.name);
       default:

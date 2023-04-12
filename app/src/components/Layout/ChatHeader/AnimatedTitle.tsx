@@ -70,7 +70,7 @@ const AnimatedTitle = () => {
       case 'DeletedChat':
         return 'Deleted';
       case 'DirectMessageChat':
-        return chat.friend.username;
+        return chat.receipent.user.username;
       default:
         return 'unknown';
     }
@@ -107,9 +107,9 @@ const AnimatedTitle = () => {
                         </Text>
                       )}
                       {chat.__typename === 'DirectMessageChat' &&
-                        chat.friend.name && (
+                        chat.receipent.user.name && (
                           <Text color={'dimmed'} p={0} size={'xs'}>
-                            {chat.friend.name}
+                            {chat.receipent.user.name}
                           </Text>
                         )}
                     </Stack>

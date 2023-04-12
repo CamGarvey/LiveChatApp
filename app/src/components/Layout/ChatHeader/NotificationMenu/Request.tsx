@@ -5,9 +5,10 @@ import UserAvatar from 'components/shared/Avatars/UserAvatar';
 import { gql } from '@apollo/client';
 import { useStranger } from 'hooks';
 import { useRequest } from 'hooks';
+import { RequestComponentFragment } from 'graphql/generated/graphql';
 
 type Props = {
-  request: RequestFragment;
+  request: RequestComponentFragment;
 };
 
 export const Request = ({ request }: Props) => {
@@ -74,7 +75,7 @@ export const Request = ({ request }: Props) => {
 
 Request.fragments = {
   request: gql`
-    fragment RequestComponentRequest on Request {
+    fragment RequestComponent on Request {
       id
       createdAt
       createdById
