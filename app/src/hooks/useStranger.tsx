@@ -51,7 +51,7 @@ export const useStranger = (stranger: UseStrangerFragment) => {
   const sendFriendRequest = () =>
     sendRequestMutation({
       variables: {
-        strangerId: stranger.id,
+        userId: stranger.id,
       },
       update: (cache, { data: newData }) => {
         cache.updateFragment<FriendRequestStrangerFragment>(

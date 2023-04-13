@@ -42,6 +42,7 @@ gql`
         totalCount
         edges {
           node {
+            id
             user {
               id
               username
@@ -53,6 +54,7 @@ gql`
     }
     ... on DirectMessageChat {
       receipent {
+        id
         user {
           id
           username
@@ -84,7 +86,7 @@ const ChatDisplay = () => {
         const chat = subscriptionData.data.chats;
 
         if (!chat) {
-          throw new Error('No chat found');
+          throw new Error('Update query failed, no chat found');
         }
 
         switch (chat.__typename) {
@@ -110,14 +112,14 @@ const ChatDisplay = () => {
 
   const filteredChats = useMemo(
     () =>
-      data?.chats?.filter((c) => {
-        if (c.__typename === 'GroupChat') {
-          return c.name.toLowerCase().includes(filter);
+      data?.chats?.filter((chat) => {
+        if (chat.__typename === 'GroupChat') {
+          return chat.name.toLowerCase().includes(filter);
         }
-        if (c.__typename === 'DirectMessageChat') {
+        if (chat.__typename === 'DirectMessageChat') {
           return (
-            c.friend.username.toLowerCase().includes(filter) ||
-            c.friend.name?.toLowerCase().includes(filter)
+            chat.receipent.user.username.toLowerCase().includes(filter) ||
+            chat.receipent.user.name?.toLowerCase().includes(filter)
           );
         }
         return false;
@@ -144,7 +146,7 @@ const ChatDisplay = () => {
         onSelect: (user) => {
           createDirectMessageChat({
             variables: {
-              friendId: user.id,
+              receipentUserId: user.id,
             },
           });
         },

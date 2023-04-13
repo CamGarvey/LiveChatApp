@@ -27,7 +27,7 @@ export const useFriend = (friend: UseFriendFragment) => {
   const deleteFriend = () =>
     deleteFriendMutation({
       variables: {
-        friendId: friend.id,
+        userId: friend.id,
       },
     });
 

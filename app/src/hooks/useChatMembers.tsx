@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 import {
   Role,
   useAddMembersMutation,
-  useChangeRoleMutation,
+  useChangeMemberRolesMutation,
   useRemoveMembersMutation,
 } from 'graphql/generated/graphql';
 import useCache from './useCache';
@@ -31,6 +31,20 @@ gql`
     }
   }
 
+  mutation changeMemberRoles(
+    $chatId: HashId!
+    $userIds: [HashId!]!
+    $role: Role!
+  ) {
+    changeMemberRoles(chatId: $chatId, userIds: $userIds, role: $role) {
+      event {
+        chat {
+          id
+        }
+      }
+    }
+  }
+
   fragment UserAlerationGroupChatUpdate on ChatMemberAlteration {
     members {
       role
@@ -47,32 +61,32 @@ export const useChatMembers = () => {
   const [addMutation, { loading: addingMembers }] = useAddMembersMutation();
   const [removeMutation, { loading: removingMembers }] =
     useRemoveMembersMutation();
-  const [changeRoleMutation, { loading: chagingName }] =
-    useChangeRoleMutation();
+  const [changeMemberRolesMutation, { loading: chagingMemberRoles }] =
+    useChangeMemberRolesMutation();
 
-  const removeMembers = (chatId: string, members: string[]) =>
+  const removeMembers = (chatId: string, userIds: string[]) =>
     removeMutation({
       variables: {
         chatId,
-        members,
+        userIds,
       },
       update: addEvent(chatId),
     });
 
-  const addMembers = (chatId: string, members: string[]) =>
+  const addMembers = (chatId: string, userIds: string[]) =>
     addMutation({
       variables: {
         chatId,
-        members,
+        userIds,
       },
       update: addEvent(chatId),
     });
 
-  const changeRole = (chatId: string, members: string[], role: Role) =>
-    changeRoleMutation({
+  const changeRole = (chatId: string, userIds: string[], role: Role) =>
+    changeMemberRolesMutation({
       variables: {
         chatId,
-        members,
+        userIds,
         role,
       },
     });
@@ -81,6 +95,6 @@ export const useChatMembers = () => {
     addMembers,
     removeMembers,
     changeRole,
-    updating: addingMembers || removingMembers || chagingName,
+    updating: addingMembers || removingMembers || chagingMemberRoles,
   };
 };

@@ -65,10 +65,6 @@ export const useCreateChat = () => {
       const updatedChats = [
         ...query.chats,
         {
-          createdBy: {
-            __typename: 'Me',
-            ...user,
-          },
           ...data.createGroupChat,
         },
       ];
@@ -93,16 +89,17 @@ export const useCreateChat = () => {
         throw new Error('No query');
       }
 
-      const friend = data?.createDirectMessageChat?.friend;
+      const receipent = data?.createDirectMessageChat?.receipent;
 
-      if (!friend) {
-        throw new Error('No friend in mutation response');
+      if (!receipent) {
+        throw new Error('No receipent in mutation response');
       }
 
       if (
         !query.chats.find(
           (x) =>
-            x.__typename === 'DirectMessageChat' && x.friend.id === friend.id
+            x.__typename === 'DirectMessageChat' &&
+            x.receipent.id === receipent.id
         )
       ) {
         const updatedChats = [

@@ -22,7 +22,7 @@ const ChatItem = ({ chat }: Props) => {
       case 'DeletedChat':
         return 'Deleted Chat';
       case 'DirectMessageChat':
-        return chat.friend.username;
+        return chat.receipent.user.username;
       case 'GroupChat':
         return chat.name;
       default:
