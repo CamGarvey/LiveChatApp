@@ -1,17 +1,14 @@
-import { gql } from '@apollo/client';
 import { Aside, Avatar, AvatarProps, Group, Text } from '@mantine/core';
 import { motion } from 'framer-motion';
-import { MemberCountSectionChatFragment } from 'graphql/generated/graphql';
 
 const MotionText = motion(Text);
 
 type Props = {
-  chat: MemberCountSectionChatFragment | null | undefined;
-  loading: boolean;
+  count: number;
   avatarProps?: AvatarProps;
 };
 
-export const MemberCountSection = ({ chat, loading, avatarProps }: Props) => {
+export const MemberCountSection = ({ count, avatarProps }: Props) => {
   return (
     <Aside.Section>
       <Group
@@ -36,19 +33,9 @@ export const MemberCountSection = ({ chat, loading, avatarProps }: Props) => {
           Members
         </MotionText>
         <Avatar sx={{ borderRadius: '100%' }} color={'dimmed'} {...avatarProps}>
-          {chat?.memberCount ?? 0}
+          {count}
         </Avatar>
       </Group>
     </Aside.Section>
   );
-};
-
-MemberCountSection.fragments = {
-  chat: gql`
-    fragment MemberCountSectionChat on GroupChat {
-      members {
-        totalCount
-      }
-    }
-  `,
 };

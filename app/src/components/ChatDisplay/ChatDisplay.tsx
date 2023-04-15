@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   ChatsForChatDisplayDocument,
   ChatsForChatDisplaySubscription,
+  GetChatsForChatDisplayQuery,
   useGetChatsForChatDisplayQuery,
 } from 'graphql/generated/graphql';
 
@@ -90,17 +91,16 @@ const ChatDisplay = () => {
         }
 
         switch (chat.__typename) {
-          case 'ChatMemberAccessGrantedAlert':
-            return Object.assign({}, prev, {
-              chats: [
-                ...prev.chats.filter((x) => x.id !== accessAlert.chat.id),
-                accessAlert.chat,
-              ],
-            } as GetChatsForChatDisplayQuery);
-          case 'ChatMemberAccessRevokedAlert':
+          case 'ForbiddenChat':
+          case 'DeletedChat':
             navigate('/chats', { replace: true });
             return Object.assign({}, prev, {
-              chats: prev.chats.filter((x) => x.id !== accessAlert.chat.id),
+              chats: prev.chats.filter((x) => x.id !== chat.id),
+            } as GetChatsForChatDisplayQuery);
+          case 'DirectMessageChat':
+          case 'GroupChat':
+            return Object.assign({}, prev, {
+              chats: [prev.chats.filter((x) => x.id !== chat.id), chat],
             } as GetChatsForChatDisplayQuery);
           default:
             return prev;

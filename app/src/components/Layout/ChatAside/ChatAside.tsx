@@ -16,11 +16,7 @@ gql`
     chat(chatId: $chatId) {
       ...HeaderSectionChat
       ...MemberSectionChat
-      ... on GroupChat {
-        ...MemberCountSectionChat
-      }
     }
-    ${MemberCountSection.fragments.chat}
   }
   query GetMembersForMemberSection(
     $chatId: HashId!
@@ -28,10 +24,11 @@ gql`
     $after: String
   ) {
     members(chatId: $chatId, first: $first, after: $after) {
+      totalCount
       edges {
         node {
           user {
-          ...MemberSectionUser
+            ...MemberSectionUser
           }
         }
       }
@@ -49,23 +46,19 @@ gql`
 const MotionAside = motion(Aside);
 
 type Props = {
-  size?: MantineNumberSize | undefined;
-  openedWidth?: number | undefined;
+  size?: MantineNumberSize;
+  openedWidth?: number;
 };
 
 export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   const { chatId } = useParams();
   const [closed, setClosed] = useState(true);
-  const { data: dataChat, loading: loadingChat } = useGetChatForChatAsideQuery({
+  const chatData = useGetChatForChatAsideQuery({
     variables: {
       chatId,
     },
   });
-  const {
-    data: dataMembers,
-    loading: loadingMembers,
-    fetchMore: fetchMoreMembers,
-  } = useGetMembersForMemberSectionQuery({
+  const membersData = useGetMembersForMemberSectionQuery({
     variables: {
       chatId,
       first: 50,
@@ -75,15 +68,15 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
 
   const closedWidth = useMemo(() => AVATAR_SIZES[size] + 20, [size]);
 
-  const chat = dataChat?.chat;
+  const chat = chatData.data?.chat;
   const members = useMemo<MemberSectionUserFragment[]>(
     () =>
-      dataMembers?.members?.edges
+      membersData.data?.members?.edges
         ?.filter((x) => !!x?.node)
-        .map((x) => x!.node?.user as MemberSectionUserFragment) ?? [],
-    [dataMembers]
+        .map((x) => x.node?.user as MemberSectionUserFragment) ?? [],
+    [membersData]
   );
-  const memberPageInfo = dataMembers?.members.pageInfo;
+  const memberPageInfo = membersData.data?.members.pageInfo;
 
   if (!chatId) return <></>;
 
@@ -127,15 +120,14 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
           onToggle={() => setClosed((prev) => !prev)}
           chat={chat}
           closed={closed}
-          loading={loadingChat}
+          loading={chatData.loading}
           avatarProps={{
             size,
           }}
         />
-        {chat?.__typename === 'GroupChat' && (
+        {membersData.data && chat?.__typename === 'GroupChat' && (
           <MemberCountSection
-            chat={chat}
-            loading={loadingChat}
+            count={membersData.data.members.totalCount}
             avatarProps={{
               size,
             }}
@@ -144,11 +136,11 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
         <MemberSection
           chat={chat}
           members={members}
-          loading={loadingMembers || loadingChat}
+          loading={membersData.loading || chatData.loading}
           size={size}
           onLoadMore={() => {
             if (memberPageInfo?.hasNextPage) {
-              fetchMoreMembers({
+              membersData.fetchMore({
                 variables: {
                   after: memberPageInfo.endCursor,
                 },

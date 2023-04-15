@@ -14,6 +14,7 @@
     "Chat": [
       "DeletedChat",
       "DirectMessageChat",
+      "ForbiddenChat",
       "GroupChat"
     ],
     "ChatAccessAlert": [

@@ -1,13 +1,10 @@
 import { gql } from '@apollo/client';
-import { Message } from './Payload/Message';
-import OutgoingEvent from '../OutgoingEvent';
-import { Group } from '@mantine/core';
-import IncomingEvent from '../IncomingEvent';
 import { CreatedEventComponentFragment } from 'graphql/generated/graphql';
 import ChatDescriptionUpdate from './Payload/ChatUpdate/ChatDescriptionUpdate';
 import ChatMembersAddedUpdate from './Payload/ChatUpdate/ChatMembersAddedUpdate';
 import ChatMembersRemovedUpdate from './Payload/ChatUpdate/ChatMembersRemovedUpdate';
 import ChatNameUpdate from './Payload/ChatUpdate/ChatNameUpdate';
+import { Message } from './Payload/Message';
 
 type Props = {
   displayAvatar: boolean;
