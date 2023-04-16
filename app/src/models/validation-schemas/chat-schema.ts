@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-const chatSchema = Yup.object().shape({
+const groupChatSchema = Yup.object().shape({
   name: Yup.string()
     .min(3, 'Name too short!')
     .max(30, 'Name too long!')
@@ -8,4 +8,4 @@ const chatSchema = Yup.object().shape({
   description: Yup.string().max(40, 'Description is too long'),
 });
 
-export { chatSchema };
+export { groupChatSchema };

@@ -10,12 +10,7 @@ type Props = {
   variant?: 'default' | 'light';
 } & PaperProps;
 
-const MessageBubble = ({
-  message,
-  onClick,
-  variant = 'default',
-  ...other
-}: Props) => {
+const MessageBubble = ({ message, onClick, variant = 'default', ...other }: Props) => {
   const smallScreen = useMediaQuery('(max-width: 470px)');
   const largeScreen = useMediaQuery('(min-width: 1200px)');
   const defaultColor = useDefaultColor();

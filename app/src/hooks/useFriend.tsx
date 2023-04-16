@@ -1,8 +1,5 @@
 import { gql } from '@apollo/client';
-import {
-  useDeleteFriendMutation,
-  UseFriendFragment,
-} from 'graphql/generated/graphql';
+import { useDeleteFriendMutation, UseFriendFragment } from 'graphql/generated/graphql';
 
 gql`
   mutation DeleteFriend($userId: HashId!) {
@@ -19,10 +16,8 @@ gql`
 `;
 
 export const useFriend = (friend: UseFriendFragment) => {
-  const [
-    deleteFriendMutation,
-    { data: deleteFriendData, loading: loadingDeleteFriend },
-  ] = useDeleteFriendMutation();
+  const [deleteFriendMutation, { data: deleteFriendData, loading: loadingDeleteFriend }] =
+    useDeleteFriendMutation();
 
   const deleteFriend = () =>
     deleteFriendMutation({

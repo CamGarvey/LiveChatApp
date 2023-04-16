@@ -1,13 +1,5 @@
 import { gql } from '@apollo/client';
-import {
-  Button,
-  Center,
-  Input,
-  Loader,
-  ScrollArea,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Button, Center, Input, Loader, ScrollArea, Stack, Text } from '@mantine/core';
 import { IconSearch } from '@tabler/icons';
 import { UserListFragment } from 'graphql/generated/graphql';
 import { useRef, useState } from 'react';
@@ -48,6 +40,8 @@ const UserList = ({
           placeholder={input?.placeholder}
           ref={inputRef}
           onChange={(e: any) => {
+            console.log(e);
+
             const value = e.target.value;
             setHasInput(!!value);
             if (value === '') {
@@ -96,9 +90,7 @@ const UserList = ({
         hasInput && (
           <Center py={10}>
             {loading && <Loader variant="dots" />}
-            {!loading && users.length === 0 && (
-              <Text color={'dimmed'}>No users found</Text>
-            )}
+            {!loading && users.length === 0 && <Text color={'dimmed'}>No users found</Text>}
           </Center>
         )
       )}

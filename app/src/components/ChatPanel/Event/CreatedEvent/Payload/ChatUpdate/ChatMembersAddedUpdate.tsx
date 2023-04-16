@@ -20,18 +20,13 @@ const ChatMembersAddedUpdate = ({ update }: Props) => {
 };
 
 ChatMembersAddedUpdate.fragments = {
-  event: gql`
-    fragment ChatMembersAddedUpdateEvent on CreatedEvent {
-      createdBy {
-        id
-        username
-      }
-    }
-  `,
   update: gql`
     fragment ChatMembersAddedUpdateComponent on ChatMembersAddedUpdate {
       event {
-
+        createdBy {
+          id
+          username
+        }
       }
       members {
         user {

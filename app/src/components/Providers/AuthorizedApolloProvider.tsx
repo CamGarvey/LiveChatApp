@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  createHttpLink,
-  InMemoryCache,
-  split,
-} from '@apollo/client';
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, split } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
@@ -57,10 +51,7 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
   const splitLink = split(
     ({ query }) => {
       const definition = getMainDefinition(query);
-      return (
-        definition.kind === 'OperationDefinition' &&
-        definition.operation === 'subscription'
-      );
+      return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
     },
     wsLink,
     authLink.concat(httpLink)
@@ -72,7 +63,8 @@ const AuthorizedApolloProvider = ({ children }: Props) => {
       typePolicies: {
         Query: {
           fields: {
-            users: relayStylePagination(['usernameFilter']),
+            users: relayStylePagination(['filter']),
+            friends: relayStylePagination(['filter']),
             events: relayStylePagination(['chatId']),
             members: relayStylePagination(['chatId']),
           },

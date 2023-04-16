@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  useGetUserSearchLazyQuery,
-  UserSearchModelUserFragment,
-} from 'graphql/generated/graphql';
+import { useGetUserSearchLazyQuery, UserSearchModelUserFragment } from 'graphql/generated/graphql';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { gql } from '@apollo/client';
@@ -31,11 +28,12 @@ gql`
 `;
 
 const USER_PAGINATION_COUNT = 7;
+const DEBOUNCED_SEARCH_TIMEOUT = 1000;
 
 export const UserSearchModal = () => {
   const inputRef = useRef<HTMLInputElement>();
   const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebouncedValue(search, 1000);
+  const [debouncedSearch] = useDebouncedValue(search, DEBOUNCED_SEARCH_TIMEOUT);
   const [getUsers, { data, loading, fetchMore }] = useGetUserSearchLazyQuery();
 
   // Wrap the getUsers call in a debounce to prevent over requesting api
@@ -44,7 +42,7 @@ export const UserSearchModal = () => {
     getUsers({
       variables: {
         first: USER_PAGINATION_COUNT,
-        usernameFilter: debouncedSearch,
+        filter: debouncedSearch,
         after: null,
       },
     });

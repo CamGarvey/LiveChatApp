@@ -22,10 +22,7 @@ gql`
       ...ChatDisplayChat
     }
   }
-  subscription ChatsForChatDisplay(
-    $firstMembers: Int = 2
-    $afterMember: String
-  ) {
+  subscription ChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
     chats {
       ...ChatDisplayChat
     }
@@ -152,13 +149,7 @@ const ChatDisplay = () => {
         },
       });
     }
-  }, [
-    drawer,
-    activeTab,
-    openCreateGroupChat,
-    openFriendSelector,
-    createDirectMessageChat,
-  ]);
+  }, [drawer, activeTab, openCreateGroupChat, openFriendSelector, createDirectMessageChat]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -174,9 +165,7 @@ const ChatDisplay = () => {
         disabled={loading}
         mt={10}
         radius={'sm'}
-        placeholder={
-          activeTab === 'groups' ? 'Search Groups' : 'Search Direct Messages'
-        }
+        placeholder={activeTab === 'groups' ? 'Search Groups' : 'Search Direct Messages'}
         maxLength={15}
         icon={<IconSearch />}
         onChange={(e: any) => {
@@ -184,11 +173,7 @@ const ChatDisplay = () => {
         }}
         rightSection={
           <Tooltip
-            label={
-              activeTab === 'groups'
-                ? 'Create a new group'
-                : 'Create a new direct message'
-            }
+            label={activeTab === 'groups' ? 'Create a new group' : 'Create a new direct message'}
             position={'bottom'}
           >
             <ActionIcon onClick={handleOpenCreate} color={'default'}>

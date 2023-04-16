@@ -757,11 +757,11 @@ export type DeleteMessageMutation = { __typename?: 'Mutation', deleteEvent: { __
 
 export type MessageComponentFragment = { __typename?: 'Message', content: string, event: { __typename?: 'CreatedEvent', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'DeletedEvent', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } };
 
-type MessageActions_CreatedEvent_Fragment = { __typename?: 'CreatedEvent', id: any, isCreator: boolean };
+type MessageActionsEvent_CreatedEvent_Fragment = { __typename?: 'CreatedEvent', id: any, isCreator: boolean };
 
-type MessageActions_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean };
+type MessageActionsEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean };
 
-export type MessageActionsFragment = MessageActions_CreatedEvent_Fragment | MessageActions_DeletedEvent_Fragment;
+export type MessageActionsEventFragment = MessageActionsEvent_CreatedEvent_Fragment | MessageActionsEvent_DeletedEvent_Fragment;
 
 export type MessageBubbleFragment = { __typename?: 'Message', content: string, event: { __typename?: 'CreatedEvent', id: any } | { __typename?: 'DeletedEvent', id: any } };
 
@@ -895,10 +895,15 @@ export type NotificationMenuRequestFragment = { __typename?: 'FriendRequest', id
 
 export type RequestComponentFragment = { __typename?: 'FriendRequest', id: any, createdAt: any, createdById: any, isCreator: boolean, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } };
 
-export type GetFriendsForCreateGroupChatQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetFriendsForCreateGroupChatQueryVariables = Exact<{
+  first: Scalars['Int'];
+  filter?: InputMaybe<Scalars['String']>;
+}>;
 
 
 export type GetFriendsForCreateGroupChatQuery = { __typename?: 'Query', friends: { __typename?: 'PaginatedFriend', edges?: Array<{ __typename?: 'FriendEdge', node: { __typename?: 'Friend', id: any, name?: string | null, username: string } }> | null } };
+
+export type CreateGroupChatModalFriendFragment = { __typename?: 'Friend', id: any, name?: string | null, username: string };
 
 export type GetFriendsForSelectSearchModalQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1283,8 +1288,8 @@ export const IncomingEventFragmentDoc = gql`
 }
     ${EventInfoFragmentDoc}
 ${UserAvatarFragmentDoc}`;
-export const MessageActionsFragmentDoc = gql`
-    fragment MessageActions on Event {
+export const MessageActionsEventFragmentDoc = gql`
+    fragment MessageActionsEvent on Event {
   id
   isCreator
 }
@@ -1296,13 +1301,13 @@ export const MessageComponentFragmentDoc = gql`
     isCreator
     ...OutgoingEvent
     ...IncomingEvent
-    ...MessageActions
+    ...MessageActionsEvent
   }
   content
 }
     ${OutgoingEventFragmentDoc}
 ${IncomingEventFragmentDoc}
-${MessageActionsFragmentDoc}`;
+${MessageActionsEventFragmentDoc}`;
 export const ChatNameUpdateComponentFragmentDoc = gql`
     fragment ChatNameUpdateComponent on ChatNameUpdate {
   event {
@@ -1396,11 +1401,11 @@ export const DeletedEventComponentFragmentDoc = gql`
   isCreator
   ...OutgoingEvent
   ...IncomingEvent
-  ...MessageActions
+  ...MessageActionsEvent
 }
     ${OutgoingEventFragmentDoc}
 ${IncomingEventFragmentDoc}
-${MessageActionsFragmentDoc}`;
+${MessageActionsEventFragmentDoc}`;
 export const ChatPanelEventFragmentDoc = gql`
     fragment ChatPanelEvent on Event {
   id
@@ -1557,6 +1562,20 @@ export const FriendRequestComponentRequestFragmentDoc = gql`
   }
 }
     ${UserAvatarFragmentDoc}`;
+export const UserMultiSelectFragmentDoc = gql`
+    fragment UserMultiSelect on User {
+  id
+  username
+}
+    `;
+export const CreateGroupChatModalFriendFragmentDoc = gql`
+    fragment CreateGroupChatModalFriend on Friend {
+  id
+  name
+  username
+  ...UserMultiSelect
+}
+    ${UserMultiSelectFragmentDoc}`;
 export const UpdateGroupUserFragmentDoc = gql`
     fragment UpdateGroupUser on User {
   id
@@ -1600,12 +1619,6 @@ export const LiveRequestFragmentDoc = gql`
   createdAt
 }
     ${NotificationMenuRequestFragmentDoc}`;
-export const UserMultiSelectFragmentDoc = gql`
-    fragment UserMultiSelect on User {
-  id
-  username
-}
-    `;
 export const UserSelectFragmentDoc = gql`
     fragment UserSelect on User {
   id
@@ -2092,18 +2105,16 @@ export type GetChatForAnimatedTitleQueryHookResult = ReturnType<typeof useGetCha
 export type GetChatForAnimatedTitleLazyQueryHookResult = ReturnType<typeof useGetChatForAnimatedTitleLazyQuery>;
 export type GetChatForAnimatedTitleQueryResult = Apollo.QueryResult<GetChatForAnimatedTitleQuery, GetChatForAnimatedTitleQueryVariables>;
 export const GetFriendsForCreateGroupChatDocument = gql`
-    query GetFriendsForCreateGroupChat {
-  friends {
+    query GetFriendsForCreateGroupChat($first: Int!, $filter: String) {
+  friends(first: $first, filter: $filter) {
     edges {
       node {
-        id
-        name
-        username
+        ...CreateGroupChatModalFriend
       }
     }
   }
 }
-    `;
+    ${CreateGroupChatModalFriendFragmentDoc}`;
 
 /**
  * __useGetFriendsForCreateGroupChatQuery__
@@ -2117,10 +2128,12 @@ export const GetFriendsForCreateGroupChatDocument = gql`
  * @example
  * const { data, loading, error } = useGetFriendsForCreateGroupChatQuery({
  *   variables: {
+ *      first: // value for 'first'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
-export function useGetFriendsForCreateGroupChatQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsForCreateGroupChatQuery, GetFriendsForCreateGroupChatQueryVariables>) {
+export function useGetFriendsForCreateGroupChatQuery(baseOptions: Apollo.QueryHookOptions<GetFriendsForCreateGroupChatQuery, GetFriendsForCreateGroupChatQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetFriendsForCreateGroupChatQuery, GetFriendsForCreateGroupChatQueryVariables>(GetFriendsForCreateGroupChatDocument, options);
       }

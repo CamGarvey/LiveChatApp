@@ -34,9 +34,7 @@ export const FriendSelectorModal = ({
   const [filter, setFilter] = useState('');
 
   const filteredUsers =
-    data?.friends.filter(
-      (x) => x.name?.includes(filter) || x.username.includes(filter)
-    ) ?? [];
+    data?.friends.filter((x) => x.name?.includes(filter) || x.username.includes(filter)) ?? [];
 
   return (
     <UserList

@@ -9,8 +9,7 @@ type Props = {
 
 const ChatNameUpdate = ({ update }: Props) => {
   const message = useMemo(
-    () =>
-      `${update.event.createdBy.username} named the group ${update.nameAfter}`,
+    () => `${update.event.createdBy.username} named the group ${update.nameAfter}`,
     [update]
   );
   return <ChatUpdate message={message} />;
