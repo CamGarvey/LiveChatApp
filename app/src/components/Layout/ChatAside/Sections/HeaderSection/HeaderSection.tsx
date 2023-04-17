@@ -18,14 +18,8 @@ type Props = {
   };
 };
 
-export const HeaderSection = ({
-  chat,
-  loading,
-  closed,
-  onToggle,
-  avatarProps,
-}: Props) => {
-  const name = useMemo(() => {
+export const HeaderSection = ({ chat, loading, closed, onToggle, avatarProps }: Props) => {
+  const chatName = useMemo(() => {
     switch (chat?.__typename) {
       case 'GroupChat':
         return chat.name;
@@ -43,11 +37,7 @@ export const HeaderSection = ({
           flexFlow: 'nowrap',
         }}
       >
-        <ArrowAvatar
-          dir={closed ? 'left' : 'right'}
-          onClick={onToggle}
-          {...avatarProps}
-        />
+        <ArrowAvatar dir={closed ? 'left' : 'right'} onClick={onToggle} {...avatarProps} />
         <AnimatePresence>
           {!closed && (
             <MotionGroup
@@ -74,13 +64,11 @@ export const HeaderSection = ({
                     width: '100%',
                   }}
                 >
-                  {name}
+                  {chatName}
                 </Text>
               </Skeleton>
 
-              {chat?.__typename === 'GroupChat' && (
-                <ChatUpdateAction chat={chat} size={'md'} />
-              )}
+              {chat?.__typename === 'GroupChat' && <ChatUpdateAction chat={chat} size={'md'} />}
             </MotionGroup>
           )}
         </AnimatePresence>

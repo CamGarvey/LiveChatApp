@@ -905,10 +905,16 @@ export type GetFriendsForCreateGroupChatQuery = { __typename?: 'Query', friends:
 
 export type CreateGroupChatModalFriendFragment = { __typename?: 'Friend', id: any, name?: string | null, username: string };
 
-export type GetFriendsForSelectSearchModalQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetFriendsForSelectSearchModalQueryVariables = Exact<{
+  filter?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+}>;
 
 
-export type GetFriendsForSelectSearchModalQuery = { __typename?: 'Query', friends: { __typename?: 'PaginatedFriend', edges?: Array<{ __typename?: 'FriendEdge', node: { __typename?: 'Friend', id: any, username: string, name?: string | null } }> | null } };
+export type GetFriendsForSelectSearchModalQuery = { __typename?: 'Query', friends: { __typename?: 'PaginatedFriend', edges?: Array<{ __typename?: 'FriendEdge', cursor: string, node: { __typename?: 'Friend', id: any, username: string, name?: string | null } }> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string } } };
+
+export type FriendSelectorModalFriendFragment = { __typename?: 'Friend', id: any, username: string, name?: string | null };
 
 export type GetChatForUpdateQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -1576,12 +1582,6 @@ export const CreateGroupChatModalFriendFragmentDoc = gql`
   ...UserMultiSelect
 }
     ${UserMultiSelectFragmentDoc}`;
-export const UpdateGroupUserFragmentDoc = gql`
-    fragment UpdateGroupUser on User {
-  id
-  username
-}
-    `;
 export const UserListFragmentDoc = gql`
     fragment UserList on User {
   ...UserItem
@@ -1589,6 +1589,18 @@ export const UserListFragmentDoc = gql`
 }
     ${UserItemFragmentDoc}
 ${UserMenuFragmentDoc}`;
+export const FriendSelectorModalFriendFragmentDoc = gql`
+    fragment FriendSelectorModalFriend on Friend {
+  id
+  ...UserList
+}
+    ${UserListFragmentDoc}`;
+export const UpdateGroupUserFragmentDoc = gql`
+    fragment UpdateGroupUser on User {
+  id
+  username
+}
+    `;
 export const UserSearchModelUserFragmentDoc = gql`
     fragment UserSearchModelUser on User {
   id
@@ -2145,16 +2157,21 @@ export type GetFriendsForCreateGroupChatQueryHookResult = ReturnType<typeof useG
 export type GetFriendsForCreateGroupChatLazyQueryHookResult = ReturnType<typeof useGetFriendsForCreateGroupChatLazyQuery>;
 export type GetFriendsForCreateGroupChatQueryResult = Apollo.QueryResult<GetFriendsForCreateGroupChatQuery, GetFriendsForCreateGroupChatQueryVariables>;
 export const GetFriendsForSelectSearchModalDocument = gql`
-    query GetFriendsForSelectSearchModal {
-  friends {
+    query GetFriendsForSelectSearchModal($filter: String, $first: Int, $after: String) {
+  friends(filter: $filter, first: $first, after: $after) {
     edges {
+      cursor
       node {
-        ...UserList
+        ...UserSearchModelUser
       }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }
-    ${UserListFragmentDoc}`;
+    ${UserSearchModelUserFragmentDoc}`;
 
 /**
  * __useGetFriendsForSelectSearchModalQuery__
@@ -2168,6 +2185,9 @@ export const GetFriendsForSelectSearchModalDocument = gql`
  * @example
  * const { data, loading, error } = useGetFriendsForSelectSearchModalQuery({
  *   variables: {
+ *      filter: // value for 'filter'
+ *      first: // value for 'first'
+ *      after: // value for 'after'
  *   },
  * });
  */

@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import ChatDisplay from 'components/ChatDisplay/ChatDisplay';
 import { useUser } from 'context/UserContext';
 import {
   GetChatsForChatDisplayDocument,
@@ -97,9 +98,7 @@ export const useCreateChat = () => {
 
       if (
         !query.chats.find(
-          (x) =>
-            x.__typename === 'DirectMessageChat' &&
-            x.receipent.id === receipent.id
+          (x) => x.__typename === 'DirectMessageChat' && x.receipent.id === receipent.id
         )
       ) {
         const updatedChats = [

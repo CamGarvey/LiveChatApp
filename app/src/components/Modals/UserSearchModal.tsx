@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { useGetUserSearchLazyQuery, UserSearchModelUserFragment } from 'graphql/generated/graphql';
+import { gql } from '@apollo/client';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { gql } from '@apollo/client';
 import UserList from 'components/shared/UserList';
+import { useGetUserSearchLazyQuery } from 'graphql/generated/graphql';
+import { useEffect, useMemo, useState } from 'react';
 
 gql`
   query GetUserSearch($filter: String, $first: Int, $after: String) {
@@ -31,12 +31,9 @@ const USER_PAGINATION_COUNT = 7;
 const DEBOUNCED_SEARCH_TIMEOUT = 1000;
 
 export const UserSearchModal = () => {
-  const inputRef = useRef<HTMLInputElement>();
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, DEBOUNCED_SEARCH_TIMEOUT);
   const [getUsers, { data, loading, fetchMore }] = useGetUserSearchLazyQuery();
-
-  // Wrap the getUsers call in a debounce to prevent over requesting api
 
   useEffect(() => {
     getUsers({
@@ -48,15 +45,7 @@ export const UserSearchModal = () => {
     });
   }, [debouncedSearch, getUsers]);
 
-  // Focus on input
-  useEffect(() => {
-    inputRef?.current?.focus();
-  }, [inputRef?.current?.id]);
-
-  const users =
-    data?.users.edges
-      ?.map((edge) => edge?.node)
-      .filter((x): x is UserSearchModelUserFragment => !!x) ?? [];
+  const users = useMemo(() => data?.users.edges?.map((edge) => edge.node) ?? [], [data]);
 
   return (
     <UserList

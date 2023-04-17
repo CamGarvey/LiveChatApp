@@ -12,17 +12,13 @@ import { AVATAR_SIZES } from 'utils';
 import { HeaderSection, MemberSection, MemberCountSection } from './Sections';
 
 gql`
-  query GetChatForChatAside($chatId: HashId!) {
+  query GetChatForChatAside($chatId: HashId!, $first: Int!, $after: String) {
     chat(chatId: $chatId) {
       ...HeaderSectionChat
       ...MemberSectionChat
     }
   }
-  query GetMembersForMemberSection(
-    $chatId: HashId!
-    $first: Int!
-    $after: String
-  ) {
+  query GetMembersForMemberSection($chatId: HashId!, $first: Int!, $after: String) {
     members(chatId: $chatId, first: $first, after: $after) {
       totalCount
       edges {
@@ -53,11 +49,13 @@ type Props = {
 export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   const { chatId } = useParams();
   const [closed, setClosed] = useState(true);
+
   const chatData = useGetChatForChatAsideQuery({
     variables: {
       chatId,
     },
   });
+
   const membersData = useGetMembersForMemberSectionQuery({
     variables: {
       chatId,
@@ -68,7 +66,10 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
 
   const closedWidth = useMemo(() => AVATAR_SIZES[size] + 20, [size]);
 
+  console.log({ chatData });
+
   const chat = chatData.data?.chat;
+
   const members = useMemo<MemberSectionUserFragment[]>(
     () =>
       membersData.data?.members?.edges

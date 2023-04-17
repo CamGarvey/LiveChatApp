@@ -66,7 +66,7 @@ gql`
 
 const ChatDisplay = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string | null>('groups');
+  const [activeTab, setActiveTab] = useState<string | null>('group');
   const { loading, data, subscribeToMore } = useGetChatsForChatDisplayQuery();
   const [filter, setFilter] = useState('');
   const openCreateGroupChat = useCreateGroupChatModal();
@@ -136,7 +136,7 @@ const ChatDisplay = () => {
 
   const handleOpenCreate = useCallback(() => {
     drawer.close();
-    if (activeTab === 'groups') {
+    if (activeTab === 'group') {
       openCreateGroupChat();
     } else {
       openFriendSelector({
@@ -154,7 +154,7 @@ const ChatDisplay = () => {
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
       <Tabs.List grow>
-        <Tabs.Tab value="groups" icon={<IconUsers size={14} />}>
+        <Tabs.Tab value="group" icon={<IconUsers size={14} />}>
           Groups
         </Tabs.Tab>
         <Tabs.Tab value="direct" icon={<IconUser size={14} />}>
@@ -165,15 +165,15 @@ const ChatDisplay = () => {
         disabled={loading}
         mt={10}
         radius={'sm'}
-        placeholder={activeTab === 'groups' ? 'Search Groups' : 'Search Direct Messages'}
+        placeholder={activeTab === 'group' ? 'Search Groups' : 'Search Direct Messages'}
         maxLength={15}
         icon={<IconSearch />}
-        onChange={(e: any) => {
-          setFilter(e.target.value.toLowerCase());
+        onChange={(element) => {
+          setFilter(element.target.value.toLowerCase());
         }}
         rightSection={
           <Tooltip
-            label={activeTab === 'groups' ? 'Create a new group' : 'Create a new direct message'}
+            label={activeTab === 'group' ? 'Create a new group' : 'Create a new direct message'}
             position={'bottom'}
           >
             <ActionIcon onClick={handleOpenCreate} color={'default'}>
@@ -182,7 +182,7 @@ const ChatDisplay = () => {
           </Tooltip>
         }
       />
-      <Tabs.Panel value="groups" pt="xs">
+      <Tabs.Panel value="group" pt="xs">
         <ChatList chats={filteredGroupChats} loading={loading} />
       </Tabs.Panel>
       <Tabs.Panel value="direct" pt="xs">

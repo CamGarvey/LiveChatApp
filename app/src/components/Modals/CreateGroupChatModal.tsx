@@ -37,21 +37,28 @@ const DEBOUNCED_SEARCH_TIMEOUT = 1000;
 const FRIEND_LIMIT = 10;
 
 export const CreateGroupChatModal = ({ context, id }: ContextModalProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+  const [friends, setFriends] = useState<CreateGroupChatModalFriendFragment[]>([]);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, DEBOUNCED_SEARCH_TIMEOUT);
-  const [friends, setFriends] = useState<CreateGroupChatModalFriendFragment[]>([]);
-  const { loading, error, refetch, observable } = useGetFriendsForCreateGroupChatQuery({
+
+  const { loading, error, refetch } = useGetFriendsForCreateGroupChatQuery({
     variables: {
       first: FRIEND_LIMIT,
     },
+    // This allows the "loading" prop to update on refech
+    notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
-      const next = data.friends?.edges?.map((friend) => friend.node) ?? [];
-      setFriends((prev) => {
-        const prevIds = prev.map((friend) => friend.id);
-        return [...prev, ...next.filter((friend) => !prevIds.includes(friend.id))];
-      });
+      const current = data.friends?.edges?.map((friend) => friend.node) ?? [];
+
+      if (current.length > 0) {
+        // Merge prev and current data
+        setFriends((prev) => {
+          const prevIds = prev.map((friend) => friend.id);
+          return [...prev, ...current.filter((friend) => !prevIds.includes(friend.id))];
+        });
+      }
     },
   });
 
@@ -59,12 +66,18 @@ export const CreateGroupChatModal = ({ context, id }: ContextModalProps) => {
     createGroupChat: [createGroupChatMutation, { loading: loadingCreateChat }],
   } = useCreateChat();
 
+  // Refetch friends on debouncedSearch
   useEffect(() => {
     refetch({
       first: FRIEND_LIMIT,
       filter: debouncedSearch,
     });
   }, [debouncedSearch, refetch]);
+
+  // Focus on name input
+  useEffect(() => {
+    nameInputRef?.current?.focus();
+  }, [nameInputRef?.current?.id]);
 
   return (
     <Formik
@@ -95,7 +108,7 @@ export const CreateGroupChatModal = ({ context, id }: ContextModalProps) => {
               <Input
                 id="name"
                 type="text"
-                ref={inputRef}
+                ref={nameInputRef}
                 onChange={props.handleChange}
                 value={props.values.name}
               />
@@ -109,11 +122,7 @@ export const CreateGroupChatModal = ({ context, id }: ContextModalProps) => {
               />
             </Input.Wrapper>
             <Input.Wrapper>
-              {loading ? (
-                <Center>
-                  <Loader />
-                </Center>
-              ) : error ? (
+              {error ? (
                 <Center>Failed to load your friends 💥</Center>
               ) : (
                 <UserMultiSelect
@@ -127,7 +136,7 @@ export const CreateGroupChatModal = ({ context, id }: ContextModalProps) => {
                   }}
                   onSearchChange={setSearch}
                   dropdownPosition={'bottom'}
-                  // rightSection={<Loader variant={'oval'} size={'sm'} />}
+                  rightSection={loading && <Loader variant={'oval'} size={'sm'} />}
                   withinPortal
                 />
               )}
