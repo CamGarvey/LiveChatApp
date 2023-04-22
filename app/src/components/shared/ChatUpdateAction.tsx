@@ -8,7 +8,6 @@ import {
 } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import { IconSettings } from '@tabler/icons';
-import { useMemo } from 'react';
 import { ChatUpdateActionGroupChatFragment } from 'graphql/generated/graphql';
 
 type Props = {
@@ -20,14 +19,7 @@ type Props = {
 const ChatUpdateAction = ({ chat, tooltipProps, ...other }: Props) => {
   const openGroupChatUpdate = useUpdateGroupChatModal();
 
-  const disabled = useMemo(() => {
-    if (chat?.__typename === 'GroupChat') {
-      if (chat.role === 'ADMIN' || chat.role === 'OWNER') {
-        return false;
-      }
-    }
-    return true;
-  }, [chat]);
+  const disabled = chat.role === 'BASIC';
 
   return (
     <Tooltip
@@ -41,7 +33,7 @@ const ChatUpdateAction = ({ chat, tooltipProps, ...other }: Props) => {
         color={'default'}
         disabled={disabled}
         onClick={() => {
-          openGroupChatUpdate({ chatId: chat.id });
+          openGroupChatUpdate({ chat });
         }}
         {...other}
       >
@@ -56,7 +48,9 @@ ChatUpdateAction.fragments = {
     fragment ChatUpdateActionGroupChat on GroupChat {
       id
       role
+      ...UseUpdateGroupChatModelChat
     }
+    ${useUpdateGroupChatModal.fragments.chat}
   `,
 };
 

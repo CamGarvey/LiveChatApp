@@ -3,10 +3,7 @@ import { MantineNumberSize, Menu } from '@mantine/core';
 import { IconDots, IconKarate } from '@tabler/icons';
 import UserItem from 'components/shared/UserItem';
 import UserMenu from 'components/shared/UserItem/UserMenu';
-import {
-  ChatMemberItemChatFragment,
-  ChatMemberItemUserFragment,
-} from 'graphql/generated/graphql';
+import { ChatMemberItemChatFragment, ChatMemberItemUserFragment } from 'graphql/generated/graphql';
 import { useChatMembers } from 'hooks';
 
 type Props = {
@@ -16,7 +13,7 @@ type Props = {
 };
 
 const ChatMemberItem = ({ chat, user, size }: Props) => {
-  const { removeMembers, updating } = useChatMembers();
+  const members = useChatMembers();
 
   return (
     <UserItem
@@ -25,7 +22,7 @@ const ChatMemberItem = ({ chat, user, size }: Props) => {
       size={size}
       menu={
         <UserMenu
-          loading={updating}
+          loading={members.loading}
           target={{
             icon: <IconDots />,
           }}
@@ -34,7 +31,7 @@ const ChatMemberItem = ({ chat, user, size }: Props) => {
             (chat.role === 'ADMIN' || chat.role === 'OWNER') && (
               <Menu.Item
                 onClick={() => {
-                  removeMembers(chat.id, [user.id]);
+                  members.remove(chat.id, [user.id]);
                 }}
                 color={'red'}
                 icon={<IconKarate size={14} />}

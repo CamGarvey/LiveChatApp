@@ -1,9 +1,4 @@
 import { gql } from '@apollo/client';
-import {
-  GetNotificationsDocument,
-  GetNotificationsQuery,
-  useAcknoledgeAlertMutation,
-} from 'graphql/generated/graphql';
 
 gql`
   mutation AcknoledgeAlert($alertId: HashId!) {
@@ -14,24 +9,22 @@ gql`
 `;
 
 const useAckAlert = () => {
-  return useAcknoledgeAlertMutation({
-    update: (cache, { data }) => {
-      cache.updateQuery<GetNotificationsQuery>(
-        {
-          query: GetNotificationsDocument,
-        },
-        (q) => {
-          if (q) {
-            return {
-              notifications: q.notifications.filter(
-                (x) => x.id !== data?.acknowledgeAlert?.id
-              ),
-            };
-          }
-        }
-      );
-    },
-  });
+  // return useAcknoledgeAlertMutation({
+  //   update: (cache, { data }) => {
+  //     cache.updateQuery<GetNotificationsQuery>(
+  //       {
+  //         query: GetNotificationsDocument,
+  //       },
+  //       (q) => {
+  //         if (q) {
+  //           return {
+  //             notifications: q.notifications.filter((x) => x.id !== data?.acknowledgeAlert?.id),
+  //           };
+  //         }
+  //       }
+  //     );
+  //   },
+  // });
 };
 
 export default useAckAlert;

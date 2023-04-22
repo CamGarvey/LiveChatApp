@@ -1,24 +1,17 @@
 import { gql } from '@apollo/client';
-import {
-  ChatMembersAddedUpdateComponentFragment,
-  ChatMembersRemovedUpdateComponentFragment,
-  ChatNameUpdateComponentFragment,
-} from 'graphql/generated/graphql';
 import { useMemo } from 'react';
 import { ChatUpdate } from './ChatUpdate';
 import { userDesc } from './user-desc';
+import { MembersRemovedUpdateComponentFragment } from 'graphql/generated/graphql';
 
 type Props = {
-  update: ChatMembersRemovedUpdateComponentFragment;
+  update: MembersRemovedUpdateComponentFragment;
 };
 
-const ChatMembersRemovedUpdate = ({ update }: Props) => {
+const MembersRemovedUpdate = ({ update }: Props) => {
   const message = useMemo(() => {
     const createdBy = update.event.createdBy;
-    if (
-      update.members.length === 1 &&
-      update.members[0].user.id === createdBy
-    ) {
+    if (update.members.length === 1 && update.members[0].user.id === createdBy) {
       return `${createdBy.username} left the group`;
     }
     return `${createdBy.username} removed ${userDesc(
@@ -28,9 +21,9 @@ const ChatMembersRemovedUpdate = ({ update }: Props) => {
   return <ChatUpdate message={message} />;
 };
 
-ChatMembersRemovedUpdate.fragments = {
+MembersRemovedUpdate.fragments = {
   update: gql`
-    fragment ChatMembersRemovedUpdateComponent on ChatMembersRemovedUpdate {
+    fragment MembersRemovedUpdateComponent on MembersRemovedUpdate {
       event {
         createdBy {
           id
@@ -47,4 +40,4 @@ ChatMembersRemovedUpdate.fragments = {
   `,
 };
 
-export default ChatMembersRemovedUpdate;
+export default MembersRemovedUpdate;

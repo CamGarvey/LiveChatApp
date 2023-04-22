@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
-import { CreatedEventComponentFragment } from 'graphql/generated/graphql';
-import ChatDescriptionUpdate from './Payload/ChatUpdate/ChatDescriptionUpdate';
-import ChatMembersAddedUpdate from './Payload/ChatUpdate/ChatMembersAddedUpdate';
-import ChatMembersRemovedUpdate from './Payload/ChatUpdate/ChatMembersRemovedUpdate';
-import ChatNameUpdate from './Payload/ChatUpdate/ChatNameUpdate';
+import DescriptionUpdate from './Payload/ChatUpdate/DescriptionChangedUpdate';
+import ChatMembersAddedUpdate from './Payload/ChatUpdate/MembersAddedUpdate';
+import MembersRemovedUpdate from './Payload/ChatUpdate/MembersRemovedUpdate';
+import NameChangedUpdate from './Payload/ChatUpdate/NameChangedUpdate';
 import { Message } from './Payload/Message';
+import { CreatedEventComponentFragment } from 'graphql/generated/graphql';
 
 type Props = {
   displayAvatar: boolean;
@@ -15,14 +15,14 @@ export const CreatedEvent = ({ event, displayAvatar }: Props) => {
   switch (event.payload.__typename) {
     case 'Message':
       return <Message displayAvatar={displayAvatar} message={event.payload} />;
-    case 'ChatNameUpdate':
-      return <ChatNameUpdate update={event.payload} />;
-    case 'ChatDescriptionUpdate':
-      return <ChatDescriptionUpdate update={event.payload} />;
-    case 'ChatMembersAddedUpdate':
+    case 'NameChangedUpdate':
+      return <NameChangedUpdate update={event.payload} />;
+    case 'DescriptionChangedUpdate':
+      return <DescriptionUpdate update={event.payload} />;
+    case 'MembersAddedUpdate':
       return <ChatMembersAddedUpdate update={event.payload} />;
-    case 'ChatMembersRemovedUpdate':
-      return <ChatMembersRemovedUpdate update={event.payload} />;
+    case 'MembersRemovedUpdate':
+      return <MembersRemovedUpdate update={event.payload} />;
     default:
       return <>unknown event payload</>;
   }
@@ -36,24 +36,24 @@ CreatedEvent.fragments = {
         ... on Message {
           ...MessageComponent
         }
-        ... on ChatNameUpdate {
-          ...ChatNameUpdateComponent
+        ... on NameChangedUpdate {
+          ...NameChangedUpdateComponent
         }
-        ... on ChatDescriptionUpdate {
-          ...ChatDescriptionUpdateComponent
+        ... on DescriptionChangedUpdate {
+          ...DescriptionChangedUpdateComponent
         }
-        ... on ChatMembersAddedUpdate {
-          ...ChatMembersAddedUpdateComponent
+        ... on MembersAddedUpdate {
+          ...MembersAddedUpdateComponent
         }
-        ... on ChatMembersRemovedUpdate {
-          ...ChatMembersRemovedUpdateComponent
+        ... on MembersRemovedUpdate {
+          ...MembersRemovedUpdateComponent
         }
       }
     }
     ${Message.fragments.message}
-    ${ChatNameUpdate.fragments.update}
-    ${ChatDescriptionUpdate.fragments.update}
+    ${NameChangedUpdate.fragments.update}
+    ${DescriptionUpdate.fragments.update}
     ${ChatMembersAddedUpdate.fragments.update}
-    ${ChatMembersRemovedUpdate.fragments.update}
+    ${MembersRemovedUpdate.fragments.update}
   `,
 };

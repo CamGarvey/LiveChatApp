@@ -1,14 +1,14 @@
 import { gql } from '@apollo/client';
-import { ChatMembersAddedUpdateComponentFragment } from 'graphql/generated/graphql';
 import { useMemo } from 'react';
 import { ChatUpdate } from './ChatUpdate';
 import { userDesc } from './user-desc';
+import { MembersAddedUpdateComponentFragment } from 'graphql/generated/graphql';
 
 type Props = {
-  update: ChatMembersAddedUpdateComponentFragment;
+  update: MembersAddedUpdateComponentFragment;
 };
 
-const ChatMembersAddedUpdate = ({ update }: Props) => {
+const MembersAddedUpdate = ({ update }: Props) => {
   const message = useMemo(
     () =>
       `${update.event.createdBy.username} added ${userDesc(
@@ -19,9 +19,9 @@ const ChatMembersAddedUpdate = ({ update }: Props) => {
   return <ChatUpdate message={message} />;
 };
 
-ChatMembersAddedUpdate.fragments = {
+MembersAddedUpdate.fragments = {
   update: gql`
-    fragment ChatMembersAddedUpdateComponent on ChatMembersAddedUpdate {
+    fragment MembersAddedUpdateComponent on MembersAddedUpdate {
       event {
         createdBy {
           id
@@ -38,4 +38,4 @@ ChatMembersAddedUpdate.fragments = {
   `,
 };
 
-export default ChatMembersAddedUpdate;
+export default MembersAddedUpdate;

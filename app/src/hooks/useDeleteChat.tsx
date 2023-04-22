@@ -1,8 +1,5 @@
 import { gql } from '@apollo/client';
-import {
-  UseDeleteChatFragment,
-  useDeleteChatMutation,
-} from 'graphql/generated/graphql';
+import { UseDeleteChatFragment, useDeleteChatMutation } from 'graphql/generated/graphql';
 
 gql`
   mutation DeleteChat($chatId: HashId!) {

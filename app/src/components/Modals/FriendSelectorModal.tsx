@@ -3,12 +3,10 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import UserList from 'components/shared/UserList';
 import {
-  FriendSelectorModalFriendFragment,
-  useGetFriendsForSelectSearchModalLazyQuery,
-  useGetFriendsForSelectSearchModalQuery,
   UserListFragment,
+  useGetFriendsForSelectSearchModalQuery,
 } from 'graphql/generated/graphql';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 gql`
   query GetFriendsForSelectSearchModal($filter: String, $first: Int, $after: String) {

@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { MultiSelect, MultiSelectProps } from '@mantine/core';
 import { UserSelectFragment } from 'graphql/generated/graphql';
-import { forwardRef, useEffect, useMemo, useRef } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { getUserAvatar } from 'utils/avatar';
 import UserSelectItem from './UserSelectItem';
 import UserValue from './UserValue';

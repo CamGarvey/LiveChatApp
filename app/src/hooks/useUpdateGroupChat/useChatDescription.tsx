@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { useUpdateGroupChatDescriptionMutation } from 'graphql/generated/graphql';
-import useCache from './useCache';
+import useCache from '../useCache';
 
 gql`
   mutation UpdateGroupChatDescription($chatId: HashId!, $description: String!) {
@@ -43,6 +43,6 @@ export const useChatDescription = () => {
 
   return {
     update,
-    updating: loading,
+    loading,
   };
 };

@@ -4,7 +4,6 @@ import { openConfirmModal } from '@mantine/modals';
 import { IconRun } from '@tabler/icons';
 import { motion } from 'framer-motion';
 import { FooterSectionChatFragment } from 'graphql/generated/graphql';
-import { useLeaveChat } from 'hooks';
 
 const MotionButton = motion(Button);
 
@@ -14,26 +13,17 @@ type Props = {
 };
 
 export const FooterSection = ({ loading, chat }: Props) => {
-  const leave = useLeaveChat();
-
-  if (
-    loading ||
-    chat?.__typename === 'DeletedChat' ||
-    chat?.__typename === 'DirectMessageChat'
-  ) {
+  if (loading || chat?.__typename === 'DeletedChat' || chat?.__typename === 'DirectMessageChat') {
     return <></>;
   }
 
   const openConfirm = () =>
     openConfirmModal({
-      title: `Are you sure you want to leave, ${
-        chat?.__typename === 'GroupChat' ? chat.name : ''
-      }`,
+      title: `Are you sure you want to leave, ${chat?.__typename === 'GroupChat' ? chat.name : ''}`,
       labels: { confirm: 'Leave', cancel: 'Cancel' },
       confirmProps: { color: 'red' },
       onConfirm: () => {
-        if (chat) leave(chat.id);
-        else console.error('No chat');
+        // TODO implement
       },
     });
 

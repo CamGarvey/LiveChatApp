@@ -23,15 +23,12 @@
     "ChatAlert": [
       "ChatMemberAccessGrantedAlert"
     ],
-    "ChatMemberAlteration": [
-      "ChatMembersAddedUpdate",
-      "ChatMembersRemovedUpdate"
-    ],
     "ChatUpdate": [
-      "ChatDescriptionUpdate",
-      "ChatMembersAddedUpdate",
-      "ChatMembersRemovedUpdate",
-      "ChatNameUpdate"
+      "DescriptionChangedUpdate",
+      "MembersAddedUpdate",
+      "MembersRemovedUpdate",
+      "NameChangedUpdate",
+      "RoleChangedUpdate"
     ],
     "Event": [
       "CreatedEvent",
@@ -41,12 +38,17 @@
       "ChatMember",
       "RemovedMember"
     ],
+    "MemberAlteration": [
+      "MembersAddedUpdate",
+      "MembersRemovedUpdate",
+      "RoleChangedUpdate"
+    ],
     "PayloadUnion": [
-      "ChatDescriptionUpdate",
-      "ChatMembersAddedUpdate",
-      "ChatMembersRemovedUpdate",
-      "ChatNameUpdate",
-      "Message"
+      "DescriptionChangedUpdate",
+      "MembersAddedUpdate",
+      "MembersRemovedUpdate",
+      "Message",
+      "NameChangedUpdate"
     ],
     "Request": [
       "FriendRequest"

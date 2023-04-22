@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import ChatDisplay from 'components/ChatDisplay/ChatDisplay';
 import { useUser } from 'context/UserContext';
 import {
   GetChatsForChatDisplayDocument,

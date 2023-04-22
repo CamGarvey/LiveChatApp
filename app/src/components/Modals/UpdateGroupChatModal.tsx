@@ -1,44 +1,35 @@
 import { gql } from '@apollo/client';
-import { Button, Center, Input, Loader, Stack, Text } from '@mantine/core';
+import { Button, Input, Stack } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { Formik } from 'formik';
-import { useChatDescription, useChatMembers, useChatName, useDeleteChat } from 'hooks';
+import {
+  UpdateGroupUserFragment,
+  UseUpdateGroupChatModelChatFragment,
+  useGetFriendsForUpdateQuery,
+  useGetMembersForUpdateQuery,
+} from 'graphql/generated/graphql';
+import { useUpdateGroupChat } from 'hooks/useUpdateGroupChat/useUpdateGroupChat';
 import _ from 'lodash';
 import { groupChatSchema } from 'models/validation-schemas';
 import { useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserMultiSelect from '../shared/UserSelector/UserMultiSelect';
-import {
-  UpdateGroupUserFragment,
-  useGetChatForUpdateQuery,
-  useGetFriendsForUpdateGroupChatQuery,
-} from 'graphql/generated/graphql';
 
 gql`
-  query GetChatForUpdate($chatId: HashId!, $firstMembers: Int = 300) {
-    chat(chatId: $chatId) {
-      id
-      isCreator
-      createdById
-      ... on GroupChat {
-        name
-        description
-        members(first: $firstMembers) {
-          edges {
-            node {
-              role
-              user {
-                ...UpdateGroupUser
-              }
-            }
+  query GetMembersForUpdate($chatId: HashId!, $first: Int = 300) {
+    members(chatId: $chatId, first: $first) {
+      edges {
+        node {
+          role
+          user {
+            ...UpdateGroupUser
           }
         }
-        role
       }
     }
   }
-  query GetFriendsForUpdateGroupChat {
-    friends {
+  query GetFriendsForUpdate($first: Int = 300) {
+    friends(first: $first) {
       edges {
         node {
           ...UpdateGroupUser
@@ -53,44 +44,26 @@ gql`
 `;
 
 type Props = {
-  chatId: string;
+  chat: UseUpdateGroupChatModelChatFragment;
 };
 
 export const UpdateGroupChatModal = ({
   context,
   id,
-  innerProps: { chatId },
+  innerProps: { chat },
 }: ContextModalProps<Props>) => {
-  const { loading: loadingChat, data } = useGetChatForUpdateQuery({
-    variables: {
-      chatId,
-    },
-  });
-  const chat = data?.chat;
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const { deleteChat, loading: loadingDelete } = useDeleteChat();
-  const { update: updateName, updating: updatingName } = useChatName();
-  const { update: updateDesc, updating: updatingDesc } = useChatDescription();
-  const { addMembers, removeMembers, updating: updatingMembers } = useChatMembers();
-  const {
-    loading: loadingFriends,
-    data: friendData,
-    error: friendError,
-  } = useGetFriendsForUpdateGroupChatQuery();
-  const users = useMemo<UpdateGroupUserFragment[]>(
-    () =>
-      chat?.__typename === 'GroupChat'
-        ? chat.members.edges?.filter((x) => !!x).map((x) => x.node.user) ?? []
-        : [],
-    [chat]
-  );
-  const userIds = useMemo<string[]>(() => members.map((x) => x.id), [members]);
+  const update = useUpdateGroupChat();
+  const members = useGetMembersForUpdateQuery({
+    variables: {
+      chatId: chat.id,
+    },
+  });
+  const friends = useGetFriendsForUpdateQuery();
+
   const canRemoveUser = useCallback(
     (user: UpdateGroupUserFragment) => {
-      if (!chat || chat.__typename !== 'GroupChat') {
-        return false;
-      }
       if (chat.isCreator && chat.createdById !== user.id) {
         return true;
       }
@@ -98,71 +71,53 @@ export const UpdateGroupChatModal = ({
     },
     [chat]
   );
+
+  const defaultUserIds = useMemo<string[]>(
+    () => members.data?.members?.edges?.map((x) => x.node.user.id) ?? [],
+    [members]
+  );
+
   // Since other friends can add either friends
   // We need to make sure that we get all of the users in the chat
   // So that if the user takes a non friend out of the UserSelector
   // they can add them back in if it was a mistake
   const users = useMemo(() => {
-    if (chat?.__typename !== 'GroupChat') return [];
     const users: (UpdateGroupUserFragment & { canRemove?: boolean })[] = _.unionBy(
-      members,
-      friendData?.friends.edges?.map((user) => user.node) ?? [],
+      members.data?.members?.edges?.map((x) => x.node.user) ?? [],
+      friends.data?.friends.edges?.map((user) => user.node) ?? [],
       'id'
     );
     return users.map((user) => ({
       ...user,
       canRemove: canRemoveUser(user),
     }));
-  }, [chat, members, friendData, canRemoveUser]);
-  if (loadingChat)
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
-  if (!chat || !chat.__typename)
-    return (
-      <Center>
-        <Text>Could not find chat</Text>
-      </Center>
-    );
-  if (chat.__typename === 'DeletedChat')
-    return (
-      <Center>
-        <Text>Chat is deleted</Text>
-      </Center>
-    );
-  if (chat.__typename !== 'GroupChat')
-    return (
-      <Center>
-        <Text>Chat must be a group chat</Text>
-      </Center>
-    );
+  }, [members, friends, canRemoveUser]);
+
   return (
     <Stack>
       <Formik
         initialValues={{
           name: chat.name,
           description: chat.description,
-          userIds,
+          userIds: defaultUserIds,
         }}
         validationSchema={groupChatSchema}
         onSubmit={(values) => {
-          const membersToAdd = values.userIds.filter((x) => !userIds.includes(x));
-          const membersToRemove = userIds.filter((x) => !values.userIds.includes(x));
-          if (chat.name !== values.name && values.name.length > 2) {
-            updateName(chat.id, values.name);
+          const membersToAdd = values.userIds.filter((x) => !defaultUserIds.includes(x));
+          const membersToRemove = defaultUserIds.filter((x) => !values.userIds.includes(x));
+
+          if (chat.name !== values.name) {
+            update.name(chat.id, values.name);
           }
           if (chat.description !== values.description) {
-            updateDesc(chat.id, values.description ?? '');
+            update.description(chat.id, values.description!);
           }
           if (membersToAdd.length > 0) {
-            addMembers(chat.id, membersToAdd);
+            update.members.add(chat.id, membersToAdd);
           }
           if (membersToRemove.length > 0) {
-            removeMembers(chat.id, membersToRemove);
+            update.members.remove(chat.id, membersToRemove);
           }
-          context.closeModal(id);
         }}
       >
         {(props) => (
@@ -186,32 +141,20 @@ export const UpdateGroupChatModal = ({
                 />
               </Input.Wrapper>
               <Input.Wrapper>
-                {loadingFriends ? (
-                  <Center>
-                    <Loader />
-                  </Center>
-                ) : friendError ? (
-                  <Center>Failed to load your friends 😥</Center>
-                ) : (
-                  <>
-                    <UserMultiSelect
-                      label={'Members'}
-                      users={users}
-                      defaultValue={members}
-                      multiSelectProps={{
-                        dropdownPosition: 'top',
-                      }}
-                      onChange={(value: any) => {
-                        props.setFieldValue('memberIds', value);
-                      }}
-                    />
-                  </>
-                )}
+                <UserMultiSelect
+                  label={'Members'}
+                  users={users}
+                  defaultValue={defaultUserIds}
+                  dropdownPosition="top"
+                  onChange={(value: any) => {
+                    props.setFieldValue('memberIds', value);
+                  }}
+                />
               </Input.Wrapper>
               <Button
                 type="submit"
-                loading={updatingName || updatingDesc || updatingMembers}
-                disabled={loadingFriends || !props.dirty}
+                loading={update.loading}
+                disabled={friends.loading || members.loading || !props.dirty}
               >
                 Update
               </Button>
@@ -221,11 +164,11 @@ export const UpdateGroupChatModal = ({
       </Formik>
       {chat.isCreator && (
         <Button
-          loading={loadingDelete}
+          loading={update.loading}
           color={'red'}
-          disabled={loadingFriends}
+          disabled={friends.loading}
           onClick={() => {
-            deleteChat(chat).then(() => {
+            update.delete(chat).then(() => {
               navigate('/chats', { replace: true });
               context.closeModal(id);
             });
@@ -245,4 +188,16 @@ export const useUpdateGroupChatModal = () => {
       title: 'Update Group Chat',
       innerProps: props,
     });
+};
+
+useUpdateGroupChatModal.fragments = {
+  chat: gql`
+    fragment UseUpdateGroupChatModelChat on GroupChat {
+      id
+      name
+      description
+      isCreator
+      createdById
+    }
+  `,
 };

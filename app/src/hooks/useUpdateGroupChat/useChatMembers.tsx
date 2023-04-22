@@ -5,13 +5,13 @@ import {
   useChangeMemberRolesMutation,
   useRemoveMembersMutation,
 } from 'graphql/generated/graphql';
-import useCache from './useCache';
+import useCache from '../useCache';
 
 gql`
   mutation AddMembers($chatId: HashId!, $userIds: [HashId!]!) {
     addMembers(chatId: $chatId, userIds: $userIds) {
       ...GroupChatUpdate
-      ...UserAlerationGroupChatUpdate
+      ...MemberAlerationMemberUpdate
       event {
         chat {
           id
@@ -22,7 +22,7 @@ gql`
   mutation RemoveMembers($chatId: HashId!, $userIds: [HashId!]!) {
     removeMembers(chatId: $chatId, userIds: $userIds) {
       ...GroupChatUpdate
-      ...UserAlerationGroupChatUpdate
+      ...MemberAlerationMemberUpdate
       event {
         chat {
           id
@@ -31,11 +31,7 @@ gql`
     }
   }
 
-  mutation changeMemberRoles(
-    $chatId: HashId!
-    $userIds: [HashId!]!
-    $role: Role!
-  ) {
+  mutation changeMemberRoles($chatId: HashId!, $userIds: [HashId!]!, $role: Role!) {
     changeMemberRoles(chatId: $chatId, userIds: $userIds, role: $role) {
       event {
         chat {
@@ -45,7 +41,7 @@ gql`
     }
   }
 
-  fragment UserAlerationGroupChatUpdate on ChatMemberAlteration {
+  fragment MemberAlerationMemberUpdate on MemberAlteration {
     members {
       role
       user {
@@ -59,12 +55,11 @@ gql`
 export const useChatMembers = () => {
   const { addEvent } = useCache();
   const [addMutation, { loading: addingMembers }] = useAddMembersMutation();
-  const [removeMutation, { loading: removingMembers }] =
-    useRemoveMembersMutation();
+  const [removeMutation, { loading: removingMembers }] = useRemoveMembersMutation();
   const [changeMemberRolesMutation, { loading: chagingMemberRoles }] =
     useChangeMemberRolesMutation();
 
-  const removeMembers = (chatId: string, userIds: string[]) =>
+  const remove = (chatId: string, userIds: string[]) =>
     removeMutation({
       variables: {
         chatId,
@@ -73,7 +68,7 @@ export const useChatMembers = () => {
       update: addEvent(chatId),
     });
 
-  const addMembers = (chatId: string, userIds: string[]) =>
+  const add = (chatId: string, userIds: string[]) =>
     addMutation({
       variables: {
         chatId,
@@ -92,9 +87,9 @@ export const useChatMembers = () => {
     });
 
   return {
-    addMembers,
-    removeMembers,
+    add,
+    remove,
     changeRole,
-    updating: addingMembers || removingMembers || chagingMemberRoles,
+    loading: addingMembers || removingMembers || chagingMemberRoles,
   };
 };

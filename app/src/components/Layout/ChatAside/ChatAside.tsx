@@ -1,15 +1,15 @@
 import { gql } from '@apollo/client';
 import { Aside, MantineNumberSize, MediaQuery } from '@mantine/core';
 import { motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { AVATAR_SIZES } from 'utils';
+import { HeaderSection, MemberSection, MemberCountSection } from './Sections';
 import {
   MemberSectionUserFragment,
   useGetChatForChatAsideQuery,
   useGetMembersForMemberSectionQuery,
 } from 'graphql/generated/graphql';
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { AVATAR_SIZES } from 'utils';
-import { HeaderSection, MemberSection, MemberCountSection } from './Sections';
 
 gql`
   query GetChatForChatAside($chatId: HashId!, $first: Int!, $after: String) {
@@ -53,6 +53,7 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   const chatData = useGetChatForChatAsideQuery({
     variables: {
       chatId,
+      first: 100,
     },
   });
 
