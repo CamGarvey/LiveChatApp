@@ -28,9 +28,6 @@ exports.onExecutePreUserRegistration = async (event, api) => {
         return;
       }
     }
-    api.access.deny(
-      `Unknown error with status: ${e.response.status}`,
-      'Something went wrong'
-    );
+    api.access.deny(`Unknown error with status: ${e.response.status}`, 'Something went wrong');
   }
 };

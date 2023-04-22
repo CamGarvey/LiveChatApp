@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const Request = ({ request }: Props) => {
-  const { acceptRequest, declineRequest } = useRequest();
+  const { accept, decline } = useRequest();
 
   const textStyle = {
     lineHeight: 1.1,
@@ -47,7 +47,7 @@ export const Request = ({ request }: Props) => {
                 },
               }}
               onClick={() => {
-                declineRequest(request.id);
+                decline(request.id);
               }}
             >
               <IconCircleX />
@@ -61,7 +61,7 @@ export const Request = ({ request }: Props) => {
                 },
               }}
               onClick={() => {
-                acceptRequest(request.id);
+                accept(request.id);
               }}
             >
               <IconCircleCheck />

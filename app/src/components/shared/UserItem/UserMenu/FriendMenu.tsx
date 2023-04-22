@@ -15,13 +15,7 @@ type Props = {
   iconSize?: number;
 };
 
-const FriendMenu = ({
-  friend,
-  iconSize = 14,
-  target,
-  items,
-  loading = false,
-}: Props) => {
+const FriendMenu = ({ friend, iconSize = 14, target, items, loading = false }: Props) => {
   const { deleteFriend, loading: loadingMutation } = useFriend(friend);
   const defaultColor = useDefaultColor();
 

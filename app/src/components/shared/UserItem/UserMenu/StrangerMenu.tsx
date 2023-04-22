@@ -1,16 +1,10 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
-import { useStranger } from 'hooks';
-import {
-  IconMailbox,
-  IconMailForward,
-  IconPlus,
-  IconMinus,
-  IconUserPlus,
-} from '@tabler/icons';
+import { IconMailForward, IconMailbox, IconMinus, IconPlus, IconUserPlus } from '@tabler/icons';
 import { StrangerMenuStrangerFragment } from 'graphql/generated/graphql';
-import { useRequest } from 'hooks';
+import { useStranger } from 'hooks';
 import useDefaultColor from 'hooks/useDefaultColor';
+import { useFriendRequest } from 'hooks/useFriendRequest';
 
 type Props = {
   stranger: StrangerMenuStrangerFragment;
@@ -22,30 +16,20 @@ type Props = {
   iconSize?: number;
 };
 
-const StrangerMenu = ({
-  stranger,
-  iconSize = 14,
-  target,
-  items,
-  loading = false,
-}: Props) => {
-  const {
-    status,
-    sendFriendRequest,
-    loading: loadingRequest,
-  } = useStranger(stranger);
-  const { acceptRequest, declineRequest, cancelRequest } = useRequest();
+const StrangerMenu = ({ stranger, iconSize = 14, target, items, loading = false }: Props) => {
+  const { status } = useStranger(stranger);
+  const request = useFriendRequest();
   const defaultColor = useDefaultColor();
 
   return (
-    <Menu width={'max-content'}>
+    <Menu width={'max-content'} withinPortal={true}>
       <Menu.Target>
         <Tooltip hidden={!!stranger} label={!stranger && 'Failed to load user'}>
           <ActionIcon
             loaderProps={{
               color: defaultColor,
             }}
-            loading={loadingRequest || loading}
+            loading={request.loading || loading}
           >
             {target?.icon ? (
               <>{target.icon}</>
@@ -69,7 +53,7 @@ const StrangerMenu = ({
                   color={'green'}
                   icon={<IconPlus size={iconSize} />}
                   disabled={stranger.friendRequest === null}
-                  onClick={() => acceptRequest(stranger.friendRequest?.id)}
+                  onClick={() => request.accept(stranger.friendRequest?.id)}
                 >
                   Accept
                 </Menu.Item>
@@ -77,7 +61,7 @@ const StrangerMenu = ({
                   color={'red'}
                   icon={<IconMinus size={iconSize} />}
                   disabled={stranger.friendRequest === null}
-                  onClick={() => declineRequest(stranger.friendRequest?.id)}
+                  onClick={() => request.decline(stranger.friendRequest?.id)}
                 >
                   Decline
                 </Menu.Item>
@@ -86,7 +70,7 @@ const StrangerMenu = ({
             {status === 'SENT_FRIEND_REQUEST' && (
               <Menu.Item
                 disabled={stranger.friendRequest === null}
-                onClick={() => cancelRequest(stranger.friendRequest?.id)}
+                onClick={() => request.cancel(stranger.friendRequest?.id)}
               >
                 Cancel Friend Request
               </Menu.Item>
@@ -94,7 +78,10 @@ const StrangerMenu = ({
             {status === 'NO_FRIEND_REQUEST' && (
               <Menu.Item
                 icon={<IconMailForward size={iconSize} />}
-                onClick={() => sendFriendRequest()}
+                onClick={() => {
+                  console.log('test');
+                  request.send(stranger.id);
+                }}
               >
                 Send Friend Request
               </Menu.Item>

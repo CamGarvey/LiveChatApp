@@ -40,8 +40,6 @@ const UserList = ({
           placeholder={input?.placeholder}
           ref={inputRef}
           onChange={(e: any) => {
-            console.log(e);
-
             const value = e.target.value;
             setHasInput(!!value);
             if (value === '') {

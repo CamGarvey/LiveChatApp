@@ -36,44 +36,44 @@ gql`
 `;
 
 export const useRequest = () => {
-  const [accept, { loading: loadingAccept }] = useAcceptRequestMutation();
-  const [decline, { loading: loadingDecline }] = useDeclineRequestMutation();
-  const [cancel, { loading: loadingCancel }] = useCancelRequestMutation();
+  const [acceptRequest, { loading: loadingAccept }] = useAcceptRequestMutation();
+  const [declineRequest, { loading: loadingDecline }] = useDeclineRequestMutation();
+  const [cancelRequest, { loading: loadingCancel }] = useCancelRequestMutation();
 
-  const acceptRequest = useCallback(
+  const accept = useCallback(
     (requestId: string) =>
-      accept({
+      acceptRequest({
         variables: {
           requestId,
         },
       }),
-    [accept]
+    [acceptRequest]
   );
 
-  const declineRequest = useCallback(
+  const decline = useCallback(
     (requestId: string) =>
-      decline({
+      declineRequest({
         variables: {
           requestId,
         },
       }),
-    [decline]
+    [declineRequest]
   );
 
-  const cancelRequest = useCallback(
+  const cancel = useCallback(
     (requestId: string) =>
-      cancel({
+      cancelRequest({
         variables: {
           requestId,
         },
       }),
-    [cancel]
+    [cancelRequest]
   );
 
   return {
-    declineRequest,
-    acceptRequest,
-    cancelRequest,
+    accept,
+    decline,
+    cancel,
     loading: loadingDecline || loadingAccept || loadingCancel,
   };
 };
