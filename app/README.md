@@ -1,59 +1,37 @@
-This project was bootstrapped with
-[Create React App](https://github.com/facebook/create-react-app).
+# Chat App
 
-## Available Scripts
+This is a React Chat App written in Typescript
 
-In the project directory, you can run:
+## Dependencies
 
-### `npm start`
+The following dependencies are required for the project:
 
-Runs the app in the development mode.<br /> Open
-[http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Node.js and npm
+- Auth0 for authentication
+- Chat API (https://github.com/CamGarvey/ChatAPI)
 
-The page will reload if you make edits.<br /> You will also see any lint errors
-in the console.
+## Installation
 
-### `npm test`
+To install and set up the project on your local machine, follow these steps:
 
-Launches the test runner in the interactive watch mode.<br /> See the section
-about
-[running tests](https://facebook.github.io/create-react-app/docs/running-tests)
-for more information.
+- Run `yarn install` to install the required packages.
+- Run `yarn run start` to start up the development server.
 
-### `npm run build`
+## Usage
 
-Builds the app for production to the `build` folder.<br /> It correctly bundles
-React in production mode and optimizes the build for the best performance.
+To interact with the Chat App, go to http://localhost:3000
 
-The build is minified and the filenames include the hashes.<br /> Your app is
-ready to be deployed!
+## Environment Variables
 
-See the section about
-[deployment](https://facebook.github.io/create-react-app/docs/deployment) for
-more information.
+Before running the project, make sure you have set the following environment variables:
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can
-`eject` at any time. This command will remove the single build dependency from
-your project.
-
-Instead, it will copy all the configuration files and the transitive
-dependencies (webpack, Babel, ESLint, etc) right into your project so you have
-full control over them. All of the commands except `eject` will still work, but
-they will point to the copied scripts so you can tweak them. At this point
-you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for
-small and middle deployments, and you shouldn’t feel obligated to use this
-feature. However we understand that this tool wouldn’t be useful if you couldn’t
-customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the
-[Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+REACT_APP_AUTH0_CLIENT_ID=
+REACT_APP_AUTH0_DOMAIN=
+REACT_APP_AUTH0_AUDIENCE=
+REACT_APP_GRAPHQL_API_URL=http://localhost:4000
+REACT_APP_GRAPHQL_SUBSCRIPTION_URL=ws://localhost:4000
+REACT_APP_AVATAR_BASE_URL=https://avatars.dicebear.com
+TOKEN=
+APOLLO_KEY=
+```
