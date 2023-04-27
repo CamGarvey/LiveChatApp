@@ -20,7 +20,7 @@ const FriendMenu = ({ friend, iconSize = 14, target, items, loading = false }: P
   const defaultColor = useDefaultColor();
 
   return (
-    <Menu width={'max-content'}>
+    <Menu width={'max-content'} withinPortal>
       <Menu.Target>
         <Tooltip hidden={!!friend} label={!friend && 'Failed to load user'}>
           <ActionIcon

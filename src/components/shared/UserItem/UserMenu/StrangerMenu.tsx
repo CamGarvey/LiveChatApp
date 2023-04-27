@@ -22,7 +22,7 @@ const StrangerMenu = ({ stranger, iconSize = 14, target, items, loading = false 
   const defaultColor = useDefaultColor();
 
   return (
-    <Menu width={'max-content'} withinPortal={true}>
+    <Menu width={'max-content'} withinPortal>
       <Menu.Target>
         <Tooltip hidden={!!stranger} label={!stranger && 'Failed to load user'}>
           <ActionIcon

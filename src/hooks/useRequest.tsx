@@ -3,6 +3,7 @@ import {
   useAcceptRequestMutation,
   useCancelRequestMutation,
   useDeclineRequestMutation,
+  useDeleteRequestMutation,
 } from 'graphql/generated/graphql';
 import { useCallback } from 'react';
 
@@ -25,6 +26,11 @@ gql`
       ...UseRequest
     }
   }
+  mutation DeleteRequest($requestId: HashId!) {
+    deleteRequest(requestId: $requestId) {
+      ...UseRequest
+    }
+  }
 
   fragment UseRequest on Request {
     id
@@ -39,12 +45,22 @@ export const useRequest = () => {
   const [acceptRequest, { loading: loadingAccept }] = useAcceptRequestMutation();
   const [declineRequest, { loading: loadingDecline }] = useDeclineRequestMutation();
   const [cancelRequest, { loading: loadingCancel }] = useCancelRequestMutation();
+  const [deleteRequest, { loading: loadingDelete }] = useDeleteRequestMutation();
 
   const accept = useCallback(
     (requestId: string) =>
       acceptRequest({
         variables: {
           requestId,
+        },
+        update: (cache, { data }) => {
+          if (data) {
+            // Remove request from cache
+            cache.evict({
+              id: cache.identify(data.acceptRequest),
+            });
+            cache.gc();
+          }
         },
       }),
     [acceptRequest]
@@ -56,6 +72,15 @@ export const useRequest = () => {
         variables: {
           requestId,
         },
+        update: (cache, { data }) => {
+          if (data) {
+            // Remove request from cache
+            cache.evict({
+              id: cache.identify(data.declineRequest),
+            });
+            cache.gc();
+          }
+        },
       }),
     [declineRequest]
   );
@@ -66,14 +91,43 @@ export const useRequest = () => {
         variables: {
           requestId,
         },
+        update: (cache, { data }) => {
+          if (data) {
+            // Remove request from cache
+            cache.evict({
+              id: cache.identify(data.cancelRequest),
+            });
+            cache.gc();
+          }
+        },
       }),
     [cancelRequest]
+  );
+
+  const del = useCallback(
+    (requestId: string) =>
+      deleteRequest({
+        variables: {
+          requestId,
+        },
+        update: (cache, { data }) => {
+          if (data) {
+            // Remove request from cache
+            cache.evict({
+              id: cache.identify(data.deleteRequest),
+            });
+            cache.gc();
+          }
+        },
+      }),
+    [deleteRequest]
   );
 
   return {
     accept,
     decline,
     cancel,
-    loading: loadingDecline || loadingAccept || loadingCancel,
+    del,
+    loading: loadingDecline || loadingAccept || loadingCancel || loadingDelete,
   };
 };

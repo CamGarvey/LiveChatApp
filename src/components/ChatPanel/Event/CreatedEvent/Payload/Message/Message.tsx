@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 import { MessageComponentFragment, useDeleteMessageMutation } from 'graphql/generated/graphql';
 import IncomingEvent from '../../../IncomingEvent';
 import OutgoingEvent from '../../../OutgoingEvent';
-import MessageActions from './MessageActions';
 import MessageBubble from './MessageBubble';
+import DeleteEventAction from 'components/ChatPanel/Event/DeleteEventAction';
 
 gql`
   mutation DeleteMessage($eventId: HashId!) {
@@ -33,16 +33,17 @@ export const Message = ({ message, displayAvatar }: Props) => {
           />
         }
         actions={
-          <MessageActions
-            event={message.event}
-            onDelete={() => {
-              deleteMessage({
-                variables: {
-                  eventId: message.event.id,
-                },
-              });
-            }}
-          />
+          message.event.isCreator && (
+            <DeleteEventAction
+              onDelete={() => {
+                deleteMessage({
+                  variables: {
+                    eventId: message.event.id,
+                  },
+                });
+              }}
+            />
+          )
         }
       />
     );
@@ -73,6 +74,5 @@ Message.fragments = {
     }
     ${OutgoingEvent.fragments.event}
     ${IncomingEvent.fragments.event}
-    ${MessageActions.fragments.event}
   `,
 };

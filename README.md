@@ -15,7 +15,7 @@ The following dependencies are required for the project:
 To install and set up the project on your local machine, follow these steps:
 
 - Run `yarn install` to install the required packages.
-- Run `yarn run start` to start up the development server.
+- Run `yarn start` to start up the development server.
 
 ## Usage
 

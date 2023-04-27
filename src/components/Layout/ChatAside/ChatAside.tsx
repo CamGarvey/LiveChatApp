@@ -12,7 +12,7 @@ import {
 } from 'graphql/generated/graphql';
 
 gql`
-  query GetChatForChatAside($chatId: HashId!, $first: Int!, $after: String) {
+  query GetChatForChatAside($chatId: HashId!) {
     chat(chatId: $chatId) {
       ...HeaderSectionChat
       ...MemberSectionChat
@@ -53,7 +53,6 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   const chatData = useGetChatForChatAsideQuery({
     variables: {
       chatId,
-      first: 100,
     },
   });
 

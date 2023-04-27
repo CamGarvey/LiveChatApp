@@ -1,15 +1,8 @@
 import { gql } from '@apollo/client';
-import {
-  ActionIcon,
-  Center,
-  Indicator,
-  Menu,
-  ScrollArea,
-  Stack,
-} from '@mantine/core';
+import { ActionIcon, Center, Indicator, Menu, ScrollArea, Stack } from '@mantine/core';
 import { IconBell } from '@tabler/icons';
 import { useLiveNotifications } from 'context/LiveNotificationsContext';
-import { Request } from './Request';
+import Request from './Request/Request';
 
 type Props = {
   size?: number;
@@ -21,29 +14,25 @@ const NotificationMenu = ({ size = 16 }: Props) => {
   return (
     <Menu width={'max-content'} shadow="md">
       <Menu.Target>
-        <Indicator
-          color={'red'}
-          label={requests.length}
-          disabled={requests.length === 0}
-          size={14}
-        >
+        <Indicator color={'red'} label={requests.length} disabled={requests.length === 0} size={14}>
           <ActionIcon variant="default">
             <IconBell size={size} />
           </ActionIcon>
         </Indicator>
       </Menu.Target>
       <Menu.Dropdown>
-        {requests.length !== 0 ? (
-          <>
-            <Menu.Label>
-              <Center>Requests</Center>
-            </Menu.Label>
-            <ScrollArea
-              sx={{
-                width: '300px',
-              }}
-              offsetScrollbars
-            >
+        <ScrollArea
+          sx={{
+            width: '300px',
+          }}
+          offsetScrollbars
+        >
+          {requests.length !== 0 ? (
+            <>
+              <Menu.Label>
+                <Center>Requests</Center>
+              </Menu.Label>
+
               <Stack
                 sx={{
                   maxHeight: '300px',
@@ -53,13 +42,13 @@ const NotificationMenu = ({ size = 16 }: Props) => {
                   <Request key={request.id} request={request} />
                 ))}
               </Stack>
-            </ScrollArea>
-          </>
-        ) : (
-          <Menu.Label>
-            <Center>No notifications</Center>
-          </Menu.Label>
-        )}
+            </>
+          ) : (
+            <Menu.Label>
+              <Center>No notifications</Center>
+            </Menu.Label>
+          )}
+        </ScrollArea>
       </Menu.Dropdown>
     </Menu>
   );

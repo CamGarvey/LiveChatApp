@@ -52,8 +52,9 @@ type Props = {
 
 const ChatPanel = ({ chatId }: Props) => {
   const isSmallerThanMedScreen = useMediaQuery('(max-width: 780px)');
-  const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } =
-    useEvents({ chatId });
+  const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } = useEvents({
+    chatId,
+  });
   const { createMessage } = useCreateMessage({ chatId });
 
   let topMessage: string = '';
@@ -113,16 +114,10 @@ const ChatPanel = ({ chatId }: Props) => {
                 event={
                   <>
                     {event.__typename === 'CreatedEvent' && (
-                      <CreatedEvent
-                        displayAvatar={event.isLastEventInGroup}
-                        event={event}
-                      />
+                      <CreatedEvent displayAvatar={event.isLastEventInGroup} event={event} />
                     )}
                     {event.__typename === 'DeletedEvent' && (
-                      <DeletedEvent
-                        displayAvatar={event.isLastEventInGroup}
-                        event={event}
-                      />
+                      <DeletedEvent displayAvatar={event.isLastEventInGroup} event={event} />
                     )}
                   </>
                 }
@@ -130,10 +125,7 @@ const ChatPanel = ({ chatId }: Props) => {
             ))}
           </Scroller>
         )}
-        <ChatInput
-          isDisabled={!!error}
-          onSubmit={({ content }) => createMessage(content)}
-        />
+        <ChatInput isDisabled={!!error} onSubmit={({ content }) => createMessage(content)} />
       </Stack>
     </div>
   );

@@ -4,6 +4,7 @@ export * from './useDeleteChat';
 export * from './useStranger';
 export * from './useFriend';
 export * from './useRequest';
+export * from './useFriendRequest';
 export * from './useLeaveChat';
 export * from './useDefaultColor';
 export * from './useScroller';
