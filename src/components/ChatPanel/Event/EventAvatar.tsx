@@ -6,15 +6,13 @@ type Props = {
   username: string;
 };
 
-const EventAvatar = ({ isVisible, username }: Props) => {
-  return (
-    <Avatar
-      size="sm"
-      radius={'xl'}
-      src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
-    />
-  );
-};
+const EventAvatar = ({ isVisible, username }: Props) => (
+  <Avatar
+    size="sm"
+    radius={'xl'}
+    src={`https://avatars.dicebear.com/api/initials/${username}.svg`}
+  />
+);
 
 EventAvatar.fragments = {
   event: gql`

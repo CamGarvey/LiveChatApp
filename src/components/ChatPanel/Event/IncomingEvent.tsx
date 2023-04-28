@@ -11,7 +11,7 @@ const MotionGroup = motion(Group);
 type Props = {
   event: IncomingEventFragment;
   displayAvatar: boolean;
-  children: JSX.Element;
+  children: React.ReactNode;
 };
 
 const IncomingEvent = ({ event, displayAvatar, children }: Props) => {

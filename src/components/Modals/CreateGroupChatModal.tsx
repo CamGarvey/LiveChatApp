@@ -47,7 +47,7 @@ export const CreateGroupChatModal = ({ context, id }: ContextModalProps) => {
     variables: {
       first: FRIEND_LIMIT,
     },
-    // This allows the "loading" prop to update on refech
+    // notifyOnNetworkStatusChange allows the "loading" prop to update on refech
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       const current = data.friends?.edges?.map((friend) => friend.node) ?? [];

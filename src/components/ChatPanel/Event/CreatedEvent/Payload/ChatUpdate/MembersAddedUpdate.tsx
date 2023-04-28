@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { useMemo } from 'react';
 import { ChatUpdate } from './ChatUpdate';
-import { userDesc } from './user-desc';
+import { buildUserDescription } from './user-desc';
 import { MembersAddedUpdateComponentFragment } from 'graphql/generated/graphql';
 
 type Props = {
@@ -11,11 +11,12 @@ type Props = {
 const MembersAddedUpdate = ({ update }: Props) => {
   const message = useMemo(
     () =>
-      `${update.event.createdBy.username} added ${userDesc(
+      `${update.event.createdBy.username} added ${buildUserDescription(
         update.members.map((x) => x.user)
       )} to the group`,
     [update]
   );
+
   return <ChatUpdate message={message} />;
 };
 

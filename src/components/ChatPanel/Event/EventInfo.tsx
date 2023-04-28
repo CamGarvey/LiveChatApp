@@ -11,24 +11,23 @@ type Props = {
 };
 
 const EventInfo = ({ event, align = 'self-start' }: Props) => {
-  const isSmallScreen = useMediaQuery('(max-width: 470px)');
-  const createdAtFormatted = useMemo(() => {
-    let format = 'HH:mm do MMM YYYY';
-    if (isSmallScreen) {
-      format = 'HH:mm';
-    }
+  const isLargeScreen = useMediaQuery('(min-width: 470px)');
+
+  const formattedCreatedAt = useMemo(() => {
+    let format = isLargeScreen ? 'HH:mm do MMM YYYY' : 'HH:mm';
     return moment(event.createdAt).format(format);
-  }, [event.createdAt, isSmallScreen]);
+  }, [event.createdAt, isLargeScreen]);
+
   return (
     <Stack spacing={2} align={align}>
-      {!isSmallScreen && (
+      {isLargeScreen && (
         <Text color={'dimmed'} size={'sm'}>
           {event.createdBy.username}
           {event.isCreator && ' (YOU)'}
         </Text>
       )}
       <Text color={'dimmed'} size={'sm'}>
-        {createdAtFormatted}
+        {formattedCreatedAt}
       </Text>
     </Stack>
   );

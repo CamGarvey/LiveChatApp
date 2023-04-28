@@ -17,6 +17,7 @@ const DeleteEventAction = ({ onDelete }: Props) => {
       confirmProps: { color: 'red' },
       onConfirm: onDelete,
     });
+
   return (
     <ActionIcon type="button" size={18}>
       <IconTrash onClick={openModal} />

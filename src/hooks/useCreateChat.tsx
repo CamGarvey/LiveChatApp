@@ -49,33 +49,6 @@ export const useCreateChat = () => {
   );
 
   const createGroupChat = useCreateGroupChatMutation({
-    update: (cache, { data }) => {
-      const query = cache.readQuery<GetChatsForChatDisplayQuery>({
-        query: GetChatsForChatDisplayDocument,
-      });
-
-      if (!query) {
-        throw new Error('Could not find query');
-      }
-
-      if (!data) {
-        throw new Error('No data');
-      }
-
-      const updatedChats = [
-        ...query.chats,
-        {
-          ...data.createGroupChat,
-        },
-      ];
-
-      cache.writeQuery({
-        query: GetChatsForChatDisplayDocument,
-        data: {
-          chats: updatedChats,
-        },
-      });
-    },
     onCompleted: (data) => navigateToChat(data.createGroupChat?.id),
   });
 

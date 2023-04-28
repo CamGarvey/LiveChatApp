@@ -1,5 +1,6 @@
 import { Center, Text } from '@mantine/core';
 import moment from 'moment';
+import { useMemo } from 'react';
 import { formatEventTime } from 'utils';
 
 type Props = {
@@ -7,9 +8,11 @@ type Props = {
 };
 
 const EventTime = ({ time }: Props) => {
+  const formattedTime = useMemo(() => formatEventTime(time), [time]);
+
   return (
     <Center>
-      <Text color={'dimmed'}>{formatEventTime(time)}</Text>
+      <Text color={'dimmed'}>{formattedTime}</Text>
     </Center>
   );
 };

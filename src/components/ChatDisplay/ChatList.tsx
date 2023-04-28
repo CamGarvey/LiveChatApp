@@ -1,14 +1,12 @@
 import { Center, Loader, ScrollArea, Stack } from '@mantine/core';
-import { ChatItemFragment } from 'graphql/generated/graphql';
 import { useDrawer } from 'store';
-import ChatItem from './ChatItem';
 
 type Props = {
-  chats: ChatItemFragment[];
   loading?: boolean;
+  children: React.ReactNode[];
 };
 
-const ChatList = ({ chats, loading = false }: Props) => {
+const ChatList = ({ children, loading = false }: Props) => {
   const drawer = useDrawer();
   return (
     <ScrollArea
@@ -23,12 +21,7 @@ const ChatList = ({ chats, loading = false }: Props) => {
             <Loader />
           </Center>
         ) : (
-          chats.map(
-            (chat) =>
-              chat.__typename !== 'DeletedChat' && (
-                <ChatItem key={chat.id} chat={chat} />
-              )
-          )
+          children
         )}
       </Stack>
     </ScrollArea>

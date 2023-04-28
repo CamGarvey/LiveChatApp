@@ -26,12 +26,6 @@ export const Message = ({ message, displayAvatar }: Props) => {
       <OutgoingEvent
         event={message.event}
         state={(message.event.id as string).startsWith('temp-id') ? 'sending' : 'sent'}
-        children={
-          <MessageBubble
-            message={message}
-            variant={message.event.isCreator ? 'light' : 'default'}
-          />
-        }
         actions={
           message.event.isCreator && (
             <DeleteEventAction
@@ -45,18 +39,16 @@ export const Message = ({ message, displayAvatar }: Props) => {
             />
           )
         }
-      />
+      >
+        <MessageBubble message={message} variant={'light'} />
+      </OutgoingEvent>
     );
   }
 
   return (
-    <IncomingEvent
-      event={message.event}
-      displayAvatar={displayAvatar}
-      children={
-        <MessageBubble message={message} variant={message.event.isCreator ? 'light' : 'default'} />
-      }
-    />
+    <IncomingEvent event={message.event} displayAvatar={displayAvatar}>
+      <MessageBubble message={message} variant={'default'} />
+    </IncomingEvent>
   );
 };
 
@@ -68,7 +60,6 @@ Message.fragments = {
         isCreator
         ...OutgoingEvent
         ...IncomingEvent
-        ...MessageActionsEvent
       }
       content
     }

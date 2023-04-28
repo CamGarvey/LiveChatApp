@@ -1,8 +1,4 @@
 import { gql } from '@apollo/client';
-import { ActionIcon, Input, Tabs, Tooltip } from '@mantine/core';
-import { IconCirclePlus, IconSearch, IconUser, IconUsers } from '@tabler/icons';
-import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
-import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
 import {
   ChatsForChatDisplayDocument,
   ChatsForChatDisplaySubscription,
@@ -11,13 +7,10 @@ import {
   GroupChatItemFragment,
   useGetChatsForChatDisplayQuery,
 } from 'graphql/generated/graphql';
-import { useCreateChat } from 'hooks';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDrawer } from 'store';
-import ChatList from './ChatList';
-import GroupChatItem from './GroupChatItem';
+import { useEffect, useMemo } from 'react';
 import DirectMessageChatItem from './DirectMessageChatItem';
+import GroupChatItem from './GroupChatItem';
+import { useNavigate } from 'react-router-dom';
 
 gql`
   query GetChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
@@ -56,17 +49,9 @@ gql`
   ${GroupChatItem.fragments.chat}
 `;
 
-const ChatDisplay = () => {
+const useLiveChats = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string | null>('group');
   const { loading, data, subscribeToMore } = useGetChatsForChatDisplayQuery();
-  const [filter, setFilter] = useState('');
-  const openCreateGroupChat = useCreateGroupChatModal();
-  const openFriendSelector = useFriendSelectorModal();
-  const {
-    createDirectMessageChat: [createDirectMessageChat],
-  } = useCreateChat();
-  const drawer = useDrawer();
 
   useEffect(() => {
     const unsubscribe = subscribeToMore<ChatsForChatDisplaySubscription>({
@@ -129,70 +114,8 @@ const ChatDisplay = () => {
     [filteredChats]
   );
 
-  const handleOpenCreate = useCallback(() => {
-    drawer.close();
-    if (activeTab === 'group') {
-      openCreateGroupChat();
-    } else {
-      openFriendSelector({
-        onSelect: (user) => {
-          createDirectMessageChat({
-            variables: {
-              receipentUserId: user.id,
-            },
-          });
-        },
-      });
-    }
-  }, [drawer, activeTab, openCreateGroupChat, openFriendSelector, createDirectMessageChat]);
-
-  return (
-    <Tabs value={activeTab} onTabChange={setActiveTab}>
-      <Tabs.List grow>
-        <Tabs.Tab value="group" icon={<IconUsers size={14} />}>
-          Groups
-        </Tabs.Tab>
-        <Tabs.Tab value="direct" icon={<IconUser size={14} />}>
-          Direct Messages
-        </Tabs.Tab>
-      </Tabs.List>
-      <Input
-        disabled={loading}
-        mt={10}
-        radius={'sm'}
-        placeholder={activeTab === 'group' ? 'Search Groups' : 'Search Direct Messages'}
-        maxLength={15}
-        icon={<IconSearch />}
-        onChange={(element) => {
-          setFilter(element.target.value.toLowerCase());
-        }}
-        rightSection={
-          <Tooltip
-            label={activeTab === 'group' ? 'Create a new group' : 'Create a new direct message'}
-            position={'bottom'}
-          >
-            <ActionIcon onClick={handleOpenCreate} color={'default'}>
-              <IconCirclePlus />
-            </ActionIcon>
-          </Tooltip>
-        }
-      />
-      <Tabs.Panel value="group" pt="xs">
-        <ChatList loading={loading}>
-          {groupChats.map((c) => (
-            <GroupChatItem key={c.id} chat={c} />
-          ))}
-        </ChatList>
-      </Tabs.Panel>
-      <Tabs.Panel value="direct" pt="xs">
-        <ChatList loading={loading}>
-          {directMessageChats.map((c) => (
-            <DirectMessageChatItem key={c.id} chat={c} />
-          ))}
-        </ChatList>
-      </Tabs.Panel>
-    </Tabs>
-  );
+  return {
+    group: groupChats,
+    directMessage: directMessageChats,
+  };
 };
-
-export default ChatDisplay;

@@ -667,7 +667,7 @@ export type GetChatsForChatDisplayQueryVariables = Exact<{
 }>;
 
 
-export type GetChatsForChatDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'ForbiddenChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } }> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } }> };
+export type GetChatsForChatDisplayQuery = { __typename?: 'Query', chats: Array<{ __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'ForbiddenChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } }> | null } }> };
 
 export type ChatsForChatDisplaySubscriptionVariables = Exact<{
   firstMembers?: InputMaybe<Scalars['Int']>;
@@ -675,7 +675,7 @@ export type ChatsForChatDisplaySubscriptionVariables = Exact<{
 }>;
 
 
-export type ChatsForChatDisplaySubscription = { __typename?: 'Subscription', chats: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'ForbiddenChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } }> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } };
+export type ChatsForChatDisplaySubscription = { __typename?: 'Subscription', chats: { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'ForbiddenChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } }> | null } } };
 
 type ChatDisplayChat_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
 
@@ -683,19 +683,11 @@ type ChatDisplayChat_DirectMessageChat_Fragment = { __typename?: 'DirectMessageC
 
 type ChatDisplayChat_ForbiddenChat_Fragment = { __typename?: 'ForbiddenChat', id: any, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
 
-type ChatDisplayChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'RemovedMember', id: any, user: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } }> | null }, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } };
+type ChatDisplayChat_GroupChat_Fragment = { __typename?: 'GroupChat', id: any, name: string, createdBy: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string }, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } }> | null } };
 
 export type ChatDisplayChatFragment = ChatDisplayChat_DeletedChat_Fragment | ChatDisplayChat_DirectMessageChat_Fragment | ChatDisplayChat_ForbiddenChat_Fragment | ChatDisplayChat_GroupChat_Fragment;
 
-type ChatItem_DeletedChat_Fragment = { __typename?: 'DeletedChat', id: any };
-
-type ChatItem_DirectMessageChat_Fragment = { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } };
-
-type ChatItem_ForbiddenChat_Fragment = { __typename?: 'ForbiddenChat', id: any };
-
-type ChatItem_GroupChat_Fragment = { __typename?: 'GroupChat', name: string, id: any, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } }> | null } };
-
-export type ChatItemFragment = ChatItem_DeletedChat_Fragment | ChatItem_DirectMessageChat_Fragment | ChatItem_ForbiddenChat_Fragment | ChatItem_GroupChat_Fragment;
+export type DirectMessageChatItemFragment = { __typename?: 'DirectMessageChat', id: any, receipent: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } };
 
 type ChatItemUser_Friend_Fragment = { __typename?: 'Friend', id: any, username: string };
 
@@ -704,6 +696,8 @@ type ChatItemUser_Me_Fragment = { __typename?: 'Me', id: any, username: string }
 type ChatItemUser_Stranger_Fragment = { __typename?: 'Stranger', id: any, username: string };
 
 export type ChatItemUserFragment = ChatItemUser_Friend_Fragment | ChatItemUser_Me_Fragment | ChatItemUser_Stranger_Fragment;
+
+export type GroupChatItemFragment = { __typename?: 'GroupChat', id: any, name: string, members: { __typename?: 'PaginatedMember', totalCount: number, edges?: Array<{ __typename?: 'MemberEdge', node: { __typename?: 'ChatMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } | { __typename?: 'RemovedMember', user: { __typename?: 'Friend', id: any, username: string } | { __typename?: 'Me', id: any, username: string } | { __typename?: 'Stranger', id: any, username: string } } }> | null } };
 
 export type GetChatForChatHeaderQueryVariables = Exact<{
   chatId: Scalars['HashId'];
@@ -770,12 +764,6 @@ export type DeleteMessageMutationVariables = Exact<{
 export type DeleteMessageMutation = { __typename?: 'Mutation', deleteEvent: { __typename?: 'DeletedEvent', id: any } };
 
 export type MessageComponentFragment = { __typename?: 'Message', content: string, event: { __typename?: 'CreatedEvent', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } | { __typename?: 'DeletedEvent', id: any, isCreator: boolean, createdAt: any, createdBy: { __typename?: 'Friend', id: any, username: string, name?: string | null } | { __typename?: 'Me', id: any, username: string, name?: string | null } | { __typename?: 'Stranger', id: any, username: string, name?: string | null } } };
-
-type MessageActionsEvent_CreatedEvent_Fragment = { __typename?: 'CreatedEvent', id: any, isCreator: boolean };
-
-type MessageActionsEvent_DeletedEvent_Fragment = { __typename?: 'DeletedEvent', id: any, isCreator: boolean };
-
-export type MessageActionsEventFragment = MessageActionsEvent_CreatedEvent_Fragment | MessageActionsEvent_DeletedEvent_Fragment;
 
 export type MessageBubbleFragment = { __typename?: 'Message', content: string, event: { __typename?: 'CreatedEvent', id: any } | { __typename?: 'DeletedEvent', id: any } };
 
@@ -1202,79 +1190,50 @@ export type UpdateGroupChatNameMutationVariables = Exact<{
 
 export type UpdateGroupChatNameMutation = { __typename?: 'Mutation', updateGroupChatName: { __typename?: 'NameChangedUpdate', eventId: number, nameBefore: string, nameAfter: string, event: { __typename?: 'CreatedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'ForbiddenChat', id: any } | { __typename?: 'GroupChat', name: string, id: any } } | { __typename?: 'DeletedEvent', id: any, createdBy: { __typename?: 'Friend', id: any } | { __typename?: 'Me', id: any } | { __typename?: 'Stranger', id: any }, chat: { __typename?: 'DeletedChat', id: any } | { __typename?: 'DirectMessageChat', id: any } | { __typename?: 'ForbiddenChat', id: any } | { __typename?: 'GroupChat', name: string, id: any } } } };
 
-export const ChatAvatarFragmentDoc = gql`
-    fragment ChatAvatar on Chat {
-  id
-  ... on GroupChat {
-    name
-  }
-  ... on DirectMessageChat {
-    receipent {
-      user {
-        id
-        username
-      }
-    }
-  }
-}
-    `;
 export const ChatItemUserFragmentDoc = gql`
     fragment ChatItemUser on User {
   id
   username
 }
     `;
-export const ChatItemFragmentDoc = gql`
-    fragment ChatItem on Chat {
+export const GroupChatItemFragmentDoc = gql`
+    fragment GroupChatItem on GroupChat {
   id
-  ...ChatAvatar
-  ... on DirectMessageChat {
-    receipent {
-      user {
-        ...ChatItemUser
-      }
-    }
-  }
-  ... on GroupChat {
-    name
-    members(first: $firstMembers, after: $afterMember) {
-      totalCount
-      edges {
-        node {
-          user {
-            ...ChatItemUser
-          }
+  name
+  members(first: $firstMembers, after: $afterMember) {
+    totalCount
+    edges {
+      node {
+        user {
+          ...ChatItemUser
         }
       }
     }
   }
 }
-    ${ChatAvatarFragmentDoc}
-${ChatItemUserFragmentDoc}`;
+    ${ChatItemUserFragmentDoc}`;
+export const DirectMessageChatItemFragmentDoc = gql`
+    fragment DirectMessageChatItem on DirectMessageChat {
+  id
+  receipent {
+    user {
+      ...ChatItemUser
+    }
+  }
+}
+    ${ChatItemUserFragmentDoc}`;
 export const ChatDisplayChatFragmentDoc = gql`
     fragment ChatDisplayChat on Chat {
   id
-  ...ChatItem
   createdBy {
     id
     username
   }
   ... on GroupChat {
-    members(first: $firstMembers, after: $afterMember) {
-      totalCount
-      edges {
-        node {
-          id
-          user {
-            id
-            username
-            name
-          }
-        }
-      }
-    }
+    ...GroupChatItem
   }
   ... on DirectMessageChat {
+    ...DirectMessageChatItem
     receipent {
       id
       user {
@@ -1285,7 +1244,8 @@ export const ChatDisplayChatFragmentDoc = gql`
     }
   }
 }
-    ${ChatItemFragmentDoc}`;
+    ${GroupChatItemFragmentDoc}
+${DirectMessageChatItemFragmentDoc}`;
 export const EventInfoFragmentDoc = gql`
     fragment EventInfo on Event {
   id
@@ -1321,12 +1281,6 @@ export const IncomingEventFragmentDoc = gql`
 }
     ${EventInfoFragmentDoc}
 ${UserAvatarFragmentDoc}`;
-export const MessageActionsEventFragmentDoc = gql`
-    fragment MessageActionsEvent on Event {
-  id
-  isCreator
-}
-    `;
 export const MessageComponentFragmentDoc = gql`
     fragment MessageComponent on Message {
   event {
@@ -1334,13 +1288,11 @@ export const MessageComponentFragmentDoc = gql`
     isCreator
     ...OutgoingEvent
     ...IncomingEvent
-    ...MessageActionsEvent
   }
   content
 }
     ${OutgoingEventFragmentDoc}
-${IncomingEventFragmentDoc}
-${MessageActionsEventFragmentDoc}`;
+${IncomingEventFragmentDoc}`;
 export const NameChangedUpdateComponentFragmentDoc = gql`
     fragment NameChangedUpdateComponent on NameChangedUpdate {
   event {
@@ -1434,11 +1386,9 @@ export const DeletedEventComponentFragmentDoc = gql`
   isCreator
   ...OutgoingEvent
   ...IncomingEvent
-  ...MessageActionsEvent
 }
     ${OutgoingEventFragmentDoc}
-${IncomingEventFragmentDoc}
-${MessageActionsEventFragmentDoc}`;
+${IncomingEventFragmentDoc}`;
 export const ChatPanelEventFragmentDoc = gql`
     fragment ChatPanelEvent on Event {
   id
@@ -1453,6 +1403,22 @@ export const ChatPanelEventFragmentDoc = gql`
     ${CreatedEventComponentFragmentDoc}
 ${EventContainerFragmentDoc}
 ${DeletedEventComponentFragmentDoc}`;
+export const ChatAvatarFragmentDoc = gql`
+    fragment ChatAvatar on Chat {
+  id
+  ... on GroupChat {
+    name
+  }
+  ... on DirectMessageChat {
+    receipent {
+      user {
+        id
+        username
+      }
+    }
+  }
+}
+    `;
 export const ChatHeaderChatFragmentDoc = gql`
     fragment ChatHeaderChat on Chat {
   ... on DirectMessageChat {

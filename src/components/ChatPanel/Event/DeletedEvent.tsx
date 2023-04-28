@@ -56,7 +56,6 @@ DeletedEvent.fragments = {
       isCreator
       ...OutgoingEvent
       ...IncomingEvent
-      ...MessageActionsEvent
     }
     ${OutgoingEvent.fragments.event}
     ${IncomingEvent.fragments.event}
