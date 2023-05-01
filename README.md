@@ -1,6 +1,6 @@
 # Chat App
 
-This is a React Chat App written in Typescript
+React (Typescript) and Graphql Live Chat App.
 
 ## Dependencies
 
