@@ -1,5 +1,7 @@
 # Chat App
 
+(WORK IN PROGRESS)
+
 React (Typescript) and Graphql Live Chat App.
 
 ## Dependencies
