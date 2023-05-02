@@ -1,4 +1,4 @@
-# Chat App
+# Live Chat App
 
 (WORK IN PROGRESS)
 
