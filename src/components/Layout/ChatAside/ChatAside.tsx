@@ -1,43 +1,11 @@
-import { gql } from '@apollo/client';
 import { Aside, MantineNumberSize, MediaQuery } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { AVATAR_SIZES } from 'utils';
-import { HeaderSection, MemberSection, MemberCountSection } from './Sections';
-import {
-  MemberSectionUserFragment,
-  useGetChatForChatAsideQuery,
-  useGetMembersForMemberSectionQuery,
-} from 'graphql/generated/graphql';
-
-gql`
-  query GetChatForChatAside($chatId: HashId!) {
-    chat(chatId: $chatId) {
-      ...HeaderSectionChat
-      ...MemberSectionChat
-    }
-  }
-  query GetMembersForMemberSection($chatId: HashId!, $first: Int!, $after: String) {
-    members(chatId: $chatId, first: $first, after: $after) {
-      totalCount
-      edges {
-        node {
-          user {
-            ...MemberSectionUser
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
-  }
-  ${HeaderSection.fragments.chat}
-  ${MemberSection.fragments.chat}
-  ${MemberSection.fragments.user}
-`;
+import { HeaderSection, MemberSection } from './Sections';
+import { useChat, useMembers } from './hooks';
+import { MemberCountSection } from './Sections/MemberSection/MemberCountSection';
 
 const MotionAside = motion(Aside);
 
@@ -48,38 +16,10 @@ type Props = {
 
 export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
   const { chatId } = useParams();
+  const { chat, loading: loadingChat } = useChat(chatId!);
+  const members = useMembers(chatId!);
   const [closed, setClosed] = useState(true);
-
-  const chatData = useGetChatForChatAsideQuery({
-    variables: {
-      chatId,
-    },
-  });
-
-  const membersData = useGetMembersForMemberSectionQuery({
-    variables: {
-      chatId,
-      first: 50,
-    },
-    fetchPolicy: 'cache-and-network',
-  });
-
   const closedWidth = useMemo(() => AVATAR_SIZES[size] + 20, [size]);
-
-  console.log({ chatData });
-
-  const chat = chatData.data?.chat;
-
-  const members = useMemo<MemberSectionUserFragment[]>(
-    () =>
-      membersData.data?.members?.edges
-        ?.filter((x) => !!x?.node)
-        .map((x) => x.node?.user as MemberSectionUserFragment) ?? [],
-    [membersData]
-  );
-  const memberPageInfo = membersData.data?.members.pageInfo;
-
-  if (!chatId) return <></>;
 
   return (
     <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
@@ -121,29 +61,22 @@ export const ChatAside = ({ size = 'md', openedWidth = 300 }: Props) => {
           onToggle={() => setClosed((prev) => !prev)}
           chat={chat}
           closed={closed}
-          loading={chatData.loading}
+          loading={loadingChat}
           avatarProps={{
             size,
           }}
         />
-        {membersData.data && chat?.__typename === 'GroupChat' && (
-          <MemberCountSection
-            count={membersData.data.members.totalCount}
-            avatarProps={{
-              size,
-            }}
-          />
-        )}
+        <MemberCountSection count={members.totalCount ?? 0} />
         <MemberSection
           chat={chat}
-          members={members}
-          loading={membersData.loading || chatData.loading}
+          members={members.members}
+          loading={members.loading}
           size={size}
           onLoadMore={() => {
-            if (memberPageInfo?.hasNextPage) {
-              membersData.fetchMore({
+            if (members.pageInfo?.hasNextPage) {
+              members.fetchMore({
                 variables: {
-                  after: memberPageInfo.endCursor,
+                  after: members.pageInfo.endCursor,
                 },
               });
             }

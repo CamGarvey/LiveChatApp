@@ -7,9 +7,9 @@ import {
   GroupChatItemFragment,
   useGetChatsForChatDisplayQuery,
 } from 'graphql/generated/graphql';
-import { useEffect, useMemo } from 'react';
-import DirectMessageChatItem from './DirectMessageChatItem';
-import GroupChatItem from './GroupChatItem';
+import { useEffect, useMemo, useState } from 'react';
+import DirectMessageChatItem from '../DirectMessageChatItem';
+import GroupChatItem from '../GroupChatItem';
 import { useNavigate } from 'react-router-dom';
 
 gql`
@@ -18,7 +18,10 @@ gql`
       ...ChatDisplayChat
     }
   }
-  subscription ChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
+  subscription ChatsForChatDisplay(
+    $firstMembers: Int = 2
+    $afterMember: String
+  ) {
     chats {
       ...ChatDisplayChat
     }
@@ -49,8 +52,10 @@ gql`
   ${GroupChatItem.fragments.chat}
 `;
 
-const useLiveChats = () => {
+export const useLiveChats = () => {
   const navigate = useNavigate();
+  const [filter, setFilter] = useState('');
+
   const { loading, data, subscribeToMore } = useGetChatsForChatDisplayQuery();
 
   useEffect(() => {
@@ -101,12 +106,15 @@ const useLiveChats = () => {
     [data?.chats, filter]
   );
 
-  const groupChats = useMemo(
-    () => filteredChats.filter((c) => c.__typename === 'GroupChat') as GroupChatItemFragment[],
+  const group = useMemo(
+    () =>
+      filteredChats.filter(
+        (c) => c.__typename === 'GroupChat'
+      ) as GroupChatItemFragment[],
     [filteredChats]
   );
 
-  const directMessageChats = useMemo<DirectMessageChatItemFragment[]>(
+  const direct = useMemo<DirectMessageChatItemFragment[]>(
     () =>
       filteredChats.filter(
         (c) => c.__typename === 'DirectMessageChat'
@@ -115,7 +123,9 @@ const useLiveChats = () => {
   );
 
   return {
-    group: groupChats,
-    directMessage: directMessageChats,
+    group,
+    direct,
+    setFilter,
+    loading,
   };
 };

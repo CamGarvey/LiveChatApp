@@ -47,7 +47,9 @@ export const useCreateMessage = ({ chatId }: Props) => {
         return {
           createMessage: {
             __typename: 'Message',
+            id,
             event: {
+              __typename: 'CreatedEvent',
               id,
               createdAt,
               isCreator: true,
@@ -87,16 +89,16 @@ export const useCreateMessage = ({ chatId }: Props) => {
               edges: [
                 ...edges,
                 {
+                  __typename: 'EventEdge',
                   node: {
                     __typename: 'CreatedEvent',
+                    ...data.createMessage.event,
                     createdBy: {
-                      __typename: 'Me',
-                      ...user,
+                      ...data.createMessage.event.createdBy,
                     },
                     payload: {
                       ...data.createMessage,
                     },
-                    createdAt,
                   },
                 },
               ],

@@ -1,1 +1,1 @@
-export * from './MemberSection';
+export { default as MemberSection } from './MemberSection';

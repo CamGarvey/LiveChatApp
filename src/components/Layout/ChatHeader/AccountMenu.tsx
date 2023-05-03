@@ -1,26 +1,14 @@
-import { gql } from '@apollo/client';
 import { ActionIcon, Menu } from '@mantine/core';
-import { UserAvatar } from 'components/shared/Avatars';
-import { useGetMeForAccountMenuQuery } from 'graphql/generated/graphql';
 import { IconLogout, IconUserCircle } from '@tabler/icons';
-
-gql`
-  query GetMeForAccountMenu {
-    me {
-      ...UserAvatar
-    }
-  }
-  ${UserAvatar.fragments.user}
-`;
+import { UserAvatar } from 'components/shared/Avatars';
+import { useUser } from 'context/UserContext';
 
 type Props = {
   onLogoutClick: () => void;
 };
 
 const AccountMenu = ({ onLogoutClick }: Props) => {
-  const { data, loading } = useGetMeForAccountMenuQuery();
-
-  const user = data?.me;
+  const { user, loading } = useUser();
 
   return (
     <Menu>

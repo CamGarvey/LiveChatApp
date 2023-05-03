@@ -32,7 +32,6 @@ const NotificationMenu = ({ size = 16 }: Props) => {
               <Menu.Label>
                 <Center>Requests</Center>
               </Menu.Label>
-
               <Stack
                 sx={{
                   maxHeight: '300px',
