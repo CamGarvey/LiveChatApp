@@ -1,50 +1,12 @@
-import { gql } from '@apollo/client';
 import { Center, Stack, Text } from '@mantine/core';
-import ChatInput from './ChatInput';
-import Scroller from './Scroller';
-import EventContainer from './Event/EventContainer';
-import DeletedEvent from './Event/DeletedEvent';
-import ChatHeader from './ChatHeader';
 import { useMediaQuery } from '@mantine/hooks';
-import { useCreateMessage, useEvents } from './hooks';
+import ChatHeader from './ChatHeader';
+import ChatInput from './ChatInput';
 import { CreatedEvent } from './Event/CreatedEvent/CreatedEvent';
-
-gql`
-  query GetEvents($chatId: HashId!, $last: Int, $before: String) {
-    events(chatId: $chatId, last: $last, before: $before) {
-      pageInfo {
-        hasPreviousPage
-        startCursor
-      }
-      edges {
-        node {
-          ...ChatPanelEvent
-        }
-      }
-    }
-  }
-  subscription Events {
-    events {
-      ...ChatPanelEvent
-    }
-  }
-  fragment ChatPanelEvent on Event {
-    id
-    createdAt
-    createdBy {
-      id
-    }
-    ...CreatedEventComponent
-    ...EventContainer
-    ...DeletedEventComponent
-  }
-  fragment ChatPanelChat on Chat {
-    ...ChatHeaderChat
-  }
-  ${EventContainer.fragments.event}
-  ${CreatedEvent.fragments.event}
-  ${DeletedEvent.fragments.event}
-`;
+import DeletedEvent from './Event/DeletedEvent';
+import EventContainer from './Event/EventContainer';
+import Scroller from './Scroller';
+import { useCreateMessage, useEvents } from './hooks';
 
 type Props = {
   chatId: string;
@@ -52,9 +14,10 @@ type Props = {
 
 const ChatPanel = ({ chatId }: Props) => {
   const isSmallerThanMedScreen = useMediaQuery('(max-width: 780px)');
-  const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } = useEvents({
-    chatId,
-  });
+  const { events, hasPreviousPage, loading, error, isFetchingMore, fetchMore } =
+    useEvents({
+      chatId,
+    });
   const { createMessage } = useCreateMessage({ chatId });
 
   let topMessage: string = '';
@@ -114,10 +77,16 @@ const ChatPanel = ({ chatId }: Props) => {
                 event={
                   <>
                     {event.__typename === 'CreatedEvent' && (
-                      <CreatedEvent displayAvatar={event.isLastEventInGroup} event={event} />
+                      <CreatedEvent
+                        displayAvatar={event.isLastEventInGroup}
+                        event={event}
+                      />
                     )}
                     {event.__typename === 'DeletedEvent' && (
-                      <DeletedEvent displayAvatar={event.isLastEventInGroup} event={event} />
+                      <DeletedEvent
+                        displayAvatar={event.isLastEventInGroup}
+                        event={event}
+                      />
                     )}
                   </>
                 }
@@ -125,7 +94,10 @@ const ChatPanel = ({ chatId }: Props) => {
             ))}
           </Scroller>
         )}
-        <ChatInput isDisabled={!!error} onSubmit={({ content }) => createMessage(content)} />
+        <ChatInput
+          isDisabled={!!error}
+          onSubmit={({ content }) => createMessage(content)}
+        />
       </Stack>
     </div>
   );

@@ -6,12 +6,12 @@ import {
   Skeleton,
   Stack,
 } from '@mantine/core';
-import { useScroller } from 'hooks';
 import {
   ChatMemberItemUserFragment,
   MemberSectionChatFragment,
   MemberSectionUserFragment,
 } from 'graphql/generated/graphql';
+import { useScroller } from 'hooks';
 import { useMemo, useRef } from 'react';
 import { AVATAR_SIZES, sortRelationship } from 'utils';
 import ChatMemberItem from './ChatMemberItem';
@@ -24,7 +24,7 @@ type Props = {
   loading: boolean;
 };
 
-export const MemberSection = ({
+const MemberSection = ({
   chat,
   members,
   loading,
@@ -107,3 +107,5 @@ MemberSection.fragments = {
     ${ChatMemberItem.fragments.chat}
   `,
 };
+
+export default MemberSection;

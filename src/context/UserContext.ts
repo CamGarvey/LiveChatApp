@@ -8,8 +8,7 @@ export const UserContext = createContext<{
         username: string;
         name?: string | null | undefined;
       }
-    | undefined
-    | null;
-}>({ user: null, loading: false });
+    | undefined;
+}>({ user: undefined, loading: false });
 
 export const useUser = () => useContext(UserContext);

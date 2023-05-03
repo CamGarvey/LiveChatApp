@@ -17,12 +17,12 @@ type Props = {
 };
 
 const UserProvider = ({ children }: Props) => {
-  const { data: userData, loading } = useGetMeForUserProviderQuery();
+  const { data, loading } = useGetMeForUserProviderQuery();
 
   return (
     <UserContext.Provider
       value={{
-        user: userData?.me,
+        user: data?.me,
         loading,
       }}
     >

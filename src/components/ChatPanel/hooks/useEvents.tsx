@@ -7,6 +7,47 @@ import {
   EventsSubscription,
   useGetEventsQuery,
 } from 'graphql/generated/graphql';
+import { gql } from '@apollo/client';
+import DeletedEvent from '../Event/DeletedEvent';
+import { CreatedEvent } from '../Event/CreatedEvent/CreatedEvent';
+import EventContainer from '../Event/EventContainer';
+
+gql`
+  query GetEvents($chatId: HashId!, $last: Int, $before: String) {
+    events(chatId: $chatId, last: $last, before: $before) {
+      pageInfo {
+        hasPreviousPage
+        startCursor
+      }
+      edges {
+        node {
+          ...ChatPanelEvent
+        }
+      }
+    }
+  }
+  subscription Events {
+    events {
+      ...ChatPanelEvent
+    }
+  }
+  fragment ChatPanelEvent on Event {
+    id
+    createdAt
+    createdBy {
+      id
+    }
+    ...CreatedEventComponent
+    ...EventContainer
+    ...DeletedEventComponent
+  }
+  fragment ChatPanelChat on Chat {
+    ...ChatHeaderChat
+  }
+  ${EventContainer.fragments.event}
+  ${CreatedEvent.fragments.event}
+  ${DeletedEvent.fragments.event}
+`;
 
 type Props = {
   chatId: string;

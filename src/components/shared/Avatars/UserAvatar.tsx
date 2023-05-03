@@ -16,7 +16,7 @@ import { UserAvatarFragment } from 'graphql/generated/graphql';
 import { AVATAR_SIZES, getUserAvatar } from 'utils/avatar';
 
 type Props = {
-  user?: UserAvatarFragment;
+  user?: UserAvatarFragment | undefined;
   loading?: boolean;
   size?: MantineNumberSize;
   dropdown?: HoverCardDropdownProps;
@@ -51,7 +51,12 @@ export const UserAvatar = ({
       withinPortal
     >
       <HoverCard.Target>
-        <Avatar size={size} radius={'xl'} src={getUserAvatar(user.username)} {...other} />
+        <Avatar
+          size={size}
+          radius={'xl'}
+          src={getUserAvatar(user.username)}
+          {...other}
+        />
       </HoverCard.Target>
       <Popover.Dropdown
         style={{
@@ -60,7 +65,12 @@ export const UserAvatar = ({
         {...dropdown}
       >
         <Group>
-          <Avatar size={'lg'} radius={'xl'} src={getUserAvatar(user.username)} {...other} />
+          <Avatar
+            size={'lg'}
+            radius={'xl'}
+            src={getUserAvatar(user.username)}
+            {...other}
+          />
           <Stack spacing={1}>
             <Text size={'lg'}>{user.username}</Text>
             {user.name && <Text color={'dimmed'}>{user.name}</Text>}
