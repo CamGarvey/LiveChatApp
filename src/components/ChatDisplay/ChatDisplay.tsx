@@ -1,5 +1,5 @@
 import { ActionIcon, Input, Tabs, Tooltip } from '@mantine/core';
-import { IconCirclePlus, IconSearch, IconUser, IconUsers } from '@tabler/icons';
+import { IconCirclePlus, IconSearch, IconUser, IconUsers } from '@tabler/icons-react';
 import { useCreateGroupChatModal } from 'components/Modals/CreateGroupChatModal';
 import { useFriendSelectorModal } from 'components/Modals/FriendSelectorModal';
 import { useCreateChat } from 'hooks';
@@ -39,13 +39,7 @@ const ChatDisplay = ({ iconSize = 14 }: Props) => {
         },
       });
     }
-  }, [
-    drawer,
-    activeTab,
-    openCreateGroupChat,
-    openFriendSelector,
-    createDirectMessageChat,
-  ]);
+  }, [drawer, activeTab, openCreateGroupChat, openFriendSelector, createDirectMessageChat]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -61,9 +55,7 @@ const ChatDisplay = ({ iconSize = 14 }: Props) => {
         disabled={loading}
         mt={10}
         radius={'sm'}
-        placeholder={
-          activeTab === 'group' ? 'Search Groups' : 'Search Direct Messages'
-        }
+        placeholder={activeTab === 'group' ? 'Search Groups' : 'Search Direct Messages'}
         maxLength={15}
         icon={<IconSearch />}
         onChange={(element) => {
@@ -71,11 +63,7 @@ const ChatDisplay = ({ iconSize = 14 }: Props) => {
         }}
         rightSection={
           <Tooltip
-            label={
-              activeTab === 'group'
-                ? 'Create a new group'
-                : 'Create a new direct message'
-            }
+            label={activeTab === 'group' ? 'Create a new group' : 'Create a new direct message'}
             position={'bottom'}
           >
             <ActionIcon onClick={handleOpenCreate} color={'default'}>

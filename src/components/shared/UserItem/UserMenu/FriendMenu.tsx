@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
 import { useFriend } from 'hooks';
-import { IconUserCircle, IconUserMinus } from '@tabler/icons';
+import { IconUserCircle, IconUserMinus } from '@tabler/icons-react';
 import { FriendMenuFriendFragment } from 'graphql/generated/graphql';
 import useDefaultColor from 'hooks/useDefaultColor';
 

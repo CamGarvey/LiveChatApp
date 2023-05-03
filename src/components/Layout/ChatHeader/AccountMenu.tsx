@@ -1,5 +1,5 @@
 import { ActionIcon, Menu } from '@mantine/core';
-import { IconLogout, IconUserCircle } from '@tabler/icons';
+import { IconLogout, IconUserCircle } from '@tabler/icons-react';
 import { UserAvatar } from 'components/shared/Avatars';
 import { useUser } from 'context/UserContext';
 
@@ -27,11 +27,7 @@ const AccountMenu = ({ onLogoutClick }: Props) => {
             },
           }}
         >
-          <UserAvatar
-            user={user}
-            loading={loading}
-            dropdown={{ style: { display: 'none' } }}
-          />
+          <UserAvatar user={user} loading={loading} dropdown={{ style: { display: 'none' } }} />
         </ActionIcon>
       </Menu.Target>
       {user && (

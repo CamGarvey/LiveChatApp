@@ -1,13 +1,6 @@
-import {
-  ActionIcon,
-  Button,
-  Grid,
-  Input,
-  MediaQuery,
-  Textarea,
-} from '@mantine/core';
+import { ActionIcon, Button, Grid, Input, MediaQuery, Textarea } from '@mantine/core';
 import { useFormik } from 'formik';
-import { IconSend } from '@tabler/icons';
+import { IconSend } from '@tabler/icons-react';
 import * as Yup from 'yup';
 
 type Props = {
@@ -16,11 +9,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-const ChatInput = ({
-  onSubmit,
-  isLoading = false,
-  isDisabled = false,
-}: Props) => {
+const ChatInput = ({ onSubmit, isLoading = false, isDisabled = false }: Props) => {
   const formik = useFormik({
     initialValues: {
       content: '',
@@ -78,9 +67,7 @@ const ChatInput = ({
 };
 
 const createMessageSchema = Yup.object().shape({
-  content: Yup.string()
-    .min(1, 'Content Required!')
-    .required('Name is required'),
+  content: Yup.string().min(1, 'Content Required!').required('Name is required'),
 });
 
 export default ChatInput;

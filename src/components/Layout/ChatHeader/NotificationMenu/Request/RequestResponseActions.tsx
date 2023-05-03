@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Tooltip } from '@mantine/core';
-import { IconCircleCheck, IconCircleX } from '@tabler/icons';
+import { IconCircleCheck, IconCircleX } from '@tabler/icons-react';
 
 type Props = {
   onAccept: () => void;

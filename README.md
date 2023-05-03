@@ -28,12 +28,12 @@ To interact with the Chat App, go to http://localhost:3000
 Before running the project, make sure you have set the following environment variables:
 
 ```
-REACT_APP_AUTH0_CLIENT_ID=
-REACT_APP_AUTH0_DOMAIN=
-REACT_APP_AUTH0_AUDIENCE=
-REACT_APP_GRAPHQL_API_URL=http://localhost:4000
-REACT_APP_GRAPHQL_SUBSCRIPTION_URL=ws://localhost:4000
-REACT_APP_AVATAR_BASE_URL=https://avatars.dicebear.com
+VITE_ AUTH0_CLIENT_ID=
+VITE_ AUTH0_DOMAIN=
+VITE_ AUTH0_AUDIENCE=
+VITE_ GRAPHQL_API_URL=http://localhost:4000
+VITE_ GRAPHQL_SUBSCRIPTION_URL=ws://localhost:4000
+VITE_ AVATAR_BASE_URL=https://avatars.dicebear.com
 TOKEN=
 APOLLO_KEY=
 ```

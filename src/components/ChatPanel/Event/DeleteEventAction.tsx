@@ -1,6 +1,6 @@
 import { ActionIcon, Text } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
-import { IconTrash } from '@tabler/icons';
+import { IconTrash } from '@tabler/icons-react';
 
 type Props = {
   onDelete: () => void;

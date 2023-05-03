@@ -1,6 +1,6 @@
 overwrite: true
 schema:
-  - ${REACT_APP_GRAPHQL_API_URL}/graphql:
+  - ${VITE_GRAPHQL_API_URL}/graphql:
       headers:
         Authorization: 'Bearer ${TOKEN}'
 documents: './src/**/!(*.d).{ts,tsx,gql,graphql}'

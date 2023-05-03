@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
-import { IconArrowDownCircle } from '@tabler/icons';
+import { IconArrowDownCircle } from '@tabler/icons-react';
 import { useScroller } from 'hooks';
 
 type Props = {
@@ -52,13 +52,7 @@ const Scroller = ({
   });
 
   if (isLoading) {
-    return (
-      <LoadingOverlay
-        zIndex={98}
-        visible={isLoading}
-        loaderProps={{ size: 'lg' }}
-      />
-    );
+    return <LoadingOverlay zIndex={98} visible={isLoading} loaderProps={{ size: 'lg' }} />;
   }
 
   return (

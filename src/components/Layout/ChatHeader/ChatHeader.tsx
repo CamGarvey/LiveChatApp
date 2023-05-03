@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Group, Input, Header, MediaQuery, Burger } from '@mantine/core';
-import { IconSearch } from '@tabler/icons';
+import { IconSearch } from '@tabler/icons-react';
 import { useDrawer } from 'store';
 import { useUserSearchModal } from 'components/Modals/UserSearchModal';
 import AnimatedTitle from './AnimatedTitle';

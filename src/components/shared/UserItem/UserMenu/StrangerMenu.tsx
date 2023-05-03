@@ -1,6 +1,12 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Menu, Tooltip } from '@mantine/core';
-import { IconMailForward, IconMailbox, IconMinus, IconPlus, IconUserPlus } from '@tabler/icons';
+import {
+  IconMailForward,
+  IconMailbox,
+  IconMinus,
+  IconPlus,
+  IconUserPlus,
+} from '@tabler/icons-react';
 import { StrangerMenuStrangerFragment } from 'graphql/generated/graphql';
 import { useStranger } from 'hooks';
 import useDefaultColor from 'hooks/useDefaultColor';
