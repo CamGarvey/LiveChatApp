@@ -14,7 +14,7 @@ export const useApolloLink = () => {
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: `${import.meta.env.VITE_SUBSCRIPTION_URL}/graphql`,
+      url: `${import.meta.env.VITE_GRAPHQL_SUBSCRIPTION_URL}/graphql`,
       lazy: true,
       connectionParams: async () => {
         const token = await getAccessTokenSilently();

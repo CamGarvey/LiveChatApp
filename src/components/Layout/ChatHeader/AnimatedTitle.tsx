@@ -54,12 +54,7 @@ const AnimatedTitle = () => {
   const chat = data?.chat;
 
   const shouldShowTitle = useMemo(
-    () =>
-      drawer.isOpen ||
-      isLargerScreen ||
-      !chatId ||
-      !chat ||
-      chat.__typename === 'DeletedChat',
+    () => drawer.isOpen || isLargerScreen || !chatId || !chat || chat.__typename === 'DeletedChat',
     [chat, chatId, drawer.isOpen, isLargerScreen]
   );
 
@@ -88,15 +83,13 @@ const AnimatedTitle = () => {
       >
         <Box sx={{ position: 'relative' }}>
           {shouldShowTitle ? (
-            <Title order={isSmallScreen ? 3 : 2}>Ham's Chat</Title>
+            <Title order={isSmallScreen ? 3 : 2}>{import.meta.env.VITE_APP_TITLE}</Title>
           ) : (
             <Group spacing={2}>
               <Group spacing={2}>
                 {!!chat ? (
                   <>
-                    {chat.__typename === 'GroupChat' && (
-                      <ChatUpdateAction chat={chat} />
-                    )}
+                    {chat.__typename === 'GroupChat' && <ChatUpdateAction chat={chat} />}
                     <Stack spacing={0}>
                       <Text p={0} size={'lg'}>
                         {title}
@@ -106,12 +99,11 @@ const AnimatedTitle = () => {
                           {chat.description}
                         </Text>
                       )}
-                      {chat.__typename === 'DirectMessageChat' &&
-                        chat.receipent.user.name && (
-                          <Text color={'dimmed'} p={0} size={'xs'}>
-                            {chat.receipent.user.name}
-                          </Text>
-                        )}
+                      {chat.__typename === 'DirectMessageChat' && chat.receipent.user.name && (
+                        <Text color={'dimmed'} p={0} size={'xs'}>
+                          {chat.receipent.user.name}
+                        </Text>
+                      )}
                     </Stack>
                   </>
                 ) : (

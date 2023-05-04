@@ -1,5 +1,5 @@
 export const getUserAvatar = (username: string) =>
-  `${import.meta.env.VITE_APP_AVATAR_BASE_URL}/api/avataaars/${username}e.svg`;
+  `${import.meta.env.VITE_AVATAR_BASE_URL}/api/avataaars/${username}e.svg`;
 
 export const getChatAvatar = (chatName: string) =>
   `${import.meta.env.VITE_AVATAR_BASE_URL}/api/jdenticon/${chatName}.svg`;

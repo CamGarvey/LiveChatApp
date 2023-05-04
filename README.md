@@ -28,12 +28,18 @@ To interact with the Chat App, go to http://localhost:3000
 Before running the project, make sure you have set the following environment variables:
 
 ```
-VITE_ AUTH0_CLIENT_ID=
-VITE_ AUTH0_DOMAIN=
-VITE_ AUTH0_AUDIENCE=
-VITE_ GRAPHQL_API_URL=http://localhost:4000
-VITE_ GRAPHQL_SUBSCRIPTION_URL=ws://localhost:4000
-VITE_ AVATAR_BASE_URL=https://avatars.dicebear.com
+VITE_APP_TITLE="Cam Chat"
+
+VITE_AUTH0_CLIENT_ID=ykjYHTAgBdTmwJmSgOkL7UTOlQqKCJdR
+VITE_AUTH0_DOMAIN=dev--2cpvhzk.us.auth0.com
+VITE_AUTH0_AUDIENCE=https://dev--2cpvhzk.us.auth0.com/api/v2/
+
+VITE_GRAPHQL_API_URL=http://localhost:4000
+VITE_GRAPHQL_SUBSCRIPTION_URL=ws://localhost:4000
+
+VITE_AVATAR_BASE_URL=https://avatars.dicebear.com
+
 TOKEN=
+
 APOLLO_KEY=
 ```
