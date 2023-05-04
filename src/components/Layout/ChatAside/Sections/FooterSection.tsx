@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { Aside, Button } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
-import { IconRun } from '@tabler/icons';
+import { IconRun } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { FooterSectionChatFragment } from 'graphql/generated/graphql';
 

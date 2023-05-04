@@ -7,7 +7,7 @@ import {
   TooltipProps,
 } from '@mantine/core';
 import { useUpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
-import { IconSettings } from '@tabler/icons';
+import { IconSettings } from '@tabler/icons-react';
 import { ChatUpdateActionGroupChatFragment } from 'graphql/generated/graphql';
 
 type Props = {

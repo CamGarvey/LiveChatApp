@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { ActionIcon, Center, Indicator, Menu, ScrollArea, Stack } from '@mantine/core';
-import { IconBell } from '@tabler/icons';
+import { IconBell } from '@tabler/icons-react';
 import { useLiveNotifications } from 'context/LiveNotificationsContext';
 import Request from './Request/Request';
 

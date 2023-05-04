@@ -9,12 +9,12 @@ export const useApolloLink = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const httpLink = createHttpLink({
-    uri: `${process.env.REACT_APP_GRAPHQL_API_URL}/graphql`,
+    uri: `${import.meta.env.VITE_GRAPHQL_API_URL}/graphql`,
   });
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: `${process.env.REACT_APP_GRAPHQL_SUBSCRIPTION_URL}/graphql`,
+      url: `${import.meta.env.VITE_GRAPHQL_SUBSCRIPTION_URL}/graphql`,
       lazy: true,
       connectionParams: async () => {
         const token = await getAccessTokenSilently();
@@ -43,10 +43,7 @@ export const useApolloLink = () => {
   const link = split(
     ({ query }) => {
       const definition = getMainDefinition(query);
-      return (
-        definition.kind === 'OperationDefinition' &&
-        definition.operation === 'subscription'
-      );
+      return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
     },
     wsLink,
     authLink.concat(httpLink)

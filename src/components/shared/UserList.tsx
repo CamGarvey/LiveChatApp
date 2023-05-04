@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { Button, Center, Input, Loader, ScrollArea, Stack, Text } from '@mantine/core';
-import { IconSearch } from '@tabler/icons';
+import { IconSearch } from '@tabler/icons-react';
 import { UserListFragment } from 'graphql/generated/graphql';
 import { useRef, useState } from 'react';
 import UserItem from './UserItem';

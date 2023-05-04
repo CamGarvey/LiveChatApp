@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { MantineNumberSize, Menu } from '@mantine/core';
-import { IconDots, IconKarate } from '@tabler/icons';
+import { IconDots, IconKarate } from '@tabler/icons-react';
 import UserItem from 'components/shared/UserItem';
 import UserMenu from 'components/shared/UserItem/UserMenu';
 import { ChatMemberItemChatFragment, ChatMemberItemUserFragment } from 'graphql/generated/graphql';

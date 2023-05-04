@@ -1,10 +1,7 @@
 import { gql } from '@apollo/client';
-import {
-  MemberSectionUserFragment,
-  useGetChatAsideMembersQuery,
-} from 'graphql/generated/graphql';
 import { useMemo } from 'react';
 import { MemberSection } from '../Sections';
+import { useGetChatAsideMembersQuery } from 'graphql/generated/graphql';
 
 gql`
   query GetChatAsideMembers($chatId: HashId!, $first: Int!, $after: String) {
@@ -36,10 +33,7 @@ export const useMembers = (chatId: string) => {
   });
 
   const members = useMemo<MemberSectionUserFragment[]>(
-    () =>
-      data?.members.edges?.map(
-        (edge) => edge.node.user as MemberSectionUserFragment
-      ) ?? [],
+    () => data?.members.edges?.map((edge) => edge.node.user as MemberSectionUserFragment) ?? [],
     [data]
   );
 

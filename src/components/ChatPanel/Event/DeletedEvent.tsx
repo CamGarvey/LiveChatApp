@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { Group, Text } from '@mantine/core';
-import { IconGhost } from '@tabler/icons';
+import { IconGhost } from '@tabler/icons-react';
 import { DeletedEventComponentFragment } from 'graphql/generated/graphql';
 import IncomingEvent from './IncomingEvent';
 import OutgoingEvent from './OutgoingEvent';

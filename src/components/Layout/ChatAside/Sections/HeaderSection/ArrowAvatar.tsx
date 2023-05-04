@@ -1,5 +1,5 @@
 import { Avatar, AvatarProps } from '@mantine/core';
-import { IconArrowLeft } from '@tabler/icons';
+import { IconArrowLeft } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 const MotionAvatar = motion(Avatar);

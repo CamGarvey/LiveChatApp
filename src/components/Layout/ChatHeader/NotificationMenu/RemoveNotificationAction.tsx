@@ -1,5 +1,5 @@
 import { ActionIcon, Tooltip } from '@mantine/core';
-import { IconCircleX } from '@tabler/icons';
+import { IconCircleX } from '@tabler/icons-react';
 
 type Props = {
   onRemove: () => void;
