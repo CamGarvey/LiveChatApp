@@ -23,7 +23,7 @@ const DirectMessageChatItem = ({ chat }: Props) => {
       onClick={() => drawer.close()}
       active={location.pathname === `/chats/${chat.id}`}
       icon={<ChatAvatar chat={chat} />}
-      label={chat.receipent.user.username}
+      label={chat.recipient.user.username}
     />
   );
 };
@@ -32,7 +32,7 @@ DirectMessageChatItem.fragments = {
   chat: gql`
     fragment DirectMessageChatItem on DirectMessageChat {
       id
-      receipent {
+      recipient {
         user {
           ...ChatItemUser
         }

@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 import { Avatar, MantineNumberSize, Skeleton } from '@mantine/core';
 import { ChatAvatarFragment } from 'graphql/generated/graphql';
 import { CSSProperties, useMemo } from 'react';
-import { AVATAR_SIZES, getChatAvatar, getUserAvatar } from 'utils/avatar';
+import { getChatAvatar, getUserAvatar } from 'utils/avatar';
 
 type Props = {
   chat?: ChatAvatarFragment | null | undefined;
@@ -11,16 +11,11 @@ type Props = {
   style?: CSSProperties;
 };
 
-export const ChatAvatar = ({
-  chat,
-  style,
-  size = 'sm',
-  loading = false,
-}: Props) => {
+export const ChatAvatar = ({ chat, style, size = 'sm', loading = false }: Props) => {
   const src = useMemo(() => {
     switch (chat?.__typename) {
       case 'DirectMessageChat':
-        return getUserAvatar(chat.receipent.user.username);
+        return getUserAvatar(chat.recipient.user.username);
       case 'GroupChat':
         return getChatAvatar(chat.name);
       default:
@@ -29,7 +24,7 @@ export const ChatAvatar = ({
   }, [chat]);
 
   if (loading) {
-    return <Skeleton height={AVATAR_SIZES[size]} circle />;
+    return <Skeleton height={size} circle />;
   }
 
   if (!chat) {
@@ -51,7 +46,7 @@ ChatAvatar.fragments = {
         name
       }
       ... on DirectMessageChat {
-        receipent {
+        recipient {
           user {
             id
             username

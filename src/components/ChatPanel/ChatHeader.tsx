@@ -12,7 +12,7 @@ gql`
   }
   fragment ChatHeaderChat on Chat {
     ... on DirectMessageChat {
-      receipent {
+      recipient {
         user {
           username
         }
@@ -32,8 +32,7 @@ type Props = {
 };
 
 const ChatHeader = ({ chatId }: Props) => {
-  const [getChat, { data, loading, error }] =
-    useGetChatForChatHeaderLazyQuery();
+  const [getChat, { data, loading, error }] = useGetChatForChatHeaderLazyQuery();
   useEffect(() => {
     if (chatId) {
       getChat({
@@ -82,9 +81,7 @@ const ChatHeader = ({ chatId }: Props) => {
               )}
             </Stack>
           )}
-          {chat?.__typename === 'DirectMessageChat' && (
-            <Text>{chat.receipent.user.username}</Text>
-          )}
+          {chat?.__typename === 'DirectMessageChat' && <Text>{chat.recipient.user.username}</Text>}
         </>
       )}
     </Group>

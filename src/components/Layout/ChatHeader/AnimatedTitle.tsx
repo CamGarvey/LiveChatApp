@@ -20,7 +20,7 @@ gql`
         ...ChatUpdateActionGroupChat
       }
       ... on DirectMessageChat {
-        receipent {
+        recipient {
           user {
             id
             name
@@ -65,7 +65,7 @@ const AnimatedTitle = () => {
       case 'DeletedChat':
         return 'Deleted';
       case 'DirectMessageChat':
-        return chat.receipent.user.username;
+        return chat.recipient.user.username;
       default:
         return 'unknown';
     }
@@ -85,32 +85,26 @@ const AnimatedTitle = () => {
           {shouldShowTitle ? (
             <Title order={isSmallScreen ? 3 : 2}>{import.meta.env.VITE_APP_TITLE}</Title>
           ) : (
-            <Group spacing={2}>
-              <Group spacing={2}>
-                {!!chat ? (
-                  <>
-                    {chat.__typename === 'GroupChat' && <ChatUpdateAction chat={chat} />}
-                    <Stack spacing={0}>
-                      <Text p={0} size={'lg'}>
-                        {title}
-                      </Text>
-                      {chat.__typename === 'GroupChat' && chat.description && (
-                        <Text color={'dimmed'} p={0} size={'xs'}>
-                          {chat.description}
-                        </Text>
-                      )}
-                      {chat.__typename === 'DirectMessageChat' && chat.receipent.user.name && (
-                        <Text color={'dimmed'} p={0} size={'xs'}>
-                          {chat.receipent.user.name}
-                        </Text>
-                      )}
-                    </Stack>
-                  </>
-                ) : (
-                  <>No chat</>
-                )}
+            chat && (
+              <Group spacing={'xs'}>
+                {chat.__typename === 'GroupChat' && <ChatUpdateAction chat={chat} />}
+                <Stack spacing={0}>
+                  <Text p={0} size={'lg'}>
+                    {title}
+                  </Text>
+                  {chat.__typename === 'GroupChat' && chat.description && (
+                    <Text color={'dimmed'} p={0} size={'xs'}>
+                      {chat.description}
+                    </Text>
+                  )}
+                  {chat.__typename === 'DirectMessageChat' && chat.recipient.user.name && (
+                    <Text color={'dimmed'} p={0} size={'xs'}>
+                      {chat.recipient.user.name}
+                    </Text>
+                  )}
+                </Stack>
               </Group>
-            </Group>
+            )
           )}
         </Box>
       </motion.div>

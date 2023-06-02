@@ -49,8 +49,8 @@ export const useCreateMessage = ({ chatId }: Props) => {
             __typename: 'Message',
             id,
             event: {
-              __typename: 'CreatedEvent',
               id,
+              __typename: 'CreatedEvent',
               createdAt,
               isCreator: true,
               createdBy: user,

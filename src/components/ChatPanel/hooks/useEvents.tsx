@@ -26,8 +26,8 @@ gql`
       }
     }
   }
-  subscription Events {
-    events {
+  subscription Events($chatId: HashId!) {
+    events(chatId: $chatId) {
       ...ChatPanelEvent
     }
   }
@@ -118,9 +118,8 @@ export const useEvents = ({ chatId }: Props) => {
   const events = useMemo(() => {
     // Map and filter
     const rawEvents =
-      data?.events?.edges
-        ?.map((x) => x?.node)
-        .filter((x): x is ChatPanelEventFragment => !!x) ?? [];
+      data?.events?.edges?.map((x) => x?.node).filter((x): x is ChatPanelEventFragment => !!x) ??
+      [];
 
     // Group
     const groupedEvents = groupEvents(rawEvents);

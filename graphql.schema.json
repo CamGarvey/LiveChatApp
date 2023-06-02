@@ -1819,7 +1819,7 @@
             "deprecationReason": null
           },
           {
-            "name": "receipent",
+            "name": "recipient",
             "description": null,
             "args": [],
             "type": {
@@ -3861,7 +3861,7 @@
             "description": null,
             "args": [
               {
-                "name": "receipentUserId",
+                "name": "recipientUserId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -6067,7 +6067,7 @@
               "name": null,
               "ofType": {
                 "kind": "INTERFACE",
-                "name": "ChatAlert",
+                "name": "Alert",
                 "ofType": null
               }
             },
@@ -6093,7 +6093,24 @@
           {
             "name": "events",
             "description": null,
-            "args": [],
+            "args": [
+              {
+                "name": "chatId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "HashId",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,

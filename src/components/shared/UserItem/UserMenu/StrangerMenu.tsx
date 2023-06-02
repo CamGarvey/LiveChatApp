@@ -85,7 +85,6 @@ const StrangerMenu = ({ stranger, iconSize = 14, target, items, loading = false 
               <Menu.Item
                 icon={<IconMailForward size={iconSize} />}
                 onClick={() => {
-                  console.log('test');
                   request.send(stranger.id);
                 }}
               >

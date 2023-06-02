@@ -22,11 +22,11 @@ gql`
     }
   }
   mutation CreateDirectMessageChat($receipentUserId: HashId!) {
-    createDirectMessageChat(receipentUserId: $receipentUserId) {
+    createDirectMessageChat(recipientUserId: $receipentUserId) {
       id
       isCreator
       createdAt
-      receipent {
+      recipient {
         id
         user {
           name
@@ -62,7 +62,7 @@ export const useCreateChat = () => {
         throw new Error('No query');
       }
 
-      const receipent = data?.createDirectMessageChat?.receipent;
+      const receipent = data?.createDirectMessageChat?.recipient;
 
       if (!receipent) {
         throw new Error('No receipent in mutation response');
@@ -70,7 +70,7 @@ export const useCreateChat = () => {
 
       if (
         !query.chats.find(
-          (x) => x.__typename === 'DirectMessageChat' && x.receipent.id === receipent.id
+          (x) => x.__typename === 'DirectMessageChat' && x.recipient.id === receipent.id
         )
       ) {
         const updatedChats = [

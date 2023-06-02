@@ -6,12 +6,7 @@ import { UpdateGroupChatModal } from 'components/Modals/UpdateGroupChatModal';
 import UserProvider from './UserProvider';
 import LiveNotificationsProvider from './LiveNotificationsProvider';
 import { FriendSelectorModal } from 'components/Modals/FriendSelectorModal';
-import {
-  ChatHeader,
-  ChatNavbar,
-  ChatAside,
-  ChatDrawer,
-} from 'components/Layout';
+import { ChatHeader, ChatNavbar, ChatAside, ChatDrawer } from 'components/Layout';
 
 type Props = {
   children: any;

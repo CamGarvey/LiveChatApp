@@ -1,10 +1,4 @@
-import {
-  Drawer as MantineDrawer,
-  Group,
-  MediaQuery,
-  Stack,
-  Title,
-} from '@mantine/core';
+import { Drawer as MantineDrawer, Group, MediaQuery, Stack, Title } from '@mantine/core';
 import { useUser } from 'context/UserContext';
 import ChatDisplay from 'components/ChatDisplay';
 import { UserAvatar } from 'components/shared/Avatars';
@@ -24,9 +18,6 @@ export const ChatDrawer = () => {
         size={'lg'}
         styles={{
           content: {
-            marginTop: '70px',
-          },
-          root: {
             marginTop: '70px',
           },
         }}

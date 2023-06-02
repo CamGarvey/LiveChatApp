@@ -30,6 +30,7 @@ const ChatUpdateAction = ({ chat, tooltipProps, ...other }: Props) => {
     >
       <ActionIcon
         size={'xs'}
+        radius={'xl'}
         color={'default'}
         disabled={disabled}
         onClick={() => {

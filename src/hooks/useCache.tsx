@@ -46,10 +46,10 @@ const useCache = () => {
         node = data['updateGroupChatName'];
       } else if ('updateGroupChatDescription' in data) {
         node = data['updateGroupChatDescription'];
-      } else if ('updateGroupChatName' in data) {
-        node = data['updateGroupChatName'];
-      } else if ('updateGroupChatDescription' in data) {
-        node = data['updateGroupChatDescription'];
+      } else if ('addMembers' in data) {
+        node = data['addMembers'];
+      } else if ('removeMembers' in data) {
+        node = data['removeMembers'];
       }
 
       if (!node) {
@@ -70,7 +70,13 @@ const useCache = () => {
               ...edges,
               {
                 __typename: 'EventEdge',
-                node,
+                node: {
+                  __typename: 'CreatedEvent',
+                  ...node.event,
+                  payload: {
+                    ...node,
+                  },
+                },
               },
             ],
           },

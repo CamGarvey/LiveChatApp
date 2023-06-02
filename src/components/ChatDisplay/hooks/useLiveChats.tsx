@@ -18,10 +18,7 @@ gql`
       ...ChatDisplayChat
     }
   }
-  subscription ChatsForChatDisplay(
-    $firstMembers: Int = 2
-    $afterMember: String
-  ) {
+  subscription ChatsForChatDisplay($firstMembers: Int = 2, $afterMember: String) {
     chats {
       ...ChatDisplayChat
     }
@@ -38,7 +35,7 @@ gql`
     }
     ... on DirectMessageChat {
       ...DirectMessageChatItem
-      receipent {
+      recipient {
         id
         user {
           id
@@ -79,7 +76,7 @@ export const useLiveChats = () => {
           case 'DirectMessageChat':
           case 'GroupChat':
             return Object.assign({}, prev, {
-              chats: [prev.chats.filter((x) => x.id !== chat.id), chat],
+              chats: [...prev.chats.filter((x) => x.id !== chat.id), chat],
             } as GetChatsForChatDisplayQuery);
           default:
             return prev;
@@ -97,8 +94,8 @@ export const useLiveChats = () => {
         }
         if (chat.__typename === 'DirectMessageChat') {
           return (
-            chat.receipent.user.username.toLowerCase().includes(filter) ||
-            chat.receipent.user.name?.toLowerCase().includes(filter)
+            chat.recipient.user.username.toLowerCase().includes(filter) ||
+            chat.recipient.user.name?.toLowerCase().includes(filter)
           );
         }
         return false;
@@ -107,10 +104,7 @@ export const useLiveChats = () => {
   );
 
   const group = useMemo(
-    () =>
-      filteredChats.filter(
-        (c) => c.__typename === 'GroupChat'
-      ) as GroupChatItemFragment[],
+    () => filteredChats.filter((c) => c.__typename === 'GroupChat') as GroupChatItemFragment[],
     [filteredChats]
   );
 

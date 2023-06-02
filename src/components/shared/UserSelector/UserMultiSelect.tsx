@@ -11,7 +11,7 @@ type Props = {
 } & Partial<MultiSelectProps>;
 
 const UserMultiSelect = forwardRef<HTMLInputElement, Props>(({ users, ...others }: Props, ref) => {
-  let usersConverted = useMemo(
+  const usersConverted = useMemo(
     () =>
       users.map((u) => ({
         key: u.id,
@@ -27,10 +27,10 @@ const UserMultiSelect = forwardRef<HTMLInputElement, Props>(({ users, ...others 
   return (
     <MultiSelect
       ref={ref}
-      {...others}
       itemComponent={UserSelectItem}
       valueComponent={UserValue}
       data={usersConverted}
+      {...others}
     />
   );
 });

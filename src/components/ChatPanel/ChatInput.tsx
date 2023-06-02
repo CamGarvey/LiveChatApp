@@ -36,8 +36,8 @@ const ChatInput = ({ onSubmit, isLoading = false, isDisabled = false }: Props) =
             />
           </Input.Wrapper>
         </Grid.Col>
-        <Grid.Col span={1} sx={{ alignSelf: 'center' }}>
-          <MediaQuery largerThan={'sm'} styles={{ display: 'none' }}>
+        <Grid.Col span={1} sx={{ alignSelf: 'center', display: 'flex', justifyContent: 'center' }}>
+          <MediaQuery largerThan={'md'} styles={{ display: 'none' }}>
             <ActionIcon
               type="submit"
               loading={isLoading}
@@ -45,12 +45,12 @@ const ChatInput = ({ onSubmit, isLoading = false, isDisabled = false }: Props) =
               variant={'filled'}
               color={'blue'}
               radius={'xl'}
-              size={'lg'}
+              size={'xl'}
             >
               <IconSend />
             </ActionIcon>
           </MediaQuery>
-          <MediaQuery smallerThan={'sm'} styles={{ display: 'none' }}>
+          <MediaQuery smallerThan={'md'} styles={{ display: 'none' }}>
             <Button
               type="submit"
               loading={isLoading}

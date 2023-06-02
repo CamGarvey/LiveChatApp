@@ -49,6 +49,7 @@ GroupChatItem.fragments = {
     fragment GroupChatItem on GroupChat {
       id
       name
+      description
       members(first: $firstMembers, after: $afterMember) {
         totalCount
         edges {

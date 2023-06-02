@@ -17,16 +17,7 @@ type Props = {
 };
 
 const UserSelect = forwardRef<HTMLInputElement, Props>(
-  (
-    {
-      users,
-      onChange,
-      nothingFound = 'Nobody Here',
-      defaultValue = [],
-      ...others
-    }: Props,
-    ref
-  ) => {
+  ({ users, onChange, nothingFound = 'Nobody Here', defaultValue = [], ...others }: Props, ref) => {
     let usersConverted = useMemo(
       () =>
         users.map((u) => ({

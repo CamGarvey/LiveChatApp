@@ -8,5 +8,6 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths(), svgrPlugin()],
   server: {
     port: 3000,
+    strictPort: true,
   },
 });

@@ -105,7 +105,6 @@ export const UpdateGroupChatModal = ({
         onSubmit={(values) => {
           const membersToAdd = values.userIds.filter((x) => !defaultUserIds.includes(x));
           const membersToRemove = defaultUserIds.filter((x) => !values.userIds.includes(x));
-
           if (chat.name !== values.name) {
             update.name(chat.id, values.name);
           }
@@ -118,6 +117,7 @@ export const UpdateGroupChatModal = ({
           if (membersToRemove.length > 0) {
             update.members.remove(chat.id, membersToRemove);
           }
+          context.closeModal(id);
         }}
       >
         {(props) => (
